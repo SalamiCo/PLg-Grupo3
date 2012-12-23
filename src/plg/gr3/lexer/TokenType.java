@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 /**
  * Clase que representa una categoría léxica del lenguaje.
  * 
- * @author PLg Grupo 03 - 2012/2013
+ * @author PLg Grupo 03 2012/2013
  */
 public enum TokenType {
     // Literales e Identificadores
