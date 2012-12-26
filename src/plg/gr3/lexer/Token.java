@@ -1,7 +1,7 @@
 package plg.gr3.lexer;
 
 /**
- * Clase que representa un token o componente lexico del lenguaje.
+ * Clase que representa un token o componente léxico del lenguaje.
  * 
  * @author PLg Grupo 03 2012/2013
  */
@@ -15,11 +15,11 @@ public final class Token {
 
     /**
      * @param type
-     *            Categoria lexica del Token
+     *            Categoría láxica del Token
      * @param lexeme
      *            Lexema del Token
      * @throws IllegalArgumentException
-     *             Si el lexema no encaja con su categoria lexica
+     *             Si el lexema no encaja con su categoría léxica
      */
     public Token (TokenType type, String lexeme) throws IllegalArgumentException {
         if (type.getPattern().matcher(lexeme).matches()) {
@@ -30,12 +30,12 @@ public final class Token {
         }
     }
 
-    /** Obtener su categoria lexica */
+    /** @return Categoría léxica de este token */
     public TokenType getType () {
         return type;
     }
 
-    /** Obtener su lexema */
+    /** @return Lexema de este token */
     public String getLexeme () {
         return lexeme;
     }
