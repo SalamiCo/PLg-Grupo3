@@ -64,17 +64,6 @@ public class LiteralsAndIdentifiersTest {
     }
 
     @Test
-    public void onlyEofNull () {
-        Assert.assertTrue("EOF", TokenType.EOF.getPattern() == null);
-
-        for (TokenType tt : TokenType.values()) {
-            if (tt != TokenType.EOF) {
-                Assert.assertFalse(tt.toString(), tt.getPattern() == null);
-            }
-        }
-    }
-
-    @Test
     public void validNaturals () {
         matchValidInvalid(TokenType.LIT_NATURAL.getPattern().pattern(), naturals[0], naturals[1]);
     }

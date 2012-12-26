@@ -87,17 +87,6 @@ public class TokenConstructorTest {
     }
 
     @Test
-    public void onlyEofNull () {
-        Assert.assertTrue("EOF", isValidToken(TokenType.EOF, null));
-
-        for (TokenType type : TokenType.values()) {
-            if (type != TokenType.EOF) {
-                Assert.assertFalse(type.toString(), isValidToken(type, null));
-            }
-        }
-    }
-
-    @Test
     public void validNaturals () {
         constructTokens(TokenType.LIT_NATURAL, naturals[0], naturals[1]);
     }
