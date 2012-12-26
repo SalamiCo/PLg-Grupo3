@@ -25,8 +25,9 @@ public final class Token {
         if (type.getPattern().matcher(lexeme).matches()) {
             this.type = type;
             this.lexeme = lexeme;
-        } else
+        } else {
             throw new IllegalArgumentException();
+        }
     }
 
     /** Obtener su categoria lexica */
