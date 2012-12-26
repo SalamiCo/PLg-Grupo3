@@ -60,7 +60,7 @@ public enum TokenType {
     RW_NOT("not"),
 
     // Fin de fichero
-    EOF(null);
+    EOF("$");
 
     /** Patrón para esta categoría léxica */
     private final Pattern pattern;
