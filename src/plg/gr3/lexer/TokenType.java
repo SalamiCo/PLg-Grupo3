@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
 public enum TokenType {
     // Literales e Identificadores
     IDENTIFIER("[a-z][a-zA-Z0-9]*"),
-    LIT_NATURAL("0|[1-9][0-9]*"),
-    LIT_INTEGER("0|-?[1-9][0-9]*"),
-    LIT_FLOAT("(0|-?[1-9][0-9]*)(\\.(0|[0-9]*[1-9]))?([eE](0|-?[1-9][0-9]*))?"),
+    LIT_NATURAL("0|[1-9]\\d*"),
+    LIT_INTEGER("0|-?[1-9]\\d*"),
+    LIT_FLOAT("(0|-?[1-9]\\d*)(\\.(0|\\d*[1-9]))?([eE](0|-?[1-9]\\d*))?"),
     LIT_CHARACTER("'[a-zA-Z0-9]'"),
 
     // Símbolos
@@ -39,28 +39,29 @@ public enum TokenType {
 
     // Palabras reservadas
     RW_PROGRAM("program:"),
-    RW_VARCONSTS("var-consts"),
-    RW_INSTRUCTIONS("instructions"),
-    RW_VAR("var"),
-    RW_CONST("const"),
-    RW_NATURAL("natural"),
-    RW_NAT("nat"),
-    RW_BOOLEAN("boolean"),
-    RW_INTEGER("integer"),
-    RW_INT("int"),
-    RW_FLOAT("float"),
-    RW_CHARACTER("character"),
-    RW_CHAR("char"),
-    RW_IN("in"),
-    RW_OUT("out"),
-    RW_SWAP1("swap1"),
-    RW_SWAP2("swap2"),
-    RW_AND("and"),
-    RW_OR("or"),
-    RW_NOT("not"),
+    RW_VARCONSTS("var-consts(?=[^a-zA-Z0-9])"),
+    RW_INSTRUCTIONS("instructions(?=[^a-zA-Z0-9])"),
+    RW_VAR("var(?=[^a-zA-Z0-9])"),
+    RW_CONST("const(?=[^a-zA-Z0-9])"),
+    RW_NATURAL("natural(?=[^a-zA-Z0-9])"),
+    RW_NAT("nat(?=[^a-zA-Z0-9])"),
+    RW_BOOLEAN("boolean(?=[^a-zA-Z0-9])"),
+    RW_INTEGER("integer(?=[^a-zA-Z0-9])"),
+    RW_INT("int(?=[^a-zA-Z0-9])"),
+    RW_FLOAT("float(?=[^a-zA-Z0-9])"),
+    RW_CHARACTER("character(?=[^a-zA-Z0-9])"),
+    RW_CHAR("char(?=[^a-zA-Z0-9])"),
+    RW_IN("in(?=[^a-zA-Z0-9])"),
+    RW_OUT("out(?=[^a-zA-Z0-9])"),
+    RW_SWAP1("swap1(?=[^a-zA-Z0-9])"),
+    RW_SWAP2("swap2(?=[^a-zA-Z0-9])"),
+    RW_AND("and(?=[^a-zA-Z0-9])"),
+    RW_OR("or(?=[^a-zA-Z0-9])"),
+    RW_NOT("not(?=[^a-zA-Z0-9])"),
 
-    // Fin de fichero
-    EOF("$");
+    // Fin de fichero. El patrón de EOF es irrelevante: Se trata de un caso especial y no se utilizará.
+    // El valor null se trata en el constructor
+    EOF(null);
 
     /** Patrón para esta categoría léxica */
     private final Pattern pattern;
@@ -70,11 +71,13 @@ public enum TokenType {
      *            Expresión regular que define la categoría léxica
      */
     private TokenType (String regex) {
-        pattern = regex == null ? null : Pattern.compile(regex);
+        // Tratamos adecuadamente el caso de una expresión nula. Puesto que indica que su valor no va a usarse, no nos
+        // importa su valor, pero nos aseguramos de que *no* es null puesto que otras clases se basan en ello.
+        pattern = Pattern.compile(regex == null ? "" : regex);
     }
 
     /**
-     * @return Patrón asociado a esta categoría, o <tt>null</tt> en el caso especial del fin de fichero
+     * @return Patrón asociado a esta categoría
      */
     public Pattern getPattern () {
         return pattern;

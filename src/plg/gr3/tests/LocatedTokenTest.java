@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import plg.gr3.lexer.LocatedToken;
 import plg.gr3.lexer.Token;
 import plg.gr3.lexer.TokenType;
 
@@ -30,7 +31,6 @@ public class LocatedTokenTest {
         lt2 = new LocatedToken(validToken, validLine, validColumn);
     }
 
-    @Test
     @Test(expected = NullPointerException.class)
     public void testTokenNotNull () {
         new LocatedToken(null, validLine, validColumn);

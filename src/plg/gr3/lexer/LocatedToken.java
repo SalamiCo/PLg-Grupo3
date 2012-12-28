@@ -1,5 +1,7 @@
 package plg.gr3.lexer;
 
+import java.util.Objects;
+
 /**
  * Clase que representa la ubicacion de un Token en el fichero.
  * 
@@ -30,28 +32,45 @@ public final class LocatedToken {
      * 
      * */
     public LocatedToken (Token token, int line, int column) throws IllegalArgumentException {
-        if (token != null && line > 0 && column > 0) {
-            this.token = token;
-            this.line = line;
-            this.column = column;
-        } else {
-            throw new IllegalArgumentException();
+        if (line <= 0) {
+            throw new IllegalArgumentException("line: " + line + " <= 0");
         }
+        if (column <= 0) {
+            throw new IllegalArgumentException("column: " + column + " <= 0");
+        }
+
+        this.token = Objects.requireNonNull(token, "token");
+        this.line = line;
+        this.column = column;
     }
 
-    /**@return Token al que se hace referencia */
+    /** @return Token al que se hace referencia */
     public Token getToken () {
         return token;
     }
 
-    /**@return Linea donde se ubica el token en el fichero */
+    /** @return Linea donde se ubica el token en el fichero */
     public int getLine () {
         return line;
     }
 
-    /**@return Columna donde se ubica el token en el fichero */
+    /** @return Columna donde se ubica el token en el fichero */
     public int getColumn () {
         return column;
     }
 
+    @Override
+    public int hashCode () {
+        return Objects.hash(token, line, column);
+    }
+
+    @Override
+    public boolean equals (Object obj) {
+        if (!(obj instanceof LocatedToken)) {
+            return false;
+        }
+
+        LocatedToken lt = (LocatedToken) obj;
+        return Objects.equals(lt.token, token) && lt.line == line && lt.column == column;
+    }
 }

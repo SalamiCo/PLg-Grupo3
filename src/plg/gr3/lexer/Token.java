@@ -1,5 +1,7 @@
 package plg.gr3.lexer;
 
+import java.util.Objects;
+
 /**
  * Clase que representa un token o componente léxico del lenguaje.
  * 
@@ -22,12 +24,13 @@ public final class Token {
      *             Si el lexema no encaja con su categoría léxica
      */
     public Token (TokenType type, String lexeme) throws IllegalArgumentException {
-        if (type.getPattern().matcher(lexeme).matches()) {
-            this.type = type;
-            this.lexeme = lexeme;
-        } else {
+        this.type = Objects.requireNonNull(type, "type");
+        this.lexeme = Objects.requireNonNull(lexeme, "lexeme");
+
+        if (!type.getPattern().matcher(lexeme).matches()) {
             throw new IllegalArgumentException();
         }
+
     }
 
     /** @return Categoría léxica de este token */
@@ -38,5 +41,20 @@ public final class Token {
     /** @return Lexema de este token */
     public String getLexeme () {
         return lexeme;
+    }
+
+    @Override
+    public int hashCode () {
+        return Objects.hash(type, lexeme);
+    }
+
+    @Override
+    public boolean equals (Object obj) {
+        if (!(obj instanceof Token)) {
+            return false;
+        }
+
+        Token t = (Token) obj;
+        return Objects.equals(t.type, type) && Objects.equals(t.lexeme, lexeme);
     }
 }
