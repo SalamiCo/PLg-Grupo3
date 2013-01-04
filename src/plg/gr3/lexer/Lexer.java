@@ -179,10 +179,6 @@ public final class Lexer implements Closeable {
         // más espacios en líneas posteriores. De igual manera,siel reconocedor es null, significa que hemos llegado al
         // fin de fichero, por lo que hemos de parar el proceso.
         
-        if (matcher == null) {
-            // Cerramos la entrada en cuanto llegamos al final para evitar problemas
-            reader.close();
-        }
     }
     
     /**
