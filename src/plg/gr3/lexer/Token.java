@@ -8,13 +8,13 @@ import java.util.Objects;
  * @author PLg Grupo 03 2012/2013
  */
 public final class Token {
-
+    
     /** Categoria lexica del Token */
     private final TokenType type;
-
+    
     /** Lexema del Token */
     private final String lexeme;
-
+    
     /**
      * @param type
      *            Categoría láxica del Token
@@ -26,34 +26,34 @@ public final class Token {
     public Token (TokenType type, String lexeme) throws IllegalArgumentException {
         this.type = Objects.requireNonNull(type, "type");
         this.lexeme = Objects.requireNonNull(lexeme, "lexeme");
-
+        
         if (!type.getPattern().matcher(lexeme).matches()) {
             throw new IllegalArgumentException();
         }
-
+        
     }
-
+    
     /** @return Categoría léxica de este token */
     public TokenType getType () {
         return type;
     }
-
+    
     /** @return Lexema de este token */
     public String getLexeme () {
         return lexeme;
     }
-
+    
     @Override
     public int hashCode () {
         return Objects.hash(type, lexeme);
     }
-
+    
     @Override
     public boolean equals (Object obj) {
         if (!(obj instanceof Token)) {
             return false;
         }
-
+        
         Token t = (Token) obj;
         return Objects.equals(t.type, type) && Objects.equals(t.lexeme, lexeme);
     }

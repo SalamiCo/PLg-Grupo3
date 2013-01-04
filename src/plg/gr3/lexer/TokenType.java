@@ -14,7 +14,7 @@ public enum TokenType {
     LIT_INTEGER("0|-?[1-9]\\d*"),
     LIT_FLOAT("(0|-?[1-9]\\d*)(\\.(0|\\d*[1-9]))?([eE](0|-?[1-9]\\d*))?"),
     LIT_CHARACTER("'[a-zA-Z0-9]'"),
-
+    
     // Símbolos
     SYM_ASIGNATION("="),
     SYM_CONST_ASIGNATION(":="),
@@ -36,7 +36,7 @@ public enum TokenType {
     SYM_MODULO("%"),
     SYM_SHIFT_LEFT("<<"),
     SYM_SHIFT_RIGHT(">>"),
-
+    
     // Palabras reservadas
     RW_PROGRAM("program:"),
     RW_VARCONSTS("var-consts(?=[^a-zA-Z0-9])"),
@@ -58,14 +58,14 @@ public enum TokenType {
     RW_AND("and(?=[^a-zA-Z0-9])"),
     RW_OR("or(?=[^a-zA-Z0-9])"),
     RW_NOT("not(?=[^a-zA-Z0-9])"),
-
+    
     // Fin de fichero. El patrón de EOF es irrelevante: Se trata de un caso especial y no se utilizará.
     // El valor null se trata en el constructor
     EOF(null);
-
+    
     /** Patrón para esta categoría léxica */
     private final Pattern pattern;
-
+    
     /**
      * @param regex
      *            Expresión regular que define la categoría léxica
@@ -75,7 +75,7 @@ public enum TokenType {
         // importa su valor, pero nos aseguramos de que *no* es null puesto que otras clases se basan en ello.
         pattern = Pattern.compile(regex == null ? "" : regex);
     }
-
+    
     /**
      * @return Patrón asociado a esta categoría
      */

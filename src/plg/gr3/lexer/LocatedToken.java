@@ -8,16 +8,16 @@ import java.util.Objects;
  * @author PLg Grupo 03 2012/2013
  */
 public final class LocatedToken {
-
+    
     /** Token al que se hace referencia */
     private final Token token;
-
+    
     /** Linea donde se ubica el token en el fichero */
     private final int line;
-
+    
     /** Columna donde se ubica el token en el fichero */
     private final int column;
-
+    
     /**
      * Constructora parametrizada de la clase LocatedToken
      * 
@@ -38,38 +38,38 @@ public final class LocatedToken {
         if (column <= 0) {
             throw new IllegalArgumentException("column: " + column + " <= 0");
         }
-
+        
         this.token = Objects.requireNonNull(token, "token");
         this.line = line;
         this.column = column;
     }
-
+    
     /** @return Token al que se hace referencia */
     public Token getToken () {
         return token;
     }
-
+    
     /** @return Linea donde se ubica el token en el fichero */
     public int getLine () {
         return line;
     }
-
+    
     /** @return Columna donde se ubica el token en el fichero */
     public int getColumn () {
         return column;
     }
-
+    
     @Override
     public int hashCode () {
         return Objects.hash(token, line, column);
     }
-
+    
     @Override
     public boolean equals (Object obj) {
         if (!(obj instanceof LocatedToken)) {
             return false;
         }
-
+        
         LocatedToken lt = (LocatedToken) obj;
         return Objects.equals(lt.token, token) && lt.line == line && lt.column == column;
     }
