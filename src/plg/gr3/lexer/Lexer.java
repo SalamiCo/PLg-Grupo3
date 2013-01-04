@@ -80,8 +80,7 @@ public final class Lexer implements Closeable {
         // * No estamos tratando de reconocer EOF (lo cual haría que el resto del código no funcionara)
         
         // Probamos si el reconocedor es capaz de reconocer el token pedido
-        matcher.usePattern(category.getPattern());
-        return matcher.lookingAt();
+        return category.startsWith(matcher);
     }
     
     /**
@@ -118,8 +117,7 @@ public final class Lexer implements Closeable {
         // Reconocemos el siguiente token
         // FIXME: ¿Es esto realmente neceario? Recordemos que en este punto venimos de una llamada a 'hasNextToken'
         //        que ha relizado exactamente las mismas acciones.
-        matcher.usePattern(category.getPattern());
-        matcher.lookingAt();
+        category.recognizes(matcher);
         
         // Avanzamos la posición del analizador y leemos el lexema
         currentColumn += matcher.end() - matcher.start();
