@@ -80,7 +80,7 @@ public final class Lexer implements Closeable {
         // * No estamos tratando de reconocer EOF (lo cual haría que el resto del código no funcionara)
         
         // Probamos si el reconocedor es capaz de reconocer el token pedido
-        return category.startsWith(matcher);
+        return category.recognizes(matcher);
     }
     
     /**

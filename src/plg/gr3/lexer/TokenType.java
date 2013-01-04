@@ -1,5 +1,8 @@
 package plg.gr3.lexer;
 
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +21,13 @@ public enum TokenType {
             }
             
             // Comprobar que esto no encaja con ninguna palabra reservada
-            return true; // TODO
+            for (TokenType keyword : KEYWORDS) {
+                if (keyword.matches(str)) {
+                    return false;
+                }
+            }
+            
+            return true;
         }
         
         @Override
@@ -27,8 +36,16 @@ public enum TokenType {
                 return false;
             }
             
-            // Comprobar que no empieza por una palabra reservada
-            return true; // TODO
+            // Comprobar que esto no encaja con ninguna palabra reservada
+            for (TokenType keyword : KEYWORDS) {
+                if (keyword.recognizes(matcher)) {
+                    return false;
+                }
+            }
+            
+            // Update the matcher with the actual match
+            super.recognizes(matcher);
+            return true;
         }
         
     },
@@ -85,6 +102,18 @@ public enum TokenType {
     // Fin de fichero. El patrón de EOF es irrelevante: Se trata de un caso especial y no se utilizará.
     // El valor null se trata en el constructor
     EOF(null, false);
+    
+    /** Conjunto con todas las palabras reservadas */
+    private static final Set<TokenType> KEYWORDS;
+    static {
+        Set<TokenType> set = EnumSet.noneOf(TokenType.class);
+        for (TokenType tt : values()) {
+            if (tt.isKeyword()) {
+                set.add(tt);
+            }
+        }
+        KEYWORDS = Collections.unmodifiableSet(set);
+    }
     
     /** Patrón para esta categoría léxica */
     private final Pattern pattern;
