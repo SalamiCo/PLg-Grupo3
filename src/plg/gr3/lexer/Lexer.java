@@ -140,7 +140,7 @@ public final class Lexer implements Closeable {
     private void prepareInput () throws IOException {
         do {
             // Si el reconocedor no está creado o ha llegado al final de la línea...
-            if (matcher == null || matcher.hitEnd()) {
+            if (matcher == null || matcher.regionStart() == matcher.regionEnd()) {
                 // Descartamos el reconocedor actual
                 matcher = null;
                 
@@ -170,7 +170,7 @@ public final class Lexer implements Closeable {
                 }
             }
             
-        } while (matcher != null && matcher.hitEnd());
+        } while (matcher != null && matcher.regionStart() == matcher.regionEnd());
         
         // El procesose repite siempre que el reconocedor haya agotado una línea completa.
         // Si el reconocedor se ha parado a mitad de línea, significa quehay más tokens que leer. Si no, podemos tener
@@ -192,7 +192,7 @@ public final class Lexer implements Closeable {
      * @throws IOException
      *             si ocurre algún error de E/S
      */
-    public Set<TokenType> nextTokenTypes () throws IOException {
+    public Set<TokenType> getNextTokenTypes () throws IOException {
         Set<TokenType> types = EnumSet.noneOf(TokenType.class);
         for (TokenType type : TokenType.values()) {
             if (hasNextToken(type)) {

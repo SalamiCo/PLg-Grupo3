@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  */
 public enum TokenType {
     // Literales e Identificadores
-    IDENTIFIER("[a-z][a-zA-Z0-9]*", false) {
+    IDENTIFIER("[a-z][a-zA-Z0-9]*", "(?=[^a-zA-Z0-9]|$)", false) {
         @Override
         public boolean matches (String str) {
             if (!super.matches(str)) {
@@ -79,29 +79,32 @@ public enum TokenType {
     
     // Palabras reservadas
     RW_PROGRAM("program:", true),
-    RW_VARCONSTS("var-consts(?=[^a-zA-Z0-9]+|$)", true),
-    RW_INSTRUCTIONS("instructions(?=[^a-zA-Z0-9]+|$)", true),
-    RW_VAR("var(?=[^a-zA-Z0-9]+|$)", true),
-    RW_CONST("const(?=[^a-zA-Z0-9]+|$)", true),
-    RW_NATURAL("natural(?=[^a-zA-Z0-9]+|$)", true),
-    RW_NAT("nat(?=[^a-zA-Z0-9]+|$)", true),
-    RW_BOOLEAN("boolean(?=[^a-zA-Z0-9]+|$)", true),
-    RW_INTEGER("integer(?=[^a-zA-Z0-9]+|$)", true),
-    RW_INT("int(?=[^a-zA-Z0-9]+|$)", true),
-    RW_FLOAT("float(?=[^a-zA-Z0-9]+|$)", true),
-    RW_CHARACTER("character(?=[^a-zA-Z0-9]+|$)", true),
-    RW_CHAR("char(?=[^a-zA-Z0-9]+|$)", true),
-    RW_IN("in(?=[^a-zA-Z0-9]+|$)", true),
-    RW_OUT("out(?=[^a-zA-Z0-9]+|$)", true),
-    RW_SWAP1("swap1(?=[^a-zA-Z0-9]+|$)", true),
-    RW_SWAP2("swap2(?=[^a-zA-Z0-9]+|$)", true),
-    RW_AND("and(?=[^a-zA-Z0-9]+|$)", true),
-    RW_OR("or(?=[^a-zA-Z0-9]+|$)", true),
-    RW_NOT("not(?=[^a-zA-Z0-9]+|$)", true),
+    RW_VARCONSTS("var-consts", true),
+    RW_INSTRUCTIONS("instructions", true),
+    RW_VAR("var", true),
+    RW_CONST("const", true),
+    RW_NATURAL("natural", true),
+    RW_NAT("nat", true),
+    RW_BOOLEAN("boolean", true),
+    RW_INTEGER("integer", true),
+    RW_INT("int", true),
+    RW_FLOAT("float", true),
+    RW_CHARACTER("character", true),
+    RW_CHAR("char", true),
+    RW_IN("in", true),
+    RW_OUT("out", true),
+    RW_SWAP1("swap1", true),
+    RW_SWAP2("swap2", true),
+    RW_AND("and", true),
+    RW_OR("or", true),
+    RW_NOT("not", true),
     
     // Fin de fichero. El patrón de EOF es irrelevante: Se trata de un caso especial y no se utilizará.
     // El valor null se trata en el constructor
     EOF(null, false);
+    
+    /** Patrón de "lookahead" para palabras reservadas */
+    private static final String LOOKAHEAD = "(?=[^a-zA-Z0-9]|$)";
     
     /** Conjunto con todas las palabras reservadas */
     private static final Set<TokenType> KEYWORDS;
@@ -118,17 +121,25 @@ public enum TokenType {
     /** Patrón para esta categoría léxica */
     private final Pattern pattern;
     
+    /** Patrón para esta categoría léxica, incluyendo la sección de "lookahead" si fuera necesaria */
+    private final Pattern lookAheadPattern;
+    
     /** Si esta categoría es una palabra reservada */
     private final boolean keyword;
+    
+    private TokenType (String regex, boolean keyword) {
+        this(regex, keyword ? LOOKAHEAD : "", keyword);
+    }
     
     /**
      * @param regex
      *            Expresión regular que define la categoría léxica
      */
-    private TokenType (String regex, boolean keyword) {
+    private TokenType (String regex, String laPart, boolean keyword) {
         // Tratamos adecuadamente el caso de una expresión nula. Puesto que indica que su valor no va a usarse, no nos
         // importa su valor, pero nos aseguramos de que *no* es null puesto que otras clases se basan en ello.
         pattern = Pattern.compile(regex == null ? "" : regex);
+        lookAheadPattern = Pattern.compile(pattern.pattern() + laPart);
         this.keyword = keyword;
     }
     
@@ -137,6 +148,13 @@ public enum TokenType {
      */
     public Pattern getPattern () {
         return pattern;
+    }
+    
+    /**
+     * @return Patrón asociado a esta categoría, incluyendo las secciones lookahead si fueran necesarias
+     */
+    public Pattern getLookAheadPattern () {
+        return lookAheadPattern;
     }
     
     /**
@@ -151,7 +169,7 @@ public enum TokenType {
     }
     
     public boolean recognizes (Matcher matcher) {
-        matcher.usePattern(pattern);
+        matcher.usePattern(lookAheadPattern);
         return matcher.lookingAt();
     }
 }
