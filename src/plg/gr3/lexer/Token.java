@@ -27,7 +27,7 @@ public final class Token {
         this.type = Objects.requireNonNull(type, "type");
         this.lexeme = Objects.requireNonNull(lexeme, "lexeme");
         
-        if (!type.getPattern().matcher(lexeme).matches()) {
+        if (!type.matches(lexeme)) {
             throw new IllegalArgumentException();
         }
         

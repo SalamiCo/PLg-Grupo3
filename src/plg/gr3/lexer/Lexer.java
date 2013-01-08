@@ -80,8 +80,7 @@ public final class Lexer implements Closeable {
         // * No estamos tratando de reconocer EOF (lo cual haría que el resto del código no funcionara)
         
         // Probamos si el reconocedor es capaz de reconocer el token pedido
-        matcher.usePattern(category.getPattern());
-        return matcher.lookingAt();
+        return category.recognizes(matcher);
     }
     
     /**
@@ -118,8 +117,7 @@ public final class Lexer implements Closeable {
         // Reconocemos el siguiente token
         // FIXME: ¿Es esto realmente neceario? Recordemos que en este punto venimos de una llamada a 'hasNextToken'
         //        que ha relizado exactamente las mismas acciones.
-        matcher.usePattern(category.getPattern());
-        matcher.lookingAt();
+        category.recognizes(matcher);
         
         // Avanzamos la posición del analizador y leemos el lexema
         currentColumn += matcher.end() - matcher.start();
@@ -142,7 +140,7 @@ public final class Lexer implements Closeable {
     private void prepareInput () throws IOException {
         do {
             // Si el reconocedor no está creado o ha llegado al final de la línea...
-            if (matcher == null || matcher.hitEnd()) {
+            if (matcher == null || matcher.regionStart() == matcher.regionEnd()) {
                 // Descartamos el reconocedor actual
                 matcher = null;
                 
@@ -172,7 +170,7 @@ public final class Lexer implements Closeable {
                 }
             }
             
-        } while (matcher != null && matcher.hitEnd());
+        } while (matcher != null && matcher.regionStart() == matcher.regionEnd());
         
         // El procesose repite siempre que el reconocedor haya agotado una línea completa.
         // Si el reconocedor se ha parado a mitad de línea, significa quehay más tokens que leer. Si no, podemos tener
@@ -194,7 +192,7 @@ public final class Lexer implements Closeable {
      * @throws IOException
      *             si ocurre algún error de E/S
      */
-    public Set<TokenType> nextTokenTypes () throws IOException {
+    public Set<TokenType> getNextTokenTypes () throws IOException {
         Set<TokenType> types = EnumSet.noneOf(TokenType.class);
         for (TokenType type : TokenType.values()) {
             if (hasNextToken(type)) {
