@@ -51,11 +51,15 @@ public final class SymbolTable {
      *            Tabla con los identificadores a añadir
      */
     public SymbolTable (HashMap<String, Entry> table) {
-        this.table.putAll(table); // TODO Hace falta?
+        this.table.putAll(table); // TODO Hace falta este constructor?
     }
     
     public boolean hasIdentifier (String ident) {
         return table.containsKey(ident);
+    }
+    
+    public void putIdentifier (String ident, Type type, boolean constant, int address, Object value) {
+        table.put(ident, new Entry(type, constant, address, value));
     }
     
     private Entry getEntry (String ident) {
