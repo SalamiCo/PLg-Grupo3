@@ -11,7 +11,7 @@ package plg.gr3.parser;
 public final class Attributes {
     
     /** Tipo de una variable o expresión */
-    private final String type;
+    private final Type type;
     
     /** Si se trata de una constante o variable */
     private final boolean constant;
@@ -46,7 +46,7 @@ public final class Attributes {
      *            El valor a usar
      */
     private Attributes (
-        int address, boolean constant, Object error, Object operator, SymbolTable symbolTable, String type, Object value)
+        int address, boolean constant, Object error, Object operator, SymbolTable symbolTable, Type type, Object value)
     {
         this.address = address;
         this.constant = constant;
@@ -60,7 +60,7 @@ public final class Attributes {
     /**
      * @return El atributo <tt>type</tt>
      */
-    public String getType () {
+    public Type getType () {
         return type;
     }
     
@@ -107,7 +107,7 @@ public final class Attributes {
     }
     
     public static final class Builder {
-        private String type;
+        private Type type;
         
         private boolean constant;
         
@@ -146,7 +146,7 @@ public final class Attributes {
             return this;
         }
         
-        public Builder type (String type) {
+        public Builder type (Type type) {
             this.type = type;
             return this;
         }
