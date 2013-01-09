@@ -4,6 +4,11 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 
+/**
+ * Depurador de la práctica. Capaz de imprimir mensajes de información, de depuración o de error.
+ * 
+ * @author PLg Grupo 03 2012/2013
+ */
 public final class Debugger {
     
     /** Flujo de salida de todos los mensajes */
@@ -18,6 +23,12 @@ public final class Debugger {
     /** Fichero en el que se envía un mensaje */
     private Path file = null;
     
+    /** Si el *logging* está activado */
+    private boolean logging;
+    
+    /** Si el modo depuración está activado */
+    private boolean debug;
+    
     /** Devuelve el depurador a su estado original */
     private void reset () {
         line = 0;
@@ -27,6 +38,14 @@ public final class Debugger {
     
     public Debugger (Writer out) {
         this.out = new PrintWriter(out);
+    }
+    
+    public void setLoggingEnabled (boolean logging) {
+        this.logging = logging;
+    }
+    
+    public void setDebugEnabled (boolean debug) {
+        this.debug = debug;
     }
     
     public Debugger at (int line) {
@@ -56,12 +75,16 @@ public final class Debugger {
     }
     
     public void log (String message) {
-        message("LOG", message);
+        if (logging) {
+            message("LOG", message);
+        }
         reset();
     }
     
     public void debug (String message) {
-        message("DBG", message);
+        if (logging && debug) {
+            message("DBG", message);
+        }
         reset();
     }
     

@@ -12,21 +12,6 @@ import plg.gr3.lexer.Lexer;
  */
 public final class Parser implements Closeable {
     
-    /** Nobre del tipo <tt>natural</tt> */
-    public static final String TYPE_NATURAL = "natural";
-    
-    /** Nobre del tipo <tt>integer</tt> */
-    public static final String TYPE_INTEGER = "integer";
-    
-    /** Nobre del tipo <tt>float</tt> */
-    public static final String TYPE_FLOAT = "float";
-    
-    /** Nobre del tipo <tt>boolean</tt> */
-    public static final String TYPE_BOOLEAN = "boolean";
-    
-    /** Nobre del tipo <tt>character</tt> */
-    public static final String TYPE_CHARACTER = "character";
-    
     /** Analizador léxico a utilizar */
     private final Lexer lexer;
     
