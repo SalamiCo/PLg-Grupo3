@@ -25,9 +25,6 @@ public final class Attributes {
     /** El operador a usar */
     private final Object operator;
     
-    /** Tabla de símbolos */
-    private final SymbolTable symbolTable;
-    
     /** El valor a usar */
     private final Object value;
     
@@ -48,14 +45,11 @@ public final class Attributes {
      * @param value
      *            El valor a usar
      */
-    private Attributes (
-        int address, boolean constant, Object error, Object operator, SymbolTable symbolTable, Type type, Object value)
-    {
+    private Attributes (int address, boolean constant, Object error, Object operator, Type type, Object value) {
         this.address = address;
         this.constant = constant;
         this.error = error;
         this.operator = operator;
-        this.symbolTable = symbolTable;
         this.type = type;
         this.value = value;
     }
@@ -89,13 +83,6 @@ public final class Attributes {
     }
     
     /**
-     * @return El atributo <tt>symbolTable</tt>
-     */
-    public SymbolTable getSymbolTable () {
-        return symbolTable;
-    }
-    
-    /**
      * @return El atributo <tt>value</tt> si es del tipo especificado, <tt>null</tt> en caso contrario
      */
     public <T> T getValue (Class<T> cls) {
@@ -117,8 +104,6 @@ public final class Attributes {
         private Object error; // TODO Clase Error o ErrorType
         
         private Object operator; // TODO Clase Operator
-        
-        private SymbolTable symbolTable;
         
         private Object value;
         
@@ -144,11 +129,6 @@ public final class Attributes {
             return this;
         }
         
-        public Builder symbolTable (SymbolTable symbolTable) {
-            this.symbolTable = symbolTable;
-            return this;
-        }
-        
         public Builder type (Type type) {
             this.type = type;
             return this;
@@ -160,7 +140,7 @@ public final class Attributes {
         }
         
         public Attributes create () {
-            return new Attributes(address, constant, error, operator, symbolTable, type, value);
+            return new Attributes(address, constant, error, operator, type, value);
         }
     }
 }

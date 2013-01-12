@@ -55,8 +55,8 @@ public final class Parser implements Closeable {
         // TODO Log an error
         if (last) {
             Debugger.INSTANCE.at(lexer.getLine(), lexer.getColumn()).error(
-                "Expected " + Arrays.toString(categories) + ", found "
-                    + (token == null ? "nothing" : token.getToken().getType()));
+                "Esperado uno de " + Arrays.toString(categories) + ", se encontró "
+                    + (token == null ? "nada" : token.getToken().getType() + " en su lugar"));
         }
         
         throw new NoSuchElementException();
@@ -73,7 +73,6 @@ public final class Parser implements Closeable {
         // NOTA: La clase Attributes se construye de una forma un tanto peculiar para evitar tener que pasarle 8
         // parámetros en aquellos casos en los que sólo interesan 2. Echadle un ojo.
         Attributes attr = parseProgram(Attributes.DEFAULT);
-        
         return attr != null;
     }
     
@@ -88,10 +87,8 @@ public final class Parser implements Closeable {
             expect(true, TokenType.SYM_CURLY_LEFT);
             
             // SDecs SInsts
-            Attributes decsSynAttr = parseSDecs(true, Attributes.DEFAULT);
-            
-            Attributes instsInhAttr = new Attributes.Builder().symbolTable(decsSynAttr.getSymbolTable()).create();
-            Attributes instsSynAttr = parseSInsts(true, instsInhAttr);
+            parseSDecs(true, Attributes.DEFAULT);
+            parseSInsts(true, Attributes.DEFAULT);
             
             // fllave fin
             expect(true, TokenType.SYM_CURLY_RIGHT);
