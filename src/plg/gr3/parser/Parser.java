@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
+import plg.gr3.Util;
 import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.lexer.LocatedToken;
@@ -153,26 +154,6 @@ public final class Parser implements Closeable {
         
     }
     
-    //Fact
-    private Attributes parseFact (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        
-        // Fact ::=
-        try {
-            //Shft
-            Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
-            //Rfact
-            Attributes rfactInhAttr = new Attributes.Builder().type(shftSynAttr.getType()).create();
-            Attributes rfactSynAttr = parseRfact(true, rfactInhAttr);
-            
-            attrb.type(rfactSynAttr.getType());
-        } catch (NoSuchElementException exc) {
-            return Attributes.DEFAULT;
-        }
-        
-        return attrb.create();
-    }
-    
     private Attributes parseRDecs (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         
@@ -210,7 +191,7 @@ public final class Parser implements Closeable {
                     
                     attrb.constant(false).type(attrType.getType()).identifier(id.getToken().getLexeme());
                 }
-                    break;
+                break;
                 
                 case RW_CONST: {
                     //Type
@@ -224,29 +205,9 @@ public final class Parser implements Closeable {
                     
                     attrb.constant(true).type(attrType.getType()).identifier(id.getLexeme()).value(attrLit.getValue());
                 }
-                    break;
+                break;
             
             }
-        } catch (NoSuchElementException exc) {
-            return Attributes.DEFAULT;
-        }
-        
-        return attrb.create();
-    }
-    
-    //Shft
-    private Attributes parseShft (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        
-        // Shft ::=
-        try {
-            //Unary
-            Attributes unarySynAttr = parseUnary(true, Attributes.DEFAULT);
-            //FShft
-            Attributes fshftInhAttr = new Attributes.Builder().type(unarySynAttr.getType()).create();
-            Attributes fshftSynAttr = parseFshft(true, fshftInhAttr);
-            
-            attrb.type(fshftSynAttr.getType());
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
         }
@@ -316,34 +277,6 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
-    //FShft
-    private Attributes parseFshft (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        //FShft
-        try {
-            //Op3
-            Attributes op3SynAttr = parseOp3(true, Attributes.DEFAULT);
-            
-            if (op3SynAttr != null) {
-                //Shft            
-                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
-                
-                //TODO FShft.type = tipoFunc(FShft.typeh, Op3.op, Shft.type)
-                /*
-                 * attrb.type(tipoFunc(attr.getType(), op3SynAttr.getOperator(), shftSynAttr.getType() ));
-                 */
-            } else {
-                //Epsilon
-                attrb.type(attr.getType());
-            }
-            
-        } catch (NoSuchElementException exc) {
-            return Attributes.DEFAULT;
-        }
-        
-        return attrb.create();
-    }
-    
     private Attributes parseInst (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         
@@ -360,56 +293,201 @@ public final class Parser implements Closeable {
                 case IDENTIFIER:
                     expect(last, TokenType.SYM_ASIGNATION);
                     parseExpr(last, Attributes.DEFAULT);
-                    expect(true, TokenType.SYM_ASIGNATION);
-                    parseExpr(true, Attributes.DEFAULT);
-                    
-                    break;
+                
+                break;
                 
                 //in lpar ident rpar
                 case RW_IN:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     expect(last, TokenType.IDENTIFIER);
                     expect(last, TokenType.SYM_PAR_RIGHT);
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.IDENTIFIER);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
-                    
-                    break;
+                
+                break;
                 
                 //out lpar Expr rpar
                 case RW_OUT:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     parseExpr(last, Attributes.DEFAULT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    parseExpr(true, Attributes.DEFAULT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
-                    
-                    break;
+                
+                break;
                 
                 //swap1 lpar rpar
                 case RW_SWAP1:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
-                    
-                    break;
+                
+                break;
                 
                 //swap2 lpar rpar
                 case RW_SWAP2:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
-                    
-                    break;
+                
+                break;
             
             }
             ;
             
         } catch (NoSuchElementException exc) {
             return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseType (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        try {
+            LocatedToken token =
+                expect(
+                    last, TokenType.RW_BOOLEAN, TokenType.RW_NATURAL, TokenType.RW_INTEGER, TokenType.RW_FLOAT,
+                    TokenType.RW_CHARACTER);
+            
+            switch (token.getToken().getType()) {
+                case RW_BOOLEAN:
+                    attrb.type(Type.BOOLEAN);
+                break;
+                
+                case RW_NATURAL:
+                    attrb.type(Type.NATURAL);
+                break;
+                
+                case RW_INTEGER:
+                    attrb.type(Type.INTEGER);
+                break;
+                
+                case RW_FLOAT:
+                    attrb.type(Type.FLOAT);
+                break;
+                
+                case RW_CHARACTER:
+                    attrb.type(Type.CHARACTER);
+                break;
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseCast (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        try {
+            LocatedToken token =
+                expect(last, TokenType.RW_NAT, TokenType.RW_INT, TokenType.RW_FLOAT, TokenType.RW_CHAR);
+            
+            switch (token.getType()) {
+                case RW_NAT:
+                    attrb.type(Type.NATURAL);
+                break;
+                
+                case RW_INT:
+                    attrb.type(Type.INTEGER);
+                break;
+                
+                case RW_FLOAT:
+                    attrb.type(Type.FLOAT);
+                break;
+                
+                case RW_CHAR:
+                    attrb.type(Type.CHARACTER);
+                break;
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseExpr (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            Attributes attrTerm = parseTerm(last, Attributes.DEFAULT);
+            Attributes attrInhFExpr = new Attributes.Builder().type(attrTerm.getType()).create();
+            Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
+            
+            return attrb.type(attrFExpr.getType()).create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseFExpr (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
+            if (attrOp0 != null) {
+                Attributes attrTerm = parseTerm(last, attrOp0);
+                attrb.type(attrTerm.getType());
+            } else {
+                attrb.type(attr.getType());
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseTerm (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            // TODO llamada a la función tipoOpIgu(a, b)
+            Attributes attrFact = parseFact(last, Attributes.DEFAULT);
+            Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
+            Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
+            
+            return attrb.type(attrRTerm.getType()).create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseRTerm (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            Attributes attrOp1 = parseOp1(last, Attributes.DEFAULT);
+            if (attrOp1 != null) {
+                Attributes attrInhFact = new Attributes.Builder().type(attrOp1.getType()).create();
+                Attributes attrFact = parseFact(last, attrInhFact);
+                if (attrFact != null) {
+                    Attributes attrRTerm = parseRTerm(last, attrFact);
+                    attrb.type(attrRTerm.getType());
+                } else {
+                    attrb.type(attrFact.getType());
+                }
+            } else {
+                attrb.type(attrOp1.getType());
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    //Fact
+    private Attributes parseFact (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // Fact ::=
+        try {
+            //Shft
+            Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+            //Rfact
+            Attributes rfactInhAttr = new Attributes.Builder().type(shftSynAttr.getType()).create();
+            Attributes rfactSynAttr = parseRfact(true, rfactInhAttr);
+            
+            attrb.type(rfactSynAttr.getType());
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
         }
         
         return attrb.create();
@@ -445,42 +523,76 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
-    private Attributes parseType (boolean last, Attributes attr) throws IOException {
+    //Shft
+    private Attributes parseShft (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // Shft ::=
+        try {
+            //Unary
+            Attributes unarySynAttr = parseUnary(true, Attributes.DEFAULT);
+            //FShft
+            Attributes fshftInhAttr = new Attributes.Builder().type(unarySynAttr.getType()).create();
+            Attributes fshftSynAttr = parseFshft(true, fshftInhAttr);
+            
+            attrb.type(fshftSynAttr.getType());
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    //FShft
+    private Attributes parseFshft (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        //FShft
+        try {
+            //Op3
+            Attributes op3SynAttr = parseOp3(true, Attributes.DEFAULT);
+            
+            if (op3SynAttr != null) {
+                //Shft            
+                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+                
+                //TODO FShft.type = tipoFunc(FShft.typeh, Op3.op, Shft.type)
+                /*
+                 * attrb.type(tipoFunc(attr.getType(), op3SynAttr.getOperator(), shftSynAttr.getType() ));
+                 */
+            } else {
+                //Epsilon
+                attrb.type(attr.getType());
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseLit (boolean last, Attributes attr) {
         Attributes.Builder attrb = new Attributes.Builder();
         
         try {
-            LocatedToken token =
-                expect(
-                    last, TokenType.RW_BOOLEAN, TokenType.RW_NATURAL, TokenType.RW_INTEGER, TokenType.RW_FLOAT,
-                    TokenType.RW_CHARACTER);
-            
-            switch (token.getToken().getType()) {
-                case RW_BOOLEAN:
-                    attrb.type(Type.BOOLEAN);
-                    break;
-                
-                case RW_NATURAL:
-                    attrb.type(Type.NATURAL);
-                    break;
-                
-                case RW_INTEGER:
-                    attrb.type(Type.INTEGER);
-                    break;
-                
-                case RW_FLOAT:
-                    attrb.type(Type.FLOAT);
-                    break;
-                
-                case RW_CHARACTER:
-                    attrb.type(Type.CHARACTER);
-                    break;
+            Attributes attrSynLitBool = parseLitBool(last, Attributes.DEFAULT);
+            if (attrSynLitBool != null) {
+                attrb.type(attrSynLitBool.getType()).value(attrSynLitBool.getValue());
+                return attrb.create();
             }
+            
+            Attributes attrSynLitNum = parseLitNum(last, Attributes.DEFAULT);
+            if (attrSynLitNum != null) {
+                attrb.type(attrSynLitNum.getType()).value(attrSynLitNum.getValue());
+                return attrb.create();
+            }
+            
+            LocatedToken token = expect(last, TokenType.LIT_NATURAL);
+            attrb.type(Type.NATURAL).value(Util.stringToNatural(token.getLexeme()));
             
         } catch (NoSuchElementException exc) {
             return null;
         }
-        
-        return attrb.create();
     }
     
     /*
@@ -490,38 +602,6 @@ public final class Parser implements Closeable {
      * 
      * return attrs; }
      */
-    
-    private Attributes parseCast (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        
-        try {
-            LocatedToken token =
-                expect(last, TokenType.RW_NAT, TokenType.RW_INT, TokenType.RW_FLOAT, TokenType.RW_CHAR);
-            
-            switch (token.getToken().getType()) {
-                case RW_NAT:
-                    attrb.type(Type.NATURAL);
-                    break;
-                
-                case RW_INT:
-                    attrb.type(Type.INTEGER);
-                    break;
-                
-                case RW_FLOAT:
-                    attrb.type(Type.FLOAT);
-                    break;
-                
-                case RW_CHAR:
-                    attrb.type(Type.CHARACTER);
-                    break;
-            }
-            
-        } catch (NoSuchElementException exc) {
-            return null;
-        }
-        
-        return attrb.create();
-    }
     
     private Attributes parseParen (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
@@ -541,12 +621,12 @@ public final class Parser implements Closeable {
                     case SYM_PAR_LEFT:
                         parseExpr(last, Attributes.DEFAULT);
                         expect(last, TokenType.SYM_PAR_RIGHT);
-                        break;
+                    break;
                     
                     // ident
                     case IDENTIFIER:
                         attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
-                        break;
+                    break;
                 
                 }
                 
@@ -628,70 +708,35 @@ public final class Parser implements Closeable {
      * 
      * RTerm → ɛ { RTerm.type = RTerm.typeh RTerm.cod = RTerm.codh }
      */
-    private Attributes parseExpr (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        try {
-            Attributes attrTerm = parseTerm(last, Attributes.DEFAULT);
-            Attributes attrInhFExpr = new Attributes.Builder().type(attrTerm.getType()).create();
-            Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
-            
-            return attrb.type(attrFExpr.getType()).create();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
     
-    private Attributes parseFExpr (boolean last, Attributes attr) throws IOException {
+    private Attributes parseLitBool (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        
+        //LitBool ::=
         try {
-            Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
-            if (attrOp0 != null) {
-                Attributes attrTerm = parseTerm(last, attrOp0);
-                attrb.type(attrTerm.getType());
-            } else {
-                attrb.type(attr.getType());
+            LocatedToken tokenRead = expect(last, TokenType.RW_TRUE, TokenType.RW_FALSE);
+            
+            switch (tokenRead.getToken().getType()) {
+            
+            //true
+                case RW_TRUE:
+                    attrb.type(Type.BOOLEAN);
+                    attrb.value(true);
+                break;
+                
+                //false
+                case RW_FALSE:
+                    attrb.type(Type.BOOLEAN);
+                    attrb.value(false);
+                break;
+            
             }
             
-            return attrb.create();
-        } catch (NoSuchElementException e) {
-            return null;
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
         }
-    }
-    
-    private Attributes parseTerm (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        try {
-            // TODO llamada a la función tipoOpIgu(a, b)
-            Attributes attrFact = parseFact(last, Attributes.DEFAULT);
-            Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
-            Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
-            
-            return attrb.type(attrRTerm.getType()).create();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
-    
-    private Attributes parseRTerm (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        try {
-            Attributes attrOp1 = parseOp1(last, Attributes.DEFAULT);
-            if (attrOp1 != null) {
-                Attributes attrInhFact = new Attributes.Builder().type(attrOp1.getType()).create();
-                Attributes attrFact = parseFact(last, attrInhFact);
-                if (attrFact != null) {
-                    Attributes attrRTerm = parseRTerm(last, attrFact);
-                    attrb.type(attrRTerm.getType());
-                } else {
-                    attrb.type(attrFact.getType());
-                }
-            } else {
-                attrb.type(attrOp1.getType());
-            }
-            
-            return attrb.create();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
+        
+        return attrb.create();
+        
     }
 }
