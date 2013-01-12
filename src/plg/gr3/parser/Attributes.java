@@ -10,6 +10,9 @@ package plg.gr3.parser;
  */
 public final class Attributes {
     
+    /** Atributos creados por defecto */
+    public static final Attributes DEFAULT = new Attributes.Builder().create();
+    
     /** Tipo de una variable o expresión */
     private final Type type;
     
