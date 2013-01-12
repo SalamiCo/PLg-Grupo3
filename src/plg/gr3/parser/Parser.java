@@ -215,13 +215,75 @@ public final class Parser implements Closeable {
         return Attributes.DEFAULT;
     }
     
-    /*
-     * private Attributes parseProgram (Attributes attrs) throws IOException {
-     * 
-     * boolean b = lexer.hasNextToken(RW_PROGRAM);
-     * 
-     * return attrs; }
-     */
+    private Attributes parseType (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        try {
+            LocatedToken token =
+                expect(
+                    last, TokenType.RW_BOOLEAN, TokenType.RW_NATURAL, TokenType.RW_INTEGER, TokenType.RW_FLOAT,
+                    TokenType.RW_CHARACTER);
+            
+            switch (token.getToken().getType()) {
+                case RW_BOOLEAN:
+                    attrb.type(Type.BOOLEAN);
+                    break;
+                
+                case RW_NATURAL:
+                    attrb.type(Type.NAT);
+                    break;
+                
+                case RW_INTEGER:
+                    attrb.type(Type.INTEGER);
+                    break;
+                
+                case RW_FLOAT:
+                    attrb.type(Type.FLOAT);
+                    break;
+                
+                case RW_CHARACTER:
+                    attrb.type(Type.CHAR);
+                    break;
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseCast (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        try {
+            LocatedToken token =
+                expect(last, TokenType.RW_NAT, TokenType.RW_INT, TokenType.RW_FLOAT, TokenType.RW_CHAR);
+            
+            switch (token.getToken().getType()) {
+                case RW_NAT:
+                    attrb.type(Type.NAT);
+                    break;
+                
+                case RW_INT:
+                    attrb.type(Type.INTEGER);
+                    break;
+                
+                case RW_FLOAT:
+                    attrb.type(Type.FLOAT);
+                    break;
+                
+                case RW_CHAR:
+                    attrb.type(Type.CHAR);
+                    break;
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
     
     @Override
     public void close () throws IOException {
