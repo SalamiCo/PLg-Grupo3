@@ -717,8 +717,6 @@ public final class Parser implements Closeable {
             LocatedToken tokenRead = expect(last, TokenType.RW_TRUE, TokenType.RW_FALSE);
             
             switch (tokenRead.getToken().getType()) {
-            
-            //true
                 case RW_TRUE:
                     attrb.type(Type.BOOLEAN);
                     attrb.value(true);
