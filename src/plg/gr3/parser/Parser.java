@@ -21,12 +21,16 @@ public final class Parser implements Closeable {
     /** Analizador léxico a utilizar */
     private final Lexer lexer;
     
+    /** Tabla de símbolos */
+    private final SymbolTable symbolTable;
+    
     /**
      * @param lexer
      *            Analizador léxico que será utilizado por este analizador sintáctico
      */
     public Parser (Lexer lexer) {
         this.lexer = lexer;
+        this.symbolTable = new SymbolTable();
     }
     
     /**
