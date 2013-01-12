@@ -117,7 +117,7 @@ public final class Parser implements Closeable {
             // Decs
             parseDecs(last, Attributes.DEFAULT);
             
-            //fllave
+            // fllave
             expect(last, TokenType.SYM_PAR_RIGHT);
             
         } catch (NoSuchElementException exc) {
@@ -127,22 +127,88 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
-    private Attributtes void parseDecs (boolean last, Attributes attr) {
+    private Attributes parseDecs (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         
         // Decs ::=
-        try(){
+        try {
+            // Dec
+            Attributes attrDec = parseDec(last, Attributes.DEFAULT);
+            if (attrDec == null) {
+                return null;
+            }
+            
+            // RDecs
+            symbolTable.putIdentifier(
+                attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
+                attrDec.getValue());
+            
+            parseRDecs(last, Attributes.DEFAULT);
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+        
+    }
+    
+    private Attributes parseRDecs (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // RDecs ::=
+        try {
+            // pyc
+            expect(last, TokenType.SYM_SEMICOLON);
             // Dec
             Attributes attrDec = parseDec(last, Attributes.DEFAULT);
             // RDecs
-            //symbolTable
-            
-            
-        } catch (NoSuchElementException exc){
-            return null;
+            symbolTable.putIdentifier(
+                attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
+                attrDec.getValue());
+            parseRDecs(last, Attributes.DEFAULT);
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
         }
-        return attrb.create();
         
+        return attrb.create();
+    }
+    
+    private Attributes parseDec (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // Dec ::=
+        try {
+            // var || const
+            LocatedToken lt = expect(last, TokenType.RW_VAR, TokenType.RW_CONST);
+            switch (lt.getToken().getType()) {
+                case RW_VAR:
+                    //Type
+                    parseType(last, Attributes.DEFAULT);
+                    //ident
+                    expect(last, TokenType.IDENTIFIER);
+                    break;
+                
+                case RW_CONST:
+                    //Type
+                    parseType(last, Attributes.DEFAULT);
+                    //ident
+                    expect(last, TokenType.IDENTIFIER);
+                    //dpigual
+                    expect(last, TokenType.SYM_CONST_ASIGNATION);
+                    //Lit
+                    parseLit(last, Attributes.DEFAULT);
+                    break;
+                
+                default:
+                    break;
+            
+            }
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
     }
     
     private Attributes parseSInsts (boolean last, Attributes attr) {
