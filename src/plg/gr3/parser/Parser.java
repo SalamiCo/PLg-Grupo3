@@ -360,6 +360,8 @@ public final class Parser implements Closeable {
                 case IDENTIFIER:
                     expect(last, TokenType.SYM_ASIGNATION);
                     parseExpr(last, Attributes.DEFAULT);
+                    expect(true, TokenType.SYM_ASIGNATION);
+                    parseExpr(true, Attributes.DEFAULT);
                     
                     break;
                 
@@ -368,6 +370,9 @@ public final class Parser implements Closeable {
                     expect(last, TokenType.SYM_PAR_LEFT);
                     expect(last, TokenType.IDENTIFIER);
                     expect(last, TokenType.SYM_PAR_RIGHT);
+                    expect(true, TokenType.SYM_PAR_LEFT);
+                    expect(true, TokenType.IDENTIFIER);
+                    expect(true, TokenType.SYM_PAR_RIGHT);
                     
                     break;
                 
@@ -376,6 +381,9 @@ public final class Parser implements Closeable {
                     expect(last, TokenType.SYM_PAR_LEFT);
                     parseExpr(last, Attributes.DEFAULT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
+                    expect(true, TokenType.SYM_PAR_LEFT);
+                    parseExpr(true, Attributes.DEFAULT);
+                    expect(true, TokenType.SYM_PAR_RIGHT);
                     
                     break;
                 
@@ -383,6 +391,8 @@ public final class Parser implements Closeable {
                 case RW_SWAP1:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
+                    expect(true, TokenType.SYM_PAR_LEFT);
+                    expect(true, TokenType.SYM_PAR_RIGHT);
                     
                     break;
                 
@@ -390,6 +400,8 @@ public final class Parser implements Closeable {
                 case RW_SWAP2:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
+                    expect(true, TokenType.SYM_PAR_LEFT);
+                    expect(true, TokenType.SYM_PAR_RIGHT);
                     
                     break;
             
@@ -547,6 +559,38 @@ public final class Parser implements Closeable {
         }
         
         return attrb.create();
+    }
+    
+    private Attributes parseUnary (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //Unary ::=
+        try {
+            //Op4
+            Attributes attrOp4 = parseOp4(last, Attributes.DEFAULT);
+            if (attrOp4 != null) {
+                //Unary
+                parseUnary(last, Attributes.DEFAULT);
+            } else {
+                Attributes attrParen = parseParen(last, Attributes.DEFAULT);
+                if (attrParen != null) {
+                    //Paren
+                    attrb.type(attrParen.getType());
+                    parseParen(last, Attributes.DEFAULT);
+                } else {
+                    //lpar
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    //Cast
+                    parseCast(last, Attributes.DEFAULT);
+                    //rpar
+                    expect(last, TokenType.SYM_PAR_RIGHT);
+                    //Paren
+                    parseParen(last, Attributes.DEFAULT);
+                }
+            }
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
     }
     
     @Override
