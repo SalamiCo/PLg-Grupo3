@@ -101,8 +101,44 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
-    private Attributes parseSDecs (boolean last, Attributes attr) {
-        return Attributes.DEFAULT;
+    private Attributes parseSDecs (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //SDecs ::=
+        try {
+            // varconsts illave
+            expect(last, TokenType.RW_VARCONSTS);
+            expect(last, TokenType.SYM_PAR_LEFT);
+            
+            // Decs
+            parseDecs(last, Attributes.DEFAULT);
+            
+            //fllave
+            expect(last, TokenType.SYM_PAR_RIGHT);
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributtes void parseDecs (boolean last, Attributes attr) {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // Decs ::=
+        try(){
+            // Dec
+            Attributes attrDec = parseDec(last, Attributes.DEFAULT);
+            // RDecs
+            //symbolTable
+            
+            
+        } catch (NoSuchElementException exc){
+            return null;
+        }
+        return attrb.create();
+        
     }
     
     private Attributes parseSInsts (boolean last, Attributes attr) {
