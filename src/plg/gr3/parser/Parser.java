@@ -650,4 +650,60 @@ public final class Parser implements Closeable {
             return null;
         }
     }
+    
+    private Attributes parseLitNum (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            LocatedToken tokenRead = expect(last, TokenType.LIT_NATURAL, TokenType.LIT_FLOAT, TokenType.SYM_MINUS);
+            
+            switch (tokenRead.getToken().getType()) {
+            
+            //litnat
+                case LIT_NATURAL:
+                    attrb.type(Type.NAT).value(StringToNatural(tokenRead.getToken().getLexeme()));
+                    break;
+                
+                //litfloat
+                case LIT_FLOAT:
+                    attrb.type(Type.FLOAT).value(StringToFloat(tokenRead.getToken().getLexeme()));
+                    break;
+                
+                //menos
+                case SYM_MINUS:
+                    //FLitNum
+                    Attributes attrFLitNum = parseFLitNum(last, Attributes.DEFAULT);
+                    attrb.type(attrFLitNum.getType()).value(attrFLitNum.getValue());
+                    break;
+            }
+            
+            return attrb.create();
+            
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseFLitNum (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            LocatedToken tokenRead = expect(last, TokenType.LIT_NATURAL, TokenType.LIT_FLOAT);
+            
+            switch (tokenRead.getToken().getType()) {
+            
+            //litnat
+                case LIT_NATURAL:
+                    attrb.type(Type.INTEGER).value(StringToInteger(tokenRead.getToken().getLexeme()));
+                    break;
+                
+                //litfloat
+                case LIT_FLOAT:
+                    attrb.type(Type.FLOAT).value(StringToFloat(tokenRead.getToken().getLexeme()));
+                    break;
+            }
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
 }
