@@ -406,28 +406,72 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
-    private Attributes parseLit (boolean last, Attributes attr) {
+    private Attributes parseExpr (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
-        
         try {
-            Attributes attrSynLitBool = parseLitBool(last, Attributes.DEFAULT);
-            if (attrSynLitBool != null) {
-                attrb.type(attrSynLitBool.getType()).value(attrSynLitBool.getValue());
-                return attrb.create();
-            }
+            Attributes attrTerm = parseTerm(last, Attributes.DEFAULT);
+            Attributes attrInhFExpr = new Attributes.Builder().type(attrTerm.getType()).create();
+            Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
             
-            Attributes attrSynLitNum = parseLitNum(last, Attributes.DEFAULT);
-            if (attrSynLitNum != null) {
-                attrb.type(attrSynLitNum.getType()).value(attrSynLitNum.getValue());
-                return attrb.create();
-            }
-            
-            LocatedToken token = expect(last, TokenType.LIT_NATURAL);
-            attrb.type(Type.NATURAL).value(Util.stringToNatural(token.getLexeme()));
-            
-        } catch (NoSuchElementException exc) {
+            return attrb.type(attrFExpr.getType()).create();
+        } catch (NoSuchElementException e) {
             return null;
         }
+    }
+    
+    private Attributes parseFExpr (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
+            if (attrOp0 != null) {
+                Attributes attrTerm = parseTerm(last, attrOp0);
+                attrb.type(attrTerm.getType());
+            } else {
+                attrb.type(attr.getType());
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseTerm (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            // TODO llamada a la función tipoOpIgu(a, b)
+            Attributes attrFact = parseFact(last, Attributes.DEFAULT);
+            Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
+            Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
+            
+            return attrb.type(attrRTerm.getType()).create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseRTerm (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            Attributes attrOp1 = parseOp1(last, Attributes.DEFAULT);
+            if (attrOp1 != null) {
+                Attributes attrInhFact = new Attributes.Builder().type(attrOp1.getType()).create();
+                Attributes attrFact = parseFact(last, attrInhFact);
+                if (attrFact != null) {
+                    Attributes attrRTerm = parseRTerm(last, attrFact);
+                    attrb.type(attrRTerm.getType());
+                } else {
+                    attrb.type(attrFact.getType());
+                }
+            } else {
+                attrb.type(attrOp1.getType());
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
     
     //Fact
     private Attributes parseFact (boolean last, Attributes attr) throws IOException {
@@ -442,6 +486,36 @@ public final class Parser implements Closeable {
             Attributes rfactSynAttr = parseRfact(true, rfactInhAttr);
             
             attrb.type(rfactSynAttr.getType());
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    //Rfact
+    private Attributes parseRfact (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        //Rfact
+        try {
+            //Op2
+            Attributes op2SynAttr = parseOp2(true, Attributes.DEFAULT);
+            
+            if (op2SynAttr != null) {
+                //Shft
+                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+                //TODO  RFact1.typeh = tipoFunc(RFact0.typeh, Op2.op, Shft.type)            
+                
+                //Rfact
+                Attributes rfactSynAttr = parseRfact(true, Attributes.DEFAULT);
+                
+                attrb.type(rfactSynAttr.getType());
+                
+            } else {
+                //Epsilon
+                attrb.type(attr.getType());
+            }
+            
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
         }
@@ -497,35 +571,28 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
-    //Rfact
-    private Attributes parseRfact (boolean last, Attributes attr) throws IOException {
+    private Attributes parseLit (boolean last, Attributes attr) {
         Attributes.Builder attrb = new Attributes.Builder();
-        //Rfact
+        
         try {
-            //Op2
-            Attributes op2SynAttr = parseOp2(true, Attributes.DEFAULT);
-            
-            if (op2SynAttr != null) {
-                //Shft
-                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
-                //TODO  RFact1.typeh = tipoFunc(RFact0.typeh, Op2.op, Shft.type)            
-                
-                //Rfact
-                Attributes rfactSynAttr = parseRfact(true, Attributes.DEFAULT);
-                
-                attrb.type(rfactSynAttr.getType());
-                
-            } else {
-                //Epsilon
-                attrb.type(attr.getType());
+            Attributes attrSynLitBool = parseLitBool(last, Attributes.DEFAULT);
+            if (attrSynLitBool != null) {
+                attrb.type(attrSynLitBool.getType()).value(attrSynLitBool.getValue());
+                return attrb.create();
             }
             
+            Attributes attrSynLitNum = parseLitNum(last, Attributes.DEFAULT);
+            if (attrSynLitNum != null) {
+                attrb.type(attrSynLitNum.getType()).value(attrSynLitNum.getValue());
+                return attrb.create();
+            }
+            
+            LocatedToken token = expect(last, TokenType.LIT_NATURAL);
+            attrb.type(Type.NATURAL).value(Util.stringToNatural(token.getLexeme()));
+            
         } catch (NoSuchElementException exc) {
-            return Attributes.DEFAULT;
+            return null;
         }
-        
-        return attrb.create();
-    }
     
     /*
      * private Attributes parseProgram (Attributes attrs) throws IOException {
@@ -608,72 +675,6 @@ public final class Parser implements Closeable {
      * 
      * RTerm → ɛ { RTerm.type = RTerm.typeh RTerm.cod = RTerm.codh }
      */
-    private Attributes parseExpr (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        try {
-            Attributes attrTerm = parseTerm(last, Attributes.DEFAULT);
-            Attributes attrInhFExpr = new Attributes.Builder().type(attrTerm.getType()).create();
-            Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
-            
-            return attrb.type(attrFExpr.getType()).create();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
-    
-    private Attributes parseFExpr (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        try {
-            Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
-            if (attrOp0 != null) {
-                Attributes attrTerm = parseTerm(last, attrOp0);
-                attrb.type(attrTerm.getType());
-            } else {
-                attrb.type(attr.getType());
-            }
-            
-            return attrb.create();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
-    
-    private Attributes parseTerm (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        try {
-            // TODO llamada a la función tipoOpIgu(a, b)
-            Attributes attrFact = parseFact(last, Attributes.DEFAULT);
-            Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
-            Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
-            
-            return attrb.type(attrRTerm.getType()).create();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
-    
-    private Attributes parseRTerm (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        try {
-            Attributes attrOp1 = parseOp1(last, Attributes.DEFAULT);
-            if (attrOp1 != null) {
-                Attributes attrInhFact = new Attributes.Builder().type(attrOp1.getType()).create();
-                Attributes attrFact = parseFact(last, attrInhFact);
-                if (attrFact != null) {
-                    Attributes attrRTerm = parseRTerm(last, attrFact);
-                    attrb.type(attrRTerm.getType());
-                } else {
-                    attrb.type(attrFact.getType());
-                }
-            } else {
-                attrb.type(attrOp1.getType());
-            }
-            
-            return attrb.create();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
-    }
     
     private Attributes parseLitBool (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
