@@ -97,6 +97,8 @@ public enum TokenType {
     RW_AND("and", true),
     RW_OR("or", true),
     RW_NOT("not", true),
+    RW_TRUE("true", true),
+    RW_FALSE("false", true),
     
     // Fin de fichero. El patrón de EOF es irrelevante: Se trata de un caso especial y no se utilizará.
     // El valor null se trata en el constructor
