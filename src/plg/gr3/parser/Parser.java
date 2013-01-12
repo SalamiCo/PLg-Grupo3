@@ -201,10 +201,8 @@ public final class Parser implements Closeable {
                     //Lit
                     Attributes attrLit = parseLit(last, Attributes.DEFAULT);
                     
-                    attrb.constant(true).type(attrType2.getType()).identifier(id2.getToken().getLexeme())getClass().value(attrLit.getValue());
-                    break;
-                
-                default:
+                    attrb.constant(true).type(attrType2.getType()).identifier(id2.getToken().getLexeme()).getClass()
+                        .value(attrLit.getValue());
                     break;
             
             }
@@ -351,7 +349,7 @@ public final class Parser implements Closeable {
                     break;
                 
                 case RW_NATURAL:
-                    attrb.type(Type.NAT);
+                    attrb.type(Type.NATURAL);
                     break;
                 
                 case RW_INTEGER:
@@ -363,7 +361,7 @@ public final class Parser implements Closeable {
                     break;
                 
                 case RW_CHARACTER:
-                    attrb.type(Type.CHAR);
+                    attrb.type(Type.CHARACTER);
                     break;
             }
             
@@ -383,7 +381,7 @@ public final class Parser implements Closeable {
             
             switch (token.getToken().getType()) {
                 case RW_NAT:
-                    attrb.type(Type.NAT);
+                    attrb.type(Type.NATURAL);
                     break;
                 
                 case RW_INT:
@@ -395,7 +393,7 @@ public final class Parser implements Closeable {
                     break;
                 
                 case RW_CHAR:
-                    attrb.type(Type.CHAR);
+                    attrb.type(Type.CHARACTER);
                     break;
             }
             
