@@ -57,4 +57,9 @@ public final class Token {
         Token t = (Token) obj;
         return Objects.equals(t.type, type) && Objects.equals(t.lexeme, lexeme);
     }
+    
+    @Override
+    public String toString () {
+        return type + "( \"" + lexeme + "\" )";
+    }
 }

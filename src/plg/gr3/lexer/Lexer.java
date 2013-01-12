@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.EnumSet;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +52,16 @@ public final class Lexer implements Closeable {
         this.reader = new BufferedReader(reader);
     }
     
+    /** @return Obtaint the current line */
+    public int getLine () {
+        return currentLine;
+    }
+    
+    /** @return Obtain the current column */
+    public int getColumn () {
+        return currentColumn;
+    }
+    
     /**
      * Determina si existe un token del tipo dado en la entrada del analizador. Este método no modifica el estado actual
      * del analizador: múltiples llamadas consecutivas a este método devolverán lo mismo siempre que no se llame a
@@ -66,7 +74,7 @@ public final class Lexer implements Closeable {
      * @throws IOException
      *             si ocurre algún error de E/S
      */
-    public boolean hasNextToken (TokenType category) throws IOException {
+    private boolean hasNextToken (TokenType category) throws IOException {
         prepareInput();
         
         // Si se ha llegado al final de fichero o intentamos reconocer un EOF...
@@ -98,36 +106,38 @@ public final class Lexer implements Closeable {
      * @throws NoSuchElementException
      *             si no se pudo encontrar un token adecuado
      */
-    public LocatedToken nextToken (TokenType category) throws IOException {
+    public LocatedToken nextToken () throws IOException {
         prepareInput();
         
-        // Comprobamos que el siguiente token es del tipo esperado
-        if (!hasNextToken(category)) {
-            throw new NoSuchElementException();
+        for (TokenType category : TokenType.values()) {
+            // Comprobamos que el siguiente token es del tipo esperado
+            if (hasNextToken(category)) {
+                
+                // Caso especial: Si estamos reconociendo el final de fichero, el reconocedor es null. Adelantamos el proceso
+                // y evitamos problemas devolviendo directamente el token de fin de fichero
+                if (category == TokenType.EOF) {
+                    return new LocatedToken(new Token(category, ""), currentLine, currentColumn);
+                }
+                
+                int column = currentColumn;
+                
+                // Reconocemos el siguiente token
+                // FIXME: ¿Es esto realmente neceario? Recordemos que en este punto venimos de una llamada a 'hasNextToken'
+                //        que ha relizado exactamente las mismas acciones.
+                category.recognizes(matcher);
+                
+                // Avanzamos la posición del analizador y leemos el lexema
+                currentColumn += matcher.end() - matcher.start();
+                String lexeme = matcher.group();
+                
+                // Avanzamos el reconocedor
+                matcher.region(matcher.end(), matcher.regionEnd());
+                
+                // Devolvemos el token localizado con toda la información necesaria
+                return new LocatedToken(new Token(category, lexeme), currentLine, column);
+            }
         }
-        
-        // Caso especial: Si estamos reconociendo el final de fichero, el reconocedor es null. Adelantamos el proceso
-        // y evitamos problemas devolviendo directamente el token de fin de fichero
-        if (category == TokenType.EOF) {
-            return new LocatedToken(new Token(category, ""), currentLine, currentColumn);
-        }
-        
-        int column = currentColumn;
-        
-        // Reconocemos el siguiente token
-        // FIXME: ¿Es esto realmente neceario? Recordemos que en este punto venimos de una llamada a 'hasNextToken'
-        //        que ha relizado exactamente las mismas acciones.
-        category.recognizes(matcher);
-        
-        // Avanzamos la posición del analizador y leemos el lexema
-        currentColumn += matcher.end() - matcher.start();
-        String lexeme = matcher.group();
-        
-        // Avanzamos el reconocedor
-        matcher.region(matcher.end(), matcher.regionEnd());
-        
-        // Devolvemos el token localizado con toda la información necesaria
-        return new LocatedToken(new Token(category, lexeme), currentLine, column);
+        return null;
     }
     
     /**
@@ -179,31 +189,9 @@ public final class Lexer implements Closeable {
         
     }
     
-    /**
-     * Devuelve un conjunto con todas las categorías léxicas que el analizador es capaz de reconocer dado su estado
-     * actual.
-     * <p>
-     * Aunque típicamente este método devolverá un conjunto unitario, en ocasiones un mismo token puede pertenecer a
-     * varias categorías léxicas. Es el caso, por ejemplo, de los números naturales, que también se pueden reconocer
-     * como enteros o decimales, o los enteros negativos, cuyo signo puede formar parte del token o formar una expresión
-     * de negación unaria junto a un natural.
-     * 
-     * @return Un conjunto con todas las posibles categorías léxicas que encajarían con la entrada del analizador
-     * @throws IOException
-     *             si ocurre algún error de E/S
-     */
-    public Set<TokenType> getNextTokenTypes () throws IOException {
-        Set<TokenType> types = EnumSet.noneOf(TokenType.class);
-        for (TokenType type : TokenType.values()) {
-            if (hasNextToken(type)) {
-                types.add(type);
-            }
-        }
-        return types;
-    }
-    
     @Override
     public void close () throws IOException {
         reader.close();
+        matcher = null;
     }
 }
