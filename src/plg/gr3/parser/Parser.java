@@ -190,7 +190,7 @@ public final class Parser implements Closeable {
                     
                     attrb.constant(false).type(attrType.getType()).identifier(id.getToken().getLexeme());
                 }
-                break;
+                    break;
                 
                 case RW_CONST: {
                     //Type
@@ -204,7 +204,7 @@ public final class Parser implements Closeable {
                     
                     attrb.constant(true).type(attrType.getType()).identifier(id.getLexeme()).value(attrLit.getValue());
                 }
-                break;
+                    break;
             
             }
         } catch (NoSuchElementException exc) {
@@ -292,38 +292,38 @@ public final class Parser implements Closeable {
                 case IDENTIFIER:
                     expect(true, TokenType.SYM_ASIGNATION);
                     parseExpr(true, Attributes.DEFAULT);
-                
-                break;
+                    
+                    break;
                 
                 //in lpar ident rpar
                 case RW_IN:
                     expect(true, TokenType.SYM_PAR_LEFT);
                     expect(true, TokenType.IDENTIFIER);
                     expect(true, TokenType.SYM_PAR_RIGHT);
-                
-                break;
+                    
+                    break;
                 
                 //out lpar Expr rpar
                 case RW_OUT:
                     expect(true, TokenType.SYM_PAR_LEFT);
                     parseExpr(true, Attributes.DEFAULT);
                     expect(true, TokenType.SYM_PAR_RIGHT);
-                
-                break;
+                    
+                    break;
                 
                 //swap1 lpar rpar
                 case RW_SWAP1:
                     expect(true, TokenType.SYM_PAR_LEFT);
                     expect(true, TokenType.SYM_PAR_RIGHT);
-                
-                break;
+                    
+                    break;
                 
                 //swap2 lpar rpar
                 case RW_SWAP2:
                     expect(true, TokenType.SYM_PAR_LEFT);
                     expect(true, TokenType.SYM_PAR_RIGHT);
-                
-                break;
+                    
+                    break;
             
             }
             ;
@@ -347,23 +347,23 @@ public final class Parser implements Closeable {
             switch (token.getToken().getType()) {
                 case RW_BOOLEAN:
                     attrb.type(Type.BOOLEAN);
-                break;
+                    break;
                 
                 case RW_NATURAL:
                     attrb.type(Type.NATURAL);
-                break;
+                    break;
                 
                 case RW_INTEGER:
                     attrb.type(Type.INTEGER);
-                break;
+                    break;
                 
                 case RW_FLOAT:
                     attrb.type(Type.FLOAT);
-                break;
+                    break;
                 
                 case RW_CHARACTER:
                     attrb.type(Type.CHARACTER);
-                break;
+                    break;
             }
             
         } catch (NoSuchElementException exc) {
@@ -383,19 +383,19 @@ public final class Parser implements Closeable {
             switch (token.getToken().getType()) {
                 case RW_NAT:
                     attrb.type(Type.NATURAL);
-                break;
+                    break;
                 
                 case RW_INT:
                     attrb.type(Type.INTEGER);
-                break;
+                    break;
                 
                 case RW_FLOAT:
                     attrb.type(Type.FLOAT);
-                break;
+                    break;
                 
                 case RW_CHAR:
                     attrb.type(Type.CHARACTER);
-                break;
+                    break;
             }
             
         } catch (NoSuchElementException exc) {
@@ -422,24 +422,6 @@ public final class Parser implements Closeable {
         parser.parse();
     }
     
-    /*
-     * Expr→ { Term.tsh = Expr.tsh } Term { FExpr.typeh = Term.type FExpr.tsh = Expr.tsh } FExpr { Expr.type =
-     * FExpr.type Expr.cod = Term.cod || FExpr.cod }
-     * 
-     * FExpr→ Op0 { Term.tsh = FExpr.tsh } Term { FExpr.type = tipoOpIgu(FExpr.typeh,Term.type) FExpr.cod = Term.cod ||
-     * Op0.op }
-     * 
-     * FExpr→ ɛ { FExpr.type = FExpr.typeh FExpr.cod = ɛ }
-     * 
-     * Term → { Fact.tsh = Term.tsh } Fact { RTerm.tsh = Fact.tsh RTerm.typeh = Fact.type RTerm.codh = Fact.cod } RTerm
-     * { Term.type = RFact.type Term.cod = RFact.cod }
-     * 
-     * RTerm → Op1 { Fact.tsh = RTerm0.tsh } Fact { RTerm1.tsh = Fact.tsh RTerm1.typeh = tipoFunc(RTerm0.typeh, Op1.op,
-     * Fact.type) RTerm1.codh = Term0.codh || Fact.cod || Op1.op } RTerm { RTerm0.type = RTerm1.type RTerm0.cod
-     * =RTerm1.cod }
-     * 
-     * RTerm → ɛ { RTerm.type = RTerm.typeh RTerm.cod = RTerm.codh }
-     */
     private Attributes parseExpr (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         try {
@@ -499,6 +481,142 @@ public final class Parser implements Closeable {
                 }
             } else {
                 attrb.type(attrOp1.getType());
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseOp0 (boolean last, Attributes attr) {
+        try {
+            TokenType token =
+                expect(
+                    last, TokenType.SYM_EQUAL, TokenType.SYM_NOT_EQUAL, TokenType.SYM_LOWER, TokenType.SYM_GREATER,
+                    TokenType.SYM_LOWER_OR_EQUAL, TokenType.SYM_GREATER_OR_EQUAL);
+            
+            Attributes.Builder attrb = new Attributes.Builder();
+            switch (token.getType()) {
+                case TokenType.SYM_EQUAL:
+                    attrb.operator("igual");
+                    break;
+                case TokenType.SYM_NOT_EQUAL:
+                    attrb.operator("igual");
+                    break;
+                case TokenType.SYM_LOWER:
+                    attrb.operator("igual");
+                    break;
+                case TokenType.SYM_GREATER:
+                    attrb.operator("igual");
+                    break;
+                case TokenType.SYM_LOWER_OR_EQUAL:
+                    attrb.operator("igual");
+                    break;
+                case TokenType.SYM_GREATER_OR_EQUAL:
+                    attrb.operator("igual");
+                    break;
+                default:
+                    attrb.operator("nullako");
+                    break;
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseOp1 (boolean last, Attributes attr) {
+        try {
+            Attributes.Builder attrb = new Attributes.Builder();
+            TokenType token = expect(last, TokenType.RW_OR, TokenType.SYM_MINUS, TokenType.SYM_PLUS);
+            switch (token.getType()) {
+                case TokenType.RW_OR:
+                    attrb.operator("or");
+                    break;
+                case TokenType.SYM_MINUS:
+                    attrb.operator("menos");
+                    break;
+                case TokenType.SYM_PLUS:
+                    attrb.operator("mas");
+                    break;
+                default:
+                    attrb.operator("nullako");
+                    break;
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseOp2 (boolean last, Attributes attr) {
+        try {
+            Attributes.Builder attrb = new Attributes.Builder();
+            TokenType token =
+                expect(last, TokenType.RW_AND, TokenType.SYM_MODULO, TokenType.SYM_DIV, TokenType.SYM_MULT);
+            switch (token.getType()) {
+                case TokenType.RW_AND:
+                    attrb.operator("and");
+                    break;
+                case TokenType.SYM_MODULO:
+                    attrb.operator("modulo");
+                    break;
+                case TokenType.SYM_DIV:
+                    attrb.operator("div");
+                    break;
+                case TokenType.SYM_MULT:
+                    attrb.operator("mult");
+                    break;
+                default:
+                    attrb.operator("nullako");
+                    break;
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseOp3 (boolean last, Attributes attr) {
+        try {
+            Attributes.Builder attrb = new Attributes.Builder();
+            TokenType token = expect(last, TokenType.SYM_SHIFT_LEFT, TokenType.SYM_SHIFT_RIGHT);
+            switch (token.getType()) {
+                case TokenType.SYM_SHIFT_LEFT:
+                    attrb.operator("rsh");
+                    break;
+                case TokenType.SYM_SHIFT_RIGHT:
+                    attrb.operator("lsh");
+                    break;
+                default:
+                    attrb.operator("nullako");
+                    break;
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseOp4 (boolean last, Attributes attr) {
+        try {
+            Attributes.Builder attrb = new Attributes.Builder();
+            TokenType token = expect(last, TokenType.RW_NOT, TokenType.SYM_MINUS);
+            switch (token.getType()) {
+                case TokenType.RW_NOT:
+                    attrb.operator("not");
+                    break;
+                case TokenType.SYM_MINUS:
+                    attrb.operator("minus");
+                    break;
+                default:
+                    attrb.operator("nullako");
+                    break;
             }
             
             return attrb.create();
