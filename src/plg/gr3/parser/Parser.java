@@ -335,6 +335,76 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
+    private Attributes parseType (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        try {
+            LocatedToken token =
+                expect(
+                    last, TokenType.RW_BOOLEAN, TokenType.RW_NATURAL, TokenType.RW_INTEGER, TokenType.RW_FLOAT,
+                    TokenType.RW_CHARACTER);
+            
+            switch (token.getToken().getType()) {
+                case RW_BOOLEAN:
+                    attrb.type(Type.BOOLEAN);
+                break;
+                
+                case RW_NATURAL:
+                    attrb.type(Type.NATURAL);
+                break;
+                
+                case RW_INTEGER:
+                    attrb.type(Type.INTEGER);
+                break;
+                
+                case RW_FLOAT:
+                    attrb.type(Type.FLOAT);
+                break;
+                
+                case RW_CHARACTER:
+                    attrb.type(Type.CHARACTER);
+                break;
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseCast (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        try {
+            LocatedToken token =
+                expect(last, TokenType.RW_NAT, TokenType.RW_INT, TokenType.RW_FLOAT, TokenType.RW_CHAR);
+            
+            switch (token.getToken().getType()) {
+                case RW_NAT:
+                    attrb.type(Type.NATURAL);
+                break;
+                
+                case RW_INT:
+                    attrb.type(Type.INTEGER);
+                break;
+                
+                case RW_FLOAT:
+                    attrb.type(Type.FLOAT);
+                break;
+                
+                case RW_CHAR:
+                    attrb.type(Type.CHARACTER);
+                break;
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
     //Fact
     private Attributes parseFact (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
@@ -433,44 +503,6 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
-    private Attributes parseType (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        
-        try {
-            LocatedToken token =
-                expect(
-                    last, TokenType.RW_BOOLEAN, TokenType.RW_NATURAL, TokenType.RW_INTEGER, TokenType.RW_FLOAT,
-                    TokenType.RW_CHARACTER);
-            
-            switch (token.getToken().getType()) {
-                case RW_BOOLEAN:
-                    attrb.type(Type.BOOLEAN);
-                break;
-                
-                case RW_NATURAL:
-                    attrb.type(Type.NATURAL);
-                break;
-                
-                case RW_INTEGER:
-                    attrb.type(Type.INTEGER);
-                break;
-                
-                case RW_FLOAT:
-                    attrb.type(Type.FLOAT);
-                break;
-                
-                case RW_CHARACTER:
-                    attrb.type(Type.CHARACTER);
-                break;
-            }
-            
-        } catch (NoSuchElementException exc) {
-            return null;
-        }
-        
-        return attrb.create();
-    }
-    
     /*
      * private Attributes parseProgram (Attributes attrs) throws IOException {
      * 
@@ -478,38 +510,6 @@ public final class Parser implements Closeable {
      * 
      * return attrs; }
      */
-    
-    private Attributes parseCast (boolean last, Attributes attr) throws IOException {
-        Attributes.Builder attrb = new Attributes.Builder();
-        
-        try {
-            LocatedToken token =
-                expect(last, TokenType.RW_NAT, TokenType.RW_INT, TokenType.RW_FLOAT, TokenType.RW_CHAR);
-            
-            switch (token.getToken().getType()) {
-                case RW_NAT:
-                    attrb.type(Type.NATURAL);
-                break;
-                
-                case RW_INT:
-                    attrb.type(Type.INTEGER);
-                break;
-                
-                case RW_FLOAT:
-                    attrb.type(Type.FLOAT);
-                break;
-                
-                case RW_CHAR:
-                    attrb.type(Type.CHARACTER);
-                break;
-            }
-            
-        } catch (NoSuchElementException exc) {
-            return null;
-        }
-        
-        return attrb.create();
-    }
     
     private Attributes parseParen (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
