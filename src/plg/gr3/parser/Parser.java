@@ -221,14 +221,14 @@ public final class Parser implements Closeable {
         //SInsts ::=
         try {
             //instructions illave
-            expect(true, TokenType.RW_INSTRUCTIONS);
-            expect(true, TokenType.SYM_CURLY_LEFT);
+            expect(last, TokenType.RW_INSTRUCTIONS);
+            expect(last, TokenType.SYM_CURLY_LEFT);
             
             //Insts
-            parseInsts(true, Attributes.DEFAULT);
+            parseInsts(last, Attributes.DEFAULT);
             
             //fllave
-            expect(true, TokenType.SYM_CURLY_RIGHT);
+            expect(last, TokenType.SYM_CURLY_RIGHT);
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -244,10 +244,10 @@ public final class Parser implements Closeable {
         //Insts ::=
         try {
             //Inst 
-            parseInst(true, Attributes.DEFAULT);
+            parseInst(last, Attributes.DEFAULT);
             
             //RInst 
-            parseRInst(true, Attributes.DEFAULT);
+            parseRInst(last, Attributes.DEFAULT);
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -262,13 +262,13 @@ public final class Parser implements Closeable {
         //RInsts ::=
         try {
             //pyc
-            expect(true, TokenType.SYM_SEMICOLON);
+            expect(last, TokenType.SYM_SEMICOLON);
             
             //Inst
-            parseInst(true, Attributes.DEFAULT);
+            parseInst(last, Attributes.DEFAULT);
             
             //RInsts
-            parseRInst(true, Attributes.DEFAULT);
+            parseRInst(last, Attributes.DEFAULT);
             
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
@@ -284,45 +284,45 @@ public final class Parser implements Closeable {
         try {
             LocatedToken readToken =
                 expect(
-                    true, TokenType.IDENTIFIER, TokenType.RW_IN, TokenType.RW_OUT, TokenType.RW_SWAP1,
+                    last, TokenType.IDENTIFIER, TokenType.RW_IN, TokenType.RW_OUT, TokenType.RW_SWAP1,
                     TokenType.RW_SWAP2);
             
             switch (readToken.getToken().getType())
             
             { //ident asig Expr
                 case IDENTIFIER:
-                    expect(true, TokenType.SYM_ASIGNATION);
-                    parseExpr(true, Attributes.DEFAULT);
+                    expect(last, TokenType.SYM_ASIGNATION);
+                    parseExpr(last, Attributes.DEFAULT);
                 
                 break;
                 
                 //in lpar ident rpar
                 case RW_IN:
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.IDENTIFIER);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    expect(last, TokenType.IDENTIFIER);
+                    expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
                 
                 //out lpar Expr rpar
                 case RW_OUT:
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    parseExpr(true, Attributes.DEFAULT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    parseExpr(last, Attributes.DEFAULT);
+                    expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
                 
                 //swap1 lpar rpar
                 case RW_SWAP1:
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
                 
                 //swap2 lpar rpar
                 case RW_SWAP2:
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
             
@@ -428,6 +428,149 @@ public final class Parser implements Closeable {
         } catch (NoSuchElementException exc) {
             return null;
         }
+    
+    //Fact
+    private Attributes parseFact (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // Fact ::=
+        try {
+            //Shft
+            Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+            //Rfact
+            Attributes rfactInhAttr = new Attributes.Builder().type(shftSynAttr.getType()).create();
+            Attributes rfactSynAttr = parseRfact(true, rfactInhAttr);
+            
+            attrb.type(rfactSynAttr.getType());
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    //Shft
+    private Attributes parseShft (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // Shft ::=
+        try {
+            //Unary
+            Attributes unarySynAttr = parseUnary(true, Attributes.DEFAULT);
+            //FShft
+            Attributes fshftInhAttr = new Attributes.Builder().type(unarySynAttr.getType()).create();
+            Attributes fshftSynAttr = parseFshft(true, fshftInhAttr);
+            
+            attrb.type(fshftSynAttr.getType());
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    //FShft
+    private Attributes parseFshft (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        //FShft
+        try {
+            //Op3
+            Attributes op3SynAttr = parseOp3(true, Attributes.DEFAULT);
+            
+            if (op3SynAttr != null) {
+                //Shft            
+                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+                
+                //TODO FShft.type = tipoFunc(FShft.typeh, Op3.op, Shft.type)
+                /*
+                 * attrb.type(tipoFunc(attr.getType(), op3SynAttr.getOperator(), shftSynAttr.getType() ));
+                 */
+            } else {
+                //Epsilon
+                attrb.type(attr.getType());
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    //Rfact
+    private Attributes parseRfact (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        //Rfact
+        try {
+            //Op2
+            Attributes op2SynAttr = parseOp2(true, Attributes.DEFAULT);
+            
+            if (op2SynAttr != null) {
+                //Shft
+                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+                //TODO  RFact1.typeh = tipoFunc(RFact0.typeh, Op2.op, Shft.type)            
+                
+                //Rfact
+                Attributes rfactSynAttr = parseRfact(true, Attributes.DEFAULT);
+                
+                attrb.type(rfactSynAttr.getType());
+                
+            } else {
+                //Epsilon
+                attrb.type(attr.getType());
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    /*
+     * private Attributes parseProgram (Attributes attrs) throws IOException {
+     * 
+     * boolean b = lexer.hasNextToken(RW_PROGRAM);
+     * 
+     * return attrs; }
+     */
+    
+    private Attributes parseParen (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //Paren ::=
+        try {
+            //Lit
+            Attributes litAttributes = parseLit(last, Attributes.DEFAULT);
+            
+            if (litAttributes == null) {
+                
+                LocatedToken tokenRead = expect(last, TokenType.SYM_PAR_LEFT, TokenType.IDENTIFIER);
+                
+                switch (tokenRead.getToken().getType()) {
+                
+                // lpar Expr rpar
+                    case SYM_PAR_LEFT:
+                        parseExpr(last, Attributes.DEFAULT);
+                        expect(last, TokenType.SYM_PAR_RIGHT);
+                    break;
+                    
+                    // ident
+                    case IDENTIFIER:
+                        attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
+                    break;
+                
+                }
+                
+            } else {
+                attrb.type(litAttributes.getType());
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
     }
     
     @Override
@@ -445,5 +588,121 @@ public final class Parser implements Closeable {
         
         Parser parser = new Parser(new Lexer(new StringReader(code)));
         parser.parse();
+    }
+    
+    /*
+     * Expr→ { Term.tsh = Expr.tsh } Term { FExpr.typeh = Term.type FExpr.tsh = Expr.tsh } FExpr { Expr.type =
+     * FExpr.type Expr.cod = Term.cod || FExpr.cod }
+     * 
+     * FExpr→ Op0 { Term.tsh = FExpr.tsh } Term { FExpr.type = tipoOpIgu(FExpr.typeh,Term.type) FExpr.cod = Term.cod ||
+     * Op0.op }
+     * 
+     * FExpr→ ɛ { FExpr.type = FExpr.typeh FExpr.cod = ɛ }
+     * 
+     * Term → { Fact.tsh = Term.tsh } Fact { RTerm.tsh = Fact.tsh RTerm.typeh = Fact.type RTerm.codh = Fact.cod } RTerm
+     * { Term.type = RFact.type Term.cod = RFact.cod }
+     * 
+     * RTerm → Op1 { Fact.tsh = RTerm0.tsh } Fact { RTerm1.tsh = Fact.tsh RTerm1.typeh = tipoFunc(RTerm0.typeh, Op1.op,
+     * Fact.type) RTerm1.codh = Term0.codh || Fact.cod || Op1.op } RTerm { RTerm0.type = RTerm1.type RTerm0.cod
+     * =RTerm1.cod }
+     * 
+     * RTerm → ɛ { RTerm.type = RTerm.typeh RTerm.cod = RTerm.codh }
+     */
+    private Attributes parseExpr (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            Attributes attrTerm = parseTerm(last, Attributes.DEFAULT);
+            Attributes attrInhFExpr = new Attributes.Builder().type(attrTerm.getType()).create();
+            Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
+            
+            return attrb.type(attrFExpr.getType()).create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseFExpr (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
+            if (attrOp0 != null) {
+                Attributes attrTerm = parseTerm(last, attrOp0);
+                attrb.type(attrTerm.getType());
+            } else {
+                attrb.type(attr.getType());
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseTerm (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            // TODO llamada a la función tipoOpIgu(a, b)
+            Attributes attrFact = parseFact(last, Attributes.DEFAULT);
+            Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
+            Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
+            
+            return attrb.type(attrRTerm.getType()).create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseRTerm (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        try {
+            Attributes attrOp1 = parseOp1(last, Attributes.DEFAULT);
+            if (attrOp1 != null) {
+                Attributes attrInhFact = new Attributes.Builder().type(attrOp1.getType()).create();
+                Attributes attrFact = parseFact(last, attrInhFact);
+                if (attrFact != null) {
+                    Attributes attrRTerm = parseRTerm(last, attrFact);
+                    attrb.type(attrRTerm.getType());
+                } else {
+                    attrb.type(attrFact.getType());
+                }
+            } else {
+                attrb.type(attrOp1.getType());
+            }
+            
+            return attrb.create();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+    
+    private Attributes parseLitBool (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //LitBool ::=
+        try {
+            LocatedToken tokenRead = expect(last, TokenType.RW_TRUE, TokenType.RW_FALSE);
+            
+            switch (tokenRead.getToken().getType()) {
+            
+            //true
+                case RW_TRUE:
+                    attrb.type(Type.BOOLEAN);
+                    attrb.value(true);
+                break;
+                
+                //false
+                case RW_FALSE:
+                    attrb.type(Type.BOOLEAN);
+                    attrb.value(false);
+                break;
+            
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+        
     }
 }
