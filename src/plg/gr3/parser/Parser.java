@@ -221,14 +221,14 @@ public final class Parser implements Closeable {
         //SInsts ::=
         try {
             //instructions illave
-            expect(true, TokenType.RW_INSTRUCTIONS);
-            expect(true, TokenType.SYM_CURLY_LEFT);
+            expect(last, TokenType.RW_INSTRUCTIONS);
+            expect(last, TokenType.SYM_CURLY_LEFT);
             
             //Insts
-            parseInsts(true, Attributes.DEFAULT);
+            parseInsts(last, Attributes.DEFAULT);
             
             //fllave
-            expect(true, TokenType.SYM_CURLY_RIGHT);
+            expect(last, TokenType.SYM_CURLY_RIGHT);
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -244,10 +244,10 @@ public final class Parser implements Closeable {
         //Insts ::=
         try {
             //Inst 
-            parseInst(true, Attributes.DEFAULT);
+            parseInst(last, Attributes.DEFAULT);
             
             //RInst 
-            parseRInst(true, Attributes.DEFAULT);
+            parseRInst(last, Attributes.DEFAULT);
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -262,13 +262,13 @@ public final class Parser implements Closeable {
         //RInsts ::=
         try {
             //pyc
-            expect(true, TokenType.SYM_SEMICOLON);
+            expect(last, TokenType.SYM_SEMICOLON);
             
             //Inst
-            parseInst(true, Attributes.DEFAULT);
+            parseInst(last, Attributes.DEFAULT);
             
             //RInsts
-            parseRInst(true, Attributes.DEFAULT);
+            parseRInst(last, Attributes.DEFAULT);
             
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
@@ -284,45 +284,45 @@ public final class Parser implements Closeable {
         try {
             LocatedToken readToken =
                 expect(
-                    true, TokenType.IDENTIFIER, TokenType.RW_IN, TokenType.RW_OUT, TokenType.RW_SWAP1,
+                    last, TokenType.IDENTIFIER, TokenType.RW_IN, TokenType.RW_OUT, TokenType.RW_SWAP1,
                     TokenType.RW_SWAP2);
             
             switch (readToken.getToken().getType())
             
             { //ident asig Expr
                 case IDENTIFIER:
-                    expect(true, TokenType.SYM_ASIGNATION);
-                    parseExpr(true, Attributes.DEFAULT);
+                    expect(last, TokenType.SYM_ASIGNATION);
+                    parseExpr(last, Attributes.DEFAULT);
                 
                 break;
                 
                 //in lpar ident rpar
                 case RW_IN:
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.IDENTIFIER);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    expect(last, TokenType.IDENTIFIER);
+                    expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
                 
                 //out lpar Expr rpar
                 case RW_OUT:
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    parseExpr(true, Attributes.DEFAULT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    parseExpr(last, Attributes.DEFAULT);
+                    expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
                 
                 //swap1 lpar rpar
                 case RW_SWAP1:
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
                 
                 //swap2 lpar rpar
                 case RW_SWAP2:
-                    expect(true, TokenType.SYM_PAR_LEFT);
-                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
             
@@ -401,6 +401,44 @@ public final class Parser implements Closeable {
             
         } catch (NoSuchElementException exc) {
             return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseParen (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //Paren ::=
+        try {
+            //Lit
+            Attributes litAttributes = parseLit(last, Attributes.DEFAULT);
+            
+            if (litAttributes == null) {
+                
+                LocatedToken tokenRead = expect(last, TokenType.SYM_PAR_LEFT, TokenType.IDENTIFIER);
+                
+                switch (tokenRead.getToken().getType()) {
+                
+                // lpar Expr rpar
+                    case SYM_PAR_LEFT:
+                        parseExpr(last, Attributes.DEFAULT);
+                        expect(last, TokenType.SYM_PAR_RIGHT);
+                    break;
+                    
+                    // ident
+                    case IDENTIFIER:
+                        attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
+                    break;
+                
+                }
+                
+            } else {
+                attrb.type(litAttributes.getType());
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
         }
         
         return attrb.create();
