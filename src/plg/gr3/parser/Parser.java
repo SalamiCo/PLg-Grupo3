@@ -184,20 +184,24 @@ public final class Parser implements Closeable {
             switch (lt.getToken().getType()) {
                 case RW_VAR:
                     //Type
-                    parseType(last, Attributes.DEFAULT);
+                    Attributes attrType = parseType(last, Attributes.DEFAULT);
                     //ident
-                    expect(last, TokenType.IDENTIFIER);
+                    LocatedToken id = expect(last, TokenType.IDENTIFIER);
+                    
+                    attrb.constant(false).type(attrType.getType()).identifier(id.getToken().getLexeme());
                     break;
                 
                 case RW_CONST:
                     //Type
-                    parseType(last, Attributes.DEFAULT);
+                    Attributes attrType2 = parseType(last, Attributes.DEFAULT);
                     //ident
-                    expect(last, TokenType.IDENTIFIER);
+                    LocatedToken id2 = expect(last, TokenType.IDENTIFIER);
                     //dpigual
                     expect(last, TokenType.SYM_CONST_ASIGNATION);
                     //Lit
-                    parseLit(last, Attributes.DEFAULT);
+                    Attributes attrLit = parseLit(last, Attributes.DEFAULT);
+                    
+                    attrb.constant(true).type(attrType2.getType()).identifier(id2.getToken().getLexeme())getClass().value(attrLit.getValue());
                     break;
                 
                 default:
