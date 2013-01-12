@@ -33,7 +33,16 @@ public final class Parser implements Closeable {
         // caso de ts y tsh): se distinguirán por el objeto usado (parámetro o devuelto)
         // NOTA: La clase Attributes se construye de una forma un tanto peculiar para evitar tener que pasarle 8
         // parámetros en aquellos casos en los que sólo interesan 2. Echadle un ojo.
+        
     }
+    
+    /*
+     * private Attributes parseProgram (Attributes attrs) throws IOException {
+     * 
+     * boolean b = lexer.hasNextToken(RW_PROGRAM);
+     * 
+     * return attrs; }
+     */
     
     @Override
     public void close () throws IOException {
