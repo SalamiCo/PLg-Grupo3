@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
+import plg.gr3.Util;
 import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.lexer.LocatedToken;
@@ -380,7 +381,7 @@ public final class Parser implements Closeable {
             LocatedToken token =
                 expect(last, TokenType.RW_NAT, TokenType.RW_INT, TokenType.RW_FLOAT, TokenType.RW_CHAR);
             
-            switch (token.getToken().getType()) {
+            switch (token.getType()) {
                 case RW_NAT:
                     attrb.type(Type.NATURAL);
                 break;
@@ -403,6 +404,30 @@ public final class Parser implements Closeable {
         }
         
         return attrb.create();
+    }
+    
+    private Attributes parseLit (boolean last, Attributes attr) {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        try {
+            Attributes attrSynLitBool = parseLitBool(last, Attributes.DEFAULT);
+            if (attrSynLitBool != null) {
+                attrb.type(attrSynLitBool.getType()).value(attrSynLitBool.getValue());
+                return attrb.create();
+            }
+            
+            Attributes attrSynLitNum = parseLitNum(last, Attributes.DEFAULT);
+            if (attrSynLitNum != null) {
+                attrb.type(attrSynLitNum.getType()).value(attrSynLitNum.getValue());
+                return attrb.create();
+            }
+            
+            LocatedToken token = expect(last, TokenType.LIT_NATURAL);
+            attrb.type(Type.NATURAL).value(Util.stringToNatural(token.getLexeme()));
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
     }
     
     @Override
