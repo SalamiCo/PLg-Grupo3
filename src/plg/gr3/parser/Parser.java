@@ -182,28 +182,30 @@ public final class Parser implements Closeable {
             // var || const
             LocatedToken lt = expect(last, TokenType.RW_VAR, TokenType.RW_CONST);
             switch (lt.getToken().getType()) {
-                case RW_VAR:
+                case RW_VAR: {
                     //Type
                     Attributes attrType = parseType(last, Attributes.DEFAULT);
                     //ident
                     LocatedToken id = expect(last, TokenType.IDENTIFIER);
                     
                     attrb.constant(false).type(attrType.getType()).identifier(id.getToken().getLexeme());
-                    break;
+                }
+                break;
                 
-                case RW_CONST:
+                case RW_CONST: {
                     //Type
-                    Attributes attrType2 = parseType(last, Attributes.DEFAULT);
+                    Attributes attrType = parseType(last, Attributes.DEFAULT);
                     //ident
-                    LocatedToken id2 = expect(last, TokenType.IDENTIFIER);
+                    LocatedToken id = expect(last, TokenType.IDENTIFIER);
                     //dpigual
                     expect(last, TokenType.SYM_CONST_ASIGNATION);
                     //Lit
                     Attributes attrLit = parseLit(last, Attributes.DEFAULT);
                     
-                    attrb.constant(true).type(attrType2.getType()).identifier(id2.getToken().getLexeme()).getClass()
+                    attrb.constant(true).type(attrType.getType()).identifier(id.getLexeme()).getClass()
                         .value(attrLit.getValue());
-                    break;
+                }
+                break;
             
             }
         } catch (NoSuchElementException exc) {
@@ -291,38 +293,38 @@ public final class Parser implements Closeable {
                 case IDENTIFIER:
                     expect(true, TokenType.SYM_ASIGNATION);
                     parseExpr(true, Attributes.DEFAULT);
-                    
-                    break;
+                
+                break;
                 
                 //in lpar ident rpar
                 case RW_IN:
                     expect(true, TokenType.SYM_PAR_LEFT);
                     expect(true, TokenType.IDENTIFIER);
                     expect(true, TokenType.SYM_PAR_RIGHT);
-                    
-                    break;
+                
+                break;
                 
                 //out lpar Expr rpar
                 case RW_OUT:
                     expect(true, TokenType.SYM_PAR_LEFT);
                     parseExpr(true, Attributes.DEFAULT);
                     expect(true, TokenType.SYM_PAR_RIGHT);
-                    
-                    break;
+                
+                break;
                 
                 //swap1 lpar rpar
                 case RW_SWAP1:
                     expect(true, TokenType.SYM_PAR_LEFT);
                     expect(true, TokenType.SYM_PAR_RIGHT);
-                    
-                    break;
+                
+                break;
                 
                 //swap2 lpar rpar
                 case RW_SWAP2:
                     expect(true, TokenType.SYM_PAR_LEFT);
                     expect(true, TokenType.SYM_PAR_RIGHT);
-                    
-                    break;
+                
+                break;
             
             }
             ;
@@ -346,23 +348,23 @@ public final class Parser implements Closeable {
             switch (token.getToken().getType()) {
                 case RW_BOOLEAN:
                     attrb.type(Type.BOOLEAN);
-                    break;
+                break;
                 
                 case RW_NATURAL:
                     attrb.type(Type.NATURAL);
-                    break;
+                break;
                 
                 case RW_INTEGER:
                     attrb.type(Type.INTEGER);
-                    break;
+                break;
                 
                 case RW_FLOAT:
                     attrb.type(Type.FLOAT);
-                    break;
+                break;
                 
                 case RW_CHARACTER:
                     attrb.type(Type.CHARACTER);
-                    break;
+                break;
             }
             
         } catch (NoSuchElementException exc) {
@@ -382,19 +384,19 @@ public final class Parser implements Closeable {
             switch (token.getToken().getType()) {
                 case RW_NAT:
                     attrb.type(Type.NATURAL);
-                    break;
+                break;
                 
                 case RW_INT:
                     attrb.type(Type.INTEGER);
-                    break;
+                break;
                 
                 case RW_FLOAT:
                     attrb.type(Type.FLOAT);
-                    break;
+                break;
                 
                 case RW_CHAR:
                     attrb.type(Type.CHARACTER);
-                    break;
+                break;
             }
             
         } catch (NoSuchElementException exc) {
