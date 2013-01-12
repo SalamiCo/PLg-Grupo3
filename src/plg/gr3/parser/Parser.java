@@ -25,6 +25,9 @@ public final class Parser implements Closeable {
     /** Tabla de símbolos */
     private final SymbolTable symbolTable;
     
+    /** Token leído sin consumir */
+    private LocatedToken token;
+    
     /**
      * @param lexer
      *            Analizador léxico que será utilizado por este analizador sintáctico
@@ -46,13 +49,19 @@ public final class Parser implements Closeable {
      *             si ocurre un error de E/S
      */
     private LocatedToken expect (boolean last, TokenType... categories) throws IOException {
-        LocatedToken token = lexer.nextToken();
+        // Si tenemos algún token pendiente, lo usamos. Si no, leemos uno nuevo
+        if (token == null) {
+            token = lexer.nextToken();
+        }
         
         if (token != null) {
             for (TokenType category : categories) {
                 if (category.equals(token.getToken().getType())) {
                     Debugger.INSTANCE.at(token.getLine(), token.getColumn()).debug("Reconocido " + token.getToken());
-                    return token;
+                    
+                    LocatedToken ret = token;
+                    token = null;
+                    return ret;
                 }
             }
         }
@@ -113,13 +122,13 @@ public final class Parser implements Closeable {
         try {
             // varconsts illave
             expect(last, TokenType.RW_VARCONSTS);
-            expect(last, TokenType.SYM_PAR_LEFT);
+            expect(last, TokenType.SYM_CURLY_LEFT);
             
             // Decs
             parseDecs(last, Attributes.DEFAULT);
             
             // fllave
-            expect(last, TokenType.SYM_PAR_RIGHT);
+            expect(last, TokenType.SYM_CURLY_RIGHT);
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -160,14 +169,21 @@ public final class Parser implements Closeable {
         // RDecs ::=
         try {
             // pyc
-            expect(last, TokenType.SYM_SEMICOLON);
+            expect(false, TokenType.SYM_SEMICOLON);
+            
             // Dec
             Attributes attrDec = parseDec(last, Attributes.DEFAULT);
+            if (attrDec == null) {
+                return Attributes.DEFAULT;
+            }
+            
             // RDecs
             symbolTable.putIdentifier(
                 attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
                 attrDec.getValue());
+            
             parseRDecs(last, Attributes.DEFAULT);
+            
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
         }
@@ -405,23 +421,6 @@ public final class Parser implements Closeable {
         }
         
         return attrb.create();
-    }
-    
-    @Override
-    public void close () throws IOException {
-        lexer.close();
-    }
-    
-    public static void main (String[] args) throws Exception {
-        String code =
-            "program: helloWorld {\n" + "\tvar-consts {\n" + "\t\t@Variable de entrada\n"
-                + "\t\tvar integer entrada;\n" + "\t}\n" + "\tinstructions {\n" + "\t}\n" + "}\n";
-        
-        Debugger.INSTANCE.setLoggingEnabled(true);
-        Debugger.INSTANCE.setDebugEnabled(true);
-        
-        Parser parser = new Parser(new Lexer(new StringReader(code)));
-        parser.parse();
     }
     
     private Attributes parseExpr (boolean last, Attributes attr) throws IOException {
@@ -934,5 +933,23 @@ public final class Parser implements Closeable {
         }
         
         return attrb.create();
+    }
+    
+    @Override
+    public void close () throws IOException {
+        lexer.close();
+    }
+    
+    public static void main (String[] args) throws Exception {
+        String code =
+            "program: helloWorld {\n" + "\tvar-consts {\n" + "\t\t@Variable de entrada\n"
+                + "\t\tvar integer entrada;\n" + "\t}\n" + "\tinstructions {\n" + "\t}\n" + "}\n";
+        
+        Debugger.INSTANCE.setLoggingEnabled(true);
+        Debugger.INSTANCE.setDebugEnabled(true);
+        
+        try (Parser parser = new Parser(new Lexer(new StringReader(code)))) {
+            parser.parse();
+        }
     }
 }
