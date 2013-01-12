@@ -202,8 +202,7 @@ public final class Parser implements Closeable {
                     //Lit
                     Attributes attrLit = parseLit(last, Attributes.DEFAULT);
                     
-                    attrb.constant(true).type(attrType.getType()).identifier(id.getLexeme()).getClass()
-                        .value(attrLit.getValue());
+                    attrb.constant(true).type(attrType.getType()).identifier(id.getLexeme()).value(attrLit.getValue());
                 }
                 break;
             
