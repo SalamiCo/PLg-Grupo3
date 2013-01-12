@@ -49,6 +49,16 @@ public final class LocatedToken {
         return token;
     }
     
+    /** @return Tipo del token */
+    public TokenType getType () {
+        return token.getType();
+    }
+    
+    /** @return Lexema del token */
+    public String getLexeme () {
+        return token.getLexeme();
+    }
+    
     /** @return Linea donde se ubica el token en el fichero */
     public int getLine () {
         return line;
