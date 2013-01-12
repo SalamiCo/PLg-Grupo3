@@ -439,7 +439,7 @@ public final class Parser implements Closeable {
     private Attributes parseTerm (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         try {
-            // TODO llamada a la función tipoOpIgu(a, b)
+            // TODO llamada a la función tipoFunc(a, b)
             Attributes attrFact = parseFact(last, Attributes.DEFAULT);
             Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
             Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
@@ -483,7 +483,7 @@ public final class Parser implements Closeable {
             Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
             //Rfact
             Attributes rfactInhAttr = new Attributes.Builder().type(shftSynAttr.getType()).create();
-            Attributes rfactSynAttr = parseRfact(true, rfactInhAttr);
+            Attributes rfactSynAttr = parseRFact(true, rfactInhAttr);
             
             attrb.type(rfactSynAttr.getType());
         } catch (NoSuchElementException exc) {
@@ -494,7 +494,7 @@ public final class Parser implements Closeable {
     }
     
     //Rfact
-    private Attributes parseRfact (boolean last, Attributes attr) throws IOException {
+    private Attributes parseRFact (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         //Rfact
         try {
@@ -507,7 +507,7 @@ public final class Parser implements Closeable {
                 //TODO  RFact1.typeh = tipoFunc(RFact0.typeh, Op2.op, Shft.type)            
                 
                 //Rfact
-                Attributes rfactSynAttr = parseRfact(true, Attributes.DEFAULT);
+                Attributes rfactSynAttr = parseRFact(true, Attributes.DEFAULT);
                 
                 attrb.type(rfactSynAttr.getType());
                 
@@ -533,7 +533,7 @@ public final class Parser implements Closeable {
             Attributes unarySynAttr = parseUnary(true, Attributes.DEFAULT);
             //FShft
             Attributes fshftInhAttr = new Attributes.Builder().type(unarySynAttr.getType()).create();
-            Attributes fshftSynAttr = parseFshft(true, fshftInhAttr);
+            Attributes fshftSynAttr = parseFShft(true, fshftInhAttr);
             
             attrb.type(fshftSynAttr.getType());
         } catch (NoSuchElementException exc) {
@@ -544,7 +544,7 @@ public final class Parser implements Closeable {
     }
     
     //FShft
-    private Attributes parseFshft (boolean last, Attributes attr) throws IOException {
+    private Attributes parseFShft (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         //FShft
         try {
