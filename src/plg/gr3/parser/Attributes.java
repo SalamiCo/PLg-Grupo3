@@ -13,6 +13,9 @@ public final class Attributes {
     /** Atributos creados por defecto */
     public static final Attributes DEFAULT = new Attributes.Builder().create();
     
+    /** Nombre del identificador */
+    private final String ident;
+    
     /** Tipo de una variable o expresión */
     private final Type type;
     
@@ -25,9 +28,6 @@ public final class Attributes {
     /** El operador a usar */
     private final Object operator;
     
-    /** Tabla de símbolos */
-    private final SymbolTable symbolTable;
-    
     /** El valor a usar */
     private final Object value;
     
@@ -35,6 +35,8 @@ public final class Attributes {
     private final int address;
     
     /**
+     * @param ident
+     *            Nombre del identificador
      * @param address
      *            La dirección de memoria
      * @param constant
@@ -49,15 +51,22 @@ public final class Attributes {
      *            El valor a usar
      */
     private Attributes (
-        int address, boolean constant, Object error, Object operator, SymbolTable symbolTable, Type type, Object value)
+        String ident, int address, boolean constant, Object error, Object operator, Type type, Object value)
     {
+        this.ident = ident;
         this.address = address;
         this.constant = constant;
         this.error = error;
         this.operator = operator;
-        this.symbolTable = symbolTable;
         this.type = type;
         this.value = value;
+    }
+    
+    /**
+     * @return El atributo <tt>ident</tt>
+     */
+    public String getIdentifier () {
+        return ident;
     }
     
     /**
@@ -89,13 +98,15 @@ public final class Attributes {
     }
     
     /**
-     * @return El atributo <tt>symbolTable</tt>
+     * @return El atributo <tt>value</tt>.
      */
-    public SymbolTable getSymbolTable () {
-        return symbolTable;
+    public Object getValue () {
+        return getValue(Object.class);
     }
     
     /**
+     * @param cls
+     *            Tipo del atributo
      * @return El atributo <tt>value</tt> si es del tipo especificado, <tt>null</tt> en caso contrario
      */
     public <T> T getValue (Class<T> cls) {
@@ -110,6 +121,8 @@ public final class Attributes {
     }
     
     public static final class Builder {
+        private String ident;
+        
         private Type type;
         
         private boolean constant;
@@ -118,11 +131,14 @@ public final class Attributes {
         
         private Object operator; // TODO Clase Operator
         
-        private SymbolTable symbolTable;
-        
         private Object value;
         
         private int address;
+        
+        public Builder identifier (String ident) {
+            this.ident = ident;
+            return this;
+        }
         
         public Builder address (int address) {
             this.address = address;
@@ -144,11 +160,6 @@ public final class Attributes {
             return this;
         }
         
-        public Builder symbolTable (SymbolTable symbolTable) {
-            this.symbolTable = symbolTable;
-            return this;
-        }
-        
         public Builder type (Type type) {
             this.type = type;
             return this;
@@ -160,7 +171,7 @@ public final class Attributes {
         }
         
         public Attributes create () {
-            return new Attributes(address, constant, error, operator, symbolTable, type, value);
+            return new Attributes(ident, address, constant, error, operator, type, value);
         }
     }
 }

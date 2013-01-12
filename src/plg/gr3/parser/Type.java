@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public final class Type {
     
-    public static final Type NAT = new Type("nat");
+    public static final Type NATURAL = new Type("natural");
     
     public static final Type INTEGER = new Type("integer");
     
@@ -12,7 +12,7 @@ public final class Type {
     
     public static final Type BOOLEAN = new Type("boolean");
     
-    public static final Type CHAR = new Type("char");
+    public static final Type CHARACTER = new Type("character");
     
     public static final Type ERROR = new Type("");
     
