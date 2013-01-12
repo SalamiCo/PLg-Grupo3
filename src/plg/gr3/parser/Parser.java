@@ -109,8 +109,125 @@ public final class Parser implements Closeable {
         return Attributes.DEFAULT;
     }
     
-    private Attributes parseSInsts (boolean last, Attributes attr) {
-        return Attributes.DEFAULT;
+    private Attributes parseSInsts (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //SInsts ::=
+        try {
+            //instructions illave
+            expect(true, TokenType.RW_INSTRUCTIONS);
+            expect(true, TokenType.SYM_CURLY_LEFT);
+            
+            //Insts
+            parseInsts(true, Attributes.DEFAULT);
+            
+            //fllave
+            expect(true, TokenType.SYM_CURLY_RIGHT);
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+        
+    }
+    
+    private Attributes parseInsts (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //Insts ::=
+        try {
+            //Inst 
+            parseInst(true, Attributes.DEFAULT);
+            
+            //RInst 
+            parseRInst(true, Attributes.DEFAULT);
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseRInst (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //RInsts ::=
+        try {
+            //pyc
+            expect(true, TokenType.SYM_SEMICOLON);
+            
+            //Inst
+            parseInst(true, Attributes.DEFAULT);
+            
+            //RInsts
+            parseRInst(true, Attributes.DEFAULT);
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseInst (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        //Insts ::=
+        try {
+            LocatedToken readToken =
+                expect(
+                    true, TokenType.IDENTIFIER, TokenType.RW_IN, TokenType.RW_OUT, TokenType.RW_SWAP1,
+                    TokenType.RW_SWAP2);
+            
+            switch (readToken.getToken().getType())
+            
+            { //ident asig Expr
+                case IDENTIFIER:
+                    expect(true, TokenType.SYM_ASIGNATION);
+                    parseExpr(true, Attributes.DEFAULT);
+                    
+                    break;
+                
+                //in lpar ident rpar
+                case RW_IN:
+                    expect(true, TokenType.SYM_PAR_LEFT);
+                    expect(true, TokenType.IDENTIFIER);
+                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    
+                    break;
+                
+                //out lpar Expr rpar
+                case RW_OUT:
+                    expect(true, TokenType.SYM_PAR_LEFT);
+                    parseExpr(true, Attributes.DEFAULT);
+                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    
+                    break;
+                
+                //swap1 lpar rpar
+                case RW_SWAP1:
+                    expect(true, TokenType.SYM_PAR_LEFT);
+                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    
+                    break;
+                
+                //swap2 lpar rpar
+                case RW_SWAP2:
+                    expect(true, TokenType.SYM_PAR_LEFT);
+                    expect(true, TokenType.SYM_PAR_RIGHT);
+                    
+                    break;
+            
+            }
+            ;
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
     }
     
     /*
