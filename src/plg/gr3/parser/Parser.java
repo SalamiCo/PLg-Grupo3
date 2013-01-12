@@ -112,6 +112,105 @@ public final class Parser implements Closeable {
         return Attributes.DEFAULT;
     }
     
+    //Fact
+    private Attributes parseFact (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // Fact ::=
+        try {
+            //Shft
+            Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+            //Rfact
+            Attributes rfactInhAttr = new Attributes.Builder().type(shftSynAttr.getType()).create();
+            Attributes rfactSynAttr = parseRfact(true, rfactInhAttr);
+            
+            attrb.type(rfactSynAttr.getType());
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    //Shft
+    private Attributes parseShft (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        
+        // Shft ::=
+        try {
+            //Unary
+            Attributes unarySynAttr = parseUnary(true, Attributes.DEFAULT);
+            //FShft
+            Attributes fshftInhAttr = new Attributes.Builder().type(unarySynAttr.getType()).create();
+            Attributes fshftSynAttr = parseFshft(true, fshftInhAttr);
+            
+            attrb.type(fshftSynAttr.getType());
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    //FShft
+    private Attributes parseFshft (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        //FShft
+        try {
+            //Op3
+            Attributes op3SynAttr = parseOp3(true, Attributes.DEFAULT);
+            
+            if (op3SynAttr != null) {
+                //Shft            
+                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+                
+                //TODO FShft.type = tipoFunc(FShft.typeh, Op3.op, Shft.type)
+                /*
+                 * attrb.type(tipoFunc(attr.getType(), op3SynAttr.getOperator(), shftSynAttr.getType() ));
+                 */
+            } else {
+                //Epsilon
+                attrb.type(attr.getType());
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
+    //Rfact
+    private Attributes parseRfact (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        //Rfact
+        try {
+            //Op2
+            Attributes op2SynAttr = parseOp2(true, Attributes.DEFAULT);
+            
+            if (op2SynAttr != null) {
+                //Shft
+                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+                //TODO  RFact1.typeh = tipoFunc(RFact0.typeh, Op2.op, Shft.type)            
+                
+                //Rfact
+                Attributes rfactSynAttr = parseRfact(true, Attributes.DEFAULT);
+                
+                attrb.type(rfactSynAttr.getType());
+                
+            } else {
+                //Epsilon
+                attrb.type(attr.getType());
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return Attributes.DEFAULT;
+        }
+        
+        return attrb.create();
+    }
+    
     /*
      * private Attributes parseProgram (Attributes attrs) throws IOException {
      * 
