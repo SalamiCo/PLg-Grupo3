@@ -1,7 +1,6 @@
 package plg.gr3.debug;
 
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.nio.file.Path;
 
 /**
@@ -9,7 +8,8 @@ import java.nio.file.Path;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public final class Debugger {
+public enum Debugger {
+    INSTANCE;
     
     /** Flujo de salida de todos los mensajes */
     private final PrintWriter out;
@@ -36,8 +36,8 @@ public final class Debugger {
         file = null;
     }
     
-    public Debugger (Writer out) {
-        this.out = new PrintWriter(out);
+    private Debugger () {
+        this.out = new PrintWriter(System.out);
     }
     
     public void setLoggingEnabled (boolean logging) {

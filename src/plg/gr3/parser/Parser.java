@@ -2,6 +2,8 @@ package plg.gr3.parser;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import plg.gr3.debug.Debugger;
@@ -19,16 +21,12 @@ public final class Parser implements Closeable {
     /** Analizador léxico a utilizar */
     private final Lexer lexer;
     
-    /** Depurador */
-    private final Debugger debugger;
-    
     /**
      * @param lexer
      *            Analizador léxico que será utilizado por este analizador sintáctico
      */
-    public Parser (Lexer lexer, Debugger debugger) {
+    public Parser (Lexer lexer) {
         this.lexer = lexer;
-        this.debugger = debugger;
     }
     
     /**
@@ -43,15 +41,22 @@ public final class Parser implements Closeable {
      *             si ocurre un error de E/S
      */
     private LocatedToken expect (boolean last, TokenType... categories) throws IOException {
-        for (TokenType category : categories) {
-            if (lexer.hasNextToken(category)) {
-                return lexer.nextToken(category);
+        LocatedToken token = lexer.nextToken();
+        
+        if (token != null) {
+            for (TokenType category : categories) {
+                if (category.equals(token.getToken().getType())) {
+                    Debugger.INSTANCE.at(token.getLine(), token.getColumn()).debug("Reconocido " + token.getToken());
+                    return token;
+                }
             }
         }
         
         // TODO Log an error
         if (last) {
-            
+            Debugger.INSTANCE.at(lexer.getLine(), lexer.getColumn()).error(
+                "Expected " + Arrays.toString(categories) + ", found "
+                    + (token == null ? "nothing" : token.getToken().getType()));
         }
         
         throw new NoSuchElementException();
@@ -91,18 +96,20 @@ public final class Parser implements Closeable {
             // fllave fin
             expect(true, TokenType.SYM_CURLY_RIGHT);
             expect(true, TokenType.EOF);
+            
         } catch (NoSuchElementException exc) {
             return null;
         }
+        
         return attrb.create();
     }
     
     private Attributes parseSDecs (boolean last, Attributes attr) {
-        return null;
+        return Attributes.DEFAULT;
     }
     
     private Attributes parseSInsts (boolean last, Attributes attr) {
-        return null;
+        return Attributes.DEFAULT;
     }
     
     @Override
@@ -110,4 +117,15 @@ public final class Parser implements Closeable {
         lexer.close();
     }
     
+    public static void main (String[] args) throws Exception {
+        String code =
+            "program: helloWorld {\n" + "\tvar-consts {\n" + "\t\t@Variable de entrada\n"
+                + "\t\tvar integer entrada;\n" + "\t}\n" + "\tinstructions {\n" + "\t}\n" + "}\n";
+        
+        Debugger.INSTANCE.setLoggingEnabled(true);
+        Debugger.INSTANCE.setDebugEnabled(true);
+        
+        Parser parser = new Parser(new Lexer(new StringReader(code)));
+        parser.parse();
+    }
 }

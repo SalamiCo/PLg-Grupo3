@@ -52,6 +52,16 @@ public final class Lexer implements Closeable {
         this.reader = new BufferedReader(reader);
     }
     
+    /** @return Obtaint the current line */
+    public int getLine () {
+        return currentLine;
+    }
+    
+    /** @return Obtain the current column */
+    public int getColumn () {
+        return currentColumn;
+    }
+    
     /**
      * Determina si existe un token del tipo dado en la entrada del analizador. Este método no modifica el estado actual
      * del analizador: múltiples llamadas consecutivas a este método devolverán lo mismo siempre que no se llame a
