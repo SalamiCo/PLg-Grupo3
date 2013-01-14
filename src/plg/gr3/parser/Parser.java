@@ -2,12 +2,14 @@ package plg.gr3.parser;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import plg.gr3.CodeGenerator;
 import plg.gr3.AssignError;
+import plg.gr3.CodeGenerator;
 import plg.gr3.CompileError;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
@@ -34,6 +36,9 @@ public final class Parser implements Closeable {
     
     /** Categorías que se esperaban y no se encontraron */
     private final Set<TokenType> expected = new HashSet<>();
+    
+    /** Coleccion de errores de compilacion */
+    private final Collection<CompileError> errors = new ArrayList<>();
     
     private final CodeGenerator codeGenerator;
     
@@ -97,6 +102,7 @@ public final class Parser implements Closeable {
         if (attr == null) {
             CompileError error = new UnexpectedTokenError(token, expected);
             error.print();
+            errors.add(error);
         }
         
         return true;
@@ -194,7 +200,9 @@ public final class Parser implements Closeable {
                 attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
                 attrDec.getValue());
             
-            parseRDecs(last, Attributes.DEFAULT);
+            Attributes rDecsAttributes = parseRDecs(last, Attributes.DEFAULT);
+            
+            attrb.error(rDecsAttributes.getErrors());
             
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
@@ -331,7 +339,7 @@ public final class Parser implements Closeable {
                     if (typeMatch(exprType, identType)) {
                         AssignError error = new AssignError(identType, exprType, tokenRead);
                         error.print();
-                        attrb.error(error);
+                        errors.add(error);
                     }
                 
                 break;
@@ -347,7 +355,8 @@ public final class Parser implements Closeable {
                 //out lpar Expr rpar
                 case RW_OUT:
                     expect(last, TokenType.SYM_PAR_LEFT);
-                    parseExpr(last, Attributes.DEFAULT);
+                    Attributes attrExpr = parseExpr(last, Attributes.DEFAULT);
+                    attrb.error(attrExpr.getErrors());
                     expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
@@ -469,6 +478,8 @@ public final class Parser implements Closeable {
             Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
             if (attrOp0 != null) {
                 Attributes attrTerm = parseTerm(last, attrOp0);
+                
+                Operator op = attrOp0.getOperator();
                 
                 // FExpr.cod = Term.cod || Op0.op }
                 codeGenerator.generateInstructions(attrTerm.getInstructions());
