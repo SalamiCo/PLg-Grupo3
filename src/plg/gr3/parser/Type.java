@@ -94,4 +94,31 @@ public final class Type {
 		else 
 			return false;
 	}
+	
+	public Type getWiderType(Type ident, Type typeAssigned){
+		if ( ident.equals(typeAssigned))
+			return ident.forValue(ident);
+		switch ident.forValue(ident){
+		case Type.NATURAL:
+			if (typeAssigned.equals(INTEGER))
+				return Type.INTEGER;
+			if (typeAssigned.equals(FLOAT))
+				return Type.FLOAT;
+			break;
+		case Type.INTEGER:
+			if (typeAssigned.equals(NATURAL))
+				return Type.INTEGER;
+			if (typeAssigned.equals(FLOAT))
+				return Type.FLOAT;
+			break;
+		case Type.FLOAT:
+			if (typeAssigned.equals(NATURAL))
+				return Type.NATURAL;
+			if (typeAssigned.equals(INTEGER))
+				return Type.FLOAT;
+			break;
+		default
+			return null;
+		}
+	}
 }
