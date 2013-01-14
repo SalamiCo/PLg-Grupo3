@@ -45,4 +45,53 @@ public final class Type {
     public String toString () {
         return "Type(" + name + ")";
     }
+    
+    public Type forValue(Object obj){
+    	if (obj instanceof java.lang.Float )
+    		return Type.FLOAT;
+    	if ( obj instanceof java.lang.Integer)
+    		return Type.INTEGER;
+    	if (obj instanceof Natural)
+    		return Type.NATURAL;
+    	if (obj instanceof java.lang.Boolean)
+    		return Type.BOOLEAN;
+    	if (obj instanceof java.lang.Character)
+    		return Type.CHARACTER;
+    	return null;
+    }
+    
+    public boolan typeMatch(Type ident, Type typeAssigned){
+    	switch (ident.forValue(ident)){
+    		case Type.NATURAL:
+    			if (typeAssigned.equals(NATURAL))
+    				return true;
+    			else 
+    				return false;
+    		
+    		break;
+    		case Type.INTEGER:
+    			if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER)){
+    				return true;
+    			else
+    				return false;
+    			
+    		break;
+    		case Type.FLOAT: 
+    			if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER) || typeAssigned.equals(FLOAT))
+    				return true;
+    			else 
+    				return false;
+    		break;
+    		default
+    			return false;
+    			}
+    	}
+    }
+
+	public boolean isNumeric(){
+		if (this.equals(NATURAL) || this.equals(INTEGER) || this.equals(FLOAT))
+			return true;
+		else 
+			return false;
+	}
 }
