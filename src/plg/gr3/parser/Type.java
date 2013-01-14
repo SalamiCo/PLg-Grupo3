@@ -49,70 +49,86 @@ public final class Type {
     }
     
     public static Type forValue (Object obj) {
-        if (obj instanceof java.lang.Float)
+        if (obj instanceof java.lang.Float) {
             return Type.FLOAT;
-        if (obj instanceof java.lang.Integer)
+        }
+        if (obj instanceof java.lang.Integer) {
             return Type.INTEGER;
-        if (obj instanceof Natural)
+        }
+        if (obj instanceof Natural) {
             return Type.NATURAL;
-        if (obj instanceof java.lang.Boolean)
+        }
+        if (obj instanceof java.lang.Boolean) {
             return Type.BOOLEAN;
-        if (obj instanceof java.lang.Character)
+        }
+        if (obj instanceof java.lang.Character) {
             return Type.CHARACTER;
+        }
         return null;
     }
     
     public boolean typeMatch (Type ident, Type typeAssigned) {
         if (ident.equals(Type.NATURAL)) {
-            if (typeAssigned.equals(NATURAL))
+            if (typeAssigned.equals(NATURAL)) {
                 return true;
-            else
+            } else {
                 return false;
+            }
         }
         if (ident.equals(Type.INTEGER)) {
-            if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER))
+            if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER)) {
                 return true;
-            else
+            } else {
                 return false;
+            }
         }
         
         if (ident.equals(Type.FLOAT)) {
-            if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER) || typeAssigned.equals(FLOAT))
+            if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER) || typeAssigned.equals(FLOAT)) {
                 return true;
-            else
+            } else {
                 return false;
+            }
         }
         return false;
         
     }
     
     public boolean isNumeric () {
-        if (this.equals(NATURAL) || this.equals(INTEGER) || this.equals(FLOAT))
+        if (this.equals(NATURAL) || this.equals(INTEGER) || this.equals(FLOAT)) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
     
     public static Type getWiderType (Type ident, Type typeAssigned) {
-        if (ident.equals(typeAssigned))
+        if (ident.equals(typeAssigned)) {
             return forValue(ident);
+        }
         if (ident.equals(Type.NATURAL)) {
-            if (typeAssigned.equals(INTEGER))
+            if (typeAssigned.equals(INTEGER)) {
                 return Type.INTEGER;
-            if (typeAssigned.equals(FLOAT))
+            }
+            if (typeAssigned.equals(FLOAT)) {
                 return Type.FLOAT;
+            }
         }
         if (ident.equals(Type.INTEGER)) {
-            if (typeAssigned.equals(NATURAL))
+            if (typeAssigned.equals(NATURAL)) {
                 return Type.INTEGER;
-            if (typeAssigned.equals(FLOAT))
+            }
+            if (typeAssigned.equals(FLOAT)) {
                 return Type.FLOAT;
+            }
         }
         if (ident.equals(Type.FLOAT)) {
-            if (typeAssigned.equals(NATURAL))
+            if (typeAssigned.equals(NATURAL)) {
                 return Type.NATURAL;
-            if (typeAssigned.equals(INTEGER))
+            }
+            if (typeAssigned.equals(INTEGER)) {
                 return Type.FLOAT;
+            }
         }
         return null;
     }
