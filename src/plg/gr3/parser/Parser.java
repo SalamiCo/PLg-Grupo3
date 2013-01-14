@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import plg.gr3.CodeGenerator;
 import plg.gr3.AssignError;
+import plg.gr3.CodeGenerator;
 import plg.gr3.CompileError;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
@@ -35,14 +35,16 @@ public final class Parser implements Closeable {
     /** Categorías que se esperaban y no se encontraron */
     private final Set<TokenType> expected = new HashSet<>();
     
+    /** Generador de código */
     private final CodeGenerator codeGenerator;
     
     /**
      * @param lexer
      *            Analizador léxico que será utilizado por este analizador sintáctico
      */
-    public Parser (Lexer lexer) {
+    public Parser (Lexer lexer, CodeGenerator codeGenerator) {
         this.lexer = lexer;
+        this.codeGenerator = codeGenerator;
         this.symbolTable = new SymbolTable();
     }
     
