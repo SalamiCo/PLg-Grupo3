@@ -39,17 +39,22 @@ public final class Parser implements Closeable {
     /** Categorías que se esperaban y no se encontraron */
     private final Set<TokenType> expected = new HashSet<>();
     
+<<<<<<< HEAD
     /** Coleccion de errores de compilacion */
     private final Collection<CompileError> errors = new ArrayList<>();
     
+=======
+    /** Generador de código */
+>>>>>>> d7a9051aa61fc583dfd758e6c5908d52ff491c72
     private final CodeGenerator codeGenerator;
     
     /**
      * @param lexer
      *            Analizador léxico que será utilizado por este analizador sintáctico
      */
-    public Parser (Lexer lexer) {
+    public Parser (Lexer lexer, CodeGenerator codeGenerator) {
         this.lexer = lexer;
+        this.codeGenerator = codeGenerator;
         this.symbolTable = new SymbolTable();
     }
     
