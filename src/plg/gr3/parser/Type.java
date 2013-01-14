@@ -48,7 +48,7 @@ public final class Type {
         return "Type(" + name + ")";
     }
     
-    public Type forValue (Object obj) {
+    public static Type forValue (Object obj) {
         if (obj instanceof java.lang.Float)
             return Type.FLOAT;
         if (obj instanceof java.lang.Integer)
@@ -95,7 +95,7 @@ public final class Type {
     
     public static Type getWiderType (Type ident, Type typeAssigned) {
         if (ident.equals(typeAssigned))
-            return ident.forValue(ident);
+            return forValue(ident);
         if (ident.equals(Type.NATURAL)) {
             if (typeAssigned.equals(INTEGER))
                 return Type.INTEGER;
