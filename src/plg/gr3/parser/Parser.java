@@ -9,8 +9,10 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import plg.gr3.AssignError;
+import plg.gr3.BinaryOperator;
 import plg.gr3.CodeGenerator;
 import plg.gr3.CompileError;
+import plg.gr3.OperatorError;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
 import plg.gr3.debug.Debugger;
@@ -336,7 +338,7 @@ public final class Parser implements Closeable {
                     Type identType = this.symbolTable.getIdentfierType(tokenRead.getLexeme());
                     Type exprType = exprAttributes.getType();
                     
-                    if (typeMatch(exprType, identType)) {
+                    if (!typeMatch(exprType, identType)) {
                         AssignError error = new AssignError(identType, exprType, tokenRead);
                         error.print();
                         errors.add(error);
@@ -474,12 +476,21 @@ public final class Parser implements Closeable {
     
     private Attributes parseFExpr (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        int actColumn = lexer.getColumn();
+        int actLine = lexer.getLine();
         try {
             Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
             if (attrOp0 != null) {
                 Attributes attrTerm = parseTerm(last, attrOp0);
                 
-                Operator op = attrOp0.getOperator();
+                BinaryOperator op = (BinaryOperator) attrOp0.getOperator();
+                
+                if (!op.canApply(attr.getType(), attrTerm)) {
+                    OperatorError error =
+                        new OperatorError(attr.getType(), attrTerm.getType(), attrOp0.getOperator(), actLine, actColumn);
+                    error.print();
+                    errors.add(error);
+                }
                 
                 // FExpr.cod = Term.cod || Op0.op }
                 codeGenerator.generateInstructions(attrTerm.getInstructions());
@@ -512,6 +523,9 @@ public final class Parser implements Closeable {
     
     private Attributes parseRTerm (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        int actColumn = lexer.getColumn();
+        int actLine = lexer.getLine();
+        
         try {
             Attributes attrOp1 = parseOp1(last, Attributes.DEFAULT);
             if (attrOp1 != null) {
@@ -521,6 +535,16 @@ public final class Parser implements Closeable {
                     Type t = attrOp1.getOperator().getApplyType(attrFact.getType(), attr.getType());
                     Attributes attrInhRTerm = new Attributes.Builder().type(t).create();
                     Attributes attrRTerm = parseRTerm(last, attrFact);
+                    
+                    BinaryOperator op = (BinaryOperator) attrOp1.getOperator();
+                    
+                    if (!op.canApply(attr.getType(), attrRTerm.getType())) {
+                        OperatorError error =
+                            new OperatorError(
+                                attr.getType(), attrRTerm.getType(), attrOp1.getOperator(), actLine, actColumn);
+                        error.print();
+                        errors.add(error);
+                    }
                     
                     //  RTerm1.codh = RTerm0.codh || Fact.cod || Op1.op }
                     codeGenerator.generateInstructions(attrFact.getInstructions());
@@ -717,6 +741,9 @@ public final class Parser implements Closeable {
     //Rfact
     private Attributes parseRFact (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        int actColumn = lexer.getColumn();
+        int actLine = lexer.getLine();
+        
         //Rfact
         try {
             //Op2
@@ -726,6 +753,16 @@ public final class Parser implements Closeable {
                 //Shft
                 Attributes attrInhShft = new Attributes.Builder().type(attrOp2.getType()).create();
                 Attributes attrShft = parseShft(last, attrInhShft);
+                
+                BinaryOperator op = (BinaryOperator) attrOp2.getOperator();
+                
+                if (!op.canApply(attr.getType(), attrShft.getType())) {
+                    OperatorError error =
+                        new OperatorError(attr.getType(), attrShft.getType(), attrOp2.getOperator(), actLine, actColumn);
+                    error.print();
+                    errors.add(error);
+                }
+                
                 if (attrShft != null) {
                     
                     Type t = attrOp2.getOperator().getApplyType(attrShft.getType(), attr.getType());
