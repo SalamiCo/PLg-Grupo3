@@ -7,7 +7,7 @@ public enum BinaryOperator {
         
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.isNumeric() && t2.isNumeric;
+            return t1.isNumeric() && t2.isNumeric();
         }
         
         @Override
