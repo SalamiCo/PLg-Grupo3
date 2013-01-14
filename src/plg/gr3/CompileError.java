@@ -16,8 +16,6 @@ public abstract class CompileError {
     private final int column;
     
     /**
-     * @param file
-     *            Fichero en el que se produjo el error
      * @param line
      *            Línea en la que se produjo el eror
      * @param column

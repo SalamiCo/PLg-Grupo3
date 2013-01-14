@@ -10,7 +10,7 @@ public class Natural {
     /**
      * Valor que contiene el Natural
      * */
-    int value;
+    private final int value;
     
     /**
      * Constructora del tipo de los Naturales
@@ -32,14 +32,4 @@ public class Natural {
         return value;
     }
     
-    /**
-     * @param value
-     *            asigna un valor a un Natural, siempre que sea mayor que cero
-     * */
-    public void setValue (int value) throws IllegalArgumentException {
-        if (value >= 0)
-            this.value = value;
-        else
-            throw new IllegalArgumentException();
-    }
 }
