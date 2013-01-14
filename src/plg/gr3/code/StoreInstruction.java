@@ -5,14 +5,14 @@ package plg.gr3.code;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public class InstructionStore extends Instruction {
+public class StoreInstruction extends Instruction {
     
     /**
      * direccion de memoria de la instruccion desapila-dir
      * */
     private int dir;
     
-    public InstructionStore (int dir) {
+    public StoreInstruction (int dir) {
         super();
         this.dir = dir;
     }

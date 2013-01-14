@@ -51,7 +51,7 @@ public class Natural extends Number {
         return value;
     }
     
-    public static Natural valueOf (String str) {
+    public static Natural parseNat (String str) {
         return new Natural(Integer.parseInt(str));
     }
     

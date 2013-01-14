@@ -5,7 +5,7 @@ package plg.gr3.code;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public class InstructionLoad extends Instruction {
+public class LoadInstruction extends Instruction {
     
     /**
      * direccion de memoria de la instruccion apila-dir
@@ -15,7 +15,7 @@ public class InstructionLoad extends Instruction {
     /**
      * Constructor de la instruccion apila-dir(Direccion)
      * */
-    public InstructionLoad (int dir) {
+    public LoadInstruction (int dir) {
         super();
         this.dir = dir;
     }
