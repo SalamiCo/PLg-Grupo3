@@ -7,13 +7,15 @@ public enum BinaryOperator {
         
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.isNumeric() && t2.isNumeric;
+            return t1.isNumeric() && t2.isNumeric();
         }
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -26,13 +28,15 @@ public enum BinaryOperator {
     SUBTRACTION {
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.isNumeric() && t2.isNumeric;
+            return t1.isNumeric() && t2.isNumeric();
         }
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -49,8 +53,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -67,8 +73,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -85,8 +93,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -103,8 +113,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -121,8 +133,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -139,8 +153,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -157,8 +173,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -175,8 +193,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -193,8 +213,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -211,8 +233,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
@@ -229,8 +253,10 @@ public enum BinaryOperator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.getWiderType(t1, t2);
         }
         
         @Override
