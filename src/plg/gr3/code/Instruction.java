@@ -12,9 +12,9 @@ public abstract class Instruction {
     
     public static Instruction forOperator (Operator op) throws IllegalArgumentException {
         if (op instanceof BinaryOperator) {
-            return new InstructionBinaryOp((BinaryOperator) op);
+            return new BinaryOpInstruction((BinaryOperator) op);
         } else if (op instanceof UnaryOperator) {
-            return new InstructionUnaryOp((UnaryOperator) op);
+            return new UnaryOpInstruction((UnaryOperator) op);
         } else
             throw new IllegalArgumentException();
     }
