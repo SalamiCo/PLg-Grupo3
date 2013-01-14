@@ -6,9 +6,14 @@ package plg.gr3;
  * @author PLg Grupo 03 2012/2013
  */
 
-public class Natural {
+public class Natural extends Number {
     /**
-     * Valor que contiene el Natural
+     * serial version por defecto para poder serializar
+     */
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * Valor que contiene el Natural (internamente es un int no negativo)
      * */
     private final int value;
     
@@ -19,17 +24,47 @@ public class Natural {
      *            valor que contiene el Natural, siempre mayor que cero.
      * */
     public Natural (int value) throws IllegalArgumentException {
-        if (value >= 0)
+        if (value >= 0) {
             this.value = value;
-        else
+        } else {
             throw new IllegalArgumentException();
+        }
     }
     
-    /**
-     * @return valor del Natural
-     * */
-    public int getValue () {
+    @Override
+    public double doubleValue () {
         return value;
+    }
+    
+    @Override
+    public float floatValue () {
+        return value;
+    }
+    
+    @Override
+    public int intValue () {
+        return value;
+    }
+    
+    @Override
+    public long longValue () {
+        return value;
+    }
+    
+    public static Natural valueOf (String str) {
+        return new Natural(Integer.parseInt(str));
+    }
+    
+    @Override
+    public boolean equals (Object obj) {
+        boolean boEquals = false;
+        if (obj instanceof Natural) {
+            Natural anotherObj = (Natural) obj;
+            if (this.value == anotherObj.intValue()) {
+                boEquals = true;
+            }
+        }
+        return boEquals;
     }
     
 }

@@ -1,5 +1,7 @@
 package plg.gr3.code;
 
+import plg.gr3.BinaryOperator;
+
 /**
  * Clase abstracta de la que heredan las instrucciones de la maquina pila
  * 
@@ -7,6 +9,15 @@ package plg.gr3.code;
  */
 
 public abstract class Instruction {
+    
+    public static Instruction forOperator (Operator op) throws IllegalArgumentException {
+        if (op instanceof BinaryOperator) {
+            return new InstructionBinaryOp((BinaryOperator) op);
+        } else if (op instanceof UnaryOperator) {
+            return new InstructionUnaryOp((UnaryOperator) op);
+        } else
+            throw new IllegalArgumentException();
+    }
     
     /**
      * Constructor privado a nivel de paquete
