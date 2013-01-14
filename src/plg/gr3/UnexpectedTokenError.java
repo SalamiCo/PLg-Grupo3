@@ -21,7 +21,7 @@ public final class UnexpectedTokenError extends CompileError {
     private final Set<TokenType> expected;
     
     public UnexpectedTokenError (LocatedToken found, Set<TokenType> expected) {
-        super(null, found.getLine(), found.getColumn());
+        super(found.getLine(), found.getColumn());
         
         this.found = found.getToken();
         this.expected = Collections.unmodifiableSet(new HashSet<>(expected));

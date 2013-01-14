@@ -1,11 +1,6 @@
 package plg.gr3;
 
-import java.nio.file.Path;
-import java.util.Set;
-
 import plg.gr3.debug.Debugger;
-import plg.gr3.lexer.LocatedToken;
-import plg.gr3.lexer.TokenType;
 
 /**
  * Clase que representa un error en la compilación de un programa.
@@ -13,9 +8,6 @@ import plg.gr3.lexer.TokenType;
  * @author PLg Grupo 03 2012/2013
  */
 public abstract class CompileError {
-    
-    /** Fichero en el que se ha producido el error */
-    private final Path file;
     
     /** Línea del fichero en la que se produjoel error */
     private final int line;
@@ -31,7 +23,7 @@ public abstract class CompileError {
      * @param column
      *            Columna en la que se produjo el error
      */
-    protected CompileError (Path file, int line, int column) {
+    protected CompileError (int line, int column) {
         if (line < 1) {
             throw new IllegalArgumentException("line: " + line + " < 1");
         }
@@ -39,13 +31,8 @@ public abstract class CompileError {
             throw new IllegalArgumentException("column: " + column + " < 1");
         }
         
-        this.file = file;
         this.line = line;
         this.column = column;
-    }
-    
-    public Path getFile () {
-        return file;
     }
     
     public int getLine () {
@@ -61,10 +48,6 @@ public abstract class CompileError {
     
     /** Imprime por consola el error, utilizando {@link Debugger#error} */
     public final void print () {
-        Debugger.INSTANCE.in(file).at(line, column).error(getErrorMessage());
-    }
-    
-    public static UnexpectedTokenError newUnexpectedTokenError (LocatedToken found, Set<TokenType> expected) {
-        return new UnexpectedTokenError(found, expected);
+        Debugger.INSTANCE.at(line, column).error(getErrorMessage());
     }
 }

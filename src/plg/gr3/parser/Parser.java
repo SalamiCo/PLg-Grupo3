@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import plg.gr3.CompileError;
+import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
 import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
@@ -90,7 +91,7 @@ public final class Parser implements Closeable {
         Attributes attr = parseProgram(Attributes.DEFAULT);
         
         if (attr == null) {
-            CompileError error = CompileError.newUnexpectedTokenError(token, expected);
+            CompileError error = new UnexpectedTokenError(token, expected);
             error.print();
         }
         
