@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import plg.gr3.CodeGenerator;
 import plg.gr3.CompileError;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
@@ -32,6 +33,8 @@ public final class Parser implements Closeable {
     
     /** Categorías que se esperaban y no se encontraron */
     private final Set<TokenType> expected = new HashSet<>();
+    
+    private final CodeGenerator codeGenerator;
     
     /**
      * @param lexer
@@ -438,6 +441,10 @@ public final class Parser implements Closeable {
             Attributes attrInhFExpr = new Attributes.Builder().type(attrTerm.getType()).create();
             Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
             
+            // Expr.cod = Term.cod || FExpr.cod }
+            codeGenerator.generateInstructions(attrTerm.getInstructions());
+            codeGenerator.generateInstructions(attrFExpr.getInstructions());
+            
             return attrb.type(attrFExpr.getType()).create();
         } catch (NoSuchElementException e) {
             return null;
@@ -450,6 +457,11 @@ public final class Parser implements Closeable {
             Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
             if (attrOp0 != null) {
                 Attributes attrTerm = parseTerm(last, attrOp0);
+                
+                // FExpr.cod = Term.cod || Op0.op }
+                codeGenerator.generateInstructions(attrTerm.getInstructions());
+                codeGenerator.generateInstructions(attrOp0.getInstructions());
+                
                 attrb.type(attrTerm.getType());
             } else {
                 attrb.type(attr.getType());
@@ -483,19 +495,30 @@ public final class Parser implements Closeable {
                 Attributes attrInhFact = new Attributes.Builder().type(attrOp1.getType()).create();
                 Attributes attrFact = parseFact(last, attrInhFact);
                 if (attrFact != null) {
+                    Type t = attrOp1.getOperator().getApplyType(attrFact.getType(), attr.getType());
+                    Attributes attrInhRTerm = new Attributes.Builder().type(t).create();
                     Attributes attrRTerm = parseRTerm(last, attrFact);
+                    
+                    //  RTerm1.codh = RTerm0.codh || Fact.cod || Op1.op }
+                    codeGenerator.generateInstructions(attrFact.getInstructions());
+                    
+                    //FIXME Cambiar el concreteInstruction, y pasarle los argumentos correctos
+                    ConcreteInstruction inst = new ConcreteInstruction();
+                    codeGenerator.generateInstruction(inst);
+                    
                     attrb.type(attrRTerm.getType());
                 } else {
-                    attrb.type(attrFact.getType());
+                    return null;
                 }
             } else {
-                attrb.type(attrOp1.getType());
+                attrb.type(attr.getType());
             }
             
-            return attrb.create();
         } catch (NoSuchElementException e) {
-            return null;
+            attrb.type(attr.getType());
         }
+        
+        return attrb.create();
     }
     
     private Attributes parseLitNum (boolean last, Attributes attr) throws IOException {
@@ -674,25 +697,31 @@ public final class Parser implements Closeable {
         //Rfact
         try {
             //Op2
-            Attributes op2SynAttr = parseOp2(true, Attributes.DEFAULT);
+            Attributes attrOp2 = parseOp2(true, Attributes.DEFAULT);
             
-            if (op2SynAttr != null) {
+            if (attrOp2 != null) {
                 //Shft
-                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
-                //TODO  RFact1.typeh = tipoFunc(RFact0.typeh, Op2.op, Shft.type)            
-                
-                //Rfact
-                Attributes rfactSynAttr = parseRFact(true, Attributes.DEFAULT);
-                
-                attrb.type(rfactSynAttr.getType());
-                
+                Attributes attrInhShft = new Attributes.Builder().type(attrOp2.getType()).create();
+                Attributes attrShft = parseShft(last, attrInhShft);
+                if (attrShft != null) {
+                    
+                    Type t = attrOp2.getOperator().getApplyType(attrShft.getType(), attr.getType());
+                    Attributes attrInhRFact = new Attributes.Builder().type(t).create();
+                    Attributes attrRFact = parseRTerm(last, attrRFact);
+                    
+                    // RFact1.codh = RFact0.codh || Shft.cod || Op2.op }
+                    //FIXME Cambiar el concreteInstruction, y pasarle los argumentos correctos
+                    ConcreteInstruction inst = new ConcreteInstructions();
+                    codeGenerator.generateInstruction(inst);
+                    
+                } else {
+                    return null;
+                }
             } else {
-                //Epsilon
                 attrb.type(attr.getType());
             }
-            
         } catch (NoSuchElementException exc) {
-            return Attributes.DEFAULT;
+            attrb.type(attr.getType());
         }
         
         return attrb.create();
