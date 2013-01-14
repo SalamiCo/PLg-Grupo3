@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import plg.gr3.CompileError;
 import plg.gr3.AssignError;
+import plg.gr3.CompileError;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
 import plg.gr3.debug.Debugger;
