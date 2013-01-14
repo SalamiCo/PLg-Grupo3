@@ -60,6 +60,10 @@ public final class Token {
     
     @Override
     public String toString () {
-        return type + "( \"" + lexeme + "\" )";
+        if (type == TokenType.EOF) {
+            return type.toString();
+        } else {
+            return type + "(\"" + lexeme + "\")";
+        }
     }
 }

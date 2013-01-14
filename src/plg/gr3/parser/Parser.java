@@ -2,10 +2,11 @@ package plg.gr3.parser;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
+import plg.gr3.CompileError;
 import plg.gr3.Util;
 import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
@@ -27,6 +28,9 @@ public final class Parser implements Closeable {
     
     /** Token leído sin consumir */
     private LocatedToken token;
+    
+    /** Categorías que se esperaban y no se encontraron */
+    private final Set<TokenType> expected = new HashSet<>();
     
     /**
      * @param lexer
@@ -56,7 +60,10 @@ public final class Parser implements Closeable {
         
         if (token != null) {
             for (TokenType category : categories) {
+                expected.add(category);
+                
                 if (category.equals(token.getToken().getType())) {
+                    expected.clear();
                     Debugger.INSTANCE.at(token.getLine(), token.getColumn()).debug("Reconocido " + token.getToken());
                     
                     LocatedToken ret = token;
@@ -64,13 +71,6 @@ public final class Parser implements Closeable {
                     return ret;
                 }
             }
-        }
-        
-        // TODO Log an error
-        if (last) {
-            Debugger.INSTANCE.at(lexer.getLine(), lexer.getColumn()).error(
-                "Esperado uno de " + Arrays.toString(categories) + ", se encontró "
-                    + (token == null ? "nada" : token.getToken().getType() + " en su lugar"));
         }
         
         throw new NoSuchElementException();
@@ -86,8 +86,15 @@ public final class Parser implements Closeable {
         // caso de ts y tsh): se distinguirán por el objeto usado (parámetro o devuelto)
         // NOTA: La clase Attributes se construye de una forma un tanto peculiar para evitar tener que pasarle 8
         // parámetros en aquellos casos en los que sólo interesan 2. Echadle un ojo.
+        
         Attributes attr = parseProgram(Attributes.DEFAULT);
-        return attr != null;
+        
+        if (attr == null) {
+            CompileError error = CompileError.newUnexpectedTokenError(token, expected);
+            error.print();
+        }
+        
+        return true;
     }
     
     private Attributes parseProgram (Attributes attr) throws IOException {
@@ -938,18 +945,5 @@ public final class Parser implements Closeable {
     @Override
     public void close () throws IOException {
         lexer.close();
-    }
-    
-    public static void main (String[] args) throws Exception {
-        String code =
-            "program: helloWorld {\n" + "\tvar-consts {\n" + "\t\t@Variable de entrada\n"
-                + "\t\tvar integer entrada;\n" + "\t}\n" + "\tinstructions {\n" + "\t}\n" + "}\n";
-        
-        Debugger.INSTANCE.setLoggingEnabled(true);
-        Debugger.INSTANCE.setDebugEnabled(true);
-        
-        try (Parser parser = new Parser(new Lexer(new StringReader(code)))) {
-            parser.parse();
-        }
     }
 }

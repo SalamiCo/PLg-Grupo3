@@ -14,6 +14,9 @@ public enum Debugger {
     /** Flujo de salida de todos los mensajes */
     private final PrintWriter out;
     
+    /** Flujo de salida de todos los mensajes */
+    private final PrintWriter err;
+    
     /** Línea en la que se envía un mensaje */
     private int line = 0;
     
@@ -38,6 +41,7 @@ public enum Debugger {
     
     private Debugger () {
         this.out = new PrintWriter(System.out);
+        this.err = new PrintWriter(System.err);
     }
     
     public void setLoggingEnabled (boolean logging) {
@@ -65,31 +69,32 @@ public enum Debugger {
         return this;
     }
     
-    private void message (String type, String message) {
+    private void message (String type, String message, PrintWriter pw) {
         String fmtFile = file == null ? "" : " (%5$s)";
         String fmtLine = line <= 0 ? "" : " line %3$d";
         String fmtCol = column <= 0 ? "" : ", col %4$d";
         String fmt = "[%1$s]" + fmtFile + fmtLine + fmtCol + ": %2$s%n";
-        out.printf(fmt, type, message, line, column, file);
-        out.flush();
+        
+        pw.printf(fmt, type, message, line, column, file);
+        pw.flush();
     }
     
-    public void log (String message) {
+    public void log (String format, Object... params) {
         if (logging) {
-            message("LOG", message);
+            message("LOG", String.format(format, params), out);
         }
         reset();
     }
     
-    public void debug (String message) {
+    public void debug (String format, Object... params) {
         if (logging && debug) {
-            message("DBG", message);
+            message("DBG", String.format(format, params), out);
         }
         reset();
     }
     
-    public void error (String message) {
-        message("ERR", message);
+    public void error (String format, Object... params) {
+        message("ERR", String.format(format, params), err);
         reset();
     }
 }
