@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import plg.gr3.CompileError;
+import plg.gr3.AssignError;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
 import plg.gr3.debug.Debugger;
@@ -306,18 +307,29 @@ public final class Parser implements Closeable {
         
         //Insts ::=
         try {
-            LocatedToken readToken =
+            LocatedToken tokenRead =
                 expect(
                     last, TokenType.IDENTIFIER, TokenType.RW_IN, TokenType.RW_OUT, TokenType.RW_SWAP1,
                     TokenType.RW_SWAP2);
             
-            switch (readToken.getToken().getType())
+            switch (tokenRead.getToken().getType())
             
             { //ident asig Expr
                 case IDENTIFIER:
                     
                     expect(last, TokenType.SYM_ASIGNATION);
-                    parseExpr(last, Attributes.DEFAULT);
+                    Attributes exprAttributes = parseExpr(last, Attributes.DEFAULT);
+                    
+                    //Comprobamos que el tipo de la expresion y del identificador
+                    //Son compatibles para la asignacion
+                    Type identType = this.symbolTable.getIdentfierType(tokenRead.getLexeme());
+                    Type exprType = exprAttributes.getType();
+                    
+                    if (typeMatch(exprType, identType)) {
+                        AssignError error = new AssignError(identType, exprType, tokenRead);
+                        error.print();
+                        attrb.error(error);
+                    }
                 
                 break;
                 
