@@ -48,6 +48,9 @@ public final class Type {
         return "Type(" + name + ")";
     }
     
+    /*
+     * funcion que dado un objeto te devuelve de que tipo es en caso de erro te devuelve null
+     */
     public static Type forValue (Object obj) {
         if (obj instanceof java.lang.Float)
             return Type.FLOAT;
@@ -62,6 +65,10 @@ public final class Type {
         return null;
     }
     
+    /*
+     * Funcion que te devuelve verdadero si el tipo de typeAssigned es asignable al tipo de ident. En caso contrario
+     * devuelve falso
+     */
     public boolean typeMatch (Type ident, Type typeAssigned) {
         if (ident.equals(Type.NATURAL)) {
             if (typeAssigned.equals(NATURAL))
@@ -86,6 +93,9 @@ public final class Type {
         
     }
     
+    /*
+     * Funcion que nos devuelve verdadero si es de tipo numerico en cualquier otro caso devuelve false
+     */
     public boolean isNumeric () {
         if (this.equals(NATURAL) || this.equals(INTEGER) || this.equals(FLOAT))
             return true;
@@ -93,6 +103,9 @@ public final class Type {
             return false;
     }
     
+    /*
+     * funcion que dados dos tipos te devuelve el de mayor tamaño si no son comparables te devuelve null
+     */
     public static Type getWiderType (Type ident, Type typeAssigned) {
         if (ident.equals(typeAssigned))
             return forValue(ident);
