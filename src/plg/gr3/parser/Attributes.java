@@ -1,5 +1,16 @@
 package plg.gr3.parser;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import plg.gr3.CompileError;
+import plg.gr3.Operator;
+
+import com.sun.org.apache.bcel.internal.generic.Instruction;
+
 /**
  * Clase que representa los atributos, heredados y sintetizados, de cualquiera de los nodos del arbol sintáctico.
  * <p>
@@ -23,10 +34,13 @@ public final class Attributes {
     private final boolean constant;
     
     /** Si hubo errores y cuales */
-    private final Object error;
+    private final Collection<CompileError> errors = new ArrayList<>();
+    
+    /** Instrucciones ya creadas pero sin generar */
+    private final List<Instruction> instructions = new LinkedList<>();
     
     /** El operador a usar */
-    private final Object operator;
+    private final Operator operator;
     
     /** El valor a usar */
     private final Object value;
@@ -41,7 +55,7 @@ public final class Attributes {
      *            La dirección de memoria
      * @param constant
      *            Si se trata de una constante o variable
-     * @param error
+     * @param errors
      *            Si hubo errores y cual
      * @param operator
      *            El operador a usar
@@ -51,12 +65,14 @@ public final class Attributes {
      *            El valor a usar
      */
     private Attributes (
-        String ident, int address, boolean constant, Object error, Object operator, Type type, Object value)
+        String ident, int address, boolean constant, Collection<CompileError> errors, Operator operator, Type type,
+        Object value, List<Instruction> instructions)
     {
         this.ident = ident;
         this.address = address;
         this.constant = constant;
-        this.error = error;
+        this.errors.addAll(errors);
+        this.instructions.addAll(instructions);
         this.operator = operator;
         this.type = type;
         this.value = value;
@@ -83,23 +99,34 @@ public final class Attributes {
         return constant;
     }
     
-    /**
-     * @return El atributo <tt>error</tt>
-     */
-    public Object getError () {
-        return error;
+    /** @return El atributo <tt>error</tt> */
+    public Collection<CompileError> getErrors () {
+        return Collections.unmodifiableCollection(errors);
+    }
+    
+    /** @return El atributo <tt>instructions</tt> */
+    public List<Instruction> getInstructions () {
+        return Collections.unmodifiableList(instructions);
+    }
+    
+    /** @return El atributo <tt>operator</tt> */
+    public Operator getOperator () {
+        return getOperator(Operator.class);
     }
     
     /**
+     * @param type
+     *            Tipo de operador a usar
      * @return El atributo <tt>operator</tt>
      */
-    public Object getOperator () {
-        return operator;
+    public <T extends Operator> T getOperator (Class<T> type) {
+        if (type.isInstance(type)) {
+            return type.cast(operator);
+        }
+        return null;
     }
     
-    /**
-     * @return El atributo <tt>value</tt>.
-     */
+    /** @return El atributo <tt>value</tt> */
     public Object getValue () {
         return getValue(Object.class);
     }
@@ -120,6 +147,12 @@ public final class Attributes {
         return address;
     }
     
+    /**
+     * Clase constructora de objetos de atributos, creada para facilitarnos la vida en la mayoría de casos y eliminar
+     * los constructores kilométricos del resto del código.
+     * 
+     * @author PLg Grupo 03 2012/2013
+     */
     public static final class Builder {
         private String ident;
         
@@ -127,13 +160,15 @@ public final class Attributes {
         
         private boolean constant;
         
-        private Object error; // TODO Clase Error o ErrorType
+        private final Collection<CompileError> errors = new ArrayList<>();
         
-        private Object operator; // TODO Clase Operator
+        private Operator operator;
         
         private Object value;
         
         private int address;
+        
+        private final List<Instruction> instructions = new LinkedList<>();
         
         public Builder identifier (String ident) {
             this.ident = ident;
@@ -150,12 +185,17 @@ public final class Attributes {
             return this;
         }
         
-        public Builder error (Object error) {
-            this.error = error;
+        public Builder error (Collection<CompileError> errors) {
+            this.errors.addAll(errors);
             return this;
         }
         
-        public Builder operator (Object operator) {
+        public Builder error (CompileError error) {
+            this.errors.add(error);
+            return this;
+        }
+        
+        public Builder operator (Operator operator) {
             this.operator = operator;
             return this;
         }
@@ -171,7 +211,7 @@ public final class Attributes {
         }
         
         public Attributes create () {
-            return new Attributes(ident, address, constant, error, operator, type, value);
+            return new Attributes(ident, address, constant, errors, operator, type, value, instructions);
         }
     }
 }
