@@ -243,11 +243,15 @@ public enum BinaryOperator {
             
             Type t = Type.forValue(o1);
             if (t.equals(t.isNumeric())) {
-                
+                return (compareNumbers((Number) o1, (Number) o2) < 0);
             } else if (t.equals(Type.CHARACTER)) {
-                
+                Character c1 = (Character) o1;
+                Character c2 = (Character) o2;
+                return (c1.compareTo(c2) < 0);
             } else if (t.equals(Type.BOOLEAN)) {
-                
+                Boolean b1 = (Boolean) o1;
+                Boolean b2 = (Boolean) o2;
+                return (b1.compareTo(b2) < 0);
             } else {
                 return null;
             }
@@ -269,8 +273,24 @@ public enum BinaryOperator {
         
         @Override
         public Object apply (Object o1, Object o2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+                return null;
+            }
+            
+            Type t = Type.forValue(o1);
+            if (t.equals(t.isNumeric())) {
+                return (compareNumbers((Number) o1, (Number) o2) <= 0);
+            } else if (t.equals(Type.CHARACTER)) {
+                Character c1 = (Character) o1;
+                Character c2 = (Character) o2;
+                return (c1.compareTo(c2) <= 0);
+            } else if (t.equals(Type.BOOLEAN)) {
+                Boolean b1 = (Boolean) o1;
+                Boolean b2 = (Boolean) o2;
+                return (b1.compareTo(b2) <= 0);
+            } else {
+                return null;
+            }
         }
     },
     GREATER_THAN(">") {
@@ -289,8 +309,24 @@ public enum BinaryOperator {
         
         @Override
         public Object apply (Object o1, Object o2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+                return null;
+            }
+            
+            Type t = Type.forValue(o1);
+            if (t.equals(t.isNumeric())) {
+                return (compareNumbers((Number) o1, (Number) o2) > 0);
+            } else if (t.equals(Type.CHARACTER)) {
+                Character c1 = (Character) o1;
+                Character c2 = (Character) o2;
+                return (c1.compareTo(c2) > 0);
+            } else if (t.equals(Type.BOOLEAN)) {
+                Boolean b1 = (Boolean) o1;
+                Boolean b2 = (Boolean) o2;
+                return (b1.compareTo(b2) > 0);
+            } else {
+                return null;
+            }
         }
     },
     GREATER_EQUALS(">=") {
@@ -309,8 +345,24 @@ public enum BinaryOperator {
         
         @Override
         public Object apply (Object o1, Object o2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+                return null;
+            }
+            
+            Type t = Type.forValue(o1);
+            if (t.equals(t.isNumeric())) {
+                return (compareNumbers((Number) o1, (Number) o2) >= 0);
+            } else if (t.equals(Type.CHARACTER)) {
+                Character c1 = (Character) o1;
+                Character c2 = (Character) o2;
+                return (c1.compareTo(c2) >= 0);
+            } else if (t.equals(Type.BOOLEAN)) {
+                Boolean b1 = (Boolean) o1;
+                Boolean b2 = (Boolean) o2;
+                return (b1.compareTo(b2) >= 0);
+            } else {
+                return null;
+            }
         }
     },
     AND("and") {
@@ -329,8 +381,13 @@ public enum BinaryOperator {
         
         @Override
         public Object apply (Object o1, Object o2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+                return null;
+            }
+            
+            Boolean b1 = (Boolean) o1;
+            Boolean b2 = (Boolean) o2;
+            return b1 && b2;
         }
     },
     OR("or") {
@@ -349,8 +406,13 @@ public enum BinaryOperator {
         
         @Override
         public Object apply (Object o1, Object o2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+                return null;
+            }
+            
+            Boolean b1 = (Boolean) o1;
+            Boolean b2 = (Boolean) o2;
+            return b1 || b2;
         }
     };
     
@@ -358,6 +420,10 @@ public enum BinaryOperator {
     
     private BinaryOperator (String symbol) {
         this.symbol = symbol;
+    }
+    
+    private int compareNumbers (Number o1, Number o2) {
+        return 0;
     }
     
     @Override
