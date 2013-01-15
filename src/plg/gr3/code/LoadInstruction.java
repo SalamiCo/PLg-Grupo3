@@ -1,22 +1,28 @@
 package plg.gr3.code;
 
 /**
- * Clase que implementa la instruccion apila-dir(Direccion). Hereda de Instruction.
+ * Clase que implementa la instruccion <tt>apila-dir(dir)</tt>.
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public class LoadInstruction extends Instruction {
+public final class LoadInstruction extends Instruction {
+    
+    /** Dirección de memoria que se carga */
+    private final int address;
     
     /**
-     * direccion de memoria de la instruccion apila-dir
-     * */
-    private int dir;
+     * @param address
+     *            Dirección de memoria de la carga
+     */
+    public LoadInstruction (int address) {
+        if (address < 0) {
+            throw new IllegalArgumentException("address: " + address + " < 0 ");
+        }
+        this.address = address;
+    }
     
-    /**
-     * Constructor de la instruccion apila-dir(Direccion)
-     * */
-    public LoadInstruction (int dir) {
-        super();
-        this.dir = dir;
+    /** @return Dirección de memoria de la carga */
+    public int getAddress () {
+        return address;
     }
 }

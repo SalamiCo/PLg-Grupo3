@@ -5,15 +5,21 @@ package plg.gr3.code;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public class StoreInstruction extends Instruction {
+public final class StoreInstruction extends Instruction {
+    
+    /** Dirección de memoria en la que guardar el valor */
+    private final int address;
     
     /**
-     * direccion de memoria de la instruccion desapila-dir
-     * */
-    private int dir;
+     * @param address
+     *            Dirección en la que guardar el valor desapilado
+     */
+    public StoreInstruction (int address) {
+        this.address = address;
+    }
     
-    public StoreInstruction (int dir) {
-        super();
-        this.dir = dir;
+    /** @return Dirección en la que se almacenará el valor */
+    public int getAddress () {
+        return address;
     }
 }
