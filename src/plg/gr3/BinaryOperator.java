@@ -27,7 +27,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Number n1 = (Number) o1;
@@ -40,7 +40,7 @@ public enum BinaryOperator {
             } else if (type.equals(Type.FLOAT)) {
                 return new Float(n1.floatValue() + n2.floatValue());
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
         
@@ -63,7 +63,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Number n1 = (Number) o1;
@@ -76,7 +76,7 @@ public enum BinaryOperator {
             } else if (type.equals(Type.FLOAT)) {
                 return new Float(n1.floatValue() - n2.floatValue());
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
     },
@@ -99,7 +99,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Number n1 = (Number) o1;
@@ -112,7 +112,7 @@ public enum BinaryOperator {
             } else if (type.equals(Type.FLOAT)) {
                 return new Float(n1.floatValue() * n2.floatValue());
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
     },
@@ -135,7 +135,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Number n1 = (Number) o1;
@@ -148,7 +148,7 @@ public enum BinaryOperator {
             } else if (type.equals(Type.FLOAT)) {
                 return new Float(n1.floatValue() / n2.floatValue());
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
     },
@@ -171,7 +171,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Number n1 = (Number) o1;
@@ -184,7 +184,7 @@ public enum BinaryOperator {
             } else if (type.equals(Type.FLOAT)) {
                 return new Float(n1.floatValue() % n2.floatValue());
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
     },
@@ -207,7 +207,7 @@ public enum BinaryOperator {
         @Override
         public Boolean apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             return Boolean.valueOf(o1.equals(o2));
@@ -232,7 +232,7 @@ public enum BinaryOperator {
         @Override
         public Boolean apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+               throw new IllegalArgumentException();
             }
             
             return !(Boolean.valueOf(o1.equals(o2)));
@@ -257,7 +257,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Type t = Type.forValue(o1);
@@ -272,7 +272,7 @@ public enum BinaryOperator {
                 Boolean b2 = (Boolean) o2;
                 return (b1.compareTo(b2) < 0);
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
     },
@@ -295,7 +295,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Type t = Type.forValue(o1);
@@ -310,7 +310,7 @@ public enum BinaryOperator {
                 Boolean b2 = (Boolean) o2;
                 return (b1.compareTo(b2) <= 0);
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
     },
@@ -333,7 +333,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Type t = Type.forValue(o1);
@@ -348,7 +348,7 @@ public enum BinaryOperator {
                 Boolean b2 = (Boolean) o2;
                 return (b1.compareTo(b2) > 0);
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
     },
@@ -371,7 +371,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Type t = Type.forValue(o1);
@@ -386,7 +386,7 @@ public enum BinaryOperator {
                 Boolean b2 = (Boolean) o2;
                 return (b1.compareTo(b2) >= 0);
             } else {
-                return null;
+                throw new IllegalArgumentException();
             }
         }
     },
@@ -409,7 +409,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Boolean b1 = (Boolean) o1;
@@ -436,7 +436,7 @@ public enum BinaryOperator {
         @Override
         public Object apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Boolean b1 = (Boolean) o1;
