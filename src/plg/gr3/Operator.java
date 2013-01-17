@@ -7,4 +7,7 @@ package plg.gr3;
  */
 public interface Operator {
     
+    /** @return Obtiene el código del operador */
+    public abstract int getCode ();
+    
 }

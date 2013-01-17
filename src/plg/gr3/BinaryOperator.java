@@ -474,6 +474,12 @@ public enum BinaryOperator {
         throw new IllegalArgumentException();
     }
     
+    /**
+     * @param symbol
+     *            Símbolo del operador
+     * @param code
+     *            Código del operador
+     */
     private BinaryOperator (String symbol, int code) {
         this.symbol = symbol;
         this.code = code;

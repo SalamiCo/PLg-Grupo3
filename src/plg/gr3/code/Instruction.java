@@ -11,13 +11,13 @@ import plg.gr3.UnaryOperator;
  */
 public abstract class Instruction {
     
-    public static final byte OPCODE_OPERATOR = 0x00;
+    public static final int OPCODE_OPERATOR = 0b0000_0000;
     
-    public static final byte OPCODE_PUSH = 0x10;
+    public static final int OPCODE_PUSH = 0b0010_0000;
     
-    public static final byte OPCODE_INPUT = 0x20;
+    public static final int OPCODE_INPUT = 0b0010_1000;
     
-    public static final byte OPCODE_CAST = 0x30;
+    public static final int OPCODE_CAST = 0b0011_0000;
     
     /**
      * Devuelve una instrucción de operación que usa el operador dado. Dependiendo del tipo del parámetro, el tipo

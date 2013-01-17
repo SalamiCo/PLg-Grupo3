@@ -9,7 +9,7 @@ import plg.gr3.parser.Type;
  */
 public enum UnaryOperator implements Operator {
     /** Operador unario de negación */
-    MINUS("-") {
+    MINUS("-", 15) {
         @Override
         public boolean canApply (Type type) {
             return type.isNumeric();
@@ -44,7 +44,7 @@ public enum UnaryOperator implements Operator {
     },
     
     /** Operador de inversión booleana */
-    NOT("not") {
+    NOT("not", 16) {
         @Override
         public boolean canApply (Type type) {
             return type.equals(Type.BOOLEAN);
@@ -64,12 +64,18 @@ public enum UnaryOperator implements Operator {
     /** Símbolo del operador */
     private final String symbol;
     
+    /** Código del operador */
+    private final int code;
+    
     /**
      * @param symbol
      *            Símbolo del operador
+     * @param code
+     *            Código del operador
      */
-    private UnaryOperator (String symbol) {
+    private UnaryOperator (String symbol, int code) {
         this.symbol = symbol;
+        this.code = code;
     }
     
     /**
@@ -92,6 +98,10 @@ public enum UnaryOperator implements Operator {
      * @return Valor resultado de aplicar la operación
      */
     public abstract Object apply (Object obj);
+    
+    public int getCode () {
+        return code;
+    }
     
     @Override
     public String toString () {

@@ -2,12 +2,12 @@ package plg.gr3;
 
 import java.util.List;
 
-import com.sun.org.apache.bcel.internal.generic.Instruction;
+import plg.gr3.code.Instruction;
 
 public abstract class CodeGenerator {
     
     protected CodeGenerator () {
-        
+        // Construtor de paquete para evitar herencia externa
     }
     
     public abstract void generateInstruction (Instruction inst);
