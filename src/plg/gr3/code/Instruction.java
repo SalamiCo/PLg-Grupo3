@@ -35,6 +35,8 @@ public abstract class Instruction {
         }
     }
     
+    public abstract execute (VirtualMachine vm);
+    
     /* package */Instruction () {
         // NOP
     }
