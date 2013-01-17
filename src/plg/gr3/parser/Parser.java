@@ -13,8 +13,11 @@ import plg.gr3.BinaryOperator;
 import plg.gr3.CodeGenerator;
 import plg.gr3.CompileError;
 import plg.gr3.OperatorError;
+import plg.gr3.UnaryOperator;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
+import plg.gr3.code.LoadInstruction;
+import plg.gr3.code.PushInstruction;
 import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.lexer.LocatedToken;
@@ -535,7 +538,7 @@ public final class Parser implements Closeable {
                 Attributes attrInhFact = new Attributes.Builder().type(attrOp1.getType()).create();
                 Attributes attrFact = parseFact(last, attrInhFact);
                 if (attrFact != null) {
-                    Type t = attrOp1.getOperator().getApplyType(attrFact.getType(), attr.getType());
+                    Type t = attrOp1.getOperator(BinaryOperator.class).getApplyType(attrFact.getType(), attr.getType());
                     Attributes attrInhRTerm = new Attributes.Builder().type(t).create();
                     Attributes attrRTerm = parseRTerm(last, attrFact);
                     
@@ -618,7 +621,7 @@ public final class Parser implements Closeable {
                 
                 if (attrShft != null) {
                     
-                    Type t = attrOp2.getOperator().getApplyType(attrShft.getType(), attr.getType());
+                    Type t = attrOp2.getOperator(BinaryOperator.class).getApplyType(attrShft.getType(), attr.getType());
                     Attributes attrInhRFact = new Attributes.Builder().type(t).create();
                     Attributes attrRFact = parseRTerm(last, attrRFact);
                     
@@ -653,6 +656,7 @@ public final class Parser implements Closeable {
             Attributes fshftSynAttr = parseFShft(true, fshftInhAttr);
             
             attrb.type(fshftSynAttr.getType());
+            
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
         }
@@ -740,15 +744,20 @@ public final class Parser implements Closeable {
                     case SYM_PAR_LEFT:
                         parseExpr(last, Attributes.DEFAULT);
                         expect(last, TokenType.SYM_PAR_RIGHT);
+                        PushInstruction inst = new PushInstruction(tokenRead.getToken().getType());
+                        codeGenerator.generateInstruction(inst);
                     break;
                     
                     // ident
                     case IDENTIFIER:
                         attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
+                        
+                        // Paren.cod = apila-dir(Paren.tsh[ident.lex].dir) }
+                        // FIXME ¿direccion?
+                        LoadInstruction inst = new LoadInstruction("direccion");
+                        codeGenerator.generateInstruction(inst);
                     break;
-                
                 }
-                
             } else {
                 attrb.type(litAttributes.getType());
             }
@@ -770,25 +779,22 @@ public final class Parser implements Closeable {
             Attributes.Builder attrb = new Attributes.Builder();
             switch (token.getType()) {
                 case SYM_EQUAL:
-                    attrb.operator("igual");
+                    attrb.operator(BinaryOperator.EQUALS);
                 break;
                 case SYM_NOT_EQUAL:
-                    attrb.operator("igual");
+                    attrb.operator(BinaryOperator.NOT_EQUALS);
                 break;
                 case SYM_LOWER:
-                    attrb.operator("igual");
+                    attrb.operator(BinaryOperator.LOWER_THAN);
                 break;
                 case SYM_GREATER:
-                    attrb.operator("igual");
+                    attrb.operator(BinaryOperator.GREATER_THAN);
                 break;
                 case SYM_LOWER_OR_EQUAL:
-                    attrb.operator("igual");
+                    attrb.operator(BinaryOperator.LOWER_EQUAL);
                 break;
                 case SYM_GREATER_OR_EQUAL:
-                    attrb.operator("igual");
-                break;
-                default:
-                    attrb.operator("nullako");
+                    attrb.operator(BinaryOperator.GREATER_EQUALS);
                 break;
             }
             
@@ -805,16 +811,13 @@ public final class Parser implements Closeable {
             LocatedToken token = expect(last, TokenType.RW_OR, TokenType.SYM_MINUS, TokenType.SYM_PLUS);
             switch (token.getType()) {
                 case RW_OR:
-                    attrb.operator("or");
+                    attrb.operator(BinaryOperator.OR);
                 break;
                 case SYM_MINUS:
-                    attrb.operator("menos");
+                    attrb.operator(BinaryOperator.SUBTRACTION);
                 break;
                 case SYM_PLUS:
-                    attrb.operator("mas");
-                break;
-                default:
-                    attrb.operator("nullako");
+                    attrb.operator(BinaryOperator.ADDITION);
                 break;
             }
             
@@ -832,19 +835,16 @@ public final class Parser implements Closeable {
                 expect(last, TokenType.RW_AND, TokenType.SYM_MODULO, TokenType.SYM_DIV, TokenType.SYM_MULT);
             switch (token.getType()) {
                 case RW_AND:
-                    attrb.operator("and");
+                    attrb.operator(BinaryOperator.AND);
                 break;
                 case SYM_MODULO:
-                    attrb.operator("modulo");
+                    attrb.operator(BinaryOperator.MODULO);
                 break;
                 case SYM_DIV:
-                    attrb.operator("div");
+                    attrb.operator(BinaryOperator.DIVISION);
                 break;
                 case SYM_MULT:
-                    attrb.operator("mult");
-                break;
-                default:
-                    attrb.operator("nullako");
+                    attrb.operator(BinaryOperator.PRODUCT);
                 break;
             }
             
@@ -866,9 +866,6 @@ public final class Parser implements Closeable {
                 case SYM_SHIFT_RIGHT:
                     attrb.operator("lsh");
                 break;
-                default:
-                    attrb.operator("nullako");
-                break;
             }
             
             return attrb.create();
@@ -883,13 +880,10 @@ public final class Parser implements Closeable {
             LocatedToken token = expect(last, TokenType.RW_NOT, TokenType.SYM_MINUS);
             switch (token.getType()) {
                 case RW_NOT:
-                    attrb.operator("not");
+                    attrb.operator(UnaryOperator.NOT);
                 break;
                 case SYM_MINUS:
-                    attrb.operator("minus");
-                break;
-                default:
-                    attrb.operator("nullako");
+                    attrb.operator(UnaryOperator.MINUS);
                 break;
             }
             return attrb.create();
