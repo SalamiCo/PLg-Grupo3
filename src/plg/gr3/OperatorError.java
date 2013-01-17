@@ -13,19 +13,37 @@ public class OperatorError extends CompileError {
     
     private Operator op;
     
+    private boolean esOpBinario;
+    
+    //Constructor para cuando los operadores son binarios
     public OperatorError (Type typeA, Type typeB, Operator op, int line, int column) {
         super(line, column);
-        
         this.typeA = typeA;
         this.typeB = typeB;
         this.op = op;
+        esOpBinario = true;
+        
+    }
+    
+    //Constructor para cuando el operador el unario. (Solo entra un tipo)
+    public OperatorError (Type typeA, Operator op, int line, int column) {
+        super(line, column);
+        this.typeA = typeA;
+        this.op = op;
+        esOpBinario = false;
         
     }
     
     @Override
     public String getErrorMessage () {
-        final String format = "No puedes aplicar el operador " + op.toString() + "a los tipos %s y %s ";
-        return String.format(format, typeA, typeB);
+        final String format;
+        if (esOpBinario) {
+            format = "No puedes aplicar el operador binario " + op.toString() + "a los tipos %s y %s ";
+            return String.format(format, typeA, typeB);
+        } else {
+            format = "No puedes aplicar el operador unario " + op.toString() + "al tipo %s";
+            return String.format(format, typeA);
+        }
+        
     }
-    
 }

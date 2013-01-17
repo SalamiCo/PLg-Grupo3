@@ -1,6 +1,7 @@
 package plg.gr3.code;
 
 import plg.gr3.parser.Type;
+import plg.gr3.vm.VirtualMachine;
 
 /**
  * Clase que implementa la instruccion <tt>in(type)</tt>.
@@ -23,5 +24,11 @@ public class InputInstruction extends Instruction {
     /** @return Tipo del valor que se leerá */
     public Type getInputType () {
         return inputType;
+    }
+    
+    @Override
+    public void execute (VirtualMachine vm) {
+        // TODO Auto-generated method stub
+        
     }
 }
