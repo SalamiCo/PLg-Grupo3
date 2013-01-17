@@ -6,7 +6,7 @@ import java.util.Stack;
 
 import plg.gr3.code.Instruction;
 
-public class VirtualMachine {
+public final class VirtualMachine {
     
     private List<Object> memory;
     
@@ -34,11 +34,20 @@ public class VirtualMachine {
     }
     
     public void execute () {
-        
+        while (!stopped) {
+            step();
+        }
     }
     
     public void step () {
+        // Obtener la siguiente instrucción
+        Instruction inst = program.get(programCounter);
         
+        // Ejecutar la instrucción
+        inst.execute(this);
+        
+        // Incrementar contador de programa
+        programCounter++;
     }
     
     public Instruction getInstruction (int position) {

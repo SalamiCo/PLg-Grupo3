@@ -67,4 +67,9 @@ public class Natural extends Number {
         return boEquals;
     }
     
+    @Override
+    public String toString () {
+        return String.valueOf(this.value);
+    }
+    
 }
