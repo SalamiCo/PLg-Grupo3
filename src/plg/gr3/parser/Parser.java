@@ -9,11 +9,14 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import plg.gr3.AssignError;
+import plg.gr3.AssignToConstantError;
 import plg.gr3.BinaryOperator;
+import plg.gr3.CastingError;
 import plg.gr3.CodeGenerator;
 import plg.gr3.CompileError;
 import plg.gr3.OperatorError;
 import plg.gr3.UnaryOperator;
+import plg.gr3.UndefinedIdentError;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
 import plg.gr3.code.LoadInstruction;
@@ -203,14 +206,14 @@ public final class Parser implements Closeable {
                 return Attributes.DEFAULT;
             }
             
+            //TODO comprobar que el identificador no esta repetido
+            
             // RDecs
             symbolTable.putIdentifier(
                 attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
                 attrDec.getValue());
             
-            Attributes rDecsAttributes = parseRDecs(last, Attributes.DEFAULT);
-            
-            attrb.error(rDecsAttributes.getErrors());
+            parseRDecs(last, Attributes.DEFAULT);
             
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
@@ -339,23 +342,64 @@ public final class Parser implements Closeable {
                     expect(last, TokenType.SYM_ASIGNATION);
                     Attributes exprAttributes = parseExpr(last, Attributes.DEFAULT);
                     
-                    //Comprobamos que el tipo de la expresion y del identificador
-                    //Son compatibles para la asignacion
-                    Type identType = this.symbolTable.getIdentfierType(tokenRead.getLexeme());
-                    Type exprType = exprAttributes.getType();
-                    
-                    if (!exprType.typeMatch(exprType, identType)) {
-                        AssignError error = new AssignError(identType, exprType, tokenRead);
+                    /* Comprobamos que el identificador existe */
+                    if (!this.symbolTable.hasIdentifier(tokenRead.getLexeme())) {
+                        UndefinedIdentError error =
+                            new UndefinedIdentError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
                         error.print();
                         errors.add(error);
+                        
+                    } else {
+                        
+                        /* Comprobamos que no estamos asignando la expresion a una constante */
+                        if (this.symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
+                            AssignToConstantError error =
+                                new AssignToConstantError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            error.print();
+                            errors.add(error);
+                        } else {
+                            /*
+                             * Comprobamos que el tipo de la expresion y del identificador Son compatibles para la
+                             * asignacion
+                             */
+                            Type identType = this.symbolTable.getIdentfierType(tokenRead.getLexeme());
+                            Type exprType = exprAttributes.getType();
+                            
+                            if (!exprType.typeMatch(exprType, identType)) {
+                                AssignError error = new AssignError(identType, exprType, tokenRead);
+                                error.print();
+                                errors.add(error);
+                            }
+                        }
+                        
                     }
                 
                 break;
                 
                 //in lpar ident rpar
                 case RW_IN:
+                    
                     expect(last, TokenType.SYM_PAR_LEFT);
-                    expect(last, TokenType.IDENTIFIER);
+                    LocatedToken identRead = expect(last, TokenType.IDENTIFIER);
+                    
+                    /* Comprobamos que el identificador existe */
+                    if (!this.symbolTable.hasIdentifier(identRead.getLexeme())) {
+                        UndefinedIdentError error =
+                            new UndefinedIdentError(identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                        error.print();
+                        errors.add(error);
+                        
+                    } else {
+                        
+                        /* Comprobamos que no estamos asignando la expresion a una constante */
+                        if (this.symbolTable.isIdentifierConstant(identRead.getLexeme())) {
+                            AssignToConstantError error =
+                                new AssignToConstantError(identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            error.print();
+                            errors.add(error);
+                        }
+                    }
+                    
                     expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
@@ -363,8 +407,7 @@ public final class Parser implements Closeable {
                 //out lpar Expr rpar
                 case RW_OUT:
                     expect(last, TokenType.SYM_PAR_LEFT);
-                    Attributes attrExpr = parseExpr(last, Attributes.DEFAULT);
-                    attrb.error(attrExpr.getErrors());
+                    parseExpr(last, Attributes.DEFAULT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
                 
                 break;
@@ -707,6 +750,8 @@ public final class Parser implements Closeable {
     
     private Attributes parseUnary (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        int actColumn = lexer.getColumn();
+        int actLine = lexer.getLine();
         
         //Unary ::=
         try {
@@ -721,7 +766,7 @@ public final class Parser implements Closeable {
                 
                 if (!op.canApply(attrUnary.getType())) {
                     OperatorError error =
-                        new OperatorError(attr.getType(), attrShft.getType(), attrOp2.getOperator(), actLine, actColumn);
+                        new OperatorError(attrUnary.getType(), attrOp4.getOperator(), actLine, actColumn);
                     error.print();
                     errors.add(error);
                 }
@@ -736,11 +781,20 @@ public final class Parser implements Closeable {
                     //lpar
                     expect(last, TokenType.SYM_PAR_LEFT);
                     //Cast
-                    parseCast(last, Attributes.DEFAULT);
+                    Attributes attrCast = parseCast(last, Attributes.DEFAULT);
                     //rpar
                     expect(last, TokenType.SYM_PAR_RIGHT);
                     //Paren
-                    parseParen(last, Attributes.DEFAULT);
+                    Attributes attrParen2 = parseParen(last, Attributes.DEFAULT);
+                    
+                    /* Comprobamos que se puede aplicar el tipo del casting al tipo casteado */
+                    if (!attrParen2.getType().typeCasting(attrCast.getType(), attrParen2.getType())) {
+                        CastingError error =
+                            new CastingError(
+                                attrCast.getType(), attrParen2.getType(), lexer.getLine(), lexer.getColumn());
+                        error.print();
+                        errors.add(error);
+                    }
                 }
             }
             return attrb.create();
@@ -774,18 +828,22 @@ public final class Parser implements Closeable {
                     
                     // ident
                     case IDENTIFIER:
-                        attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
+                        
+                        /* Comprobamos que el identificador existe */
+                        if (!this.symbolTable.hasIdentifier(tokenRead.getLexeme())) {
+                            UndefinedIdentError error =
+                                new UndefinedIdentError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            error.print();
+                            errors.add(error);
+                            
+                        } else {
+                            attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
+                        }
                         
                         // Paren.cod = apila-dir(Paren.tsh[ident.lex].dir) }
                         // FIXME ¿direccion?
                         LoadInstruction inst = new LoadInstruction("direccion");
                         codeGenerator.generateInstruction(inst);
-
-                    //TODO
-                    /*
-                     * Mirar que el operador este declarado. Si no lo está sacar error de Identificador no declarado.
-                     * Luego mirar el si elipo de paren concuerda con el tipo de ident.
-                     */
                     
                     break;
                 }

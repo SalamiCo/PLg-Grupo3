@@ -97,6 +97,63 @@ public final class Type {
                 return false;
             }
         }
+        if (ident.equals(Type.BOOLEAN)) {
+            if (typeAssigned.equals(BOOLEAN)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        if (ident.equals(Type.CHARACTER)) {
+            if (typeAssigned.equals(CHARACTER)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        return false;
+        
+    }
+    
+    /*
+     * Funcion que te devuelve verdadero si dados dos tipos, podemos haces el casting del 2º tipo al del primero.
+     * (typeCasting)typeCasted
+     */
+    public boolean typeCasting (Type typeCasting, Type typeCasted) {
+        if (typeCasting.equals(Type.NATURAL)) {
+            if (typeCasted.equals(NATURAL) || typeCasted.equals(CHARACTER)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        if (typeCasting.equals(Type.INTEGER)) {
+            if (typeCasted.equals(BOOLEAN)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        
+        if (typeCasting.equals(Type.FLOAT)) {
+            if (typeCasted.equals(BOOLEAN)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        
+        if (typeCasting.equals(Type.CHARACTER)) {
+            if (typeCasted.equals(NATURAL) || typeCasted.equals(CHARACTER)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
         return false;
         
     }
