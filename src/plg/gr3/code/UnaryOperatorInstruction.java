@@ -1,6 +1,7 @@
 package plg.gr3.code;
 
 import plg.gr3.UnaryOperator;
+import plg.gr3.vm.VirtualMachine;
 
 /**
  * Clase que engloba las operaciones unarias.
@@ -23,5 +24,11 @@ public final class UnaryOperatorInstruction extends Instruction {
     /** @return Operador usado por la instrucción */
     public UnaryOperator getOperator () {
         return operator;
+    }
+    
+    @Override
+    public void execute (VirtualMachine vm) {
+        // TODO Auto-generated method stub
+        
     }
 }

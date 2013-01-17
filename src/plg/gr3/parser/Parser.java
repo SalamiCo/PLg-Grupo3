@@ -489,6 +489,7 @@ public final class Parser implements Closeable {
             if (attrOp0 != null) {
                 Attributes attrTerm = parseTerm(last, attrOp0);
                 
+                //Comprobamos que podamos aplicar el operador (que los tipos casen)
                 BinaryOperator op = (BinaryOperator) attrOp0.getOperator();
                 
                 if (!op.canApply(attr.getType(), attrTerm.getType())) {
@@ -515,8 +516,8 @@ public final class Parser implements Closeable {
     
     private Attributes parseTerm (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        
         try {
-            // TODO llamada a la función tipoFunc(a, b)
             Attributes attrFact = parseFact(last, Attributes.DEFAULT);
             Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
             Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
@@ -542,6 +543,7 @@ public final class Parser implements Closeable {
                     Attributes attrInhRTerm = new Attributes.Builder().type(t).create();
                     Attributes attrRTerm = parseRTerm(last, attrFact);
                     
+                    //Comprobamos que podamos aplicar el operador (que los tipos casen)
                     BinaryOperator op = (BinaryOperator) attrOp1.getOperator();
                     
                     if (!op.canApply(attr.getType(), attrRTerm.getType())) {
@@ -610,6 +612,7 @@ public final class Parser implements Closeable {
                 Attributes attrInhShft = new Attributes.Builder().type(attrOp2.getType()).create();
                 Attributes attrShft = parseShft(last, attrInhShft);
                 
+                //Comprobamos que podamos aplicar el operador (que los tipos casen)
                 BinaryOperator op = (BinaryOperator) attrOp2.getOperator();
                 
                 if (!op.canApply(attr.getType(), attrShft.getType())) {
@@ -667,6 +670,9 @@ public final class Parser implements Closeable {
     //FShft
     private Attributes parseFShft (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        int actColumn = lexer.getColumn();
+        int actLine = lexer.getLine();
+        
         //FShft
         try {
             //Op3
@@ -676,10 +682,17 @@ public final class Parser implements Closeable {
                 //Shft            
                 Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
                 
-                //TODO FShft.type = tipoFunc(FShft.typeh, Op3.op, Shft.type)
-                /*
-                 * attrb.type(tipoFunc(attr.getType(), op3SynAttr.getOperator(), shftSynAttr.getType() ));
-                 */
+                //Comprobamos que podamos aplicar el operador (que los tipos casen)
+                BinaryOperator op = (BinaryOperator) op3SynAttr.getOperator();
+                
+                if (!op.canApply(attr.getType(), shftSynAttr.getType())) {
+                    OperatorError error =
+                        new OperatorError(
+                            attr.getType(), shftSynAttr.getType(), op3SynAttr.getOperator(), actLine, actColumn);
+                    error.print();
+                    errors.add(error);
+                }
+                
             } else {
                 //Epsilon
                 attrb.type(attr.getType());
@@ -701,7 +714,18 @@ public final class Parser implements Closeable {
             Attributes attrOp4 = parseOp4(last, Attributes.DEFAULT);
             if (attrOp4 != null) {
                 //Unary
-                parseUnary(last, Attributes.DEFAULT);
+                Attributes attrUnary = parseUnary(last, Attributes.DEFAULT);
+                
+                //Comprobamos que el operador unario se puede aplicar (que los tipos casan)
+                UnaryOperator op = (UnaryOperator) attrOp4.getOperator();
+                
+                if (!op.canApply(attrUnary.getType())) {
+                    OperatorError error =
+                        new OperatorError(attr.getType(), attrShft.getType(), attrOp2.getOperator(), actLine, actColumn);
+                    error.print();
+                    errors.add(error);
+                }
+                
             } else {
                 Attributes attrParen = parseParen(last, Attributes.DEFAULT);
                 if (attrParen != null) {
@@ -756,6 +780,13 @@ public final class Parser implements Closeable {
                         // FIXME ¿direccion?
                         LoadInstruction inst = new LoadInstruction("direccion");
                         codeGenerator.generateInstruction(inst);
+
+                    //TODO
+                    /*
+                     * Mirar que el operador este declarado. Si no lo está sacar error de Identificador no declarado.
+                     * Luego mirar el si elipo de paren concuerda con el tipo de ident.
+                     */
+                    
                     break;
                 }
             } else {

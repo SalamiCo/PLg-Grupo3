@@ -6,7 +6,7 @@ import java.util.Stack;
 
 import plg.gr3.code.Instruction;
 
-public class VirtualMachine {
+public final class VirtualMachine {
     
     private List<Object> memory;
     
@@ -16,11 +16,11 @@ public class VirtualMachine {
     
     private int programCounter;
     
-    private boolean stopper;
+    private boolean stopped;
     
-    private boolean swapper1;
+    private boolean swapped1;
     
-    private boolean swapper2;
+    private boolean swapped2;
     
     public VirtualMachine (List<Instruction> program) {
         this.program = program;
@@ -28,9 +28,25 @@ public class VirtualMachine {
         memory = new ArrayList<>();
         stack = new Stack<>();
         programCounter = 0;
-        stopper = false;
-        swapper1 = false;
-        swapper2 = false;
+        stopped = false;
+        swapped1 = false;
+        swapped2 = false;
     }
     
+    public void execute () {
+        while (!stopped) {
+            step();
+        }
+    }
+    
+    public void step () {
+        // Obtener la siguiente instrucción
+        Instruction inst = program.get(programCounter);
+        
+        // Ejecutar la instrucción
+        inst.execute(this);
+        
+        // Incrementar contador de programa
+        programCounter++;
+    }
 }
