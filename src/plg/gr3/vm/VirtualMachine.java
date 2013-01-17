@@ -40,4 +40,33 @@ public class VirtualMachine {
     public void step () {
         
     }
+    
+    public Instruction getInstruction (int position) {
+        return program.get(position);
+    }
+    
+    public void changeStop () {
+        if (stopped) {
+            stopped = false;
+        } else {
+            stopped = true;
+        }
+    }
+    
+    public void changeSwapped1 () {
+        if (swapped1) {
+            swapped1 = false;
+        } else {
+            swapped1 = true;
+        }
+    }
+    
+    public void changeSwapped2 () {
+        if (swapped2) {
+            swapped2 = false;
+        } else {
+            swapped2 = true;
+        }
+    }
+    
 }
