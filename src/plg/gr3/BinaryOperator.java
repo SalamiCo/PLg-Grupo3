@@ -443,6 +443,48 @@ public enum BinaryOperator implements Operator {
             Boolean b2 = (Boolean) o2;
             return b1 || b2;
         }
+    },
+    
+    /** Operación desplazar a la izquierda */
+    SHIFT_LEFT("<<") {
+        
+        @Override
+        public boolean canApply (Type t1, Type t2) {
+            return t1.equals(Type.NATURAL) && t2.equals(Type.NATURAL);
+        }
+        
+        @Override
+        public Type getApplyType (Type t1, Type t2) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        
+        @Override
+        public Object apply (Object o1, Object o2) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+    },
+    
+    /** Operación desplazar a la derecha */
+    SHIFT_RIGHT(">>") {
+        
+        @Override
+        public boolean canApply (Type t1, Type t2) {
+            return t1.equals(Type.NATURAL) && t2.equals(Type.NATURAL);
+        }
+        
+        @Override
+        public Type getApplyType (Type t1, Type t2) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        
+        @Override
+        public Object apply (Object o1, Object o2) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     };
     
     /** Símbolo del operador */
