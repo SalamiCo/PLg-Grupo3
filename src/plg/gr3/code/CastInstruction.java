@@ -1,6 +1,7 @@
 package plg.gr3.code;
 
 import plg.gr3.parser.Type;
+import plg.gr3.vm.VirtualMachine;
 
 /**
  * Clase que implementa las instrucciones con operadores de casting.
@@ -23,5 +24,11 @@ public class CastInstruction extends Instruction {
     /** @return Tipo al qu hacer casting */
     public Type getCastType () {
         return castType;
+    }
+    
+    @Override
+    public void execute (VirtualMachine vm) {
+        // TODO Auto-generated method stub
+        
     }
 }

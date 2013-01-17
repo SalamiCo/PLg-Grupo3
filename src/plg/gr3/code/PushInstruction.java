@@ -2,6 +2,8 @@ package plg.gr3.code;
 
 import java.util.Objects;
 
+import plg.gr3.vm.VirtualMachine;
+
 /**
  * Clase que implementa la instruccion apila(valor). Hereda de Instruction.
  * 
@@ -36,5 +38,11 @@ public final class PushInstruction extends Instruction {
         } else {
             return null;
         }
+    }
+    
+    @Override
+    public void execute (VirtualMachine vm) {
+        // TODO Auto-generated method stub
+        
     }
 }

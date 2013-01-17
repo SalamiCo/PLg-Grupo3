@@ -1,5 +1,7 @@
 package plg.gr3.code;
 
+import plg.gr3.vm.VirtualMachine;
+
 /**
  * Clase que implementa la instruccion desapila-dir(Direccion). Hereda de Instruction.
  * 
@@ -21,5 +23,11 @@ public final class StoreInstruction extends Instruction {
     /** @return Dirección en la que se almacenará el valor */
     public int getAddress () {
         return address;
+    }
+    
+    @Override
+    public void execute (VirtualMachine vm) {
+        // TODO Auto-generated method stub
+        
     }
 }

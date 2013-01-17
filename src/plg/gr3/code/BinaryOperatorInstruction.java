@@ -1,6 +1,7 @@
 package plg.gr3.code;
 
 import plg.gr3.BinaryOperator;
+import plg.gr3.vm.VirtualMachine;
 
 /**
  * Clase que engloba todas las operaciones binarias.
@@ -23,5 +24,11 @@ public final class BinaryOperatorInstruction extends Instruction {
     /** @return Operador usado por la instrucción */
     public BinaryOperator getOperator () {
         return operator;
+    }
+    
+    @Override
+    public void execute (VirtualMachine vm) {
+        // TODO Auto-generated method stub
+        
     }
 }

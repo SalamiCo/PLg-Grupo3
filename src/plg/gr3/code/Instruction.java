@@ -3,6 +3,7 @@ package plg.gr3.code;
 import plg.gr3.BinaryOperator;
 import plg.gr3.Operator;
 import plg.gr3.UnaryOperator;
+import plg.gr3.vm.VirtualMachine;
 
 /**
  * Instrucción de la máquina virtual.
@@ -42,6 +43,8 @@ public abstract class Instruction {
             throw new IllegalArgumentException();
         }
     }
+    
+    public abstract void execute (VirtualMachine vm);
     
     /* package */Instruction () {
         // NOP

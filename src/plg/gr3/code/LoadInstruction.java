@@ -1,5 +1,7 @@
 package plg.gr3.code;
 
+import plg.gr3.vm.VirtualMachine;
+
 /**
  * Clase que implementa la instruccion <tt>apila-dir(dir)</tt>.
  * 
@@ -24,5 +26,11 @@ public final class LoadInstruction extends Instruction {
     /** @return Dirección de memoria de la carga */
     public int getAddress () {
         return address;
+    }
+    
+    @Override
+    public void execute (VirtualMachine vm) {
+        // TODO Auto-generated method stub
+        
     }
 }
