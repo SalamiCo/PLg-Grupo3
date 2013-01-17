@@ -47,6 +47,6 @@ public final class VirtualMachine {
         inst.execute(this);
         
         // Incrementar contador de programa
-        programCount++;
+        programCounter++;
     }
 }
