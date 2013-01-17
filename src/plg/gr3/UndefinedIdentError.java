@@ -5,6 +5,19 @@ package plg.gr3;
  * previamente declarado
  */
 
-public class UndefinedIdentError {
+public class UndefinedIdentError extends CompileError {
+    
+    private String identName;
+    
+    public UndefinedIdentError (String identName, int line, int column) {
+        super(line, column);
+        this.identName = identName;
+    }
+    
+    @Override
+    public String getErrorMessage () {
+        final String format = "El identificador %s no esta definido ";
+        return String.format(format, identName);
+    }
     
 }
