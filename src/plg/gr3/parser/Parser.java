@@ -514,8 +514,8 @@ public final class Parser implements Closeable {
     
     private Attributes parseTerm (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        
         try {
-            // TODO llamada a la función tipoFunc(a, b)
             Attributes attrFact = parseFact(last, Attributes.DEFAULT);
             Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
             Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
@@ -770,6 +770,12 @@ public final class Parser implements Closeable {
                     // ident
                     case IDENTIFIER:
                         attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
+                    //TODO
+                    /*
+                     * Mirar que el operador este declarado. Si no lo está sacar error de Identificador no declarado.
+                     * Luego mirar el si elipo de paren concuerda con el tipo de ident.
+                     */
+                    
                     break;
                 
                 }
