@@ -7,7 +7,7 @@ import plg.gr3.parser.Type;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public enum BinaryOperator {
+public enum BinaryOperator implements Operator {
     /** Operador de suma */
     ADDITION("+") {
         
@@ -232,7 +232,7 @@ public enum BinaryOperator {
         @Override
         public Boolean apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-               throw new IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
             
             return !(Boolean.valueOf(o1.equals(o2)));
