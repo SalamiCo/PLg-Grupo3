@@ -16,11 +16,11 @@ public class VirtualMachine {
     
     private int programCounter;
     
-    private boolean stopper;
+    private boolean stopped;
     
-    private boolean swapper1;
+    private boolean swapped1;
     
-    private boolean swapper2;
+    private boolean swapped2;
     
     public VirtualMachine (List<Instruction> program) {
         this.program = program;
@@ -28,9 +28,16 @@ public class VirtualMachine {
         memory = new ArrayList<>();
         stack = new Stack<>();
         programCounter = 0;
-        stopper = false;
-        swapper1 = false;
-        swapper2 = false;
+        stopped = false;
+        swapped1 = false;
+        swapped2 = false;
     }
     
+    public void execute () {
+        
+    }
+    
+    public void step () {
+        
+    }
 }
