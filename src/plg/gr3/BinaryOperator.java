@@ -9,7 +9,7 @@ import plg.gr3.parser.Type;
  */
 public enum BinaryOperator {
     /** Operador de suma */
-    ADDITION("+") {
+    ADDITION("+", 0) {
         
         @Override
         public boolean canApply (Type t1, Type t2) {
@@ -46,7 +46,7 @@ public enum BinaryOperator {
         
     },
     /** Operador de resta */
-    SUBTRACTION("-") {
+    SUBTRACTION("-", 1) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.isNumeric() && t2.isNumeric();
@@ -82,7 +82,7 @@ public enum BinaryOperator {
     },
     
     /** Operador de multiplicación */
-    PRODUCT("*") {
+    PRODUCT("*", 2) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.isNumeric() && t2.isNumeric();
@@ -118,7 +118,7 @@ public enum BinaryOperator {
     },
     
     /** Operador de división */
-    DIVISION("/") {
+    DIVISION("/", 3) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.isNumeric() && t2.isNumeric();
@@ -154,7 +154,7 @@ public enum BinaryOperator {
     },
     
     /** Operador de módulo */
-    MODULO("%") {
+    MODULO("%", 4) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.isNumeric() && t2.isNumeric();
@@ -190,7 +190,7 @@ public enum BinaryOperator {
     },
     
     /** Operador de igualdad */
-    EQUALS("==") {
+    EQUALS("==", 5) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.equals(t2);
@@ -215,7 +215,7 @@ public enum BinaryOperator {
     },
     
     /** Operador de desigualdad */
-    NOT_EQUALS("!=") {
+    NOT_EQUALS("!=", 6) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.equals(t2);
@@ -232,7 +232,7 @@ public enum BinaryOperator {
         @Override
         public Boolean apply (Object o1, Object o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
-               throw new IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
             
             return !(Boolean.valueOf(o1.equals(o2)));
@@ -240,7 +240,7 @@ public enum BinaryOperator {
     },
     
     /** Operación menor */
-    LOWER_THAN("<") {
+    LOWER_THAN("<", 7) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.equals(t2);
@@ -278,7 +278,7 @@ public enum BinaryOperator {
     },
     
     /** Operador menor o igual */
-    LOWER_EQUAL("<=") {
+    LOWER_EQUAL("<=", 8) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.equals(t2);
@@ -316,7 +316,7 @@ public enum BinaryOperator {
     },
     
     /** Operador mayor */
-    GREATER_THAN(">") {
+    GREATER_THAN(">", 9) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.equals(t2);
@@ -354,7 +354,7 @@ public enum BinaryOperator {
     },
     
     /** Operador mayor o igual */
-    GREATER_EQUALS(">=") {
+    GREATER_EQUALS(">=", 10) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.equals(t2);
@@ -392,7 +392,7 @@ public enum BinaryOperator {
     },
     
     /** Operación de y lógico */
-    AND("and") {
+    AND("and", 11) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.equals(Type.BOOLEAN) && t2.equals(Type.BOOLEAN);
@@ -419,7 +419,7 @@ public enum BinaryOperator {
     },
     
     /** Operación o lógico */
-    OR("or") {
+    OR("or", 12) {
         @Override
         public boolean canApply (Type t1, Type t2) {
             return t1.equals(Type.BOOLEAN) && t2.equals(Type.BOOLEAN);
@@ -448,6 +448,8 @@ public enum BinaryOperator {
     /** Símbolo del operador */
     private final String symbol;
     
+    private final int code;
+    
     /**
      * Compara dos objetos de tipo {@link Number} entre sí.
      * 
@@ -472,13 +474,19 @@ public enum BinaryOperator {
         throw new IllegalArgumentException();
     }
     
-    private BinaryOperator (String symbol) {
+    private BinaryOperator (String symbol, int code) {
         this.symbol = symbol;
+        this.code = code;
+    }
+    
+    /** @return Código del operador */
+    public int getCode () {
+        return code;
     }
     
     @Override
     public String toString () {
-        return this.symbol;
+        return symbol;
     }
     
     /**
