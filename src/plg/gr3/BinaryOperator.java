@@ -157,7 +157,7 @@ public enum BinaryOperator implements Operator {
     MODULO("%") {
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.isNumeric() && t2.isNumeric();
+            return (t1.equals(Type.INTEGER) || t1.equals(Type.NATURAL)) && t2.equals(Type.NATURAL);
         }
         
         @Override
@@ -165,7 +165,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return t1;
         }
         
         @Override
@@ -181,8 +181,6 @@ public enum BinaryOperator implements Operator {
                 return new Natural(n1.intValue() % n2.intValue());
             } else if (type.equals(Type.INTEGER)) {
                 return new Integer(n1.intValue() % n2.intValue());
-            } else if (type.equals(Type.FLOAT)) {
-                return new Float(n1.floatValue() % n2.floatValue());
             } else {
                 throw new IllegalArgumentException();
             }
@@ -193,7 +191,8 @@ public enum BinaryOperator implements Operator {
     EQUALS("==") {
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.equals(t2);
+            return t1.isNumeric() && t2.isNumeric() || t1.equals(Type.BOOLEAN) && t2.equals(Type.BOOLEAN)
+                   || t1.equals(Type.CHARACTER) && t2.equals(Type.CHARACTER);
         }
         
         @Override
@@ -201,7 +200,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return Type.BOOLEAN;
         }
         
         @Override
@@ -218,7 +217,8 @@ public enum BinaryOperator implements Operator {
     NOT_EQUALS("!=") {
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.equals(t2);
+            return t1.isNumeric() && t2.isNumeric() || t1.equals(Type.BOOLEAN) && t2.equals(Type.BOOLEAN)
+                   || t1.equals(Type.CHARACTER) && t2.equals(Type.CHARACTER);
         }
         
         @Override
@@ -226,7 +226,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return Type.BOOLEAN;
         }
         
         @Override
@@ -243,7 +243,8 @@ public enum BinaryOperator implements Operator {
     LOWER_THAN("<") {
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.equals(t2);
+            return t1.isNumeric() && t2.isNumeric() || t1.equals(Type.BOOLEAN) && t2.equals(Type.BOOLEAN)
+                   || t1.equals(Type.CHARACTER) && t2.equals(Type.CHARACTER);
         }
         
         @Override
@@ -251,7 +252,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return Type.BOOLEAN;
         }
         
         @Override
@@ -281,7 +282,8 @@ public enum BinaryOperator implements Operator {
     LOWER_EQUAL("<=") {
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.equals(t2);
+            return t1.isNumeric() && t2.isNumeric() || t1.equals(Type.BOOLEAN) && t2.equals(Type.BOOLEAN)
+                   || t1.equals(Type.CHARACTER) && t2.equals(Type.CHARACTER);
         }
         
         @Override
@@ -289,7 +291,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return Type.BOOLEAN;
         }
         
         @Override
@@ -319,7 +321,8 @@ public enum BinaryOperator implements Operator {
     GREATER_THAN(">") {
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.equals(t2);
+            return t1.isNumeric() && t2.isNumeric() || t1.equals(Type.BOOLEAN) && t2.equals(Type.BOOLEAN)
+                   || t1.equals(Type.CHARACTER) && t2.equals(Type.CHARACTER);
         }
         
         @Override
@@ -327,7 +330,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return Type.BOOLEAN;
         }
         
         @Override
@@ -357,7 +360,8 @@ public enum BinaryOperator implements Operator {
     GREATER_EQUALS(">=") {
         @Override
         public boolean canApply (Type t1, Type t2) {
-            return t1.equals(t2);
+            return t1.isNumeric() && t2.isNumeric() || t1.equals(Type.BOOLEAN) && t2.equals(Type.BOOLEAN)
+                   || t1.equals(Type.CHARACTER) && t2.equals(Type.CHARACTER);
         }
         
         @Override
@@ -365,7 +369,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return Type.BOOLEAN;
         }
         
         @Override
@@ -403,7 +407,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return Type.BOOLEAN;
         }
         
         @Override
@@ -430,7 +434,7 @@ public enum BinaryOperator implements Operator {
             if (!canApply(t1, t2)) {
                 return Type.ERROR;
             }
-            return Type.getWiderType(t1, t2);
+            return Type.BOOLEAN;
         }
         
         @Override
@@ -455,14 +459,21 @@ public enum BinaryOperator implements Operator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.NATURAL;
         }
         
         @Override
         public Object apply (Object o1, Object o2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+                throw new IllegalArgumentException();
+            }
+            
+            int n1 = (int) o1;
+            int n2 = (int) o2;
+            return new Natural(n1 << n2);
         }
     },
     
@@ -476,14 +487,21 @@ public enum BinaryOperator implements Operator {
         
         @Override
         public Type getApplyType (Type t1, Type t2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(t1, t2)) {
+                return Type.ERROR;
+            }
+            return Type.NATURAL;
         }
         
         @Override
         public Object apply (Object o1, Object o2) {
-            // TODO Auto-generated method stub
-            return null;
+            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+                throw new IllegalArgumentException();
+            }
+            
+            int n1 = (int) o1;
+            int n2 = (int) o2;
+            return new Natural(n1 >> n2);
         }
     };
     
