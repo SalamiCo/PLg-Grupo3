@@ -24,7 +24,7 @@ public class OperatorError extends CompileError {
     
     @Override
     public String getErrorMessage () {
-        final String format = "No puedes aplicar el operador " + toString(op) + "a los tipos %s y %s ";
+        final String format = "No puedes aplicar el operador " + op.toString() + "a los tipos %s y %s ";
         return String.format(format, typeA, typeB);
     }
     
