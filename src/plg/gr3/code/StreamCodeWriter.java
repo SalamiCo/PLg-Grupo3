@@ -106,8 +106,7 @@ public final class StreamCodeWriter extends CodeWriter {
     }
     
     private void writeOutput (OutputInstruction inst) {
-        // TODO Auto-generated method stub
-        
+        stream.writeByte(Instruction.OPCODE_OUTPUT);
     }
     
     private void writeInput (InputInstruction inst) {
