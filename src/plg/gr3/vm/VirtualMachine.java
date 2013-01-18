@@ -1,6 +1,7 @@
 package plg.gr3.vm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -23,14 +24,12 @@ public final class VirtualMachine {
     private boolean swapped2;
     
     public VirtualMachine (List<Instruction> program) {
-        this.program = program;
+        this.program = Collections.unmodifiableList(program);
         
         memory = new ArrayList<>();
         stack = new Stack<>();
-        programCounter = 0;
-        stopped = false;
-        swapped1 = false;
-        swapped2 = false;
+        
+        reset();
     }
     
     public void execute () {
@@ -54,28 +53,40 @@ public final class VirtualMachine {
         return program.get(position);
     }
     
-    public void changeStop () {
-        if (stopped) {
-            stopped = false;
-        } else {
-            stopped = true;
-        }
+    public Object getMemoryValue (int position) {
+        return memory.get(position);
     }
     
-    public void changeSwapped1 () {
-        if (swapped1) {
-            swapped1 = false;
-        } else {
-            swapped1 = true;
-        }
+    public void setMemoryValue (int position, Object value) {
+        memory.set(position, value);
     }
     
-    public void changeSwapped2 () {
-        if (swapped2) {
-            swapped2 = false;
-        } else {
-            swapped2 = true;
-        }
+    public void stop () {
+        stopped = true;
     }
     
+    public void reset () {
+        stopped = false;
+        programCounter = 0;
+        stopped = false;
+        swapped1 = false;
+        swapped2 = false;
+        memory.clear();
+    }
+    
+    public void toggleSwapped1 () {
+        swapped1 = !swapped1;
+    }
+    
+    public void toggleSwapped2 () {
+        swapped2 = !swapped2;
+    }
+    
+    public void pushValue (Object value) {
+        stack.push(value);
+    }
+    
+    public Object popValue () {
+        return stack.pop();
+    }
 }
