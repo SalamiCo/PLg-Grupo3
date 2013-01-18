@@ -819,15 +819,16 @@ public final class Parser implements Closeable {
                 switch (tokenRead.getToken().getType()) {
                 
                 // lpar Expr rpar
-                    case SYM_PAR_LEFT:
+                    case SYM_PAR_LEFT: {
                         parseExpr(last, Attributes.DEFAULT);
                         expect(last, TokenType.SYM_PAR_RIGHT);
                         PushInstruction inst = new PushInstruction(tokenRead.getToken().getType());
                         codeWriter.write(inst);
+                    }
                     break;
                     
                     // ident
-                    case IDENTIFIER:
+                    case IDENTIFIER: {
                         
                         /* Comprobamos que el identificador existe */
                         if (!this.symbolTable.hasIdentifier(tokenRead.getLexeme())) {
@@ -841,10 +842,10 @@ public final class Parser implements Closeable {
                         }
                         
                         // Paren.cod = apila-dir(Paren.tsh[ident.lex].dir) }
-                        // FIXME ¿direccion?
-                        LoadInstruction inst = new LoadInstruction("direccion");
+                        int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
+                        LoadInstruction inst = new LoadInstruction(addr);
                         codeWriter.write(inst);
-                    
+                    }
                     break;
                 }
             } else {
@@ -950,10 +951,10 @@ public final class Parser implements Closeable {
             LocatedToken token = expect(last, TokenType.SYM_SHIFT_LEFT, TokenType.SYM_SHIFT_RIGHT);
             switch (token.getType()) {
                 case SYM_SHIFT_LEFT:
-                    attrb.operator("rsh");
+                    attrb.operator(BinaryOperator.SHIFT_LEFT);
                 break;
                 case SYM_SHIFT_RIGHT:
-                    attrb.operator("lsh");
+                    attrb.operator(BinaryOperator.SHIFT_RIGHT);
                 break;
             }
             
