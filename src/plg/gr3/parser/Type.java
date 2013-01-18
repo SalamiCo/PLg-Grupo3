@@ -118,25 +118,25 @@ public final class Type {
     }
     
     /**
-     * @param typeCasting
+     * @param castingType
      *            Tipo al que convertir
-     * @param typeCasted
+     * @param originalType
      *            Tipo original
      * @return <tt>true</tt> si se puede convertir de <tt>typeCasted</tt> a <tt>typeCasting</tt>, <tt>false></tt> en
      *         caso contrario
      */
-    public static boolean typeCasting (Type typeCasting, Type typeCasted) {
-        if (typeCasting.equals(Type.NATURAL)) {
-            return typeCasted.equals(NATURAL) || typeCasted.equals(CHARACTER);
+    public static boolean canCast (Type castingType, Type originalType) {
+        if (castingType.equals(Type.NATURAL)) {
+            return originalType.equals(NATURAL) || originalType.equals(CHARACTER);
             
-        } else if (typeCasting.equals(Type.INTEGER)) {
-            return typeCasted.isNumeric() || typeCasted.equals(CHARACTER);
+        } else if (castingType.equals(Type.INTEGER)) {
+            return originalType.isNumeric() || originalType.equals(CHARACTER);
             
-        } else if (typeCasting.equals(Type.FLOAT)) {
-            return typeCasted.isNumeric() || typeCasted.equals(CHARACTER);
+        } else if (castingType.equals(Type.FLOAT)) {
+            return originalType.isNumeric() || originalType.equals(CHARACTER);
             
-        } else if (typeCasting.equals(Type.CHARACTER)) {
-            return typeCasted.equals(NATURAL) || typeCasted.equals(CHARACTER);
+        } else if (castingType.equals(Type.CHARACTER)) {
+            return originalType.equals(NATURAL) || originalType.equals(CHARACTER);
             
         } else {
             return false;

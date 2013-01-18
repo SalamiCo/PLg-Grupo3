@@ -788,7 +788,7 @@ public final class Parser implements Closeable {
                     Attributes attrParen2 = parseParen(last, Attributes.DEFAULT);
                     
                     /* Comprobamos que se puede aplicar el tipo del casting al tipo casteado */
-                    if (!attrParen2.getType().typeCasting(attrCast.getType(), attrParen2.getType())) {
+                    if (!attrParen2.getType().canCast(attrCast.getType(), attrParen2.getType())) {
                         CastingError error =
                             new CastingError(
                                 attrCast.getType(), attrParen2.getType(), lexer.getLine(), lexer.getColumn());
