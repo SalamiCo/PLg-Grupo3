@@ -39,13 +39,9 @@ public final class VirtualMachine {
     }
     
     public void step () {
-        // Obtener la siguiente instrucción
-        Instruction inst = program.get(programCounter);
-        
-        // Ejecutar la instrucción
+        // Ejecuta la siguiente instrucción e incrementa el contador de programa
+        Instruction inst = getInstruction(programCounter);
         inst.execute(this);
-        
-        // Incrementar contador de programa
         programCounter++;
     }
     
@@ -88,5 +84,21 @@ public final class VirtualMachine {
     
     public Object popValue () {
         return stack.pop();
+    }
+    
+    public int getProgramCounter () {
+        return programCounter;
+    }
+    
+    public boolean isStopped () {
+        return stopped;
+    }
+    
+    public boolean isSwapped1 () {
+        return swapped1;
+    }
+    
+    public boolean isSwapped2 () {
+        return swapped2;
     }
 }
