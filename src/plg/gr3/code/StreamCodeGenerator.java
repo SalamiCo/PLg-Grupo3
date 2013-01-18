@@ -14,7 +14,7 @@ import plg.gr3.code.instructions.UnaryOperatorInstruction;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public final class StreamCodeGenerator extends CodeGenerator {
+public final class StreamCodeGenerator extends CodeWriter {
     
     /** Si la cabecera del fichero se ha escrita */
     private boolean writtenHeader = false;
@@ -34,7 +34,7 @@ public final class StreamCodeGenerator extends CodeGenerator {
     }
     
     @Override
-    public void generateInstruction (Instruction inst) {
+    public void write (Instruction inst) {
         if (!inhibited) {
             try {
                 // Escribimos la cabecera si es necesario
