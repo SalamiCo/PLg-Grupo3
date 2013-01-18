@@ -26,6 +26,7 @@ public final class ListCodeWriter extends CodeWriter {
     @Override
     public void inhibit () {
         inhibited = true;
+        list.clear();
     }
     
     public List<Instruction> getList () {
