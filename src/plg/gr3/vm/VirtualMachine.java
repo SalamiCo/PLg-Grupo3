@@ -1,5 +1,10 @@
 package plg.gr3.vm;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,12 +28,17 @@ public final class VirtualMachine {
     
     private boolean swapped2;
     
+    private BufferedReader reader;
+    
+    private BufferedWriter writer;
+    
     public VirtualMachine (List<Instruction> program) {
         this.program = Collections.unmodifiableList(program);
         
         memory = new ArrayList<>();
         stack = new Stack<>();
-        
+        reader = new BufferedReader(new InputStreamReader(System.in));
+        writer = new BufferedWriter(new OutputStreamWriter(System.out));
         reset();
     }
     
@@ -104,5 +114,13 @@ public final class VirtualMachine {
     
     public boolean isSwapped2 () {
         return swapped2;
+    }
+    
+    public Object getInput () throws IOException {
+        return reader.readLine();
+    }
+    
+    public void setOutput (Object value) throws IOException {
+        writer.write(value.toString());
     }
 }

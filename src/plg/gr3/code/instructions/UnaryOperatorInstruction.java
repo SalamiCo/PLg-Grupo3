@@ -28,9 +28,14 @@ public final class UnaryOperatorInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        //aplicar el operador al valor de la Cima
-        Object result = operator.apply(vm.popValue());
-        //poner el resultado en la Cima
-        vm.pushValue(result);
+        try {
+            //aplicar el operador al valor de la Cima
+            //TODO el apply de UnaryOperator devuelve null si no puede aplicar, cambiarlo por un IllegalArgumentException
+            Object result = operator.apply(vm.popValue());
+            //poner el resultado en la Cima
+            vm.pushValue(result);
+        } catch (IllegalArgumentException e) {
+            //TODO Manejar excepciones como la de division por cero            
+        }
     }
 }

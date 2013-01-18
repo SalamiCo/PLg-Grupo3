@@ -1,5 +1,7 @@
 package plg.gr3.code.instructions;
 
+import java.io.IOException;
+
 import plg.gr3.parser.Type;
 import plg.gr3.vm.VirtualMachine;
 
@@ -14,6 +16,9 @@ public class InputInstruction extends Instruction {
     private Type inputType;
     
     /**
+     * La instrución de Input debe ir seguida de un Store ya que solo almacena el valor del BufferIN en la cima de la
+     * pila
+     * 
      * @param inputType
      *            Tipo del valor que se leerá
      */
@@ -28,7 +33,10 @@ public class InputInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO Auto-generated method stub
-        
+        try {
+            vm.pushValue(vm.getInput()); //Cima <= BufferIN
+        } catch (IOException e) {
+            // TODO Error en tiempo de ejecución: No se puede leer de BufferIN
+        }
     }
 }
