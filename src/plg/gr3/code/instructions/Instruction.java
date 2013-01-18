@@ -24,6 +24,24 @@ public abstract class Instruction {
     /** Opcode de la instrucción de casting */
     public static final int OPCODE_CAST = 0b0011_0000;
     
+    /** Opcode de la instrucción load */
+    public static final int OPCODE_LOAD = 0b0011_1000;
+    
+    /** Opcode de la instrucción store */
+    public static final int OPCODE_STORE = 0b0011_1001;
+    
+    /** Opcode de la instrucción de output */
+    public static final int OPCODE_OUTPUT = 0b0011_1010;
+    
+    /** Opcode de la instrucción stop */
+    public static final int OPCODE_STOP = 0b0011_1011;
+    
+    /** Opcode de la instrucción swap1 */
+    public static final int OPCODE_SWAP1 = 0b0011_1100;
+    
+    /** Opcode de la instrucción swap2 */
+    public static final int OPCODE_SWAP2 = 0b0011_1101;
+    
     /**
      * Devuelve una instrucción de operación que usa el operador dado. Dependiendo del tipo del parámetro, el tipo
      * concreto del valor devuelto será el correspondiente, permitiéndonos crear una instrucción paracualquier operador,
@@ -48,6 +66,12 @@ public abstract class Instruction {
         }
     }
     
+    /**
+     * Ejecuta esta instrucción en la máquina virtual dada
+     * 
+     * @param vm
+     *            Máquina virtualen la que ejecutar la instrucción
+     */
     public abstract void execute (VirtualMachine vm);
     
     /* package */Instruction () {

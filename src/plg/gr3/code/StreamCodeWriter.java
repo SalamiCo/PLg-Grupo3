@@ -82,6 +82,9 @@ public final class StreamCodeWriter extends CodeWriter {
                 } else if (inst instanceof Swap2Instruction) {
                     writeSwap2((Swap2Instruction) inst);
                     
+                } else if (inst instanceof StopInstruction) {
+                    writeStop((StopInstruction) inst);
+                    
                 } else {
                     throw new IllegalArgumentException("Unknown instruction: " + inst.getClass());
                 }
@@ -92,46 +95,46 @@ public final class StreamCodeWriter extends CodeWriter {
         }
     }
     
-    private void writeSwap1 (Swap1Instruction inst) {
-        stream.writeByte(Instruction.OPCODE_SWAP1);
-    }
-    
-    private void writeSwap2 (Swap2Instruction inst) {
-        stream.writeByte(Instruction.OPCODE_SWAP2);
-    }
-    
-    private void writePush (PushInstruction inst) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    private void writeOutput (OutputInstruction inst) {
-        stream.writeByte(Instruction.OPCODE_OUTPUT);
-    }
-    
-    private void writeInput (InputInstruction inst) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    private void writeStore (StoreInstruction inst) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    private void writeLoad (LoadInstruction inst) {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    private void writeCast (CastInstruction inst) {
-        // TODO Auto-generated method stub
-        
-    }
-    
     @Override
     public void inhibit () {
         inhibited = true;
+    }
+    
+    private void writeSwap1 (Swap1Instruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_SWAP1);
+    }
+    
+    private void writeSwap2 (Swap2Instruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_SWAP2);
+    }
+    
+    private void writePush (PushInstruction inst) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    private void writeOutput (OutputInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_OUTPUT);
+    }
+    
+    private void writeInput (InputInstruction inst) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    private void writeStore (StoreInstruction inst) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    private void writeLoad (LoadInstruction inst) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    private void writeCast (CastInstruction inst) throws IOException {
+        // TODO Auto-generated method stub
+        
     }
     
     private void writeBinaryOp (BinaryOperatorInstruction inst) throws IOException {
