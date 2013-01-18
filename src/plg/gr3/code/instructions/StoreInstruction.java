@@ -27,7 +27,6 @@ public final class StoreInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO Auto-generated method stub
-        
+        vm.setMemoryValue(address, vm.popValue()); //Mem[dir] = Cima        
     }
 }

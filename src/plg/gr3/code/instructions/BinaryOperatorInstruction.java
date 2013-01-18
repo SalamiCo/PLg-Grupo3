@@ -28,7 +28,6 @@ public final class BinaryOperatorInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO Auto-generated method stub
         
     }
 }

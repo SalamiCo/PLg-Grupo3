@@ -42,7 +42,6 @@ public final class PushInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO Auto-generated method stub
-        
+        vm.pushValue(this.value);
     }
 }

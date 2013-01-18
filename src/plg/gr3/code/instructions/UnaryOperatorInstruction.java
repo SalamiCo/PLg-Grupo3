@@ -28,7 +28,9 @@ public final class UnaryOperatorInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO Auto-generated method stub
-        
+        //aplicar el operador al valor de la Cima
+        Object result = operator.apply(vm.popValue());
+        //poner el resultado en la Cima
+        vm.pushValue(result);
     }
 }

@@ -28,7 +28,9 @@ public class CastInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO Auto-generated method stub
-        
+        /*
+         * Type castingType = Type.forValue(vm.peekValue()); //type del valor de la cima de la pila Type castedType =
+         * this.castType; if (Type.canCast(castingType, castedType)){ cast(vm.peekValue(),castedType); }
+         */
     }
 }

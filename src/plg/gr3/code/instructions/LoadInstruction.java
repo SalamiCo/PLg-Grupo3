@@ -30,7 +30,6 @@ public final class LoadInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO Auto-generated method stub
-        
+        vm.pushValue(vm.getMemoryValue(address)); //Cima = Mem[dir]        
     }
 }

@@ -11,8 +11,7 @@ public class Swap2Instruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO Auto-generated method stub
-        
+        vm.toggleSwapped2();
     }
     
 }

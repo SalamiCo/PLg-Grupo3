@@ -45,16 +45,16 @@ public final class VirtualMachine {
         programCounter++;
     }
     
-    public Instruction getInstruction (int position) {
-        return program.get(position);
+    public Instruction getInstruction (int address) {
+        return program.get(address);
     }
     
-    public Object getMemoryValue (int position) {
-        return memory.get(position);
+    public Object getMemoryValue (int address) {
+        return memory.get(address);
     }
     
-    public void setMemoryValue (int position, Object value) {
-        memory.set(position, value);
+    public void setMemoryValue (int address, Object value) {
+        memory.set(address, value);
     }
     
     public void stop () {
@@ -84,6 +84,10 @@ public final class VirtualMachine {
     
     public Object popValue () {
         return stack.pop();
+    }
+    
+    public Object peekValue () {
+        return stack.peek();
     }
     
     public int getProgramCounter () {
