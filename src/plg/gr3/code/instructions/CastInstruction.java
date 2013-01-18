@@ -1,4 +1,4 @@
-package plg.gr3.code;
+package plg.gr3.code.instructions;
 
 import plg.gr3.parser.Type;
 import plg.gr3.vm.VirtualMachine;

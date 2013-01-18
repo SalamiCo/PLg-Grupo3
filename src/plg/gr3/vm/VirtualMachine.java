@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-import plg.gr3.code.Instruction;
+import plg.gr3.code.instructions.Instruction;
 
 public final class VirtualMachine {
     

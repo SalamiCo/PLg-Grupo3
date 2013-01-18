@@ -1,4 +1,4 @@
-package plg.gr3.code;
+package plg.gr3.code.instructions;
 
 import plg.gr3.BinaryOperator;
 import plg.gr3.vm.VirtualMachine;

@@ -1,8 +1,8 @@
-package plg.gr3;
+package plg.gr3.code;
 
 import java.util.List;
 
-import plg.gr3.code.Instruction;
+import plg.gr3.code.instructions.Instruction;
 
 public abstract class CodeGenerator {
     
@@ -17,4 +17,6 @@ public abstract class CodeGenerator {
             generateInstruction(inst);
         }
     }
+    
+    public abstract void inhibit ();
 }

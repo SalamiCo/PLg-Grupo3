@@ -1,13 +1,13 @@
-package plg.gr3.code;
+package plg.gr3.code.instructions;
 
 import plg.gr3.vm.VirtualMachine;
 
 /**
- * Clase que implementa la instrucción <tt>out</tt>.
+ * Clase que implementa la instruccion <tt>swap2</tt>.
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public final class OutputInstruction extends Instruction {
+public class Swap2Instruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
