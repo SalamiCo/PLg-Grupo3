@@ -13,6 +13,7 @@ import plg.gr3.AssignToConstantError;
 import plg.gr3.BinaryOperator;
 import plg.gr3.CastingError;
 import plg.gr3.CompileError;
+import plg.gr3.DuplicateIDError;
 import plg.gr3.OperatorError;
 import plg.gr3.UnaryOperator;
 import plg.gr3.UndefinedIdentError;
@@ -177,12 +178,21 @@ public final class Parser implements Closeable {
                 return null;
             }
             
-            // RDecs
-            symbolTable.putIdentifier(
-                attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
-                attrDec.getValue());
-            
-            parseRDecs(last, Attributes.DEFAULT);
+            //Compruebo que identificador no haya sido duplicado
+            if (this.symbolTable.hasIdentifier(attrDec.getIdentifier())) {
+                DuplicateIDError error =
+                    new DuplicateIDError(attrDec.getIdentifier(), lexer.getLine(), lexer.getColumn());
+                error.print();
+                errors.add(error);
+                
+            } else {
+                // RDecs
+                symbolTable.putIdentifier(
+                    attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
+                    attrDec.getValue());
+                
+                parseRDecs(last, Attributes.DEFAULT);
+            }
             
         } catch (NoSuchElementException exc) {
             return null;
