@@ -12,12 +12,16 @@ import plg.gr3.vm.VirtualMachine;
  */
 public abstract class Instruction {
     
+    /** Opcode de la instrucción de operador */
     public static final int OPCODE_OPERATOR = 0b0000_0000;
     
+    /** Opcode de la instrucción push */
     public static final int OPCODE_PUSH = 0b0010_0000;
     
+    /** Opcode de la instrucción input */
     public static final int OPCODE_INPUT = 0b0010_1000;
     
+    /** Opcode de la instrucción de casting */
     public static final int OPCODE_CAST = 0b0011_0000;
     
     /**
