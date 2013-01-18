@@ -54,14 +54,36 @@ public final class SymbolTable {
         this.table.putAll(table); // TODO Hace falta este constructor?
     }
     
+    /**
+     * @param ident
+     *            Identificador que se quiere comprobar
+     * @return <tt>true</tt> si el identificador existe, <tt>false</tt> si no
+     */
     public boolean hasIdentifier (String ident) {
         return table.containsKey(ident);
     }
     
+    /**
+     * @param ident
+     *            Identificador a añadir
+     * @param type
+     *            Tipo del identificador
+     * @param constant
+     *            Si el identificador es una constante
+     * @param address
+     *            Dirección de memoria del identificador
+     * @param value
+     *            Valor del identificador
+     */
     public void putIdentifier (String ident, Type type, boolean constant, int address, Object value) {
         table.put(ident, new Entry(type, constant, address, value));
     }
     
+    /**
+     * @param ident
+     *            Identificador a consultar
+     * @return Fila de la tabla completa
+     */
     private Entry getEntry (String ident) {
         if (!hasIdentifier(ident)) {
             throw new NoSuchElementException(ident);
@@ -70,18 +92,49 @@ public final class SymbolTable {
         return table.get(ident);
     }
     
+    /**
+     * @param ident
+     *            Identificador a consultar
+     * @return Dirección del identificador
+     */
     public int getIdentifierAddress (String ident) {
         return getEntry(ident).address;
     }
     
+    /**
+     * @param ident
+     *            Identificador a consultar
+     * @return Tipo del identificador
+     */
     public Type getIdentfierType (String ident) {
         return getEntry(ident).type;
     }
     
+    /**
+     * @param ident
+     *            Identificador a consultar
+     * @return Si el identificador es una constante
+     */
     public boolean isIdentifierConstant (String ident) {
         return getEntry(ident).constant;
     }
     
+    /**
+     * @param ident
+     *            Identificador a consultar
+     * @return Valor del identificador
+     */
+    public Object getIdentifierValue (String ident) {
+        return getIdentifierValue(ident, Object.class);
+    }
+    
+    /**
+     * @param ident
+     *            Identificador a consultar
+     * @param type
+     *            Tipo del valor
+     * @return Valor del identificador
+     */
     public <T> T getIdentifierValue (String ident, Class<T> type) {
         Object obj = getEntry(ident).value;
         

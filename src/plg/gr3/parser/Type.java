@@ -117,45 +117,30 @@ public final class Type {
         
     }
     
-    /*
-     * Funcion que te devuelve verdadero si dados dos tipos, podemos haces el casting del 2º tipo al del primero.
-     * (typeCasting)typeCasted
+    /**
+     * @param castingType
+     *            Tipo al que convertir
+     * @param originalType
+     *            Tipo original
+     * @return <tt>true</tt> si se puede convertir de <tt>typeCasted</tt> a <tt>typeCasting</tt>, <tt>false></tt> en
+     *         caso contrario
      */
-    public boolean typeCasting (Type typeCasting, Type typeCasted) {
-        if (typeCasting.equals(Type.NATURAL)) {
-            if (typeCasted.equals(NATURAL) || typeCasted.equals(CHARACTER)) {
-                return true;
-            } else {
-                return false;
-            }
+    public static boolean canCast (Type castingType, Type originalType) {
+        if (castingType.equals(Type.NATURAL)) {
+            return originalType.equals(NATURAL) || originalType.equals(CHARACTER);
+            
+        } else if (castingType.equals(Type.INTEGER)) {
+            return originalType.isNumeric() || originalType.equals(CHARACTER);
+            
+        } else if (castingType.equals(Type.FLOAT)) {
+            return originalType.isNumeric() || originalType.equals(CHARACTER);
+            
+        } else if (castingType.equals(Type.CHARACTER)) {
+            return originalType.equals(NATURAL) || originalType.equals(CHARACTER);
+            
+        } else {
+            return false;
         }
-        
-        if (typeCasting.equals(Type.INTEGER)) {
-            if (typeCasted.equals(BOOLEAN)) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-        
-        if (typeCasting.equals(Type.FLOAT)) {
-            if (typeCasted.equals(BOOLEAN)) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-        
-        if (typeCasting.equals(Type.CHARACTER)) {
-            if (typeCasted.equals(NATURAL) || typeCasted.equals(CHARACTER)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        
-        return false;
-        
     }
     
     /*

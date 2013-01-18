@@ -8,8 +8,7 @@ import java.util.List;
 
 import plg.gr3.CompileError;
 import plg.gr3.Operator;
-
-import com.sun.org.apache.bcel.internal.generic.Instruction;
+import plg.gr3.code.instructions.Instruction;
 
 /**
  * Clase que representa los atributos, heredados y sintetizados, de cualquiera de los nodos del arbol sintáctico.

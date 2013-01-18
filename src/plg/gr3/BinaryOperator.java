@@ -45,6 +45,7 @@ public enum BinaryOperator implements Operator {
         }
         
     },
+    
     /** Operador de resta */
     SUBTRACTION("-", 1) {
         @Override
@@ -450,7 +451,7 @@ public enum BinaryOperator implements Operator {
     },
     
     /** Operación desplazar a la izquierda */
-    SHIFT_LEFT("<<") {
+    SHIFT_LEFT("<<", 13) {
         
         @Override
         public boolean canApply (Type t1, Type t2) {
@@ -478,7 +479,7 @@ public enum BinaryOperator implements Operator {
     },
     
     /** Operación desplazar a la derecha */
-    SHIFT_RIGHT(">>") {
+    SHIFT_RIGHT(">>", 14) {
         
         @Override
         public boolean canApply (Type t1, Type t2) {
@@ -508,6 +509,7 @@ public enum BinaryOperator implements Operator {
     /** Símbolo del operador */
     private final String symbol;
     
+    /** Código del operador */
     private final int code;
     
     /**

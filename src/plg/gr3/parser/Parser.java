@@ -18,7 +18,7 @@ import plg.gr3.UnaryOperator;
 import plg.gr3.UndefinedIdentError;
 import plg.gr3.UnexpectedTokenError;
 import plg.gr3.Util;
-import plg.gr3.code.CodeGenerator;
+import plg.gr3.code.CodeWriter;
 import plg.gr3.code.instructions.LoadInstruction;
 import plg.gr3.code.instructions.PushInstruction;
 import plg.gr3.debug.Debugger;
@@ -50,15 +50,15 @@ public final class Parser implements Closeable {
     
     /** Generador de código */
     
-    private final CodeGenerator codeGenerator;
+    private final CodeWriter codeWriter;
     
     /**
      * @param lexer
      *            Analizador léxico que será utilizado por este analizador sintáctico
      */
-    public Parser (Lexer lexer, CodeGenerator codeGenerator) {
+    public Parser (Lexer lexer, CodeWriter codeGenerator) {
         this.lexer = lexer;
-        this.codeGenerator = codeGenerator;
+        this.codeWriter = codeGenerator;
         this.symbolTable = new SymbolTable();
     }
     
@@ -514,8 +514,8 @@ public final class Parser implements Closeable {
             Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
             
             // Expr.cod = Term.cod || FExpr.cod }
-            codeGenerator.generateInstructions(attrTerm.getInstructions());
-            codeGenerator.generateInstructions(attrFExpr.getInstructions());
+            codeWriter.write(attrTerm.getInstructions());
+            codeWriter.write(attrFExpr.getInstructions());
             
             return attrb.type(attrFExpr.getType()).create();
         } catch (NoSuchElementException e) {
@@ -543,8 +543,8 @@ public final class Parser implements Closeable {
                 }
                 
                 // FExpr.cod = Term.cod || Op0.op }
-                codeGenerator.generateInstructions(attrTerm.getInstructions());
-                codeGenerator.generateInstructions(attrOp0.getInstructions());
+                codeWriter.write(attrTerm.getInstructions());
+                codeWriter.write(attrOp0.getInstructions());
                 
                 attrb.type(attrTerm.getType());
             } else {
@@ -598,11 +598,11 @@ public final class Parser implements Closeable {
                     }
                     
                     //  RTerm1.codh = RTerm0.codh || Fact.cod || Op1.op }
-                    codeGenerator.generateInstructions(attrFact.getInstructions());
+                    codeWriter.write(attrFact.getInstructions());
                     
                     //FIXME Cambiar el concreteInstruction, y pasarle los argumentos correctos
                     ConcreteInstruction inst = new ConcreteInstruction();
-                    codeGenerator.generateInstruction(inst);
+                    codeWriter.write(inst);
                     
                     attrb.type(attrRTerm.getType());
                 } else {
@@ -674,7 +674,7 @@ public final class Parser implements Closeable {
                     // RFact1.codh = RFact0.codh || Shft.cod || Op2.op }
                     //FIXME Cambiar el concreteInstruction, y pasarle los argumentos correctos
                     ConcreteInstruction inst = new ConcreteInstructions();
-                    codeGenerator.generateInstruction(inst);
+                    codeWriter.write(inst);
                     
                 } else {
                     return null;
@@ -788,7 +788,7 @@ public final class Parser implements Closeable {
                     Attributes attrParen2 = parseParen(last, Attributes.DEFAULT);
                     
                     /* Comprobamos que se puede aplicar el tipo del casting al tipo casteado */
-                    if (!attrParen2.getType().typeCasting(attrCast.getType(), attrParen2.getType())) {
+                    if (!attrParen2.getType().canCast(attrCast.getType(), attrParen2.getType())) {
                         CastingError error =
                             new CastingError(
                                 attrCast.getType(), attrParen2.getType(), lexer.getLine(), lexer.getColumn());
@@ -819,15 +819,16 @@ public final class Parser implements Closeable {
                 switch (tokenRead.getToken().getType()) {
                 
                 // lpar Expr rpar
-                    case SYM_PAR_LEFT:
+                    case SYM_PAR_LEFT: {
                         parseExpr(last, Attributes.DEFAULT);
                         expect(last, TokenType.SYM_PAR_RIGHT);
                         PushInstruction inst = new PushInstruction(tokenRead.getToken().getType());
-                        codeGenerator.generateInstruction(inst);
+                        codeWriter.write(inst);
+                    }
                     break;
                     
                     // ident
-                    case IDENTIFIER:
+                    case IDENTIFIER: {
                         
                         /* Comprobamos que el identificador existe */
                         if (!this.symbolTable.hasIdentifier(tokenRead.getLexeme())) {
@@ -841,10 +842,10 @@ public final class Parser implements Closeable {
                         }
                         
                         // Paren.cod = apila-dir(Paren.tsh[ident.lex].dir) }
-                        // FIXME ¿direccion?
-                        LoadInstruction inst = new LoadInstruction("direccion");
-                        codeGenerator.generateInstruction(inst);
-                    
+                        int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
+                        LoadInstruction inst = new LoadInstruction(addr);
+                        codeWriter.write(inst);
+                    }
                     break;
                 }
             } else {
@@ -950,10 +951,10 @@ public final class Parser implements Closeable {
             LocatedToken token = expect(last, TokenType.SYM_SHIFT_LEFT, TokenType.SYM_SHIFT_RIGHT);
             switch (token.getType()) {
                 case SYM_SHIFT_LEFT:
-                    attrb.operator("rsh");
+                    attrb.operator(BinaryOperator.SHIFT_LEFT);
                 break;
                 case SYM_SHIFT_RIGHT:
-                    attrb.operator("lsh");
+                    attrb.operator(BinaryOperator.SHIFT_RIGHT);
                 break;
             }
             
