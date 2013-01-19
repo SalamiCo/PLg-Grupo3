@@ -26,26 +26,26 @@ public class StreamCodeReader extends CodeReader {
     @Override
     public Instruction read () throws IOException {
         
-        byte byteReaded = stream.readByte();
+        byte byteRead = stream.readByte();
         
-        if ((byteReaded & Instruction.OPMASK_OPERATOR) == Instruction.OPCODE_OPERATOR) {
+        if ((byteRead & Instruction.OPMASK_OPERATOR) == Instruction.OPCODE_OPERATOR) {
             return new BinaryOperatorInstruction(new BinaryOperator());
-        } else if ((byteReaded & Instruction.OPMASK_PUSH) == Instruction.OPCODE_PUSH) {
-        } else if ((byteReaded & Instruction.OPMASK_INPUT) == Instruction.OPCODE_INPUT) {
+        } else if ((byteRead & Instruction.OPMASK_PUSH) == Instruction.OPCODE_PUSH) {
+        } else if ((byteRead & Instruction.OPMASK_INPUT) == Instruction.OPCODE_INPUT) {
             
-        } else if ((byteReaded & Instruction.OPMASK_CAST) == Instruction.OPCODE_CAST) {
+        } else if ((byteRead & Instruction.OPMASK_CAST) == Instruction.OPCODE_CAST) {
             
-        } else if (byteReaded == Instruction.OPCODE_LOAD) {
+        } else if (byteRead == Instruction.OPCODE_LOAD) {
             return new LoadInstruction(address);
-        } else if (byteReaded == Instruction.OPCODE_STORE) {
+        } else if (byteRead == Instruction.OPCODE_STORE) {
             return new StoreInstruction(address);
-        } else if (byteReaded == Instruction.OPCODE_OUTPUT) {
+        } else if (byteRead == Instruction.OPCODE_OUTPUT) {
             return new OutputInstruction();
-        } else if (byteReaded == Instruction.OPCODE_STOP) {
+        } else if (byteRead == Instruction.OPCODE_STOP) {
             return new StopInstruction();
-        } else if (byteReaded == Instruction.OPCODE_SWAP1) {
+        } else if (byteRead == Instruction.OPCODE_SWAP1) {
             return new Swap1Instruction();
-        } else if (byteReaded == Instruction.OPCODE_SWAP2) {
+        } else if (byteRead == Instruction.OPCODE_SWAP2) {
             return new Swap2Instruction();
         }
     }
