@@ -42,6 +42,6 @@ public final class PushInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        vm.pushValue(this.value);
+        vm.pushValue(value);
     }
 }
