@@ -135,6 +135,10 @@ public enum TokenType {
     /**
      * @param regex
      *            Expresión regular que define la categoría léxica
+     * @param laPart
+     *            Parte del look-ahead
+     * @param keyword
+     *            Si se trata de una palabra reservada
      */
     private TokenType (String regex, String laPart, boolean keyword) {
         // Tratamos adecuadamente el caso de una expresión nula. Puesto que indica que su valor no va a usarse, no nos
@@ -165,10 +169,20 @@ public enum TokenType {
         return keyword;
     }
     
+    /**
+     * @param str
+     *            Cadena a comprobar
+     * @return <tt>true</tt> si la cadena encaja, <tt>false</tt> si no
+     */
     public boolean matches (String str) {
         return pattern.matcher(str).matches();
     }
     
+    /**
+     * @param matcher
+     *            Matcher a comprobar
+     * @return <tt>true</tt> si la cadena encaja, <tt>false</tt> si no
+     */
     public boolean recognizes (Matcher matcher) {
         matcher.usePattern(lookAheadPattern);
         return matcher.lookingAt();
