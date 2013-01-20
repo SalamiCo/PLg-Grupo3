@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
+import plg.gr3.BinaryOperator;
 import plg.gr3.RuntimeError;
 import plg.gr3.code.instructions.Instruction;
 
@@ -119,5 +120,23 @@ public final class VirtualMachine {
     
     public RuntimeError getError () {
         return error;
+    }
+    
+    public BinaryOperator getSwappedOperator (BinaryOperator operator) {
+        if (swapped1 && operator == BinaryOperator.ADDITION) {
+            return BinaryOperator.SUBTRACTION;
+            
+        } else if (swapped1 && operator == BinaryOperator.SUBTRACTION) {
+            return BinaryOperator.ADDITION;
+            
+        } else if (swapped2 && operator == BinaryOperator.PRODUCT) {
+            return BinaryOperator.DIVISION;
+            
+        } else if (swapped2 && operator == BinaryOperator.DIVISION) {
+            return BinaryOperator.PRODUCT;
+            
+        } else {
+            return operator;
+        }
     }
 }
