@@ -28,7 +28,7 @@ public enum UnaryOperator implements Operator {
         public Number apply (Object obj) {
             Type type = Type.forValue(obj);
             if (!canApply(type)) {
-                return null;
+                throw new IllegalArgumentException();
             }
             
             Number num = (Number) obj;
@@ -61,7 +61,12 @@ public enum UnaryOperator implements Operator {
         
         @Override
         public Boolean apply (Object obj) {
-            return canApply(Type.forValue(obj)) ? Boolean.valueOf(!((Boolean) obj).booleanValue()) : null;
+            if (!canApply(Type.forValue(obj))) {
+                throw new IllegalArgumentException();
+            }
+            
+            Boolean b = (Boolean) obj;
+            return Boolean.valueOf(Boolean.valueOf(!b.booleanValue()));
         }
     };
     

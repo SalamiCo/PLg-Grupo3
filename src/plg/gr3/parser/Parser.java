@@ -10,8 +10,8 @@ import java.util.Set;
 
 import plg.gr3.BinaryOperator;
 import plg.gr3.DuplicateIDError;
+import plg.gr3.Natural;
 import plg.gr3.UnaryOperator;
-import plg.gr3.Util;
 import plg.gr3.code.CodeWriter;
 import plg.gr3.code.instructions.LoadInstruction;
 import plg.gr3.code.instructions.PushInstruction;
@@ -1009,7 +1009,7 @@ public final class Parser implements Closeable {
             }
             
             LocatedToken token = expect(last, TokenType.LIT_NATURAL);
-            attrb.type(Type.NATURAL).value(Util.stringToNatural(token.getLexeme()));
+            attrb.type(Type.NATURAL).value(Natural.parseNat(token.getLexeme()));
             
             return attrb.create();
             
@@ -1056,12 +1056,12 @@ public final class Parser implements Closeable {
             
             //litnat
                 case LIT_NATURAL:
-                    attrb.type(Type.NATURAL).value(Util.stringToNatural(tokenRead.getToken().getLexeme()));
+                    attrb.type(Type.NATURAL).value(Natural.parseNat(token.getLexeme()));
                 break;
                 
                 //litfloat
                 case LIT_FLOAT:
-                    attrb.type(Type.FLOAT).value(Util.stringToFloat(tokenRead.getToken().getLexeme()));
+                    attrb.type(Type.FLOAT).value(Natural.parseNat(token.getLexeme()));
                 break;
                 
                 //menos
@@ -1087,12 +1087,12 @@ public final class Parser implements Closeable {
             
             //litnat
                 case LIT_NATURAL:
-                    attrb.type(Type.INTEGER).value(Util.stringToNatural(tokenRead.getToken().getLexeme()));
+                    attrb.type(Type.INTEGER).value(Natural.parseNat(token.getLexeme()));
                 break;
                 
                 //litfloat
                 case LIT_FLOAT:
-                    attrb.type(Type.FLOAT).value(Util.stringToFloat(tokenRead.getToken().getLexeme()));
+                    attrb.type(Type.FLOAT).value(Natural.parseNat(token.getLexeme()));
                 break;
             }
             return attrb.create();

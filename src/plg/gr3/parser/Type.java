@@ -1,5 +1,7 @@
 package plg.gr3.parser;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import plg.gr3.Natural;
@@ -10,6 +12,9 @@ import plg.gr3.Natural;
  * @author PLg Grupo 03 2012/2013
  */
 public final class Type {
+    
+    /** Mapa de códigos a sus tipos */
+    private static final Map<Integer, Type> TYPES = new HashMap<>();
     
     /** Tipo predefinido para naturales */
     public static final Type NATURAL = new Type("natural", 0);
@@ -44,6 +49,10 @@ public final class Type {
     private Type (String name, int code) {
         this.name = Objects.requireNonNull(name, "name");
         this.code = code;
+        
+        if (code != 0xFFFFFFFF) {
+            TYPES.put(Integer.valueOf(code), this);
+        }
     }
     
     /** param name Nombre del tipo */
@@ -103,6 +112,15 @@ public final class Type {
         return null;
     }
     
+    public static Type forCode (int code) {
+        Type type = TYPES.get(Integer.valueOf(code));
+        if (type == null) {
+            return Type.ERROR;
+        } else {
+            return type;
+        }
+    }
+    
     /*
      * Funcion que te devuelve verdadero si el tipo de typeAssigned es asignable al tipo de ident. En caso contrario
      * devuelve falso
@@ -111,9 +129,10 @@ public final class Type {
         if (ident.equals(Type.NATURAL)) {
             if (typeAssigned.equals(NATURAL)) {
                 return true;
-            } else {
-                return false;
             }
+            
+            return false;
+            
         }
         if (ident.equals(Type.INTEGER)) {
             if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER)) {
