@@ -3,6 +3,9 @@ package plg.gr3.code.instructions;
 import java.util.EmptyStackException;
 
 import plg.gr3.BinaryOperator;
+import plg.gr3.DivisionByZeroError;
+import plg.gr3.EmptyStackError;
+import plg.gr3.NegativeNaturalError;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -36,21 +39,24 @@ public final class BinaryOperatorInstruction extends Instruction {
             //Operando1 = Cima - 1
             Object op1 = vm.popValue();
             
-            //TODO si el operador es suma o resta mirar swap1
-            //TODO si el operador en mult o div mirar swap2
+            //obtener el operador que se va a aplicar (en función de swap1, swap2)
+            BinaryOperator swappedOperator = vm.getSwappedOperator(operator);
             
             //Calcular el resultado
-            Object res = operator.apply(op1, op2);
+            Object res = swappedOperator.apply(op1, op2);
             //resultado en la Cima
             vm.pushValue(res);
             
         } catch (IllegalArgumentException e1) {
-            //TODO Si se restan 2 naturales y a < b, error en tiempo de ejecución
+            //Si se restan 2 naturales y a < b, error en tiempo de ejecución
+            vm.abort(new NegativeNaturalError(vm.getProgramCounter(), this));
+            //TODO Añadir TypeMismatchError
         } catch (ArithmeticException e2) {
-            //TODO Division entre 0
+            //Division entre 0
+            vm.abort(new DivisionByZeroError(vm.getProgramCounter(), this));
         } catch (EmptyStackException e3) {
-            //TODO Error de pila vacía
+            //Error de pila vacía
+            vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
-        //TODO Manejar excepciones como la de division por cero
     }
 }

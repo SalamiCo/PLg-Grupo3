@@ -2,6 +2,7 @@ package plg.gr3.code.instructions;
 
 import java.util.EmptyStackException;
 
+import plg.gr3.EmptyStackError;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -33,6 +34,7 @@ public final class StoreInstruction extends Instruction {
             vm.setMemoryValue(address, vm.popValue()); //Mem[dir] = Cima  
         } catch (EmptyStackException e) {
             //Error de pila vacía
+            vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
     }
 }

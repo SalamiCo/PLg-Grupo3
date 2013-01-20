@@ -1,5 +1,6 @@
 package plg.gr3.code.instructions;
 
+import plg.gr3.UninitializedError;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -34,7 +35,8 @@ public final class LoadInstruction extends Instruction {
         if (value != null) {
             vm.pushValue(value); //Cima = Mem[dir] 
         } else {
-            //TODO error: direccion de memoria no valida
+            //error: direccion de memoria no valida
+            vm.abort(new UninitializedError(vm.getProgramCounter(), this, address));
         }
     }
 }

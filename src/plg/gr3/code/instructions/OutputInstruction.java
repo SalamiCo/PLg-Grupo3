@@ -1,8 +1,10 @@
 package plg.gr3.code.instructions;
 
+import java.io.IOError;
 import java.io.IOException;
 import java.util.EmptyStackException;
 
+import plg.gr3.EmptyStackError;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -17,9 +19,10 @@ public final class OutputInstruction extends Instruction {
         try {
             vm.setOutput(vm.popValue()); //bufferOut = Cima
         } catch (IOException e1) {
-            //TODO error en tiempo de ejecución: fallo del stream de salida
+            //TODO error en tiempo de ejecución: fallo del buffer de salida
+            vm.abort(new IOError(vm.getProgramCounter(), this));
         } catch (EmptyStackException e2) {
-            //TODO error de pila vacía
+            vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
         
     }
