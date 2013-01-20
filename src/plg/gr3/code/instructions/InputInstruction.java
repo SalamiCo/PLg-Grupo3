@@ -1,5 +1,6 @@
 package plg.gr3.code.instructions;
 
+import java.io.IOError;
 import java.io.IOException;
 
 import plg.gr3.parser.Type;
@@ -37,6 +38,7 @@ public class InputInstruction extends Instruction {
             vm.pushValue(vm.getInput()); //Cima <= BufferIN
         } catch (IOException e) {
             // TODO Error en tiempo de ejecución: error al leer de BufferIN
+            vm.abort(new IOError(vm.getProgramCounter(), this));
         }
     }
 }
