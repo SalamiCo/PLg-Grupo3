@@ -1,5 +1,6 @@
-package plg.gr3;
+package plg.gr3.errors.compile;
 
+import plg.gr3.Operator;
 import plg.gr3.parser.Type;
 
 //Clase que hereda de Compile error que maneja los errores de tipos en operacion
@@ -38,11 +39,11 @@ public class OperatorError extends CompileError {
     public String getErrorMessage () {
         final String format;
         if (esOpBinario) {
-            format = "No puedes aplicar el operador binario " + op.toString() + "a los tipos %s y %s ";
-            return String.format(format, typeA, typeB);
+            format = "No puedes aplicar el operador binario %s a los tipos %s y %s ";
+            return String.format(format, op, typeA, typeB);
         } else {
-            format = "No puedes aplicar el operador unario " + op.toString() + "al tipo %s";
-            return String.format(format, typeA);
+            format = "No puedes aplicar el operador unario %s al tipo %s";
+            return String.format(format, op, typeA);
         }
         
     }
