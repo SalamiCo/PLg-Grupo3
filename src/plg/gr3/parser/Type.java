@@ -103,6 +103,10 @@ public final class Type {
         return null;
     }
     
+    public static Type forCode (int code) {
+        return null;
+    }
+    
     /*
      * Funcion que te devuelve verdadero si el tipo de typeAssigned es asignable al tipo de ident. En caso contrario
      * devuelve falso
