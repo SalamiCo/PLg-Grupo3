@@ -36,7 +36,7 @@ public class InputInstruction extends Instruction {
         try {
             vm.pushValue(vm.getInput()); //Cima <= BufferIN
         } catch (IOException e) {
-            // TODO Error en tiempo de ejecución: No se puede leer de BufferIN
+            // TODO Error en tiempo de ejecución: error al leer de BufferIN
         }
     }
 }

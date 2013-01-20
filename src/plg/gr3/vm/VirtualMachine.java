@@ -60,7 +60,10 @@ public final class VirtualMachine {
     }
     
     public Object getMemoryValue (int address) {
-        return memory.get(address);
+        if (address >= 0 && address < memory.size()) {
+            memory.get(address);
+        }
+        return null;
     }
     
     public void setMemoryValue (int address, Object value) {

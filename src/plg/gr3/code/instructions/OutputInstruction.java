@@ -1,6 +1,7 @@
 package plg.gr3.code.instructions;
 
 import java.io.IOException;
+import java.util.EmptyStackException;
 
 import plg.gr3.vm.VirtualMachine;
 
@@ -15,8 +16,10 @@ public final class OutputInstruction extends Instruction {
     public void execute (VirtualMachine vm) {
         try {
             vm.setOutput(vm.popValue()); //bufferOut = Cima
-        } catch (IOException e) {
-            //TODO error en tiempo de ejecución: No se puede mostrar [Expr.]
+        } catch (IOException e1) {
+            //TODO error en tiempo de ejecución: fallo del stream de salida
+        } catch (EmptyStackException e2) {
+            //TODO error de pila vacía
         }
         
     }

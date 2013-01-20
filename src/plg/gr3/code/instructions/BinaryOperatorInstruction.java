@@ -1,5 +1,7 @@
 package plg.gr3.code.instructions;
 
+import java.util.EmptyStackException;
+
 import plg.gr3.BinaryOperator;
 import plg.gr3.vm.VirtualMachine;
 
@@ -42,8 +44,12 @@ public final class BinaryOperatorInstruction extends Instruction {
             //resultado en la Cima
             vm.pushValue(res);
             
-        } catch (IllegalArgumentException e) {
-            //TODO Error en tiempo de ejecución: No se puede aplicar el operador
+        } catch (IllegalArgumentException e1) {
+            //TODO Si se restan 2 naturales y a < b, error en tiempo de ejecución
+        } catch (ArithmeticException e2) {
+            //TODO Division entre 0
+        } catch (EmptyStackException e3) {
+            //TODO Error de pila vacía
         }
         //TODO Manejar excepciones como la de division por cero
     }

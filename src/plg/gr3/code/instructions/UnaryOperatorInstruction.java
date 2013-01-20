@@ -1,5 +1,7 @@
 package plg.gr3.code.instructions;
 
+import java.util.EmptyStackException;
+
 import plg.gr3.UnaryOperator;
 import plg.gr3.vm.VirtualMachine;
 
@@ -36,6 +38,8 @@ public final class UnaryOperatorInstruction extends Instruction {
             vm.pushValue(result);
         } catch (IllegalArgumentException e) {
             //TODO Manejar excepciones como la de division por cero            
+        } catch (EmptyStackException e1) {
+            //TODO error de pila vacía
         }
     }
 }

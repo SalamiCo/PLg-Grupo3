@@ -30,6 +30,11 @@ public final class LoadInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        vm.pushValue(vm.getMemoryValue(address)); //Cima = Mem[dir]        
+        Object value = vm.getMemoryValue(address);
+        if (value != null) {
+            vm.pushValue(value); //Cima = Mem[dir] 
+        } else {
+            //TODO error: direccion de memoria no valida
+        }
     }
 }
