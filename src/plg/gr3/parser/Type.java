@@ -4,37 +4,59 @@ import java.util.Objects;
 
 import plg.gr3.Natural;
 
+/**
+ * Representación interna de los tipos del lenguaje
+ * 
+ * @author PLg Grupo 03 2012/2013
+ */
 public final class Type {
     
+    /** Tipo predefinido para naturales */
     public static final Type NATURAL = new Type("natural", 0);
     
+    /** Tipo predefinido para enteros */
     public static final Type INTEGER = new Type("integer", 1);
     
+    /** Tipo predefinido para punto flotante */
     public static final Type FLOAT = new Type("float", 2);
     
+    /** Tipo predefinido para booleanos */
     public static final Type BOOLEAN = new Type("boolean", 3);
     
+    /** Tipo predefinido para caracteres */
     public static final Type CHARACTER = new Type("character", 4);
     
+    /** Tipo predefinido para errores en la gramática */
     public static final Type ERROR = new Type("");
     
+    /** Nombre del tipo */
     private final String name;
     
+    /** Código del tipo */
     private final int code;
     
+    /**
+     * @param name
+     *            Nombre del tipo
+     * @param code
+     *            Código del tipo
+     */
     private Type (String name, int code) {
         this.name = Objects.requireNonNull(name, "name");
         this.code = code;
     }
     
+    /** param name Nombre del tipo */
     public Type (String name) {
         this(name, 0xFFFFFFFF);
     }
     
+    /** @return Nombre del tipo */
     public String getName () {
         return name;
     }
     
+    /** @return Código del tipo */
     public int getCode () {
         return code;
     }
