@@ -1,4 +1,4 @@
-package plg.gr3;
+package plg.gr3.errors.compile;
 
 public class AssignToConstantError extends CompileError {
     

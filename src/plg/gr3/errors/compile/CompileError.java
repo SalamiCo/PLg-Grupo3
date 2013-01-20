@@ -1,5 +1,6 @@
-package plg.gr3;
+package plg.gr3.errors.compile;
 
+import plg.gr3.Error;
 import plg.gr3.debug.Debugger;
 
 /**

@@ -3,8 +3,11 @@ package plg.gr3.vm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
+import plg.gr3.BinaryOperator;
+import plg.gr3.RuntimeError;
 import plg.gr3.code.instructions.Instruction;
 
 public final class VirtualMachine {
@@ -22,6 +25,8 @@ public final class VirtualMachine {
     private boolean swapped1;
     
     private boolean swapped2;
+    
+    private RuntimeError error;
     
     public VirtualMachine (List<Instruction> program) {
         this.program = Collections.unmodifiableList(program);
@@ -70,6 +75,13 @@ public final class VirtualMachine {
         memory.clear();
     }
     
+    public void abort (RuntimeError error) {
+        this.error = Objects.requireNonNull(error, "error");
+        error.print();
+        
+        stop();
+    }
+    
     public void toggleSwapped1 () {
         swapped1 = !swapped1;
     }
@@ -104,5 +116,27 @@ public final class VirtualMachine {
     
     public boolean isSwapped2 () {
         return swapped2;
+    }
+    
+    public RuntimeError getError () {
+        return error;
+    }
+    
+    public BinaryOperator getSwappedOperator (BinaryOperator operator) {
+        if (swapped1 && operator == BinaryOperator.ADDITION) {
+            return BinaryOperator.SUBTRACTION;
+            
+        } else if (swapped1 && operator == BinaryOperator.SUBTRACTION) {
+            return BinaryOperator.ADDITION;
+            
+        } else if (swapped2 && operator == BinaryOperator.PRODUCT) {
+            return BinaryOperator.DIVISION;
+            
+        } else if (swapped2 && operator == BinaryOperator.DIVISION) {
+            return BinaryOperator.PRODUCT;
+            
+        } else {
+            return operator;
+        }
     }
 }

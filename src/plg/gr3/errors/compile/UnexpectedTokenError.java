@@ -1,4 +1,4 @@
-package plg.gr3;
+package plg.gr3.errors.compile;
 
 import java.util.Collections;
 import java.util.HashSet;
