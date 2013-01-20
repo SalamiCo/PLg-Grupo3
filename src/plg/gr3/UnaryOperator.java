@@ -1,5 +1,9 @@
 package plg.gr3;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import plg.gr3.parser.Type;
 
 /**
@@ -17,7 +21,7 @@ public enum UnaryOperator implements Operator {
         
         @Override
         public Type getApplyType (Type type) {
-            return canApply(type) ? type : Type.ERROR;
+            return canApply(type) ? Type.getWiderType(type, Type.INTEGER) : Type.ERROR;
         }
         
         @Override
@@ -29,7 +33,7 @@ public enum UnaryOperator implements Operator {
             
             Number num = (Number) obj;
             if (type.equals(Type.NATURAL)) {
-                return new Natural(-num.intValue());
+                return new Integer(-num.intValue());
                 
             } else if (type.equals(Type.INTEGER)) {
                 return new Integer(-num.intValue());
@@ -61,7 +65,18 @@ public enum UnaryOperator implements Operator {
         }
     };
     
+    private static final Map<Integer, UnaryOperator> OPERATORS;
+    static {
+        Map<Integer, UnaryOperator> map = new HashMap<>();
+        for (UnaryOperator op : values()) {
+            map.put(Integer.valueOf(op.code), op);
+        }
+        
+        OPERATORS = Collections.unmodifiableMap(map);
+    }
+    
     /** Símbolo del operador */
+    
     private final String symbol;
     
     /** Código del operador */
@@ -106,5 +121,14 @@ public enum UnaryOperator implements Operator {
     @Override
     public String toString () {
         return symbol;
+    }
+    
+    /**
+     * @param code
+     *            Código del operador
+     * @return Operador con el código pasado, o <tt>null</tt> si no existe.
+     */
+    public static UnaryOperator forCode (int code) {
+        return OPERATORS.get(Integer.valueOf(code));
     }
 }

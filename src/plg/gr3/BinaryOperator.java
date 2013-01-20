@@ -1,5 +1,9 @@
 package plg.gr3;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import plg.gr3.parser.Type;
 
 /**
@@ -506,6 +510,16 @@ public enum BinaryOperator implements Operator {
         }
     };
     
+    private static final Map<Integer, BinaryOperator> OPERATORS;
+    static {
+        Map<Integer, BinaryOperator> map = new HashMap<>();
+        for (BinaryOperator op : values()) {
+            map.put(Integer.valueOf(op.code), op);
+        }
+        
+        OPERATORS = Collections.unmodifiableMap(map);
+    }
+    
     /** Símbolo del operador */
     private final String symbol;
     
@@ -593,4 +607,13 @@ public enum BinaryOperator implements Operator {
      *             si los argumentos no se pueden operar con este operador
      */
     public abstract Object apply (Object o1, Object o2);
+    
+    /**
+     * @param code
+     *            Código del operador
+     * @return Operador con el código pasado, o <tt>null</tt> si no existe.
+     */
+    public static BinaryOperator forCode (int code) {
+        return OPERATORS.get(Integer.valueOf(code));
+    }
 }
