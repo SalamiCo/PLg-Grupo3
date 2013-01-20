@@ -9,9 +9,6 @@ import plg.gr3.debug.Debugger;
  */
 public abstract class Error {
     
-    /* package */Error () {
-    }
-    
     /** @return Mensaje de error que se le montrará al usuario, sin información específica de la posición del error */
     public abstract String getErrorMessage ();
     
