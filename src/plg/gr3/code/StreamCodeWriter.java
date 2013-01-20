@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import plg.gr3.Natural;
 import plg.gr3.code.instructions.BinaryOperatorInstruction;
 import plg.gr3.code.instructions.CastInstruction;
 import plg.gr3.code.instructions.InputInstruction;
@@ -12,10 +13,12 @@ import plg.gr3.code.instructions.Instruction;
 import plg.gr3.code.instructions.LoadInstruction;
 import plg.gr3.code.instructions.OutputInstruction;
 import plg.gr3.code.instructions.PushInstruction;
+import plg.gr3.code.instructions.StopInstruction;
 import plg.gr3.code.instructions.StoreInstruction;
 import plg.gr3.code.instructions.Swap1Instruction;
 import plg.gr3.code.instructions.Swap2Instruction;
 import plg.gr3.code.instructions.UnaryOperatorInstruction;
+import plg.gr3.parser.Type;
 
 /**
  * Generador de código que escribirá el código a un {@link OutputStream}
@@ -100,6 +103,10 @@ public final class StreamCodeWriter extends CodeWriter {
         inhibited = true;
     }
     
+    private void writeStop (StopInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_STOP);
+    }
+    
     private void writeSwap1 (Swap1Instruction inst) throws IOException {
         stream.writeByte(Instruction.OPCODE_SWAP1);
     }
@@ -109,8 +116,11 @@ public final class StreamCodeWriter extends CodeWriter {
     }
     
     private void writePush (PushInstruction inst) throws IOException {
-        // TODO Auto-generated method stub
+        Object value = inst.getValue();
+        Type type = Type.forValue(value);
         
+        stream.writeByte(Instruction.OPCODE_PUSH | (type.getCode() & 0b111));
+        writeValue(value);
     }
     
     private void writeOutput (OutputInstruction inst) throws IOException {
@@ -118,23 +128,21 @@ public final class StreamCodeWriter extends CodeWriter {
     }
     
     private void writeInput (InputInstruction inst) throws IOException {
-        // TODO Auto-generated method stub
-        
+        stream.writeByte(Instruction.OPCODE_INPUT | inst.getInputType().getCode());
     }
     
     private void writeStore (StoreInstruction inst) throws IOException {
-        // TODO Auto-generated method stub
-        
+        stream.writeByte(Instruction.OPCODE_STORE);
+        stream.writeInt(inst.getAddress());
     }
     
     private void writeLoad (LoadInstruction inst) throws IOException {
-        // TODO Auto-generated method stub
-        
+        stream.writeByte(Instruction.OPCODE_STORE);
+        stream.writeInt(inst.getAddress());
     }
     
     private void writeCast (CastInstruction inst) throws IOException {
-        // TODO Auto-generated method stub
-        
+        stream.writeByte(Instruction.OPCODE_CAST | inst.getCastType().getCode());
     }
     
     private void writeBinaryOp (BinaryOperatorInstruction inst) throws IOException {
@@ -145,5 +153,26 @@ public final class StreamCodeWriter extends CodeWriter {
     private void writeUnaryOp (UnaryOperatorInstruction inst) throws IOException {
         int op = Instruction.OPCODE_OPERATOR | inst.getOperator().getCode();
         stream.writeByte(op);
+    }
+    
+    private void writeValue (Object value) throws IOException {
+        if (value instanceof Natural) {
+            stream.writeInt(((Natural) value).intValue());
+            
+        } else if (value instanceof Integer) {
+            stream.writeInt(((Integer) value).intValue());
+            
+        } else if (value instanceof Float) {
+            stream.writeFloat(((Float) value).floatValue());
+            
+        } else if (value instanceof Character) {
+            stream.writeChar(((Character) value).charValue());
+            
+        } else if (value instanceof Boolean) {
+            stream.writeBoolean(((Boolean) value).booleanValue());
+            
+        } else {
+            throw new IllegalArgumentException(value.toString());
+        }
     }
 }

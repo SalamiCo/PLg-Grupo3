@@ -30,6 +30,7 @@ public class StreamCodeReader extends CodeReader {
         
         if ((byteRead & Instruction.OPMASK_OPERATOR) == Instruction.OPCODE_OPERATOR) {
             return new BinaryOperatorInstruction(new BinaryOperator());
+            
         } else if ((byteRead & Instruction.OPMASK_PUSH) == Instruction.OPCODE_PUSH) {
         } else if ((byteRead & Instruction.OPMASK_INPUT) == Instruction.OPCODE_INPUT) {
             

@@ -6,26 +6,37 @@ import plg.gr3.Natural;
 
 public final class Type {
     
-    public static final Type NATURAL = new Type("natural");
+    public static final Type NATURAL = new Type("natural", 0);
     
-    public static final Type INTEGER = new Type("integer");
+    public static final Type INTEGER = new Type("integer", 1);
     
-    public static final Type FLOAT = new Type("float");
+    public static final Type FLOAT = new Type("float", 2);
     
-    public static final Type BOOLEAN = new Type("boolean");
+    public static final Type BOOLEAN = new Type("boolean", 3);
     
-    public static final Type CHARACTER = new Type("character");
+    public static final Type CHARACTER = new Type("character", 4);
     
     public static final Type ERROR = new Type("");
     
-    public final String name;
+    private final String name;
+    
+    private final int code;
+    
+    private Type (String name, int code) {
+        this.name = Objects.requireNonNull(name, "name");
+        this.code = code;
+    }
     
     public Type (String name) {
-        this.name = Objects.requireNonNull(name, "name");
+        this(name, 0xFFFFFFFF);
     }
     
     public String getName () {
         return name;
+    }
+    
+    public int getCode () {
+        return code;
     }
     
     @Override
