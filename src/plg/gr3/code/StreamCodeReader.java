@@ -8,14 +8,18 @@ import java.util.Objects;
 import plg.gr3.BinaryOperator;
 import plg.gr3.UnaryOperator;
 import plg.gr3.code.instructions.BinaryOperatorInstruction;
+import plg.gr3.code.instructions.CastInstruction;
+import plg.gr3.code.instructions.InputInstruction;
 import plg.gr3.code.instructions.Instruction;
 import plg.gr3.code.instructions.LoadInstruction;
 import plg.gr3.code.instructions.OutputInstruction;
+import plg.gr3.code.instructions.PushInstruction;
 import plg.gr3.code.instructions.StopInstruction;
 import plg.gr3.code.instructions.StoreInstruction;
 import plg.gr3.code.instructions.Swap1Instruction;
 import plg.gr3.code.instructions.Swap2Instruction;
 import plg.gr3.code.instructions.UnaryOperatorInstruction;
+import plg.gr3.parser.Type;
 
 /**
  * Lector dce código de un {@link InputStream}
@@ -36,7 +40,7 @@ public class StreamCodeReader extends CodeReader {
     }
     
     @Override
-    public Instruction read () throws IOException {
+    public Instruction read () {
         byte byteRead = stream.readByte();
         
         if ((byteRead & Instruction.OPMASK_OPERATOR) == Instruction.OPCODE_OPERATOR) {
@@ -58,10 +62,13 @@ public class StreamCodeReader extends CodeReader {
             throw new IOException("Formato de bytecode inválido");
             
         } else if ((byteRead & Instruction.OPMASK_PUSH) == Instruction.OPCODE_PUSH) {
+            return new PushInstruction(stream.readByte());
             
         } else if ((byteRead & Instruction.OPMASK_INPUT) == Instruction.OPCODE_INPUT) {
+            return new InputInstruction(Type.forValue(stream.readByte()));
             
         } else if ((byteRead & Instruction.OPMASK_CAST) == Instruction.OPCODE_CAST) {
+            return new CastInstruction(Type.forValue(stream.readByte()));
             
         } else if (byteRead == Instruction.OPCODE_LOAD) {
             return new LoadInstruction(stream.readInt());
@@ -80,6 +87,10 @@ public class StreamCodeReader extends CodeReader {
             
         } else if (byteRead == Instruction.OPCODE_SWAP2) {
             return new Swap2Instruction();
+            
+        } else {
+            // El código de operador no se reconoce
+            throw new IOException("Formato de bytecode inválido");
         }
     }
 }
