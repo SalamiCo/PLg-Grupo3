@@ -3,6 +3,7 @@ package plg.gr3.code.instructions;
 import java.util.EmptyStackException;
 
 import plg.gr3.EmptyStackError;
+import plg.gr3.TypeMismatchError;
 import plg.gr3.UnaryOperator;
 import plg.gr3.vm.VirtualMachine;
 
@@ -38,7 +39,7 @@ public final class UnaryOperatorInstruction extends Instruction {
             //poner el resultado en la Cima
             vm.pushValue(result);
         } catch (IllegalArgumentException e) {
-            //TODO error, no se puede aplicar el operador (type mismatch)
+            //error, no se puede aplicar el operador (type mismatch)
             vm.abort(new TypeMismatchError(vm.getProgramCounter(), this));
             
         } catch (EmptyStackException e1) {

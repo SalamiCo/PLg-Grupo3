@@ -1,8 +1,8 @@
 package plg.gr3.code.instructions;
 
-import java.io.IOError;
 import java.io.IOException;
 
+import plg.gr3.IOError;
 import plg.gr3.parser.Type;
 import plg.gr3.vm.VirtualMachine;
 
