@@ -62,13 +62,27 @@ public class StreamCodeReader extends CodeReader {
             throw new IOException("Formato de bytecode inválido");
             
         } else if ((byteRead & Instruction.OPMASK_PUSH) == Instruction.OPCODE_PUSH) {
-            return new PushInstruction(stream.readByte());
+            int code = byteRead & ~Instruction.OPCODE_PUSH;
+            Type type = Type.forValue(code);
+            if (type == Type.BOOLEAN) {
+                return new PushInstruction(stream.readByte());
+            } else if (type == Type.CHARACTER) {
+                byte[] bytes = new byte[2];
+                return new PushInstruction(stream.read(bytes));
+            } else if (type == Type.NATURAL || type == Type.INTEGER || type == Type.FLOAT) {
+                byte[] bytes = new byte[4];
+                return new PushInstruction(stream.read(bytes));
+            } else {
+                throw new IOException("Formato de bytecode inválido");
+            }
             
         } else if ((byteRead & Instruction.OPMASK_INPUT) == Instruction.OPCODE_INPUT) {
-            return new InputInstruction(Type.forValue(stream.readByte()));
+            int code = byteRead & ~Instruction.OPCODE_INPUT;
+            return new InputInstruction(Type.forCode(code));
             
         } else if ((byteRead & Instruction.OPMASK_CAST) == Instruction.OPCODE_CAST) {
-            return new CastInstruction(Type.forValue(stream.readByte()));
+            int code = byteRead & ~Instruction.OPCODE_CAST;
+            return new CastInstruction(Type.forCode(code));
             
         } else if (byteRead == Instruction.OPCODE_LOAD) {
             return new LoadInstruction(stream.readInt());
