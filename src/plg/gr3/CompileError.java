@@ -7,7 +7,7 @@ import plg.gr3.debug.Debugger;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public abstract class CompileError {
+public abstract class CompileError extends Error {
     
     /** Línea del fichero en la que se produjoel error */
     private final int line;
@@ -33,18 +33,21 @@ public abstract class CompileError {
         this.column = column;
     }
     
+    /**
+     * @return Línea en la que se produjo el error
+     */
     public int getLine () {
         return line;
     }
     
+    /**
+     * @return Columna en la que se produjo el error
+     */
     public int getColumn () {
         return column;
     }
     
-    /** @return Mensaje de error que se le montrará al usuario, sin información específica de la posición del error */
-    public abstract String getErrorMessage ();
-    
-    /** Imprime por consola el error, utilizando {@link Debugger#error} */
+    @Override
     public final void print () {
         Debugger.INSTANCE.at(line, column).error(getErrorMessage());
     }

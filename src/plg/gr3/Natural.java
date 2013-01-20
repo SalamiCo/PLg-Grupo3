@@ -5,7 +5,6 @@ package plg.gr3;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-
 public class Natural extends Number {
     /**
      * serial version por defecto para poder serializar
@@ -56,15 +55,18 @@ public class Natural extends Number {
     }
     
     @Override
+    public int hashCode () {
+        return value;
+    }
+    
+    @Override
     public boolean equals (Object obj) {
-        boolean boEquals = false;
-        if (obj instanceof Natural) {
-            Natural anotherObj = (Natural) obj;
-            if (this.value == anotherObj.intValue()) {
-                boEquals = true;
-            }
+        if (!(obj instanceof Natural)) {
+            return false;
         }
-        return boEquals;
+        
+        Natural nat = (Natural) obj;
+        return (value == nat.value);
     }
     
     @Override
