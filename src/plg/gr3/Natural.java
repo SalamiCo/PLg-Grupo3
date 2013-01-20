@@ -5,7 +5,6 @@ package plg.gr3;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-
 public class Natural extends Number {
     /**
      * serial version por defecto para poder serializar
@@ -22,8 +21,10 @@ public class Natural extends Number {
      * 
      * @param value
      *            valor que contiene el Natural, siempre mayor que cero.
-     * */
-    public Natural (int value) throws IllegalArgumentException {
+     * @throws IllegalArgumentException
+     *             si el valor pasado es negativo
+     */
+    public Natural (int value) {
         if (value >= 0) {
             this.value = value;
         } else {
@@ -51,20 +52,33 @@ public class Natural extends Number {
         return value;
     }
     
+    /**
+     * @param str
+     *            Natural a parsear
+     * @return Natural leído
+     */
     public static Natural parseNat (String str) {
-        return new Natural(Integer.parseInt(str));
+        int i = Integer.parseInt(str);
+        if (i < 0) {
+            throw new NumberFormatException(str);
+        }
+        
+        return new Natural(i);
+    }
+    
+    @Override
+    public int hashCode () {
+        return value;
     }
     
     @Override
     public boolean equals (Object obj) {
-        boolean boEquals = false;
-        if (obj instanceof Natural) {
-            Natural anotherObj = (Natural) obj;
-            if (this.value == anotherObj.intValue()) {
-                boEquals = true;
-            }
+        if (!(obj instanceof Natural)) {
+            return false;
         }
-        return boEquals;
+        
+        Natural nat = (Natural) obj;
+        return (value == nat.value);
     }
     
     @Override

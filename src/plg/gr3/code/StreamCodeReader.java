@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Objects;
 
 import plg.gr3.BinaryOperator;
+import plg.gr3.UnaryOperator;
 import plg.gr3.code.instructions.BinaryOperatorInstruction;
 import plg.gr3.code.instructions.Instruction;
 import plg.gr3.code.instructions.LoadInstruction;
@@ -14,6 +15,7 @@ import plg.gr3.code.instructions.StopInstruction;
 import plg.gr3.code.instructions.StoreInstruction;
 import plg.gr3.code.instructions.Swap1Instruction;
 import plg.gr3.code.instructions.Swap2Instruction;
+import plg.gr3.code.instructions.UnaryOperatorInstruction;
 
 /**
  * Lector dce código de un {@link InputStream}
@@ -38,7 +40,22 @@ public class StreamCodeReader extends CodeReader {
         byte byteRead = stream.readByte();
         
         if ((byteRead & Instruction.OPMASK_OPERATOR) == Instruction.OPCODE_OPERATOR) {
-            return new BinaryOperatorInstruction(new BinaryOperator());
+            int code = byteRead & ~Instruction.OPCODE_OPERATOR;
+            
+            // Probamos si es un operador binario
+            BinaryOperator binOp = BinaryOperator.forCode(code);
+            if (binOp != null) {
+                return new BinaryOperatorInstruction(binOp);
+            }
+            
+            // Probamos si es un operador binario
+            UnaryOperator unOp = UnaryOperator.forCode(code);
+            if (unOp != null) {
+                return new UnaryOperatorInstruction(unOp);
+            }
+            
+            // El código de operador no se reconoce
+            throw new IOException("Formato de bytecode inválido");
             
         } else if ((byteRead & Instruction.OPMASK_PUSH) == Instruction.OPCODE_PUSH) {
             
@@ -47,10 +64,10 @@ public class StreamCodeReader extends CodeReader {
         } else if ((byteRead & Instruction.OPMASK_CAST) == Instruction.OPCODE_CAST) {
             
         } else if (byteRead == Instruction.OPCODE_LOAD) {
-            return new LoadInstruction(address);
+            return new LoadInstruction(stream.readInt());
             
         } else if (byteRead == Instruction.OPCODE_STORE) {
-            return new StoreInstruction(address);
+            return new StoreInstruction(stream.readInt());
             
         } else if (byteRead == Instruction.OPCODE_OUTPUT) {
             return new OutputInstruction();
