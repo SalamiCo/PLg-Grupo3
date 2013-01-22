@@ -1,8 +1,8 @@
-package plg.gr3.code.instructions;
+package plg.gr3.vm.instr;
 
-import plg.gr3.BinaryOperator;
-import plg.gr3.Operator;
-import plg.gr3.UnaryOperator;
+import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.Operator;
+import plg.gr3.data.UnaryOperator;
 import plg.gr3.vm.VirtualMachine;
 
 /**

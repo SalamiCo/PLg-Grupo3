@@ -1,6 +1,5 @@
-package plg.gr3;
+package plg.gr3.errors.compile;
 
-import plg.gr3.errors.compile.CompileError;
 
 //Clase que hereda de Compile error que maneja los errores de cuando se declara un mismo identificador dos veces
 

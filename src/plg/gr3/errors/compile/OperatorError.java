@@ -1,7 +1,7 @@
 package plg.gr3.errors.compile;
 
-import plg.gr3.Operator;
-import plg.gr3.parser.Type;
+import plg.gr3.data.Operator;
+import plg.gr3.data.Type;
 
 //Clase que hereda de Compile error que maneja los errores de tipos en operacion
 //es decir, no pordemos hacer (nat+boolean;char mod float etc)

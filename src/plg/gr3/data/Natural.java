@@ -1,4 +1,4 @@
-package plg.gr3;
+package plg.gr3.data;
 
 /**
  * Clase que implementa el tipo de los Naturales del lenguaje

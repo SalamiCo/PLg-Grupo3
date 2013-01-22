@@ -1,6 +1,6 @@
-package plg.gr3;
+package plg.gr3.errors.runtime;
 
-import plg.gr3.code.instructions.Instruction;
+import plg.gr3.vm.instr.Instruction;
 
 public final class NegativeNaturalError extends RuntimeError {
     

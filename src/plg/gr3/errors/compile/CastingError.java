@@ -1,6 +1,6 @@
 package plg.gr3.errors.compile;
 
-import plg.gr3.parser.Type;
+import plg.gr3.data.Type;
 
 //Clase que hereda de Compile error que maneja los errores de discordancia de tipos cuando hacemos el casting
 public class CastingError extends CompileError {

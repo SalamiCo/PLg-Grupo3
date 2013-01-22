@@ -1,10 +1,9 @@
-package plg.gr3.parser;
+package plg.gr3.data;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import plg.gr3.Natural;
 
 /**
  * Representación interna de los tipos del lenguaje

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import plg.gr3.code.instructions.Instruction;
+import plg.gr3.vm.instr.Instruction;
 
 /**
  * Lector de instrucciones abstracto.

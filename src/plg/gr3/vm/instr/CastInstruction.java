@@ -1,6 +1,6 @@
-package plg.gr3.code.instructions;
+package plg.gr3.vm.instr;
 
-import plg.gr3.parser.Type;
+import plg.gr3.data.Type;
 import plg.gr3.vm.VirtualMachine;
 
 /**

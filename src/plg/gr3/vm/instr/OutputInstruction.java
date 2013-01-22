@@ -1,10 +1,10 @@
-package plg.gr3.code.instructions;
+package plg.gr3.vm.instr;
 
 import java.io.IOException;
 import java.util.EmptyStackException;
 
-import plg.gr3.EmptyStackError;
-import plg.gr3.IOError;
+import plg.gr3.errors.runtime.EmptyStackError;
+import plg.gr3.errors.runtime.IOError;
 import plg.gr3.vm.VirtualMachine;
 
 /**

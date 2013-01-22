@@ -1,7 +1,7 @@
 package plg.gr3.errors.compile;
 
-import plg.gr3.Error;
 import plg.gr3.debug.Debugger;
+import plg.gr3.errors.Error;
 
 /**
  * Clase que representa un error en la compilación de un programa.

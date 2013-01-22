@@ -1,7 +1,8 @@
-package plg.gr3;
+package plg.gr3.errors.runtime;
 
-import plg.gr3.code.instructions.Instruction;
 import plg.gr3.debug.Debugger;
+import plg.gr3.errors.Error;
+import plg.gr3.vm.instr.Instruction;
 
 /**
  * Clase que representa un error en la ejecución de un programa.

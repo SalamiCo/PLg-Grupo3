@@ -1,4 +1,4 @@
-package plg.gr3;
+package plg.gr3.errors;
 
 import plg.gr3.debug.Debugger;
 

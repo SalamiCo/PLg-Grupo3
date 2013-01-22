@@ -1,7 +1,7 @@
 package plg.gr3.errors.compile;
 
+import plg.gr3.data.Type;
 import plg.gr3.lexer.LocatedToken;
-import plg.gr3.parser.Type;
 
 //Clase que hereda de Compile error que maneja los errores de discordancia de tipos cuando asignamos una 
 //expresion con una variable. Tiene dos atributos, 

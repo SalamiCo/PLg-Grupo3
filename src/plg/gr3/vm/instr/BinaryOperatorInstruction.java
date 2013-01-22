@@ -1,11 +1,11 @@
-package plg.gr3.code.instructions;
+package plg.gr3.vm.instr;
 
 import java.util.EmptyStackException;
 
-import plg.gr3.BinaryOperator;
-import plg.gr3.DivisionByZeroError;
-import plg.gr3.EmptyStackError;
-import plg.gr3.NegativeNaturalError;
+import plg.gr3.data.BinaryOperator;
+import plg.gr3.errors.runtime.DivisionByZeroError;
+import plg.gr3.errors.runtime.EmptyStackError;
+import plg.gr3.errors.runtime.NegativeNaturalError;
 import plg.gr3.vm.VirtualMachine;
 
 /**

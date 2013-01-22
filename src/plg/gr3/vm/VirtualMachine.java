@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
-import plg.gr3.BinaryOperator;
-import plg.gr3.RuntimeError;
-import plg.gr3.code.instructions.Instruction;
+import plg.gr3.data.BinaryOperator;
+import plg.gr3.errors.runtime.RuntimeError;
+import plg.gr3.vm.instr.Instruction;
 
 public final class VirtualMachine {
     

@@ -1,10 +1,10 @@
-package plg.gr3.code.instructions;
+package plg.gr3.vm.instr;
 
 import java.util.EmptyStackException;
 
-import plg.gr3.EmptyStackError;
-import plg.gr3.TypeMismatchError;
-import plg.gr3.UnaryOperator;
+import plg.gr3.data.UnaryOperator;
+import plg.gr3.errors.runtime.EmptyStackError;
+import plg.gr3.errors.runtime.TypeMismatchError;
 import plg.gr3.vm.VirtualMachine;
 
 /**

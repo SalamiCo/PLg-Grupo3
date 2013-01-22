@@ -1,6 +1,6 @@
-package plg.gr3.code.instructions;
+package plg.gr3.vm.instr;
 
-import plg.gr3.UninitializedError;
+import plg.gr3.errors.runtime.UninitializedError;
 import plg.gr3.vm.VirtualMachine;
 
 /**

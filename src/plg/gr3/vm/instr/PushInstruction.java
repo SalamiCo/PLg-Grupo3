@@ -1,4 +1,4 @@
-package plg.gr3.code.instructions;
+package plg.gr3.vm.instr;
 
 import java.util.Objects;
 

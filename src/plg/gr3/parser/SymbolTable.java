@@ -3,6 +3,8 @@ package plg.gr3.parser;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+import plg.gr3.data.Type;
+
 /**
  * Representación de la tabla de símbolos mediante una tabla con clave el identificador de la variable o costante que se
  * guarde y valor una tupla con los atributos de la tabla.

@@ -1,4 +1,4 @@
-package plg.gr3;
+package plg.gr3.data;
 
 /**
  * Interfaz que representa un operador.

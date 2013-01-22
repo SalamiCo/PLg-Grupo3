@@ -5,20 +5,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import plg.gr3.Natural;
-import plg.gr3.code.instructions.BinaryOperatorInstruction;
-import plg.gr3.code.instructions.CastInstruction;
-import plg.gr3.code.instructions.InputInstruction;
-import plg.gr3.code.instructions.Instruction;
-import plg.gr3.code.instructions.LoadInstruction;
-import plg.gr3.code.instructions.OutputInstruction;
-import plg.gr3.code.instructions.PushInstruction;
-import plg.gr3.code.instructions.StopInstruction;
-import plg.gr3.code.instructions.StoreInstruction;
-import plg.gr3.code.instructions.Swap1Instruction;
-import plg.gr3.code.instructions.Swap2Instruction;
-import plg.gr3.code.instructions.UnaryOperatorInstruction;
-import plg.gr3.parser.Type;
+import plg.gr3.data.Natural;
+import plg.gr3.data.Type;
+import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.CastInstruction;
+import plg.gr3.vm.instr.InputInstruction;
+import plg.gr3.vm.instr.Instruction;
+import plg.gr3.vm.instr.LoadInstruction;
+import plg.gr3.vm.instr.OutputInstruction;
+import plg.gr3.vm.instr.PushInstruction;
+import plg.gr3.vm.instr.StopInstruction;
+import plg.gr3.vm.instr.StoreInstruction;
+import plg.gr3.vm.instr.Swap1Instruction;
+import plg.gr3.vm.instr.Swap2Instruction;
+import plg.gr3.vm.instr.UnaryOperatorInstruction;
 
 /**
  * Generador de código que escribirá el código a un {@link OutputStream}
@@ -26,9 +26,6 @@ import plg.gr3.parser.Type;
  * @author PLg Grupo 03 2012/2013
  */
 public final class StreamCodeWriter extends CodeWriter {
-    
-    /** Si la cabecera del fichero se ha escrita */
-    private boolean writtenHeader = false;
     
     /** Si el generador está inhibido */
     private boolean inhibited = false;
@@ -48,11 +45,6 @@ public final class StreamCodeWriter extends CodeWriter {
     public void write (Instruction inst) {
         if (!inhibited) {
             try {
-                // Escribimos la cabecera si es necesario
-                if (!writtenHeader) {
-                    stream.writeUTF("PLG-G3\0");
-                    writtenHeader = true;
-                }
                 
                 // Escribimos la instrucción
                 if (inst instanceof BinaryOperatorInstruction) {
@@ -174,5 +166,10 @@ public final class StreamCodeWriter extends CodeWriter {
         } else {
             throw new IllegalArgumentException(value.toString());
         }
+    }
+    
+    @Override
+    public boolean isInhibited () {
+        return inhibited;
     }
 }

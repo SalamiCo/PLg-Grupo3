@@ -5,22 +5,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import plg.gr3.BinaryOperator;
-import plg.gr3.Natural;
-import plg.gr3.UnaryOperator;
-import plg.gr3.code.instructions.BinaryOperatorInstruction;
-import plg.gr3.code.instructions.CastInstruction;
-import plg.gr3.code.instructions.InputInstruction;
-import plg.gr3.code.instructions.Instruction;
-import plg.gr3.code.instructions.LoadInstruction;
-import plg.gr3.code.instructions.OutputInstruction;
-import plg.gr3.code.instructions.PushInstruction;
-import plg.gr3.code.instructions.StopInstruction;
-import plg.gr3.code.instructions.StoreInstruction;
-import plg.gr3.code.instructions.Swap1Instruction;
-import plg.gr3.code.instructions.Swap2Instruction;
-import plg.gr3.code.instructions.UnaryOperatorInstruction;
-import plg.gr3.parser.Type;
+import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.Natural;
+import plg.gr3.data.Type;
+import plg.gr3.data.UnaryOperator;
+import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.CastInstruction;
+import plg.gr3.vm.instr.InputInstruction;
+import plg.gr3.vm.instr.Instruction;
+import plg.gr3.vm.instr.LoadInstruction;
+import plg.gr3.vm.instr.OutputInstruction;
+import plg.gr3.vm.instr.PushInstruction;
+import plg.gr3.vm.instr.StopInstruction;
+import plg.gr3.vm.instr.StoreInstruction;
+import plg.gr3.vm.instr.Swap1Instruction;
+import plg.gr3.vm.instr.Swap2Instruction;
+import plg.gr3.vm.instr.UnaryOperatorInstruction;
 
 /**
  * Lector dce código de un {@link InputStream}
@@ -43,6 +43,7 @@ public class StreamCodeReader extends CodeReader {
     @Override
     public Instruction read () {
         try {
+            
             byte byteRead = stream.readByte();
             
             if ((byteRead & Instruction.OPMASK_OPERATOR) == Instruction.OPCODE_OPERATOR) {

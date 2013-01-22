@@ -6,9 +6,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import plg.gr3.Operator;
-import plg.gr3.code.instructions.Instruction;
+import plg.gr3.data.Operator;
+import plg.gr3.data.Type;
 import plg.gr3.errors.compile.CompileError;
+import plg.gr3.vm.instr.Instruction;
 
 /**
  * Clase que representa los atributos, heredados y sintetizados, de cualquiera de los nodos del arbol sintáctico.

@@ -8,24 +8,26 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import plg.gr3.BinaryOperator;
-import plg.gr3.DuplicateIDError;
-import plg.gr3.Natural;
-import plg.gr3.UnaryOperator;
 import plg.gr3.code.CodeWriter;
-import plg.gr3.code.instructions.LoadInstruction;
-import plg.gr3.code.instructions.PushInstruction;
+import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.Natural;
+import plg.gr3.data.Type;
+import plg.gr3.data.UnaryOperator;
 import plg.gr3.debug.Debugger;
 import plg.gr3.errors.compile.AssignError;
 import plg.gr3.errors.compile.AssignToConstantError;
 import plg.gr3.errors.compile.CastingError;
 import plg.gr3.errors.compile.CompileError;
+import plg.gr3.errors.compile.DuplicateIDError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentError;
 import plg.gr3.errors.compile.UnexpectedTokenError;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.lexer.LocatedToken;
 import plg.gr3.lexer.TokenType;
+import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.LoadInstruction;
+import plg.gr3.vm.instr.PushInstruction;
 
 /**
  * Analizador sintáctico del lenguaje.
@@ -610,9 +612,7 @@ public final class Parser implements Closeable {
                     //  RTerm1.codh = RTerm0.codh || Fact.cod || Op1.op }
                     codeWriter.write(attrFact.getInstructions());
                     
-                    //FIXME Cambiar el concreteInstruction, y pasarle los argumentos correctos
-                    ConcreteInstruction inst = new ConcreteInstruction();
-                    codeWriter.write(inst);
+                    codeWriter.write(new BinaryOperatorInstruction(op));
                     
                     attrb.type(attrRTerm.getType());
                 } else {
@@ -676,18 +676,12 @@ public final class Parser implements Closeable {
                 }
                 
                 if (attrShft != null) {
-                    
                     Type t = attrOp2.getOperator(BinaryOperator.class).getApplyType(attrShft.getType(), attr.getType());
                     Attributes attrInhRFact = new Attributes.Builder().type(t).create();
-                    Attributes attrRFact = parseRTerm(last, attrRFact);
+                    Attributes attrRFact = parseRTerm(last, attrInhRFact);
                     
                     // RFact1.codh = RFact0.codh || Shft.cod || Op2.op }
-                    //FIXME Cambiar el concreteInstruction, y pasarle los argumentos correctos
-                    ConcreteInstruction inst = new ConcreteInstructions();
-                    codeWriter.write(inst);
-                    
-                } else {
-                    return null;
+                    codeWriter.write(new BinaryOperatorInstruction(op));
                 }
             } else {
                 attrb.type(attr.getType());

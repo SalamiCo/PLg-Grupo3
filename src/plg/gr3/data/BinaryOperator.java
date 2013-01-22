@@ -1,10 +1,9 @@
-package plg.gr3;
+package plg.gr3.data;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import plg.gr3.parser.Type;
 
 /**
  * Clase que representa los operadores binarios del lenguaje.
