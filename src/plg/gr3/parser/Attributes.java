@@ -49,20 +49,14 @@ public final class Attributes {
     private final int address;
     
     /**
-     * @param ident
-     *            Nombre del identificador
-     * @param address
-     *            La dirección de memoria
-     * @param constant
-     *            Si se trata de una constante o variable
-     * @param errors
-     *            Si hubo errores y cual
-     * @param operator
-     *            El operador a usar
-     * @param type
-     *            Tipo de una variable o expresión
-     * @param value
-     *            El valor a usar
+     * @param ident Nombre del identificador
+     * @param address La dirección de memoria
+     * @param constant Si se trata de una constante o variable
+     * @param errors Si hubo errores y cual
+     * @param operator El operador a usar
+     * @param type Tipo de una variable o expresión
+     * @param value El valor a usar
+     * @param instructions Lista de instrucciones
      */
     private Attributes (
         String ident, int address, boolean constant, Collection<CompileError> errors, Operator operator, Type type,
@@ -115,8 +109,7 @@ public final class Attributes {
     }
     
     /**
-     * @param type
-     *            Tipo de operador a usar
+     * @param type Tipo de operador a usar
      * @return El atributo <tt>operator</tt>
      */
     public <T extends Operator> T getOperator (Class<T> type) {
@@ -132,8 +125,7 @@ public final class Attributes {
     }
     
     /**
-     * @param cls
-     *            Tipo del atributo
+     * @param cls Tipo del atributo
      * @return El atributo <tt>value</tt> si es del tipo especificado, <tt>null</tt> en caso contrario
      */
     public <T> T getValue (Class<T> cls) {

@@ -78,7 +78,7 @@ public enum TokenType {
     
     // Palabras reservadas
     RW_PROGRAM("program:", true),
-    RW_VARCONSTS("var-consts", true),
+    RW_VARCONSTS("vars-consts", true),
     RW_INSTRUCTIONS("instructions", true),
     RW_VAR("var", true),
     RW_CONST("const", true),
@@ -133,12 +133,9 @@ public enum TokenType {
     }
     
     /**
-     * @param regex
-     *            Expresión regular que define la categoría léxica
-     * @param laPart
-     *            Parte del look-ahead
-     * @param keyword
-     *            Si se trata de una palabra reservada
+     * @param regex Expresión regular que define la categoría léxica
+     * @param laPart Parte del look-ahead
+     * @param keyword Si se trata de una palabra reservada
      */
     private TokenType (String regex, String laPart, boolean keyword) {
         // Tratamos adecuadamente el caso de una expresión nula. Puesto que indica que su valor no va a usarse, no nos
@@ -170,8 +167,7 @@ public enum TokenType {
     }
     
     /**
-     * @param str
-     *            Cadena a comprobar
+     * @param str Cadena a comprobar
      * @return <tt>true</tt> si la cadena encaja, <tt>false</tt> si no
      */
     public boolean matches (String str) {
@@ -179,8 +175,7 @@ public enum TokenType {
     }
     
     /**
-     * @param matcher
-     *            Matcher a comprobar
+     * @param matcher Matcher a comprobar
      * @return <tt>true</tt> si la cadena encaja, <tt>false</tt> si no
      */
     public boolean recognizes (Matcher matcher) {

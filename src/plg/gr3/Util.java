@@ -7,12 +7,16 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 
 import plg.gr3.code.ListCodeWriter;
+import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
 
 public final class Util {
     
     public static void main (String[] args) throws Exception {
+        Debugger.INSTANCE.setLoggingEnabled(true);
+        Debugger.INSTANCE.setDebugEnabled(true);
+        
         File file = new File("/home/darkhogg/Universidad/PLg/EjemploMem.li");
         Reader reader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
         

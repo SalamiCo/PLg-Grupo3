@@ -3,11 +3,11 @@ package plg.gr3.errors.compile;
 
 //Clase que hereda de Compile error que maneja los errores de cuando se declara un mismo identificador dos veces
 
-public class DuplicateIDError extends CompileError {
+public class DuplicateIdentifierError extends CompileError {
     
     String ident;
     
-    public DuplicateIDError (String ident, int line, int column) {
+    public DuplicateIdentifierError (String ident, int line, int column) {
         super(line, column);
         
         this.ident = ident;

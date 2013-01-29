@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-
 /**
  * Representación interna de los tipos del lenguaje
  * 
@@ -12,26 +11,29 @@ import java.util.Objects;
  */
 public final class Type {
     
+    /** Mapa de nombres a sus tipos */
+    private static final Map<String, Type> TYPES = new HashMap<>();
+    
     /** Mapa de códigos a sus tipos */
-    private static final Map<Integer, Type> TYPES = new HashMap<>();
+    private static final Map<Integer, Type> TYPECODES = new HashMap<>();
     
     /** Tipo predefinido para naturales */
-    public static final Type NATURAL = new Type("natural", 0);
+    public static final Type NATURAL = defineType("natural", 0);
     
     /** Tipo predefinido para enteros */
-    public static final Type INTEGER = new Type("integer", 1);
+    public static final Type INTEGER = defineType("integer", 1);
     
     /** Tipo predefinido para punto flotante */
-    public static final Type FLOAT = new Type("float", 2);
+    public static final Type FLOAT = defineType("float", 2);
     
     /** Tipo predefinido para booleanos */
-    public static final Type BOOLEAN = new Type("boolean", 3);
+    public static final Type BOOLEAN = defineType("boolean", 3);
     
     /** Tipo predefinido para caracteres */
-    public static final Type CHARACTER = new Type("character", 4);
+    public static final Type CHARACTER = defineType("character", 4);
     
     /** Tipo predefinido para errores en la gramática */
-    public static final Type ERROR = new Type("");
+    public static final Type ERROR = forName("");
     
     /** Nombre del tipo */
     private final String name;
@@ -40,23 +42,16 @@ public final class Type {
     private final int code;
     
     /**
-     * @param name
-     *            Nombre del tipo
-     * @param code
-     *            Código del tipo
+     * @param name Nombre del tipo
+     * @param code Código del tipo
      */
     private Type (String name, int code) {
         this.name = Objects.requireNonNull(name, "name");
         this.code = code;
         
         if (code != 0xFFFFFFFF) {
-            TYPES.put(Integer.valueOf(code), this);
+            TYPECODES.put(Integer.valueOf(code), this);
         }
-    }
-    
-    /** param name Nombre del tipo */
-    public Type (String name) {
-        this(name, 0xFFFFFFFF);
     }
     
     /** @return Nombre del tipo */
@@ -124,55 +119,30 @@ public final class Type {
      * Funcion que te devuelve verdadero si el tipo de typeAssigned es asignable al tipo de ident. En caso contrario
      * devuelve falso
      */
-    public boolean typeMatch (Type ident, Type typeAssigned) {
+    public static boolean assignable (Type ident, Type typeAssigned) {
         if (ident.equals(Type.NATURAL)) {
-            if (typeAssigned.equals(NATURAL)) {
-                return true;
-            }
+            return typeAssigned.equals(NATURAL);
             
+        } else if (ident.equals(Type.INTEGER)) {
+            return typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER);
+            
+        } else if (ident.equals(Type.FLOAT)) {
+            return typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER) || typeAssigned.equals(FLOAT);
+            
+        } else if (ident.equals(Type.BOOLEAN)) {
+            return typeAssigned.equals(BOOLEAN);
+            
+        } else if (ident.equals(Type.CHARACTER)) {
+            return typeAssigned.equals(CHARACTER);
+            
+        } else {
             return false;
-            
         }
-        if (ident.equals(Type.INTEGER)) {
-            if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        
-        if (ident.equals(Type.FLOAT)) {
-            if (typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER) || typeAssigned.equals(FLOAT)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        if (ident.equals(Type.BOOLEAN)) {
-            if (typeAssigned.equals(BOOLEAN)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        
-        if (ident.equals(Type.CHARACTER)) {
-            if (typeAssigned.equals(CHARACTER)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        
-        return false;
-        
     }
     
     /**
-     * @param castingType
-     *            Tipo al que convertir
-     * @param originalType
-     *            Tipo original
+     * @param castingType Tipo al que convertir
+     * @param originalType Tipo original
      * @return <tt>true</tt> si se puede convertir de <tt>typeCasted</tt> a <tt>typeCasting</tt>, <tt>false></tt> en
      *         caso contrario
      */
@@ -198,11 +168,7 @@ public final class Type {
      * Funcion que nos devuelve verdadero si es de tipo numerico en cualquier otro caso devuelve false
      */
     public boolean isNumeric () {
-        if (this.equals(NATURAL) || this.equals(INTEGER) || this.equals(FLOAT)) {
-            return true;
-        } else {
-            return false;
-        }
+        return equals(NATURAL) || equals(INTEGER) || equals(FLOAT);
     }
     
     /*
@@ -237,5 +203,23 @@ public final class Type {
             }
         }
         return null;
+    }
+    
+    public static Type forName (String name) {
+        if (TYPES.containsKey(name)) {
+            return TYPES.get(name);
+        } else {
+            return defineType(name, 0xFFFFFFFF);
+        }
+    }
+    
+    private static Type defineType (String name, int code) {
+        if (TYPES.containsKey(name)) {
+            throw new IllegalStateException(name + " already exists");
+        }
+        
+        Type type = new Type(name, code);
+        TYPES.put(name, type);
+        return type;
     }
 }

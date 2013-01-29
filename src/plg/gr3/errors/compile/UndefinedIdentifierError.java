@@ -5,11 +5,11 @@ package plg.gr3.errors.compile;
  * previamente declarado
  */
 
-public class UndefinedIdentError extends CompileError {
+public class UndefinedIdentifierError extends CompileError {
     
     private String identName;
     
-    public UndefinedIdentError (String identName, int line, int column) {
+    public UndefinedIdentifierError (String identName, int line, int column) {
         super(line, column);
         this.identName = identName;
     }
