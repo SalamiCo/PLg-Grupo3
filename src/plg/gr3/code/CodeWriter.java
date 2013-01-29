@@ -16,7 +16,7 @@ public abstract class CodeWriter {
     }
     
     /**
-     * Escribe una instrucción en el destino de este escritor. Si la escritura de código se hainhibido, este método no
+     * Escribe una instrucción en el destino de este escritor. Si la escritura de código se ha inhibido, este método no
      * hace nada.
      * 
      * @param inst
