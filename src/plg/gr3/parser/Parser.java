@@ -26,8 +26,15 @@ import plg.gr3.lexer.Lexer;
 import plg.gr3.lexer.LocatedToken;
 import plg.gr3.lexer.TokenType;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.CastInstruction;
+import plg.gr3.vm.instr.InputInstruction;
 import plg.gr3.vm.instr.LoadInstruction;
+import plg.gr3.vm.instr.OutputInstruction;
 import plg.gr3.vm.instr.PushInstruction;
+import plg.gr3.vm.instr.StoreInstruction;
+import plg.gr3.vm.instr.Swap1Instruction;
+import plg.gr3.vm.instr.Swap2Instruction;
+import plg.gr3.vm.instr.UnaryOperatorInstruction;
 
 /**
  * Analizador sintáctico del lenguaje.
@@ -180,21 +187,17 @@ public final class Parser implements Closeable {
                 return null;
             }
             
-            //Compruebo que identificador no haya sido duplicado
-            if (this.symbolTable.hasIdentifier(attrDec.getIdentifier())) {
-                DuplicateIDError error =
-                    new DuplicateIDError(attrDec.getIdentifier(), lexer.getLine(), lexer.getColumn());
-                error.print();
-                errors.add(error);
-                
-            } else {
-                // RDecs
-                symbolTable.putIdentifier(
-                    attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
-                    attrDec.getValue());
-                
-                parseRDecs(last, Attributes.DEFAULT);
-            }
+            /*
+             * Se supone que en esta produccion se crea la tabla de símbolos. Así que no me tengo que preocupar si el
+             * identificador ya ha sido declarado porque es el 1º
+             */
+            
+            // RDecs
+            symbolTable.putIdentifier(
+                attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
+                attrDec.getValue());
+            
+            parseRDecs(last, Attributes.DEFAULT);
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -218,14 +221,22 @@ public final class Parser implements Closeable {
                 return Attributes.DEFAULT;
             }
             
-            //TODO comprobar que el identificador no esta repetido
-            
-            // RDecs
-            symbolTable.putIdentifier(
-                attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
-                attrDec.getValue());
-            
-            parseRDecs(last, Attributes.DEFAULT);
+            //Compruebo que identificador no haya sido duplicado
+            if (this.symbolTable.hasIdentifier(attrDec.getIdentifier())) {
+                DuplicateIDError error =
+                    new DuplicateIDError(attrDec.getIdentifier(), lexer.getLine(), lexer.getColumn());
+                error.print();
+                errors.add(error);
+                
+            } else {
+                
+                // RDecs
+                symbolTable.putIdentifier(
+                    attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
+                    attrDec.getValue());
+                
+                parseRDecs(last, Attributes.DEFAULT);
+            }
             
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
@@ -382,6 +393,11 @@ public final class Parser implements Closeable {
                                 error.print();
                                 errors.add(error);
                             }
+                            
+                            //Inst.cod = Expr.cod || desapila-dir(Inst.tsh[ident.lex].dir) }
+                            codeWriter.write(exprAttributes.getInstructions());
+                            //
+                            
                         }
                         
                     }
@@ -410,6 +426,10 @@ public final class Parser implements Closeable {
                             error.print();
                             errors.add(error);
                         }
+                        
+                        //Inst.cod = in(Inst.tsh[ident.lex].type) || desapila-dir(Inst.tsh[ident.lex].dir) }
+                        codeWriter.write(new InputInstruction(symbolTable.getIdentfierType(identRead.getLexeme())));
+                        codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(tokenRead.getLexeme())));
                     }
                     
                     expect(last, TokenType.SYM_PAR_RIGHT);
@@ -419,8 +439,12 @@ public final class Parser implements Closeable {
                 //out lpar Expr rpar
                 case RW_OUT:
                     expect(last, TokenType.SYM_PAR_LEFT);
-                    parseExpr(last, Attributes.DEFAULT);
+                    Attributes attrExpr = parseExpr(last, Attributes.DEFAULT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
+                    
+                    //Inst.cod = Expr.cod || out}
+                    codeWriter.write(attrExpr.getInstructions());
+                    codeWriter.write(new OutputInstruction());
                 
                 break;
                 
@@ -428,6 +452,10 @@ public final class Parser implements Closeable {
                 case RW_SWAP1:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
+                    
+                    //FIXME Comprobar que este bien  
+                    // Inst.cod = swap1
+                    codeWriter.write(new Swap1Instruction());
                 
                 break;
                 
@@ -435,6 +463,9 @@ public final class Parser implements Closeable {
                 case RW_SWAP2:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     expect(last, TokenType.SYM_PAR_RIGHT);
+                    
+                    // Inst.cod = swap2
+                    codeWriter.write(new Swap2Instruction());
                 
                 break;
             
@@ -556,7 +587,7 @@ public final class Parser implements Closeable {
                 
                 // FExpr.cod = Term.cod || Op0.op }
                 codeWriter.write(attrTerm.getInstructions());
-                codeWriter.write(attrOp0.getInstructions());
+                codeWriter.write(new BinaryOperatorInstruction(op));
                 
                 attrb.type(attrTerm.getType());
             } else {
@@ -611,7 +642,6 @@ public final class Parser implements Closeable {
                     
                     //  RTerm1.codh = RTerm0.codh || Fact.cod || Op1.op }
                     codeWriter.write(attrFact.getInstructions());
-                    
                     codeWriter.write(new BinaryOperatorInstruction(op));
                     
                     attrb.type(attrRTerm.getType());
@@ -678,12 +708,14 @@ public final class Parser implements Closeable {
                 if (attrShft != null) {
                     Type t = attrOp2.getOperator(BinaryOperator.class).getApplyType(attrShft.getType(), attr.getType());
                     Attributes attrInhRFact = new Attributes.Builder().type(t).create();
-                    Attributes attrRFact = parseRTerm(last, attrInhRFact);
+                    Attributes attrRFact = parseRFact(last, attrInhRFact);
                     
                     // RFact1.codh = RFact0.codh || Shft.cod || Op2.op }
+                    codeWriter.write(attrShft.getInstructions());
                     codeWriter.write(new BinaryOperatorInstruction(op));
                 }
             } else {
+                //Epsilon
                 attrb.type(attr.getType());
             }
         } catch (NoSuchElementException exc) {
@@ -706,6 +738,11 @@ public final class Parser implements Closeable {
             Attributes fshftSynAttr = parseFShft(true, fshftInhAttr);
             
             attrb.type(fshftSynAttr.getType());
+            
+            //Shft.cod = Unary.cod || FShft.cod
+            
+            codeWriter.write(unarySynAttr.getInstructions());
+            codeWriter.write(fshftSynAttr.getInstructions());
             
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
@@ -740,6 +777,10 @@ public final class Parser implements Closeable {
                     errors.add(error);
                 }
                 
+                // FShft.cod = Shft.cod || Op3.op
+                codeWriter.write(shftSynAttr.getInstructions());
+                codeWriter.write(new BinaryOperatorInstruction(op));
+                
             } else {
                 //Epsilon
                 attrb.type(attr.getType());
@@ -761,6 +802,7 @@ public final class Parser implements Closeable {
         try {
             //Op4
             Attributes attrOp4 = parseOp4(last, Attributes.DEFAULT);
+            
             if (attrOp4 != null) {
                 //Unary
                 Attributes attrUnary = parseUnary(last, Attributes.DEFAULT);
@@ -774,6 +816,9 @@ public final class Parser implements Closeable {
                     error.print();
                     errors.add(error);
                 }
+                
+                // Unary0.cod = Unary1.cod || Op4.op
+                codeWriter.write(new UnaryOperatorInstruction(op));
                 
             } else {
                 Attributes attrParen = parseParen(last, Attributes.DEFAULT);
@@ -799,6 +844,10 @@ public final class Parser implements Closeable {
                         error.print();
                         errors.add(error);
                     }
+                    
+                    //Unary.cod = Paren.cod || Cast.type
+                    codeWriter.write(attrCast.getInstructions());
+                    codeWriter.write(new CastInstruction(attrCast.getType()));
                 }
             }
             return attrb.create();
@@ -826,8 +875,7 @@ public final class Parser implements Closeable {
                     case SYM_PAR_LEFT: {
                         parseExpr(last, Attributes.DEFAULT);
                         expect(last, TokenType.SYM_PAR_RIGHT);
-                        PushInstruction inst = new PushInstruction(tokenRead.getToken().getType());
-                        codeWriter.write(inst);
+                        
                     }
                     break;
                     
@@ -845,6 +893,11 @@ public final class Parser implements Closeable {
                             attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
                         }
                         
+                        /*
+                         * FIXME en la memoria pone cod0 ← Si tsh0[ident.lex].const = true apila(tsh0[ident.lex].value)
+                         * Si no apila-dir(tsh0 [ident.lex].dir) } que no es para nada lo que se está haciendo aqui
+                         */
+                        
                         // Paren.cod = apila-dir(Paren.tsh[ident.lex].dir) }
                         int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
                         LoadInstruction inst = new LoadInstruction(addr);
@@ -854,6 +907,9 @@ public final class Parser implements Closeable {
                 }
             } else {
                 attrb.type(litAttributes.getType());
+                //Paren.cod = apilar(Lit.value)  
+                PushInstruction inst = new PushInstruction(litAttributes.getValue());
+                codeWriter.write(inst);
             }
             
         } catch (NoSuchElementException exc) {
