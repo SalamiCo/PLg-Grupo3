@@ -33,8 +33,7 @@ public class StreamCodeReader extends CodeReader {
     private final DataInputStream stream;
     
     /**
-     * @param stream
-     *            Stream que usará este lector
+     * @param stream Stream que usará este lector
      */
     public StreamCodeReader (InputStream stream) {
         this.stream = new DataInputStream(Objects.requireNonNull(stream, "stream"));
@@ -43,7 +42,6 @@ public class StreamCodeReader extends CodeReader {
     @Override
     public Instruction read () {
         try {
-            
             byte byteRead = stream.readByte();
             
             if ((byteRead & Instruction.OPMASK_OPERATOR) == Instruction.OPCODE_OPERATOR) {
