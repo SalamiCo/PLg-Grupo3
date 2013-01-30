@@ -31,6 +31,7 @@ import plg.gr3.vm.instr.InputInstruction;
 import plg.gr3.vm.instr.LoadInstruction;
 import plg.gr3.vm.instr.OutputInstruction;
 import plg.gr3.vm.instr.PushInstruction;
+import plg.gr3.vm.instr.StopInstruction;
 import plg.gr3.vm.instr.StoreInstruction;
 import plg.gr3.vm.instr.Swap1Instruction;
 import plg.gr3.vm.instr.Swap2Instruction;
@@ -142,11 +143,15 @@ public final class Parser implements Closeable {
             
             // SDecs SInsts
             parseSDecs(true, Attributes.DEFAULT);
-            parseSInsts(true, Attributes.DEFAULT);
+            Attributes attrSInsts = parseSInsts(true, Attributes.DEFAULT);
             
             // fllave fin
             expect(true, TokenType.SYM_CURLY_RIGHT);
             expect(true, TokenType.EOF);
+            
+            // Program.cod = SInsts.cod || stop }
+            codeWriter.write(attrSInsts.getInstructions());
+            codeWriter.write(new StopInstruction());
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -313,8 +318,8 @@ public final class Parser implements Closeable {
             // Inst
             parseInst(last, Attributes.DEFAULT);
             
-            // RInst
-            parseRInst(last, Attributes.DEFAULT);
+            // RInsts
+            parseRInsts(last, Attributes.DEFAULT);
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -323,7 +328,7 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
-    private Attributes parseRInst (boolean last, Attributes attr) throws IOException {
+    private Attributes parseRInsts (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         
         // RInsts ::=
@@ -332,10 +337,13 @@ public final class Parser implements Closeable {
             expect(last, TokenType.SYM_SEMICOLON);
             
             // Inst
-            parseInst(last, Attributes.DEFAULT);
+            Attributes attrInst = parseInst(last, Attributes.DEFAULT);
+            
+            // RInsts1.codh = RInsts0.codh || Inst.cod
+            codeWriter.write(attrInst.getInstructions());
             
             // RInsts
-            parseRInst(last, Attributes.DEFAULT);
+            parseRInsts(last, Attributes.DEFAULT);
             
         } catch (NoSuchElementException exc) {
             return Attributes.DEFAULT;
@@ -365,27 +373,34 @@ public final class Parser implements Closeable {
                     
                     // Comprobamos que el identificador existe
                     if (!symbolTable.hasIdentifier(tokenRead.getLexeme())) {
-                        UndefinedIdentifierError error =
+                        UndefinedIdentifierError errorIDExist =
                             new UndefinedIdentifierError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
-                        errors.add(error);
+                        errors.add(errorIDExist);
+                        
+                        // Comprobamos que no estamos asignando la expresion a una constante
+                        if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
+                            AssignToConstantError errorConstant =
+                                new AssignToConstantError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            errors.add(errorConstant);
+                        }
+                        
+                        /*
+                         * Comprobamos que el tipo de la expresion y del identificador son compatibles para la
+                         * asignacion
+                         */
+                        Type identType = symbolTable.getIdentfierType(tokenRead.getLexeme());
+                        Type exprType = exprAttributes.getType();
+                        
+                        if (!Type.assignable(exprType, identType)) {
+                            AssignError error = new AssignError(identType, exprType, tokenRead);
+                            error.print();
+                            errors.add(error);
+                        }
                     }
                     
-                    // Comprobamos que no estamos asignando la expresion a una constante
-                    if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
-                        AssignToConstantError error =
-                            new AssignToConstantError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
-                        errors.add(error);
-                    }
-                    
-                    // Comprobamos que el tipo de la expresion y del identificador Son compatibles para la asignacion
-                    Type identType = symbolTable.getIdentfierType(tokenRead.getLexeme());
-                    Type exprType = exprAttributes.getType();
-                    
-                    if (!Type.assignable(exprType, identType)) {
-                        AssignError error = new AssignError(identType, exprType, tokenRead);
-                        error.print();
-                        errors.add(error);
-                    }
+                    // Inst.cod = Expr.cod || desapila-dir(Inst.tsh[ident.lex].dir) }
+                    codeWriter.write(exprAttributes.getInstructions());
+                    codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(tokenRead.getLexeme())));
                 
                 break;
                 
@@ -414,7 +429,7 @@ public final class Parser implements Closeable {
                         
                         // Inst.cod = in(Inst.tsh[ident.lex].type) || desapila-dir(Inst.tsh[ident.lex].dir) }
                         codeWriter.write(new InputInstruction(symbolTable.getIdentfierType(identRead.getLexeme())));
-                        codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(tokenRead.getLexeme())));
+                        codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(identRead.getLexeme())));
                     }
                     
                     expect(last, TokenType.SYM_PAR_RIGHT);
@@ -882,14 +897,22 @@ public final class Parser implements Closeable {
                         }
                         
                         /*
-                         * FIXME en la memoria pone cod0 ← Si tsh0[ident.lex].const = true apila(tsh0[ident.lex].value)
-                         * Si no apila-dir(tsh0 [ident.lex].dir) } que no es para nada lo que se está haciendo aqui
+                         * Paren.cod = Si Paren.tsh[ident.lex].const = true apila(Paren.tsh[ident.lex].value) Si no
+                         * apila-dir(Paren.tsh[ident.lex].dir)
                          */
                         
-                        // Paren.cod = apila-dir(Paren.tsh[ident.lex].dir) }
-                        int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
-                        LoadInstruction inst = new LoadInstruction(addr);
-                        codeWriter.write(inst);
+                        if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
+                            
+                            PushInstruction inst =
+                                new PushInstruction(symbolTable.getIdentifierValue(tokenRead.getLexeme()));
+                            codeWriter.write(inst);
+                            
+                        } else {
+                            int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
+                            LoadInstruction inst = new LoadInstruction(addr);
+                            codeWriter.write(inst);
+                        }
+                        
                     }
                     break;
                 }
