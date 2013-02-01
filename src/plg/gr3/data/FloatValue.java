@@ -5,7 +5,7 @@ package plg.gr3.data;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public final class FloatValue extends Value {
+public final class FloatValue extends NumericValue {
     
     /** Valor numérico del flotante */
     private final float value;

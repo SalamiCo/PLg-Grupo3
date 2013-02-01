@@ -28,19 +28,22 @@ public enum BinaryOperator implements Operator {
         
         @Override
         public Value apply (Value o1, Value o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+            Type t1 = o1.getType();
+            Type t2 = o2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Number n1 = (Number) o1;
-            Number n2 = (Number) o2;
-            Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
-            if (type.equals(Type.NATURAL)) {
-                return new NaturalValue(n1.intValue() + n2.intValue());
-            } else if (type.equals(Type.INTEGER)) {
-                return new Integer(n1.intValue() + n2.intValue());
-            } else if (type.equals(Type.FLOAT)) {
-                return new Float(n1.floatValue() + n2.floatValue());
+            Type ta = getApplyType(t1, t2);
+            if (ta.equals(Type.NATURAL)) {
+                return NaturalValue.valueOf(o1.toNaturalValue().getValue() + o2.toNaturalValue().getValue());
+                
+            } else if (ta.equals(Type.INTEGER)) {
+                return IntegerValue.valueOf(o1.toIntegerValue().getValue() + o2.toIntegerValue().getValue());
+                
+            } else if (ta.equals(Type.FLOAT)) {
+                return FloatValue.valueOf(o1.toFloatValue().getValue() + o2.toFloatValue().getValue());
+                
             } else {
                 throw new IllegalArgumentException();
             }

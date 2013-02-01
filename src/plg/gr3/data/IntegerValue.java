@@ -5,7 +5,7 @@ package plg.gr3.data;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public final class IntegerValue extends Value {
+public final class IntegerValue extends NumericValue {
     
     /** Valor numérico del entero */
     private final int value;

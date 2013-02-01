@@ -5,7 +5,7 @@ package plg.gr3.data;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public class NaturalValue extends Value {
+public class NaturalValue extends NumericValue {
     
     /** Valor numérico del natural */
     private final int value;
