@@ -84,26 +84,8 @@ public final class Type {
         return "Type(" + name + ")";
     }
     
-    /*
-     * funcion que dado un objeto te devuelve de que tipo es en caso de erro te devuelve null
-     */
-    public static Type forValue (Object obj) {
-        if (obj instanceof java.lang.Float) {
-            return Type.FLOAT;
-        }
-        if (obj instanceof java.lang.Integer) {
-            return Type.INTEGER;
-        }
-        if (obj instanceof Natural) {
-            return Type.NATURAL;
-        }
-        if (obj instanceof java.lang.Boolean) {
-            return Type.BOOLEAN;
-        }
-        if (obj instanceof java.lang.Character) {
-            return Type.CHARACTER;
-        }
-        return null;
+    public static Type forValue (Value val) {
+        return val.getType();
     }
     
     public static Type forCode (int code) {
@@ -174,35 +156,26 @@ public final class Type {
     /*
      * funcion que dados dos tipos te devuelve el de mayor tamaño si no son comparables te devuelve null
      */
-    public static Type getWiderType (Type ident, Type typeAssigned) {
-        if (ident.equals(typeAssigned)) {
-            return forValue(ident);
-        }
-        if (ident.equals(Type.NATURAL)) {
-            if (typeAssigned.equals(INTEGER)) {
-                return Type.INTEGER;
+    public static Type getWiderType (Type t1, Type t2) {
+        if (t1.equals(t2)) {
+            return t1;
+        } else if (t1.equals(Type.NATURAL)) {
+            if (t2.equals(INTEGER) || t2.equals(FLOAT)) {
+                return t2;
             }
-            if (typeAssigned.equals(FLOAT)) {
-                return Type.FLOAT;
+        } else if (t1.equals(Type.INTEGER)) {
+            if (t2.equals(NATURAL)) {
+                return t1;
+            } else if (t2.equals(FLOAT)) {
+                return t2;
             }
-        }
-        if (ident.equals(Type.INTEGER)) {
-            if (typeAssigned.equals(NATURAL)) {
-                return Type.INTEGER;
-            }
-            if (typeAssigned.equals(FLOAT)) {
-                return Type.FLOAT;
+        } else if (t1.equals(Type.FLOAT)) {
+            if (t2.equals(Type.NATURAL) || t2.equals(Type.INTEGER)) {
+                return t1;
             }
         }
-        if (ident.equals(Type.FLOAT)) {
-            if (typeAssigned.equals(NATURAL)) {
-                return Type.NATURAL;
-            }
-            if (typeAssigned.equals(INTEGER)) {
-                return Type.FLOAT;
-            }
-        }
-        return null;
+        
+        return Type.ERROR;
     }
     
     public static Type forName (String name) {

@@ -6,7 +6,11 @@ import java.io.InputStream;
 import java.util.Objects;
 
 import plg.gr3.data.BinaryOperator;
-import plg.gr3.data.Natural;
+import plg.gr3.data.BooleanValue;
+import plg.gr3.data.CharacterValue;
+import plg.gr3.data.FloatValue;
+import plg.gr3.data.IntegerValue;
+import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
@@ -64,22 +68,22 @@ public class StreamCodeReader extends CodeReader {
                 
             } else if ((byteRead & Instruction.OPMASK_PUSH) == Instruction.OPCODE_PUSH) {
                 int code = byteRead & ~Instruction.OPCODE_PUSH;
-                Type type = Type.forValue(code);
+                Type type = Type.forCode(code);
                 
                 if (type == Type.BOOLEAN) {
-                    return new PushInstruction(Boolean.valueOf(stream.readBoolean()));
+                    return new PushInstruction(BooleanValue.valueOf(stream.readBoolean()));
                     
                 } else if (type == Type.CHARACTER) {
-                    return new PushInstruction(Character.valueOf(stream.readChar()));
+                    return new PushInstruction(CharacterValue.valueOf(stream.readChar()));
                     
                 } else if (type == Type.NATURAL) {
-                    return new PushInstruction(new Natural(stream.readInt()));
+                    return new PushInstruction(NaturalValue.valueOf(stream.readInt()));
                     
                 } else if (type == Type.INTEGER) {
-                    return new PushInstruction(Integer.valueOf(stream.readInt()));
+                    return new PushInstruction(IntegerValue.valueOf(stream.readInt()));
                     
                 } else if (type == Type.FLOAT) {
-                    return new PushInstruction(Float.valueOf(stream.readFloat()));
+                    return new PushInstruction(FloatValue.valueOf(stream.readFloat()));
                     
                 } else {
                     throw new IOException("Formato de bytecode inválido");

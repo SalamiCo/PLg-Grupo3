@@ -10,7 +10,7 @@ import java.util.Set;
 
 import plg.gr3.code.CodeWriter;
 import plg.gr3.data.BinaryOperator;
-import plg.gr3.data.Natural;
+import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.debug.Debugger;
@@ -1069,7 +1069,7 @@ public final class Parser implements Closeable {
             }
             
             LocatedToken token = expect(last, TokenType.LIT_NATURAL);
-            attrb.type(Type.NATURAL).value(Natural.parseNat(token.getLexeme()));
+            attrb.type(Type.NATURAL).value(NaturalValue.valueOf(token.getLexeme()));
             
             return attrb.create();
             
@@ -1116,7 +1116,7 @@ public final class Parser implements Closeable {
             
             // litnat
                 case LIT_NATURAL:
-                    attrb.type(Type.NATURAL).value(Natural.parseNat(token.getLexeme()));
+                    attrb.type(Type.NATURAL).value(NaturalValue.valueOf(token.getLexeme()));
                 break;
                 
                 // litfloat
@@ -1147,12 +1147,12 @@ public final class Parser implements Closeable {
             
             // litnat
                 case LIT_NATURAL:
-                    attrb.type(Type.INTEGER).value(Natural.parseNat(token.getLexeme()));
+                    attrb.type(Type.INTEGER).value(NaturalValue.valueOf(token.getLexeme()));
                 break;
                 
                 // litfloat
                 case LIT_FLOAT:
-                    attrb.type(Type.FLOAT).value(Natural.parseNat(token.getLexeme()));
+                    attrb.type(Type.FLOAT).value(NaturalValue.valueOf(token.getLexeme()));
                 break;
             }
             return attrb.create();

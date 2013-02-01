@@ -8,6 +8,7 @@ import java.util.List;
 
 import plg.gr3.data.Operator;
 import plg.gr3.data.Type;
+import plg.gr3.data.Value;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.vm.instr.Instruction;
 
@@ -43,7 +44,7 @@ public final class Attributes {
     private final Operator operator;
     
     /** El valor a usar */
-    private final Object value;
+    private final Value value;
     
     /** La dirección de memoria */
     private final int address;
@@ -60,7 +61,7 @@ public final class Attributes {
      */
     private Attributes (
         String ident, int address, boolean constant, Collection<CompileError> errors, Operator operator, Type type,
-        Object value, List<Instruction> instructions)
+        Value value, List<Instruction> instructions)
     {
         this.ident = ident;
         this.address = address;
@@ -156,7 +157,7 @@ public final class Attributes {
         
         private Operator operator;
         
-        private Object value;
+        private Value value;
         
         private int address;
         
@@ -197,7 +198,7 @@ public final class Attributes {
             return this;
         }
         
-        public Builder value (Object value) {
+        public Builder value (Value value) {
             this.value = value;
             return this;
         }

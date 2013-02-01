@@ -2,6 +2,7 @@ package plg.gr3.vm.instr;
 
 import java.util.Objects;
 
+import plg.gr3.data.Value;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -12,27 +13,25 @@ import plg.gr3.vm.VirtualMachine;
 public final class PushInstruction extends Instruction {
     
     /** Argumento de la instruccion <tt>apila(valor)</tt> */
-    private final Object value;
+    private final Value value;
     
     /**
-     * @param value
-     *            Valor que se va a apilar
+     * @param value Valor que se va a apilar
      */
-    public PushInstruction (Object value) {
+    public PushInstruction (Value value) {
         this.value = Objects.requireNonNull(value, "value");
     }
     
     /** @return Valor que se va a apilar */
-    public Object getValue () {
-        return getValue(Object.class);
+    public Value getValue () {
+        return getValue(Value.class);
     }
     
     /**
-     * @param type
-     *            Tipo del valor devuelto
+     * @param type Tipo del valor devuelto
      * @return Valor que se va a apilar convertido al tipo dado, o <tt>null</tt> si no esde ese tipo
      */
-    public <T> T getValue (Class<T> type) {
+    public <T extends Value> T getValue (Class<T> type) {
         if (type.isInstance(value)) {
             return type.cast(value);
         } else {

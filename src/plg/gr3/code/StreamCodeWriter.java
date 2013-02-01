@@ -5,8 +5,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import plg.gr3.data.Natural;
+import plg.gr3.data.BooleanValue;
+import plg.gr3.data.CharacterValue;
+import plg.gr3.data.FloatValue;
+import plg.gr3.data.IntegerValue;
+import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
+import plg.gr3.data.Value;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
 import plg.gr3.vm.instr.CastInstruction;
 import plg.gr3.vm.instr.InputInstruction;
@@ -34,8 +39,7 @@ public final class StreamCodeWriter extends CodeWriter {
     private final DataOutputStream stream;
     
     /**
-     * @param stream
-     *            Stream a usar para la generación de código
+     * @param stream Stream a usar para la generación de código
      */
     public StreamCodeWriter (OutputStream stream) {
         this.stream = new DataOutputStream(Objects.requireNonNull(stream, "stream"));
@@ -108,7 +112,7 @@ public final class StreamCodeWriter extends CodeWriter {
     }
     
     private void writePush (PushInstruction inst) throws IOException {
-        Object value = inst.getValue();
+        Value value = inst.getValue();
         Type type = Type.forValue(value);
         
         stream.writeByte(Instruction.OPCODE_PUSH | (type.getCode() & 0b111));
@@ -147,21 +151,21 @@ public final class StreamCodeWriter extends CodeWriter {
         stream.writeByte(op);
     }
     
-    private void writeValue (Object value) throws IOException {
-        if (value instanceof Natural) {
-            stream.writeInt(((Natural) value).intValue());
+    private void writeValue (Value value) throws IOException {
+        if (value instanceof NaturalValue) {
+            stream.writeInt(((NaturalValue) value).getValue());
             
-        } else if (value instanceof Integer) {
-            stream.writeInt(((Integer) value).intValue());
+        } else if (value instanceof IntegerValue) {
+            stream.writeInt(((IntegerValue) value).getValue());
             
-        } else if (value instanceof Float) {
-            stream.writeFloat(((Float) value).floatValue());
+        } else if (value instanceof FloatValue) {
+            stream.writeFloat(((FloatValue) value).getValue());
             
-        } else if (value instanceof Character) {
-            stream.writeChar(((Character) value).charValue());
+        } else if (value instanceof CharacterValue) {
+            stream.writeChar(((CharacterValue) value).getValue());
             
-        } else if (value instanceof Boolean) {
-            stream.writeBoolean(((Boolean) value).booleanValue());
+        } else if (value instanceof BooleanValue) {
+            stream.writeBoolean(((BooleanValue) value).getValue());
             
         } else {
             throw new IllegalArgumentException(value.toString());

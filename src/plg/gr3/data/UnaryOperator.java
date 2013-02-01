@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Clase que representa un operador unario.
  * 
@@ -24,25 +23,24 @@ public enum UnaryOperator implements Operator {
         }
         
         @Override
-        public Number apply (Object obj) {
-            Type type = Type.forValue(obj);
+        public Value apply (Value val) {
+            Type type = Type.forValue(val);
             if (!canApply(type)) {
                 throw new IllegalArgumentException();
             }
             
-            Number num = (Number) obj;
             if (type.equals(Type.NATURAL)) {
-                return new Integer(-num.intValue());
+                return IntegerValue.valueOf(-((NaturalValue) val).getValue());
                 
             } else if (type.equals(Type.INTEGER)) {
-                return new Integer(-num.intValue());
+                return IntegerValue.valueOf(-((IntegerValue) val).getValue());
                 
             } else if (type.equals(Type.FLOAT)) {
-                return new Float(-num.floatValue());
+                return FloatValue.valueOf(-((FloatValue) val).getValue());
                 
-            } else {
-                return null;
             }
+            
+            throw new IllegalArgumentException();
         }
     },
     
@@ -59,13 +57,12 @@ public enum UnaryOperator implements Operator {
         }
         
         @Override
-        public Boolean apply (Object obj) {
-            if (!canApply(Type.forValue(obj))) {
+        public BooleanValue apply (Value val) {
+            if (!canApply(Type.forValue(val))) {
                 throw new IllegalArgumentException();
             }
             
-            Boolean b = (Boolean) obj;
-            return Boolean.valueOf(Boolean.valueOf(!b.booleanValue()));
+            return BooleanValue.valueOf(!((BooleanValue) val).getValue());
         }
     };
     
@@ -80,17 +77,14 @@ public enum UnaryOperator implements Operator {
     }
     
     /** Símbolo del operador */
-    
     private final String symbol;
     
     /** Código del operador */
     private final int code;
     
     /**
-     * @param symbol
-     *            Símbolo del operador
-     * @param code
-     *            Código del operador
+     * @param symbol Símbolo del operador
+     * @param code Código del operador
      */
     private UnaryOperator (String symbol, int code) {
         this.symbol = symbol;
@@ -98,25 +92,22 @@ public enum UnaryOperator implements Operator {
     }
     
     /**
-     * @param type
-     *            Tipo a comprobar
+     * @param type Tipo a comprobar
      * @return Si el tipo es aplicable a este operador
      */
     public abstract boolean canApply (Type type);
     
     /**
-     * @param type
-     *            Tipo a comprobar
+     * @param type Tipo a comprobar
      * @return Tipo resultado de aplicar el operador
      */
     public abstract Type getApplyType (Type type);
     
     /**
-     * @param obj
-     *            Valor al que aplicar la operación
+     * @param val Valor al que aplicar la operación
      * @return Valor resultado de aplicar la operación
      */
-    public abstract Object apply (Object obj);
+    public abstract Value apply (Value val);
     
     public int getCode () {
         return code;
@@ -128,8 +119,7 @@ public enum UnaryOperator implements Operator {
     }
     
     /**
-     * @param code
-     *            Código del operador
+     * @param code Código del operador
      * @return Operador con el código pasado, o <tt>null</tt> si no existe.
      */
     public static UnaryOperator forCode (int code) {

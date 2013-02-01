@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * Clase que representa los operadores binarios del lenguaje.
  * 
@@ -28,7 +27,7 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
+        public Value apply (Value o1, Value o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
                 throw new IllegalArgumentException();
             }
@@ -37,7 +36,7 @@ public enum BinaryOperator implements Operator {
             Number n2 = (Number) o2;
             Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
             if (type.equals(Type.NATURAL)) {
-                return new Natural(n1.intValue() + n2.intValue());
+                return new NaturalValue(n1.intValue() + n2.intValue());
             } else if (type.equals(Type.INTEGER)) {
                 return new Integer(n1.intValue() + n2.intValue());
             } else if (type.equals(Type.FLOAT)) {
@@ -65,7 +64,7 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
+        public Value apply (Value o1, Value o2) {
             if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
                 throw new IllegalArgumentException();
             }
@@ -74,7 +73,7 @@ public enum BinaryOperator implements Operator {
             Number n2 = (Number) o2;
             Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
             if (type.equals(Type.NATURAL)) {
-                return new Natural(n1.intValue() - n2.intValue());
+                return new NaturalValue(n1.intValue() - n2.intValue());
             } else if (type.equals(Type.INTEGER)) {
                 return new Integer(n1.intValue() - n2.intValue());
             } else if (type.equals(Type.FLOAT)) {
@@ -110,7 +109,7 @@ public enum BinaryOperator implements Operator {
             Number n2 = (Number) o2;
             Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
             if (type.equals(Type.NATURAL)) {
-                return new Natural(n1.intValue() * n2.intValue());
+                return new NaturalValue(n1.intValue() * n2.intValue());
             } else if (type.equals(Type.INTEGER)) {
                 return new Integer(n1.intValue() * n2.intValue());
             } else if (type.equals(Type.FLOAT)) {
@@ -146,7 +145,7 @@ public enum BinaryOperator implements Operator {
             Number n2 = (Number) o2;
             Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
             if (type.equals(Type.NATURAL)) {
-                return new Natural(n1.intValue() / n2.intValue());
+                return new NaturalValue(n1.intValue() / n2.intValue());
             } else if (type.equals(Type.INTEGER)) {
                 return new Integer(n1.intValue() / n2.intValue());
             } else if (type.equals(Type.FLOAT)) {
@@ -182,7 +181,7 @@ public enum BinaryOperator implements Operator {
             Number n2 = (Number) o2;
             Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
             if (type.equals(Type.NATURAL)) {
-                return new Natural(n1.intValue() % n2.intValue());
+                return new NaturalValue(n1.intValue() % n2.intValue());
             } else if (type.equals(Type.INTEGER)) {
                 return new Integer(n1.intValue() % n2.intValue());
             } else {
@@ -477,7 +476,7 @@ public enum BinaryOperator implements Operator {
             
             int n1 = (int) o1;
             int n2 = (int) o2;
-            return new Natural(n1 << n2);
+            return new NaturalValue(n1 << n2);
         }
     },
     
@@ -505,7 +504,7 @@ public enum BinaryOperator implements Operator {
             
             int n1 = (int) o1;
             int n2 = (int) o2;
-            return new Natural(n1 >> n2);
+            return new NaturalValue(n1 >> n2);
         }
     };
     
@@ -528,10 +527,8 @@ public enum BinaryOperator implements Operator {
     /**
      * Compara dos objetos de tipo {@link Number} entre sí.
      * 
-     * @param n1
-     *            Primer número a comparar
-     * @param n2
-     *            Segundo número a comparar
+     * @param n1 Primer número a comparar
+     * @param n2 Segundo número a comparar
      * @return Entero positivo, cero o negativo dependiendo de si <tt>n1</tt> es mayor, igual o menor, respectivamente,
      *         que <tt>n2</tt>.
      */
@@ -542,7 +539,7 @@ public enum BinaryOperator implements Operator {
         } else if (n1 instanceof Integer || n2 instanceof Integer) {
             return n1.intValue() - n2.intValue();
             
-        } else if (n1 instanceof Natural || n2 instanceof Natural) {
+        } else if (n1 instanceof NaturalValue || n2 instanceof NaturalValue) {
             return n1.intValue() - n2.intValue();
         }
         
@@ -550,10 +547,8 @@ public enum BinaryOperator implements Operator {
     }
     
     /**
-     * @param symbol
-     *            Símbolo del operador
-     * @param code
-     *            Código del operador
+     * @param symbol Símbolo del operador
+     * @param code Código del operador
      */
     private BinaryOperator (String symbol, int code) {
         this.symbol = symbol;
@@ -573,10 +568,8 @@ public enum BinaryOperator implements Operator {
     /**
      * Comprueba si este operador puede aplicarse para los tipos dados.
      * 
-     * @param t1
-     *            Tipo del primer operando
-     * @param t2
-     *            Tipo del segundo operando
+     * @param t1 Tipo del primer operando
+     * @param t2 Tipo del segundo operando
      * @return <tt>true</tt> si este operador puede aplicarse a valores de tipo <tt>t1</tt> y <tt>t2</tt>,
      *         <tt>false</tt>
      */
@@ -585,10 +578,8 @@ public enum BinaryOperator implements Operator {
     /**
      * Devuelve el tipo resultado de aplicar este operador con los tipos dados, o un tipo error si no pueden aplicarse.
      * 
-     * @param t1
-     *            Tipo del primer operando
-     * @param t2
-     *            Tipo del segundo operando
+     * @param t1 Tipo del primer operando
+     * @param t2 Tipo del segundo operando
      * @return El tipo que devolvería este operador al aplicarse sobre dos operandos de tipo <tt>t1</tt> y <tt>t2</tt>
      */
     public abstract Type getApplyType (Type t1, Type t2);
@@ -597,19 +588,15 @@ public enum BinaryOperator implements Operator {
      * Aplica el operador sobre los argumentos dados y devuelve el resultado. Si el operador no es aplicable a los
      * argumentos dados, este método lanza una {@link IllegalArgumentException}.
      * 
-     * @param o1
-     *            Primer operando
-     * @param o2
-     *            Segundo operando
+     * @param v1 Primer operando
+     * @param v2 Segundo operando
      * @return El valor resultado de aplicar el operador a los argumentos <tt>o1</tt> y <tt>o2</tt>
-     * @throws IllegalArgumentException
-     *             si los argumentos no se pueden operar con este operador
+     * @throws IllegalArgumentException si los argumentos no se pueden operar con este operador
      */
-    public abstract Object apply (Object o1, Object o2);
+    public abstract Value apply (Value v1, Value v2);
     
     /**
-     * @param code
-     *            Código del operador
+     * @param code Código del operador
      * @return Operador con el código pasado, o <tt>null</tt> si no existe.
      */
     public static BinaryOperator forCode (int code) {
