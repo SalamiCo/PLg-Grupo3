@@ -3,6 +3,7 @@ package plg.gr3.vm.instr;
 import java.util.EmptyStackException;
 
 import plg.gr3.data.UnaryOperator;
+import plg.gr3.data.Value;
 import plg.gr3.errors.runtime.EmptyStackError;
 import plg.gr3.errors.runtime.TypeMismatchError;
 import plg.gr3.vm.VirtualMachine;
@@ -18,8 +19,7 @@ public final class UnaryOperatorInstruction extends Instruction {
     private final UnaryOperator operator;
     
     /**
-     * @param operator
-     *            Operador de la instrucción
+     * @param operator Operador de la instrucción
      */
     public UnaryOperatorInstruction (UnaryOperator operator) {
         this.operator = operator;
@@ -33,17 +33,18 @@ public final class UnaryOperatorInstruction extends Instruction {
     @Override
     public void execute (VirtualMachine vm) {
         try {
-            //aplicar el operador al valor de la Cima
-            //TODO el apply de UnaryOperator devuelve null si no puede aplicar, cambiarlo por un IllegalArgumentException
-            Object result = operator.apply(vm.popValue());
-            //poner el resultado en la Cima
+            // aplicar el operador al valor de la Cima
+            // TODO el apply de UnaryOperator devuelve null si no puede aplicar, cambiarlo por un
+            // IllegalArgumentException
+            Value result = operator.apply(vm.popValue());
+            // poner el resultado en la Cima
             vm.pushValue(result);
         } catch (IllegalArgumentException e) {
-            //error, no se puede aplicar el operador (type mismatch)
+            // error, no se puede aplicar el operador (type mismatch)
             vm.abort(new TypeMismatchError(vm.getProgramCounter(), this));
             
         } catch (EmptyStackException e1) {
-            //error de pila vacía
+            // error de pila vacía
             vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
     }

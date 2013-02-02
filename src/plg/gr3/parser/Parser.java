@@ -10,6 +10,8 @@ import java.util.Set;
 
 import plg.gr3.code.CodeWriter;
 import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.BooleanValue;
+import plg.gr3.data.FloatValue;
 import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
@@ -1089,13 +1091,13 @@ public final class Parser implements Closeable {
             switch (tokenRead.getToken().getType()) {
                 case RW_TRUE:
                     attrb.type(Type.BOOLEAN);
-                    attrb.value(true);
+                    attrb.value(BooleanValue.TRUE);
                 break;
                 
                 // false
                 case RW_FALSE:
                     attrb.type(Type.BOOLEAN);
-                    attrb.value(false);
+                    attrb.value(BooleanValue.FALSE);
                 break;
             
             }
@@ -1121,14 +1123,14 @@ public final class Parser implements Closeable {
                 
                 // litfloat
                 case LIT_FLOAT:
-                    attrb.type(Type.FLOAT).value(Float.valueOf(token.getLexeme()));
+                    attrb.type(Type.FLOAT).value(FloatValue.valueOf(token.getLexeme()));
                 break;
                 
                 // menos
                 case SYM_MINUS:
                     // FLitNum
                     Attributes attrFLitNum = parseFLitNum(last, Attributes.DEFAULT);
-                    attrb.type(attrFLitNum.getType()).value(attrFLitNum.getValue());
+                    attrb.type(attrFLitNum.getType()).value(UnaryOperator.MINUS.apply(attrFLitNum.getValue()));
                 break;
             }
             

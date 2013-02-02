@@ -8,10 +8,10 @@ package plg.gr3.data;
 public final class BooleanValue extends Value {
     
     /** Valor para <tt>true</tt> */
-    private final static BooleanValue TRUE = new BooleanValue(true);
+    public final static BooleanValue TRUE = new BooleanValue(true);
     
     /** Valor para <tt>false</tt> */
-    private final static BooleanValue FALSE = new BooleanValue(false);
+    public final static BooleanValue FALSE = new BooleanValue(false);
     
     /** Valor booleano */
     private final boolean value;

@@ -20,8 +20,7 @@ public class InputInstruction extends Instruction {
      * La instrución de Input debe ir seguida de un Store ya que solo almacena el valor del BufferIN en la cima de la
      * pila
      * 
-     * @param inputType
-     *            Tipo del valor que se leerá
+     * @param inputType Tipo del valor que se leerá
      */
     public InputInstruction (Type inputType) {
         this.inputType = inputType;
@@ -35,7 +34,8 @@ public class InputInstruction extends Instruction {
     @Override
     public void execute (VirtualMachine vm) {
         try {
-            vm.pushValue(vm.getInput()); //Cima <= BufferIN
+            // FIXME Qué
+            vm.pushValue(vm.getInput()); // Cima <= BufferIN
         } catch (IOException e) {
             // TODO Error en tiempo de ejecución: error al leer de BufferIN
             vm.abort(new IOError(vm.getProgramCounter(), this));

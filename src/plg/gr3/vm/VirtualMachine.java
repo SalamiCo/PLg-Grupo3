@@ -12,16 +12,17 @@ import java.util.Objects;
 import java.util.Stack;
 
 import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.Value;
 import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.vm.instr.Instruction;
 
 public final class VirtualMachine {
     
-    private List<Object> memory;
+    private List<Value> memory;
     
     private List<Instruction> program;
     
-    private Stack<Object> stack;
+    private Stack<Value> stack;
     
     private int programCounter;
     
@@ -54,7 +55,6 @@ public final class VirtualMachine {
     }
     
     public void step () {
-        // Ejecuta la siguiente instrucción e incrementa el contador de programa
         Instruction inst = getInstruction(programCounter);
         inst.execute(this);
         programCounter++;
@@ -64,14 +64,14 @@ public final class VirtualMachine {
         return program.get(address);
     }
     
-    public Object getMemoryValue (int address) {
+    public Value getMemoryValue (int address) {
         if (address >= 0 && address < memory.size()) {
             memory.get(address);
         }
         return null;
     }
     
-    public void setMemoryValue (int address, Object value) {
+    public void setMemoryValue (int address, Value value) {
         memory.set(address, value);
     }
     
@@ -103,15 +103,15 @@ public final class VirtualMachine {
         swapped2 = !swapped2;
     }
     
-    public void pushValue (Object value) {
+    public void pushValue (Value value) {
         stack.push(value);
     }
     
-    public Object popValue () {
+    public Value popValue () {
         return stack.pop();
     }
     
-    public Object peekValue () {
+    public Value peekValue () {
         return stack.peek();
     }
     
@@ -131,6 +131,7 @@ public final class VirtualMachine {
         return swapped2;
     }
     
+    // FIXME OMGWTFBBQ QUÉ COJONES
     public Object getInput () throws IOException {
         return reader.readLine();
     }

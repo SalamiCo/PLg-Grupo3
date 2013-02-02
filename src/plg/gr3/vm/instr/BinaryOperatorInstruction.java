@@ -3,6 +3,7 @@ package plg.gr3.vm.instr;
 import java.util.EmptyStackException;
 
 import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.Value;
 import plg.gr3.errors.runtime.DivisionByZeroError;
 import plg.gr3.errors.runtime.EmptyStackError;
 import plg.gr3.errors.runtime.NegativeNaturalError;
@@ -19,8 +20,7 @@ public final class BinaryOperatorInstruction extends Instruction {
     private BinaryOperator operator;
     
     /**
-     * @param operator
-     *            Operador usado por esta instrucción
+     * @param operator Operador usado por esta instrucción
      */
     public BinaryOperatorInstruction (BinaryOperator operator) {
         this.operator = operator;
@@ -34,28 +34,23 @@ public final class BinaryOperatorInstruction extends Instruction {
     @Override
     public void execute (VirtualMachine vm) {
         try {
-            //Operando2 = Cima
-            Object op2 = vm.popValue();
-            //Operando1 = Cima - 1
-            Object op1 = vm.popValue();
-            
-            //obtener el operador que se va a aplicar (en función de swap1, swap2)
+            Value op2 = vm.popValue();
+            Value op1 = vm.popValue();
             BinaryOperator swappedOperator = vm.getSwappedOperator(operator);
             
-            //Calcular el resultado
-            Object res = swappedOperator.apply(op1, op2);
-            //resultado en la Cima
+            Value res = swappedOperator.apply(op1, op2);
+            
             vm.pushValue(res);
             
         } catch (IllegalArgumentException e1) {
-            //Si se restan 2 naturales y a < b, error en tiempo de ejecución
+            // Si se restan 2 naturales y a < b, error en tiempo de ejecución
             vm.abort(new NegativeNaturalError(vm.getProgramCounter(), this));
-            //TODO Añadir TypeMismatchError
+            // TODO Añadir TypeMismatchError
+            
         } catch (ArithmeticException e2) {
-            //Division entre 0
             vm.abort(new DivisionByZeroError(vm.getProgramCounter(), this));
+            
         } catch (EmptyStackException e3) {
-            //Error de pila vacía
             vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
     }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 import plg.gr3.data.Type;
+import plg.gr3.data.Value;
 
 /**
  * Representación de la tabla de símbolos mediante una tabla con clave el identificador de la variable o costante que se
@@ -26,9 +27,9 @@ public final class SymbolTable {
         
         public final int address;
         
-        public final Object value;
+        public final Value value;
         
-        public Entry (Type type, boolean constant, int address, Object value) {
+        public Entry (Type type, boolean constant, int address, Value value) {
             this.type = type;
             this.constant = constant;
             this.address = address;
@@ -47,18 +48,7 @@ public final class SymbolTable {
     }
     
     /**
-     * Construye una nueva tabla de simbolos y añade los elementos especificados
-     * 
-     * @param table
-     *            Tabla con los identificadores a añadir
-     */
-    public SymbolTable (HashMap<String, Entry> table) {
-        this.table.putAll(table); // TODO Hace falta este constructor?
-    }
-    
-    /**
-     * @param ident
-     *            Identificador que se quiere comprobar
+     * @param ident Identificador que se quiere comprobar
      * @return <tt>true</tt> si el identificador existe, <tt>false</tt> si no
      */
     public boolean hasIdentifier (String ident) {
@@ -66,24 +56,18 @@ public final class SymbolTable {
     }
     
     /**
-     * @param ident
-     *            Identificador a añadir
-     * @param type
-     *            Tipo del identificador
-     * @param constant
-     *            Si el identificador es una constante
-     * @param address
-     *            Dirección de memoria del identificador
-     * @param value
-     *            Valor del identificador
+     * @param ident Identificador a añadir
+     * @param type Tipo del identificador
+     * @param constant Si el identificador es una constante
+     * @param address Dirección de memoria del identificador
+     * @param value Valor del identificador
      */
-    public void putIdentifier (String ident, Type type, boolean constant, int address, Object value) {
+    public void putIdentifier (String ident, Type type, boolean constant, int address, Value value) {
         table.put(ident, new Entry(type, constant, address, value));
     }
     
     /**
-     * @param ident
-     *            Identificador a consultar
+     * @param ident Identificador a consultar
      * @return Fila de la tabla completa
      */
     private Entry getEntry (String ident) {
@@ -95,8 +79,7 @@ public final class SymbolTable {
     }
     
     /**
-     * @param ident
-     *            Identificador a consultar
+     * @param ident Identificador a consultar
      * @return Dirección del identificador
      */
     public int getIdentifierAddress (String ident) {
@@ -104,8 +87,7 @@ public final class SymbolTable {
     }
     
     /**
-     * @param ident
-     *            Identificador a consultar
+     * @param ident Identificador a consultar
      * @return Tipo del identificador
      */
     public Type getIdentfierType (String ident) {
@@ -113,8 +95,7 @@ public final class SymbolTable {
     }
     
     /**
-     * @param ident
-     *            Identificador a consultar
+     * @param ident Identificador a consultar
      * @return Si el identificador es una constante
      */
     public boolean isIdentifierConstant (String ident) {
@@ -122,23 +103,20 @@ public final class SymbolTable {
     }
     
     /**
-     * @param ident
-     *            Identificador a consultar
+     * @param ident Identificador a consultar
      * @return Valor del identificador
      */
-    public Object getIdentifierValue (String ident) {
-        return getIdentifierValue(ident, Object.class);
+    public Value getIdentifierValue (String ident) {
+        return getIdentifierValue(ident, Value.class);
     }
     
     /**
-     * @param ident
-     *            Identificador a consultar
-     * @param type
-     *            Tipo del valor
+     * @param ident Identificador a consultar
+     * @param type Tipo del valor
      * @return Valor del identificador
      */
-    public <T> T getIdentifierValue (String ident, Class<T> type) {
-        Object obj = getEntry(ident).value;
+    public <T extends Value> T getIdentifierValue (String ident, Class<T> type) {
+        Value obj = getEntry(ident).value;
         
         if (type.isInstance(obj)) {
             return type.cast(obj);
