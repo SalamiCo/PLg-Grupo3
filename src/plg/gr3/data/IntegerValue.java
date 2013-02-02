@@ -27,6 +27,88 @@ public final class IntegerValue extends NumericValue {
         return value;
     }
     
+    @Override
+    public NaturalValue toNaturalValue () {
+        return NaturalValue.valueOf(value);
+    }
+    
+    @Override
+    public IntegerValue toIntegerValue () {
+        return this;
+    }
+    
+    @Override
+    public FloatValue toFloatValue () {
+        return FloatValue.valueOf(value);
+    }
+    
+    @Override
+    public CharacterValue toCharacterValue () {
+        throw new IllegalArgumentException(toString());
+    }
+    
+    @Override
+    public NumericValue add (NumericValue other) {
+        if (other instanceof NaturalValue || other instanceof IntegerValue) {
+            int otherValue = other.toIntegerValue().getValue();
+            return IntegerValue.valueOf(value + otherValue);
+            
+        } else if (other instanceof FloatValue) {
+            return toFloatValue().add(other);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
+    @Override
+    public NumericValue subtract (NumericValue other) {
+        if (other instanceof NaturalValue || other instanceof IntegerValue) {
+            int otherValue = other.toIntegerValue().getValue();
+            return IntegerValue.valueOf(value - otherValue);
+            
+        } else if (other instanceof FloatValue) {
+            return toFloatValue().subtract(other);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
+    @Override
+    public NumericValue multiply (NumericValue other) {
+        if (other instanceof NaturalValue || other instanceof IntegerValue) {
+            int otherValue = other.toIntegerValue().getValue();
+            return IntegerValue.valueOf(value * otherValue);
+            
+        } else if (other instanceof FloatValue) {
+            return toFloatValue().multiply(other);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
+    @Override
+    public NumericValue divide (NumericValue other) {
+        if (other instanceof NaturalValue || other instanceof IntegerValue) {
+            int otherValue = other.toIntegerValue().getValue();
+            return IntegerValue.valueOf(value / otherValue);
+            
+        } else if (other instanceof FloatValue) {
+            return toFloatValue().divide(other);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
+    @Override
+    public NumericValue modulo (NumericValue other) {
+        if (other instanceof NaturalValue) {
+            int otherValue = other.toNaturalValue().getValue();
+            return IntegerValue.valueOf(value % otherValue);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
     /**
      * @param str Entero a parsear
      * @return Entero leído

@@ -32,6 +32,100 @@ public class NaturalValue extends NumericValue {
         return value;
     }
     
+    @Override
+    public NaturalValue toNaturalValue () {
+        return this;
+    }
+    
+    @Override
+    public IntegerValue toIntegerValue () {
+        return IntegerValue.valueOf(value);
+    }
+    
+    @Override
+    public FloatValue toFloatValue () {
+        return FloatValue.valueOf(value);
+    }
+    
+    @Override
+    public CharacterValue toCharacterValue () {
+        return CharacterValue.valueOf((char) value);
+    }
+    
+    @Override
+    public NumericValue add (NumericValue other) {
+        if (other instanceof NaturalValue) {
+            int otherValue = other.toNaturalValue().getValue();
+            return NaturalValue.valueOf(value + otherValue);
+            
+        } else if (other instanceof IntegerValue) {
+            return toIntegerValue().add(other);
+            
+        } else if (other instanceof FloatValue) {
+            return toFloatValue().add(other);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
+    @Override
+    public NumericValue subtract (NumericValue other) {
+        if (other instanceof NaturalValue) {
+            int otherValue = other.toNaturalValue().getValue();
+            return NaturalValue.valueOf(value - otherValue);
+            
+        } else if (other instanceof IntegerValue) {
+            return toIntegerValue().subtract(other);
+            
+        } else if (other instanceof FloatValue) {
+            return toFloatValue().subtract(other);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
+    @Override
+    public NumericValue multiply (NumericValue other) {
+        if (other instanceof NaturalValue) {
+            int otherValue = other.toNaturalValue().getValue();
+            return NaturalValue.valueOf(value * otherValue);
+            
+        } else if (other instanceof IntegerValue) {
+            return toIntegerValue().multiply(other);
+            
+        } else if (other instanceof FloatValue) {
+            return toFloatValue().multiply(other);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
+    @Override
+    public NumericValue divide (NumericValue other) {
+        if (other instanceof NaturalValue) {
+            int otherValue = other.toNaturalValue().getValue();
+            return NaturalValue.valueOf(value / otherValue);
+            
+        } else if (other instanceof IntegerValue) {
+            return toIntegerValue().divide(other);
+            
+        } else if (other instanceof FloatValue) {
+            return toFloatValue().divide(other);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
+    @Override
+    public NumericValue modulo (NumericValue other) {
+        if (other instanceof NaturalValue) {
+            int otherValue = other.toNaturalValue().getValue();
+            return NaturalValue.valueOf(value % otherValue);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
+    
     /**
      * @param str Natural a parsear
      * @return Natural leído

@@ -70,4 +70,30 @@ public final class CharacterValue extends Value {
     public String toString () {
         return String.valueOf(value);
     }
+    
+    @Override
+    public NaturalValue toNaturalValue () {
+        throw new IllegalArgumentException(toString());
+    }
+    
+    @Override
+    public IntegerValue toIntegerValue () {
+        throw new IllegalArgumentException(toString());
+    }
+    
+    @Override
+    public FloatValue toFloatValue () {
+        throw new IllegalArgumentException(toString());
+    }
+    
+    @Override
+    public CharacterValue toCharacterValue () {
+        return this;
+    }
+    
+    @Override
+    public int compare (Value other) {
+        char otherValue = other.toCharacterValue().getValue();
+        return value - otherValue;
+    }
 }

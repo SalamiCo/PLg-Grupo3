@@ -24,7 +24,7 @@ public enum UnaryOperator implements Operator {
         
         @Override
         public Value apply (Value val) {
-            Type type = Type.forValue(val);
+            Type type = val.getType();
             if (!canApply(type)) {
                 throw new IllegalArgumentException();
             }
@@ -58,7 +58,7 @@ public enum UnaryOperator implements Operator {
         
         @Override
         public BooleanValue apply (Value val) {
-            if (!canApply(Type.forValue(val))) {
+            if (!canApply(val.getType())) {
                 throw new IllegalArgumentException();
             }
             

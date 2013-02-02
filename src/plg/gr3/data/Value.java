@@ -21,4 +21,11 @@ public abstract class Value {
     
     /** @return Convierte este valor a un caracter */
     public abstract CharacterValue toCharacterValue ();
+    
+    /**
+     * @param other Valor a comparar
+     * @return un valor <i>negativo</i>, <i>positivo</i> o <i>cero</i>, dependiendo de si <tt>this</tt> es <i>menor</i>,
+     *         <i>mayor</i> o <i>igual</i> que <tt>other</tt>.
+     */
+    public abstract int compare (Value other);
 }

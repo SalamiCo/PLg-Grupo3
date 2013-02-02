@@ -1,5 +1,6 @@
 package plg.gr3.data;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -12,10 +13,10 @@ import java.util.Objects;
 public final class Type {
     
     /** Mapa de nombres a sus tipos */
-    private static final Map<String, Type> TYPES = new HashMap<>();
+    private static final Map<String, Type> TYPES = Collections.synchronizedMap(new HashMap<String, Type>());
     
     /** Mapa de códigos a sus tipos */
-    private static final Map<Integer, Type> TYPECODES = new HashMap<>();
+    private static final Map<Integer, Type> TYPECODES = Collections.synchronizedMap(new HashMap<Integer, Type>());
     
     /** Tipo predefinido para naturales */
     public static final Type NATURAL = defineType("natural", 0);
@@ -84,10 +85,12 @@ public final class Type {
         return "Type(" + name + ")";
     }
     
-    public static Type forValue (Value val) {
-        return val.getType();
-    }
-    
+    /**
+     * Devuelve el tipo asociado al código pasado
+     * 
+     * @param code Código del tipo
+     * @return Tipo asociado a dicho código, o {@link #ERROR Type.ERROR} si no existiera
+     */
     public static Type forCode (int code) {
         Type type = TYPES.get(Integer.valueOf(code));
         if (type == null) {
@@ -97,24 +100,26 @@ public final class Type {
         }
     }
     
-    /*
-     * Funcion que te devuelve verdadero si el tipo de typeAssigned es asignable al tipo de ident. En caso contrario
-     * devuelve falso
+    /**
+     * @param typeIdent Tipo del identificador
+     * @param typeAssigned Tipo de la expresión a asignar
+     * @return <tt>true</tt> si <tt>typeAssigned</tt> puede asignarse a <tt>typeIdent</tt>, <tt>false</tt> en caso
+     *         contrario.
      */
-    public static boolean assignable (Type ident, Type typeAssigned) {
-        if (ident.equals(Type.NATURAL)) {
+    public static boolean assignable (Type typeIdent, Type typeAssigned) {
+        if (typeIdent.equals(Type.NATURAL)) {
             return typeAssigned.equals(NATURAL);
             
-        } else if (ident.equals(Type.INTEGER)) {
+        } else if (typeIdent.equals(Type.INTEGER)) {
             return typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER);
             
-        } else if (ident.equals(Type.FLOAT)) {
+        } else if (typeIdent.equals(Type.FLOAT)) {
             return typeAssigned.equals(NATURAL) || typeAssigned.equals(INTEGER) || typeAssigned.equals(FLOAT);
             
-        } else if (ident.equals(Type.BOOLEAN)) {
+        } else if (typeIdent.equals(Type.BOOLEAN)) {
             return typeAssigned.equals(BOOLEAN);
             
-        } else if (ident.equals(Type.CHARACTER)) {
+        } else if (typeIdent.equals(Type.CHARACTER)) {
             return typeAssigned.equals(CHARACTER);
             
         } else {
@@ -146,53 +151,74 @@ public final class Type {
         }
     }
     
-    /*
-     * Funcion que nos devuelve verdadero si es de tipo numerico en cualquier otro caso devuelve false
-     */
+    /** @return <tt>true</tt> Si este tipo es numérico, <tt>false</tt> en otro caso */
     public boolean isNumeric () {
         return equals(NATURAL) || equals(INTEGER) || equals(FLOAT);
     }
     
-    /*
-     * funcion que dados dos tipos te devuelve el de mayor tamaño si no son comparables te devuelve null
+    /**
+     * @param t1 Primer tipo acomprobar
+     * @param t2 Segundo tipo a comprobar
+     * @return El tipo más ancho de los tipos pasados, o {@link #ERROR Type.ERROR} si la compración no tiene sentido
      */
     public static Type getWiderType (Type t1, Type t2) {
         if (t1.equals(t2)) {
+            // Si los tipos son iguales, devolvemos uno de ellos
             return t1;
+            
         } else if (t1.equals(Type.NATURAL)) {
+            // Cualquier tipo numérico es más ancho que <tt>natural</tt>
             if (t2.equals(INTEGER) || t2.equals(FLOAT)) {
                 return t2;
             }
+            
         } else if (t1.equals(Type.INTEGER)) {
+            // <tt>natural</tt> es más estrecho que integer, <tt>float</tt> es más ancho
             if (t2.equals(NATURAL)) {
                 return t1;
             } else if (t2.equals(FLOAT)) {
                 return t2;
             }
+            
         } else if (t1.equals(Type.FLOAT)) {
+            // <tt>float</tt> es más ancho que cualquier tipo numérico
             if (t2.equals(Type.NATURAL) || t2.equals(Type.INTEGER)) {
                 return t1;
             }
         }
         
+        // Los tipos no se pueden comparar en anchura (p.ej.: Numérico con <tt>boolean</tt> o <tt>character</tt>)
         return Type.ERROR;
     }
     
+    /**
+     * Devuelve el tipo correspondiente al nombre dado.
+     * <p>
+     * Si el tipo aún no ha sido definido, se definirá automáticamente.
+     * 
+     * @param name Nombre del tipo pedido
+     * @return Tipo correspondiente al nombre dado
+     */
     public static Type forName (String name) {
-        if (TYPES.containsKey(name)) {
-            return TYPES.get(name);
-        } else {
-            return defineType(name, 0xFFFFFFFF);
+        // Necesitamos sincronizar para evitar problemas al llamar aeste método desde múltiples hilos (en la GUI)
+        synchronized (TYPES) {
+            if (TYPES.containsKey(name)) {
+                return TYPES.get(name);
+            } else {
+                return defineType(name, 0xFFFFFFFF);
+            }
         }
     }
     
     private static Type defineType (String name, int code) {
-        if (TYPES.containsKey(name)) {
-            throw new IllegalStateException(name + " already exists");
+        synchronized (TYPES) {
+            if (TYPES.containsKey(name)) {
+                throw new IllegalStateException(name + " already exists");
+            }
+            
+            Type type = new Type(name, code);
+            TYPES.put(name, type);
+            return type;
         }
-        
-        Type type = new Type(name, code);
-        TYPES.put(name, type);
-        return type;
     }
 }

@@ -27,26 +27,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Value apply (Value o1, Value o2) {
-            Type t1 = o1.getType();
-            Type t2 = o2.getType();
+        public NumericValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
             if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Type ta = getApplyType(t1, t2);
-            if (ta.equals(Type.NATURAL)) {
-                return NaturalValue.valueOf(o1.toNaturalValue().getValue() + o2.toNaturalValue().getValue());
-                
-            } else if (ta.equals(Type.INTEGER)) {
-                return IntegerValue.valueOf(o1.toIntegerValue().getValue() + o2.toIntegerValue().getValue());
-                
-            } else if (ta.equals(Type.FLOAT)) {
-                return FloatValue.valueOf(o1.toFloatValue().getValue() + o2.toFloatValue().getValue());
-                
-            } else {
-                throw new IllegalArgumentException();
-            }
+            NumericValue n1 = (NumericValue) v1;
+            NumericValue n2 = (NumericValue) v2;
+            return n1.add(n2);
         }
         
     },
@@ -67,23 +57,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Value apply (Value o1, Value o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public NumericValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Number n1 = (Number) o1;
-            Number n2 = (Number) o2;
-            Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
-            if (type.equals(Type.NATURAL)) {
-                return new NaturalValue(n1.intValue() - n2.intValue());
-            } else if (type.equals(Type.INTEGER)) {
-                return new Integer(n1.intValue() - n2.intValue());
-            } else if (type.equals(Type.FLOAT)) {
-                return new Float(n1.floatValue() - n2.floatValue());
-            } else {
-                throw new IllegalArgumentException();
-            }
+            NumericValue n1 = (NumericValue) v1;
+            NumericValue n2 = (NumericValue) v2;
+            return n1.subtract(n2);
         }
     },
     
@@ -103,23 +86,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public NumericValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Number n1 = (Number) o1;
-            Number n2 = (Number) o2;
-            Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
-            if (type.equals(Type.NATURAL)) {
-                return new NaturalValue(n1.intValue() * n2.intValue());
-            } else if (type.equals(Type.INTEGER)) {
-                return new Integer(n1.intValue() * n2.intValue());
-            } else if (type.equals(Type.FLOAT)) {
-                return new Float(n1.floatValue() * n2.floatValue());
-            } else {
-                throw new IllegalArgumentException();
-            }
+            NumericValue n1 = (NumericValue) v1;
+            NumericValue n2 = (NumericValue) v2;
+            return n1.multiply(n2);
         }
     },
     
@@ -139,23 +115,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public NumericValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Number n1 = (Number) o1;
-            Number n2 = (Number) o2;
-            Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
-            if (type.equals(Type.NATURAL)) {
-                return new NaturalValue(n1.intValue() / n2.intValue());
-            } else if (type.equals(Type.INTEGER)) {
-                return new Integer(n1.intValue() / n2.intValue());
-            } else if (type.equals(Type.FLOAT)) {
-                return new Float(n1.floatValue() / n2.floatValue());
-            } else {
-                throw new IllegalArgumentException();
-            }
+            NumericValue n1 = (NumericValue) v1;
+            NumericValue n2 = (NumericValue) v2;
+            return n1.divide(n2);
         }
     },
     
@@ -175,21 +144,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public NumericValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Number n1 = (Number) o1;
-            Number n2 = (Number) o2;
-            Type type = getApplyType(Type.forValue(o1), Type.forValue(o2));
-            if (type.equals(Type.NATURAL)) {
-                return new NaturalValue(n1.intValue() % n2.intValue());
-            } else if (type.equals(Type.INTEGER)) {
-                return new Integer(n1.intValue() % n2.intValue());
-            } else {
-                throw new IllegalArgumentException();
-            }
+            NumericValue n1 = (NumericValue) v1;
+            NumericValue n2 = (NumericValue) v2;
+            return n1.modulo(n2);
         }
     },
     
@@ -210,12 +174,14 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Boolean apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public BooleanValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            return Boolean.valueOf(o1.equals(o2));
+            return BooleanValue.valueOf(v1.compare(v2) == 0);
         }
     },
     
@@ -236,12 +202,14 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Boolean apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public BooleanValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            return !(Boolean.valueOf(o1.equals(o2)));
+            return BooleanValue.valueOf(v1.compare(v2) != 0);
         }
     },
     
@@ -262,25 +230,14 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public BooleanValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Type t = Type.forValue(o1);
-            if (t.equals(t.isNumeric())) {
-                return (compareNumbers((Number) o1, (Number) o2) < 0);
-            } else if (t.equals(Type.CHARACTER)) {
-                Character c1 = (Character) o1;
-                Character c2 = (Character) o2;
-                return (c1.compareTo(c2) < 0);
-            } else if (t.equals(Type.BOOLEAN)) {
-                Boolean b1 = (Boolean) o1;
-                Boolean b2 = (Boolean) o2;
-                return (b1.compareTo(b2) < 0);
-            } else {
-                throw new IllegalArgumentException();
-            }
+            return BooleanValue.valueOf(v1.compare(v2) < 0);
         }
     },
     
@@ -301,25 +258,14 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public BooleanValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Type t = Type.forValue(o1);
-            if (t.equals(t.isNumeric())) {
-                return (compareNumbers((Number) o1, (Number) o2) <= 0);
-            } else if (t.equals(Type.CHARACTER)) {
-                Character c1 = (Character) o1;
-                Character c2 = (Character) o2;
-                return (c1.compareTo(c2) <= 0);
-            } else if (t.equals(Type.BOOLEAN)) {
-                Boolean b1 = (Boolean) o1;
-                Boolean b2 = (Boolean) o2;
-                return (b1.compareTo(b2) <= 0);
-            } else {
-                throw new IllegalArgumentException();
-            }
+            return BooleanValue.valueOf(v1.compare(v2) <= 0);
         }
     },
     
@@ -340,25 +286,14 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public BooleanValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Type t = Type.forValue(o1);
-            if (t.equals(t.isNumeric())) {
-                return (compareNumbers((Number) o1, (Number) o2) > 0);
-            } else if (t.equals(Type.CHARACTER)) {
-                Character c1 = (Character) o1;
-                Character c2 = (Character) o2;
-                return (c1.compareTo(c2) > 0);
-            } else if (t.equals(Type.BOOLEAN)) {
-                Boolean b1 = (Boolean) o1;
-                Boolean b2 = (Boolean) o2;
-                return (b1.compareTo(b2) > 0);
-            } else {
-                throw new IllegalArgumentException();
-            }
+            return BooleanValue.valueOf(v1.compare(v2) > 0);
         }
     },
     
@@ -379,25 +314,14 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public BooleanValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Type t = Type.forValue(o1);
-            if (t.equals(t.isNumeric())) {
-                return (compareNumbers((Number) o1, (Number) o2) >= 0);
-            } else if (t.equals(Type.CHARACTER)) {
-                Character c1 = (Character) o1;
-                Character c2 = (Character) o2;
-                return (c1.compareTo(c2) >= 0);
-            } else if (t.equals(Type.BOOLEAN)) {
-                Boolean b1 = (Boolean) o1;
-                Boolean b2 = (Boolean) o2;
-                return (b1.compareTo(b2) >= 0);
-            } else {
-                throw new IllegalArgumentException();
-            }
+            return BooleanValue.valueOf(v1.compare(v2) >= 0);
         }
     },
     
@@ -417,14 +341,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public BooleanValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Boolean b1 = (Boolean) o1;
-            Boolean b2 = (Boolean) o2;
-            return b1 && b2;
+            BooleanValue b1 = (BooleanValue) v1;
+            BooleanValue b2 = (BooleanValue) v2;
+            return BooleanValue.valueOf(b1.getValue() & b2.getValue());
         }
     },
     
@@ -444,14 +370,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public BooleanValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            Boolean b1 = (Boolean) o1;
-            Boolean b2 = (Boolean) o2;
-            return b1 || b2;
+            BooleanValue b1 = (BooleanValue) v1;
+            BooleanValue b2 = (BooleanValue) v2;
+            return BooleanValue.valueOf(b1.getValue() | b2.getValue());
         }
     },
     
@@ -472,14 +400,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public NaturalValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            int n1 = (int) o1;
-            int n2 = (int) o2;
-            return new NaturalValue(n1 << n2);
+            NaturalValue n1 = (NaturalValue) v1;
+            NaturalValue n2 = (NaturalValue) v2;
+            return NaturalValue.valueOf(n1.getValue() << n2.getValue());
         }
     },
     
@@ -500,14 +430,16 @@ public enum BinaryOperator implements Operator {
         }
         
         @Override
-        public Object apply (Object o1, Object o2) {
-            if (!canApply(Type.forValue(o1), Type.forValue(o2))) {
+        public NaturalValue apply (Value v1, Value v2) {
+            Type t1 = v1.getType();
+            Type t2 = v2.getType();
+            if (!canApply(t1, t2)) {
                 throw new IllegalArgumentException();
             }
             
-            int n1 = (int) o1;
-            int n2 = (int) o2;
-            return new NaturalValue(n1 >> n2);
+            NaturalValue n1 = (NaturalValue) v1;
+            NaturalValue n2 = (NaturalValue) v2;
+            return NaturalValue.valueOf(n1.getValue() >> n2.getValue());
         }
     };
     
@@ -526,28 +458,6 @@ public enum BinaryOperator implements Operator {
     
     /** Código del operador */
     private final int code;
-    
-    /**
-     * Compara dos objetos de tipo {@link Number} entre sí.
-     * 
-     * @param n1 Primer número a comparar
-     * @param n2 Segundo número a comparar
-     * @return Entero positivo, cero o negativo dependiendo de si <tt>n1</tt> es mayor, igual o menor, respectivamente,
-     *         que <tt>n2</tt>.
-     */
-    private static int compareNumbers (Number n1, Number n2) {
-        if (n1 instanceof Float || n2 instanceof Float) {
-            return n1.floatValue() < n2.floatValue() ? -1 : n1.floatValue() > n2.floatValue() ? +1 : 0;
-            
-        } else if (n1 instanceof Integer || n2 instanceof Integer) {
-            return n1.intValue() - n2.intValue();
-            
-        } else if (n1 instanceof NaturalValue || n2 instanceof NaturalValue) {
-            return n1.intValue() - n2.intValue();
-        }
-        
-        throw new IllegalArgumentException();
-    }
     
     /**
      * @param symbol Símbolo del operador

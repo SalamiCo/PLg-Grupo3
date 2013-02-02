@@ -68,4 +68,34 @@ public final class BooleanValue extends Value {
     public String toString () {
         return String.valueOf(value);
     }
+    
+    @Override
+    public NaturalValue toNaturalValue () {
+        throw new IllegalArgumentException(toString());
+    }
+    
+    @Override
+    public IntegerValue toIntegerValue () {
+        throw new IllegalArgumentException(toString());
+    }
+    
+    @Override
+    public FloatValue toFloatValue () {
+        throw new IllegalArgumentException(toString());
+    }
+    
+    @Override
+    public CharacterValue toCharacterValue () {
+        throw new IllegalArgumentException(toString());
+    }
+    
+    @Override
+    public int compare (Value other) {
+        if (other instanceof BooleanValue) {
+            boolean otherValue = ((BooleanValue) other).getValue();
+            return value ? (otherValue ? 0 : 1) : (otherValue ? -1 : 0);
+        }
+        
+        throw new IllegalArgumentException(other.toString());
+    }
 }
