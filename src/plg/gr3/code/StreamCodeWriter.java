@@ -113,9 +113,9 @@ public final class StreamCodeWriter extends CodeWriter {
     
     private void writePush (PushInstruction inst) throws IOException {
         Value value = inst.getValue();
-        Type type = Type.forValue(value);
+        Type type = value.getType();
         
-        stream.writeByte(Instruction.OPCODE_PUSH | (type.getCode() & 0b111));
+        stream.writeByte(Instruction.OPCODE_PUSH | (type.getCode() & 0b0111));
         writeValue(value);
     }
     

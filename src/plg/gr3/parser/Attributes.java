@@ -121,15 +121,15 @@ public final class Attributes {
     }
     
     /** @return El atributo <tt>value</tt> */
-    public Object getValue () {
-        return getValue(Object.class);
+    public Value getValue () {
+        return getValue(Value.class);
     }
     
     /**
      * @param cls Tipo del atributo
      * @return El atributo <tt>value</tt> si es del tipo especificado, <tt>null</tt> en caso contrario
      */
-    public <T> T getValue (Class<T> cls) {
+    public <T extends Value> T getValue (Class<T> cls) {
         return cls.isInstance(value) ? cls.cast(value) : null;
     }
     
