@@ -14,4 +14,9 @@ public class StopInstruction extends Instruction {
         vm.stop();
     }
     
+    @Override
+    public String toString () {
+        return "STOP";
+    }
+    
 }

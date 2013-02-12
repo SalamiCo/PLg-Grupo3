@@ -48,4 +48,10 @@ public final class UnaryOperatorInstruction extends Instruction {
             vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
     }
+    
+    @Override
+    public String toString () {
+        return operator.toString();
+    }
+    
 }
