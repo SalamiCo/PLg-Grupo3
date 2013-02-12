@@ -43,4 +43,9 @@ public final class PushInstruction extends Instruction {
     public void execute (VirtualMachine vm) {
         vm.pushValue(value);
     }
+    
+    @Override
+    public String toString () {
+        return "PUSH(" + value.getType() + ":" + value + ")";
+    }
 }

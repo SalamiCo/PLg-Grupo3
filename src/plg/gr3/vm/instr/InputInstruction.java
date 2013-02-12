@@ -41,4 +41,9 @@ public class InputInstruction extends Instruction {
             vm.abort(new IOError(vm.getProgramCounter(), this));
         }
     }
+    
+    @Override
+    public String toString () {
+        return "INPUT(" + inputType + ")";
+    }
 }

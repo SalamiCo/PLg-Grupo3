@@ -14,8 +14,7 @@ public class CastInstruction extends Instruction {
     private final Type castType;
     
     /**
-     * @param castType
-     *            Tipo al que hacer casting
+     * @param castType Tipo al que hacer casting
      */
     public CastInstruction (Type castType) {
         this.castType = castType;
@@ -28,13 +27,18 @@ public class CastInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        //TODO crear un metodo para convertir los tipos "cast"
+        // TODO crear un metodo para convertir los tipos "cast"
         // Type castingType = Type.forValue(vm.peekValue());
-        //type del valor de la cima de la pila Type castedType = 
-        //this.castType; 
-        //if (Type.canCast(castingType, castedType)){
-        //    cast(vm.peekValue(),castedType); 
-        //}
+        // type del valor de la cima de la pila Type castedType =
+        // this.castType;
+        // if (Type.canCast(castingType, castedType)){
+        // cast(vm.peekValue(),castedType);
+        // }
         
+    }
+    
+    @Override
+    public String toString () {
+        return "CAST(" + castType + ")";
     }
 }
