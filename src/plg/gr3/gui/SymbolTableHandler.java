@@ -36,7 +36,10 @@ public class SymbolTableHandler {
         tableColumnNames[4] = "Dirección";
         tableModel.setColumnIdentifiers(tableColumnNames);
         
+        tableModel.addRow(tableColumnNames);
+        
         symbolTable.setModel(tableModel);
+        symbolTable.setVisible(true);
     }
     
     /**

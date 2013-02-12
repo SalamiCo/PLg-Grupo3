@@ -25,6 +25,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import plg.gr3.gui.LogHandler.LogType;
@@ -65,6 +66,8 @@ public final class CompilerUI extends JFrame {
     
     private FileHandler bytecodeFile;
     
+    private SymbolTableHandler symbolTableArea;
+    
     // Contenido de las pestañas de log y errores de compilación
     // se crea un LogHandler static para que sea accedido desde cualquier objeto del programa
     private static LogHandler logArea = new LogHandler();
@@ -85,6 +88,7 @@ public final class CompilerUI extends JFrame {
      * */
     public CompilerUI () {
         view = Views.COMPILER; // vista de compilador
+        symbolTableArea = new SymbolTableHandler();
         initUI();
     }
     
@@ -480,6 +484,9 @@ public final class CompilerUI extends JFrame {
         
         // crear paneles para Tabla de Símbolos y Lista de Tokens, añadir dichas pestañas
         JComponent panel1 = new JPanel();
+        JScrollPane scrollPane = new JScrollPane(symbolTableArea.getSymbolTable());
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel1.add(scrollPane);
         symTabbedPane.addTab("Symbol table", iconTable, panel1, "Shows symbol table content");
         
         JComponent panel2 = new JPanel();
