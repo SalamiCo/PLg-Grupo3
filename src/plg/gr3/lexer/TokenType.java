@@ -52,7 +52,7 @@ public enum TokenType {
     
     LIT_NATURAL("0|[1-9]\\d*", "(?=[^.0-9])", false),
     LIT_FLOAT("(0|[1-9]\\d*)(\\.(0|\\d*[1-9]))|(0|[1-9]\\d*)(\\.(0|\\d*[1-9]))?([eE](0|-?[1-9]\\d*))", false),
-    LIT_CHARACTER("'[a-zA-Z0-9]'", false),
+    LIT_CHARACTER("'[^']'", false),
     
     // Símbolos
     SYM_ASIGNATION("=", false),

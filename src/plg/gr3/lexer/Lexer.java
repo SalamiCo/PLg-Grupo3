@@ -45,8 +45,7 @@ public final class Lexer implements Closeable {
     /**
      * Crea un nuevo Lexer a partir de un <tt>reader</tt> dado
      * 
-     * @param reader
-     *            Flujo de caracteres del que obtener líneas
+     * @param reader Flujo de caracteres del que obtener líneas
      */
     public Lexer (Reader reader) {
         this.reader = new BufferedReader(reader);
@@ -67,12 +66,10 @@ public final class Lexer implements Closeable {
      * del analizador: múltiples llamadas consecutivas a este método devolverán lo mismo siempre que no se llame a
      * {@link #nextToken} entre ellas.
      * 
-     * @param category
-     *            Categoría léxica que buscamos reconocer
+     * @param category Categoría léxica que buscamos reconocer
      * @return <tt>true</tt> si la entrada es capaz de reconocer <tt>category</tt> como siguiente token, <tt>false</tt>
      *         en otro caso.
-     * @throws IOException
-     *             si ocurre algún error de E/S
+     * @throws IOException si ocurre algún error de E/S
      */
     private boolean hasNextToken (TokenType category) throws IOException {
         prepareInput();
@@ -92,19 +89,15 @@ public final class Lexer implements Closeable {
     }
     
     /**
-     * Devuelve el siguiente token disponible, siempre y cuando sea del tipo dado. En caso de no poder reconocer un
-     * token del tipo dado, este método lanzará una excepción de tipo {@link NoSuchElementException}.
+     * Devuelve el siguiente token disponible. En caso de no poder reconocer un token, este método lanzará una excepción
+     * de tipo {@link NoSuchElementException}.
      * <p>
      * Si el método {@link #hasNextToken} devuelve <tt>true</tt>, este método retornará satisfactoriamente. De igual
      * manera, si devuelve <tt>false</tt>, este método lanzará una excepción.
      * 
-     * @param category
-     *            Categoría léxica que buscamos reconocer
      * @return Un token localizado con información acerca del lexema, la línea y la columna en que se encuentra
-     * @throws IOException
-     *             si ocurre algún error de E/S
-     * @throws NoSuchElementException
-     *             si no se pudo encontrar un token adecuado
+     * @throws IOException si ocurre algún error de E/S
+     * @throws NoSuchElementException si no se pudo encontrar un token adecuado
      */
     public LocatedToken nextToken () throws IOException {
         prepareInput();
@@ -113,7 +106,8 @@ public final class Lexer implements Closeable {
             // Comprobamos que el siguiente token es del tipo esperado
             if (hasNextToken(category)) {
                 
-                // Caso especial: Si estamos reconociendo el final de fichero, el reconocedor es null. Adelantamos el proceso
+                // Caso especial: Si estamos reconociendo el final de fichero, el reconocedor es null.
+                // Adelantamos el proceso
                 // y evitamos problemas devolviendo directamente el token de fin de fichero
                 if (category == TokenType.EOF) {
                     return new LocatedToken(new Token(category, ""), currentLine, currentColumn);
@@ -122,8 +116,7 @@ public final class Lexer implements Closeable {
                 int column = currentColumn;
                 
                 // Reconocemos el siguiente token
-                // FIXME: ¿Es esto realmente neceario? Recordemos que en este punto venimos de una llamada a 'hasNextToken'
-                //        que ha relizado exactamente las mismas acciones.
+                // que ha relizado exactamente las mismas acciones.
                 category.recognizes(matcher);
                 
                 // Avanzamos la posición del analizador y leemos el lexema
@@ -144,8 +137,7 @@ public final class Lexer implements Closeable {
      * Prepara el analizador léxico para empezar a reconocer un token, saltándose espacios y comentarios así como
      * leyendo nuevas líneas si fuera necesario
      * 
-     * @throws IOException
-     *             si ocurre algún error de E/S
+     * @throws IOException si ocurre algún error de E/S
      */
     private void prepareInput () throws IOException {
         do {
