@@ -798,10 +798,12 @@ public final class Parser implements Closeable {
         return attrb.create();
     }
     
+    // XXX Inicio de la puta mierda
+    
     private Attributes parseUnary (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
-        int actColumn = lexer.getColumn();
-        int actLine = lexer.getLine();
+        int col = lexer.getColumn();
+        int line = lexer.getLine();
         
         // Unary ::=
         try {
@@ -816,44 +818,29 @@ public final class Parser implements Closeable {
                 UnaryOperator op = (UnaryOperator) attrOp4.getOperator();
                 
                 if (!op.canApply(attrUnary.getType())) {
-                    OperatorError error =
-                        new OperatorError(attrUnary.getType(), attrOp4.getOperator(), actLine, actColumn);
-                    error.print();
+                    OperatorError error = new OperatorError(attrUnary.getType(), attrOp4.getOperator(), line, col);
                     errors.add(error);
                 }
                 
                 // Unary0.cod = Unary1.cod || Op4.op
-                codeWriter.write(new UnaryOperatorInstruction(op));
+                codeWriter.write(new UnaryOperatorInstruction(op)); // FIXME
                 
             } else {
-                Attributes attrParen = parseParen(last, Attributes.DEFAULT);
-                if (attrParen != null) {
-                    // Paren
-                    attrb.type(attrParen.getType());
-                    parseParen(last, Attributes.DEFAULT);
-                } else {
-                    // lpar
-                    expect(last, TokenType.SYM_PAR_LEFT);
-                    // Cast
-                    Attributes attrCast = parseCast(last, Attributes.DEFAULT);
-                    // rpar
-                    expect(last, TokenType.SYM_PAR_RIGHT);
-                    // Paren
-                    Attributes attrParen2 = parseParen(last, Attributes.DEFAULT);
+                
+                Attributes attrParen2 = parseParen2(last, Attributes.DEFAULT);
+                if (attrParen2 != null) {
+                    attrb.type(attrParen2.getType());
                     
-                    /* Comprobamos que se puede aplicar el tipo del casting al tipo casteado */
-                    if (!Type.canCast(attrCast.getType(), attrParen2.getType())) {
-                        CastingError error =
-                            new CastingError(
-                                attrCast.getType(), attrParen2.getType(), lexer.getLine(), lexer.getColumn());
-                        error.print();
-                        errors.add(error);
+                } else {
+                    expect(last, TokenType.SYM_PAR_LEFT);
+                    Attributes attrFUnary = parseFUnary(last, Attributes.DEFAULT);
+                    if (attrFUnary == null) {
+                        return null;
                     }
                     
-                    // Unary.cod = Paren.cod || Cast.type
-                    codeWriter.write(attrCast.getInstructions());
-                    codeWriter.write(new CastInstruction(attrCast.getType()));
+                    attrb.type(attrFUnary.getType());
                 }
+                
             }
             return attrb.create();
             
@@ -862,8 +849,98 @@ public final class Parser implements Closeable {
         }
     }
     
+    private Attributes parseFUnary (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        int col = lexer.getColumn();
+        int line = lexer.getLine();
+        
+        try {
+            Attributes attrFParen = parseFParen(last, Attributes.DEFAULT);
+            if (attrFParen != null) {
+                attrb.type(attrFParen.getType());
+                
+            } else {
+                Attributes attrCast = parseCast(last, Attributes.DEFAULT);
+                if (attrCast == null) {
+                    return null;
+                }
+                
+                expect(last, TokenType.SYM_PAR_RIGHT);
+                
+                Attributes attrParen = parseParen(last, Attributes.DEFAULT);
+                if (attrParen == null) {
+                    return null;
+                }
+                
+                if (!Type.canCast(attrCast.getType(), attrParen.getType())) {
+                    CastingError error = new CastingError(attrCast.getType(), attrParen.getType(), line, col);
+                    errors.add(error);
+                }
+                
+                attrb.type(attrCast.getType());
+                
+                codeWriter.write(attrCast.getInstructions());
+                codeWriter.write(new CastInstruction(attrCast.getType()));
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseFParen (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        int col = lexer.getColumn();
+        int line = lexer.getLine();
+        
+        try {
+            Attributes attrExpr = parseExpr(last, Attributes.DEFAULT);
+            if (attrExpr == null) {
+                return null;
+            }
+            
+            expect(last, TokenType.SYM_PAR_RIGHT);
+            
+            attrb.type(attrExpr.getType());
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
     private Attributes parseParen (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
+        int col = lexer.getColumn();
+        int line = lexer.getLine();
+        
+        try {
+            Attributes attrFParen = parseFParen(last, Attributes.DEFAULT);
+            if (attrFParen != null) {
+                attrb.type(attrFParen.getType());
+            } else {
+                Attributes attrParen2 = parseParen2(last, Attributes.DEFAULT);
+                if (attrParen2 == null) {
+                    return null;
+                }
+                
+                attrb.type(attrParen2.getType());
+            }
+            
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
+        
+        return attrb.create();
+    }
+    
+    private Attributes parseParen2 (boolean last, Attributes attr) throws IOException {
+        Attributes.Builder attrb = new Attributes.Builder();
+        int line = lexer.getLine();
+        int column = lexer.getColumn();
         
         // Paren ::=
         try {
@@ -871,53 +948,31 @@ public final class Parser implements Closeable {
             Attributes litAttributes = parseLit(last, Attributes.DEFAULT);
             
             if (litAttributes == null) {
+                LocatedToken tokenRead = expect(last, TokenType.IDENTIFIER);
                 
-                LocatedToken tokenRead = expect(last, TokenType.SYM_PAR_LEFT, TokenType.IDENTIFIER);
-                
-                switch (tokenRead.getToken().getType()) {
-                
-                // lpar Expr rpar
-                    case SYM_PAR_LEFT: {
-                        parseExpr(last, Attributes.DEFAULT);
-                        expect(last, TokenType.SYM_PAR_RIGHT);
-                        
-                    }
-                    break;
+                /* Comprobamos que el identificador existe */
+                if (!symbolTable.hasIdentifier(tokenRead.getLexeme())) {
+                    UndefinedIdentifierError error = new UndefinedIdentifierError(tokenRead.getLexeme(), line, column);
+                    errors.add(error);
                     
-                    // ident
-                    case IDENTIFIER: {
-                        
-                        /* Comprobamos que el identificador existe */
-                        if (!this.symbolTable.hasIdentifier(tokenRead.getLexeme())) {
-                            UndefinedIdentifierError error =
-                                new UndefinedIdentifierError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
-                            error.print();
-                            errors.add(error);
-                            
-                        } else {
-                            attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
-                        }
-                        
-                        /*
-                         * Paren.cod = Si Paren.tsh[ident.lex].const = true apila(Paren.tsh[ident.lex].value) Si no
-                         * apila-dir(Paren.tsh[ident.lex].dir)
-                         */
-                        
-                        if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
-                            
-                            PushInstruction inst =
-                                new PushInstruction(symbolTable.getIdentifierValue(tokenRead.getLexeme()));
-                            codeWriter.write(inst);
-                            
-                        } else {
-                            int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
-                            LoadInstruction inst = new LoadInstruction(addr);
-                            codeWriter.write(inst);
-                        }
-                        
-                    }
-                    break;
+                } else {
+                    attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
                 }
+                
+                /*
+                 * Paren.cod = Si Paren.tsh[ident.lex].const = true apila(Paren.tsh[ident.lex].value) Si no
+                 * apila-dir(Paren.tsh[ident.lex].dir)
+                 */
+                if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
+                    PushInstruction inst = new PushInstruction(symbolTable.getIdentifierValue(tokenRead.getLexeme()));
+                    codeWriter.write(inst);
+                    
+                } else {
+                    int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
+                    LoadInstruction inst = new LoadInstruction(addr);
+                    codeWriter.write(inst);
+                }
+                
             } else {
                 attrb.type(litAttributes.getType());
                 // Paren.cod = apilar(Lit.value)
@@ -931,6 +986,8 @@ public final class Parser implements Closeable {
         
         return attrb.create();
     }
+    
+    // XXX Fin de la puta mierda
     
     private Attributes parseOp0 (boolean last, Attributes attr) throws IOException {
         try {
