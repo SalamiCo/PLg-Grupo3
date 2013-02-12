@@ -16,8 +16,7 @@ public final class StoreInstruction extends Instruction {
     private final int address;
     
     /**
-     * @param address
-     *            Dirección en la que guardar el valor desapilado
+     * @param address Dirección en la que guardar el valor desapilado
      */
     public StoreInstruction (int address) {
         this.address = address;
@@ -31,10 +30,15 @@ public final class StoreInstruction extends Instruction {
     @Override
     public void execute (VirtualMachine vm) {
         try {
-            vm.setMemoryValue(address, vm.popValue()); //Mem[dir] = Cima  
+            vm.setMemoryValue(address, vm.popValue()); // Mem[dir] = Cima
         } catch (EmptyStackException e) {
-            //Error de pila vacía
+            // Error de pila vacía
             vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
+    }
+    
+    @Override
+    public String toString () {
+        return "STORE(0x" + Integer.toHexString(address) + ")";
     }
 }

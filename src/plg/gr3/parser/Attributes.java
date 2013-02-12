@@ -114,7 +114,7 @@ public final class Attributes {
      * @return El atributo <tt>operator</tt>
      */
     public <T extends Operator> T getOperator (Class<T> type) {
-        if (type.isInstance(type)) {
+        if (type.isInstance(operator)) {
             return type.cast(operator);
         }
         return null;

@@ -54,4 +54,9 @@ public final class BinaryOperatorInstruction extends Instruction {
             vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
     }
+    
+    @Override
+    public String toString () {
+        return "BIN-OP[" + operator + "]";
+    }
 }

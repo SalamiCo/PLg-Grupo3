@@ -17,9 +17,9 @@ public final class OutputInstruction extends Instruction {
     @Override
     public void execute (VirtualMachine vm) {
         try {
-            vm.setOutput(vm.popValue()); //bufferOut = Cima
+            vm.setOutput(vm.popValue()); // bufferOut = Cima
         } catch (IOException e1) {
-            //TODO error en tiempo de ejecución: fallo del buffer de salida
+            // TODO error en tiempo de ejecución: fallo del buffer de salida
             vm.abort(new IOError(vm.getProgramCounter(), this));
         } catch (EmptyStackException e2) {
             vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
@@ -27,4 +27,8 @@ public final class OutputInstruction extends Instruction {
         
     }
     
+    @Override
+    public String toString () {
+        return "OUT";
+    }
 }

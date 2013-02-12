@@ -35,10 +35,15 @@ public class InputInstruction extends Instruction {
     public void execute (VirtualMachine vm) {
         try {
             // FIXME Qué
-            vm.pushValue(vm.getInput()); // Cima <= BufferIN
+            vm.pushValue(vm.getInput(inputType)); // Cima <= BufferIN
         } catch (IOException e) {
             // TODO Error en tiempo de ejecución: error al leer de BufferIN
             vm.abort(new IOError(vm.getProgramCounter(), this));
         }
+    }
+    
+    @Override
+    public String toString () {
+        return "INPUT(" + inputType + ")";
     }
 }

@@ -14,4 +14,9 @@ public class Swap1Instruction extends Instruction {
         vm.toggleSwapped1();
     }
     
+    @Override
+    public String toString () {
+        return "SWAP1";
+    }
+    
 }
