@@ -46,6 +46,6 @@ public final class PushInstruction extends Instruction {
     
     @Override
     public String toString () {
-        return "PUSH(" + value.getType() + ":" + value + ")";
+        return "PUSH(" + value.getType().getName() + ":" + value + ")";
     }
 }
