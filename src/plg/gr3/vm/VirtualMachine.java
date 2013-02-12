@@ -12,6 +12,12 @@ import java.util.Objects;
 import java.util.Stack;
 
 import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.BooleanValue;
+import plg.gr3.data.CharacterValue;
+import plg.gr3.data.FloatValue;
+import plg.gr3.data.IntegerValue;
+import plg.gr3.data.NaturalValue;
+import plg.gr3.data.Type;
 import plg.gr3.data.Value;
 import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.vm.instr.Instruction;
@@ -132,8 +138,21 @@ public final class VirtualMachine {
     }
     
     // FIXME OMGWTFBBQ QUÉ COJONES
-    public Object getInput () throws IOException {
-        return reader.readLine();
+    public Value getInput (Type type) throws IOException {
+        String str = reader.readLine();
+        if (type.equals(Type.NATURAL)) {
+            return NaturalValue.valueOf(str);
+        } else if (type.equals(Type.INTEGER)) {
+            return IntegerValue.valueOf(str);
+        } else if (type.equals(Type.FLOAT)) {
+            return FloatValue.valueOf(str);
+        } else if (type.equals(Type.CHARACTER)) {
+            return CharacterValue.valueOf(str);
+        } else if (type.equals(Type.BOOLEAN)) {
+            return BooleanValue.valueOf(str);
+        }
+        
+        throw new IllegalArgumentException(type.toString());
     }
     
     public void setOutput (Object value) throws IOException {
