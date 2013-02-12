@@ -8,7 +8,7 @@ import javax.swing.JTextPane;
 public class LogHandler {
     
     /**
-     * Tipos de mensaje posibles para el Log
+     * Tipos de mensaje posibles para el Log.
      * */
     public enum LogType {
         ERROR,
@@ -17,7 +17,7 @@ public class LogHandler {
     }
     
     /**
-     * Área de texto que representa el Log
+     * Área de texto que representa el Log.
      * */
     private final JTextPane logPane;
     
@@ -30,14 +30,14 @@ public class LogHandler {
     }
     
     /**
-     * Obtiene el área de texto que representa el Log
+     * Obtiene el área de texto que representa el Log.
      * */
     public JTextPane getLogPane () {
         return logPane;
     }
     
     /**
-     * Inserta un nuevo mensaje del tipo especificado en el area de texto que representa el Log.
+     * Inserta un nuevo mensaje del tipo especificado en el area de texto del log.
      * */
     public void log (LogType type, String msg) {
         logPane.setText(logPane.getText() + "[" + type.toString() + "] " + msg + "\n");

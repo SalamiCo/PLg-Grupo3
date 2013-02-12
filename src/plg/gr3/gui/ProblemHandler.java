@@ -25,7 +25,7 @@ public class ProblemHandler {
     }
     
     /**
-     * Obtiene el área de texto que representa los problemas en tiempo de compilación
+     * Obtiene el área de texto que representa los problemas en tiempo de compilación.
      * */
     public JTextPane getLogPane () {
         return problemPane;
