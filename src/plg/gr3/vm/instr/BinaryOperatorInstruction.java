@@ -57,6 +57,6 @@ public final class BinaryOperatorInstruction extends Instruction {
     
     @Override
     public String toString () {
-        return operator.toString();
+        return "BIN-OP[" + operator + "]";
     }
 }
