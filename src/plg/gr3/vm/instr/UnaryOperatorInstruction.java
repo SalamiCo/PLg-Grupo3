@@ -51,7 +51,7 @@ public final class UnaryOperatorInstruction extends Instruction {
     
     @Override
     public String toString () {
-        return operator.toString();
+        return "UN-OP[" + operator + "]";
     }
     
 }
