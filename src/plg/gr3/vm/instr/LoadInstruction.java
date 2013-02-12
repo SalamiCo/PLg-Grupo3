@@ -39,4 +39,9 @@ public final class LoadInstruction extends Instruction {
             vm.abort(new UninitializedError(vm.getProgramCounter(), this, address));
         }
     }
+    
+    @Override
+    public String toString () {
+        return "LOAD(0x" + Integer.toHexString(address) + ")";
+    }
 }
