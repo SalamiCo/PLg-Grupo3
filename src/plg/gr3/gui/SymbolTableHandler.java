@@ -27,6 +27,8 @@ public class SymbolTableHandler {
             }
         };
         
+        // auto resize off
+        symbolTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         // setting the column name
         String[] tableColumnNames = new String[5];
         tableColumnNames[0] = "Nombre";
@@ -34,9 +36,15 @@ public class SymbolTableHandler {
         tableColumnNames[2] = "Const";
         tableColumnNames[3] = "Valor";
         tableColumnNames[4] = "Dirección";
+        String[] tableColumnNames1 = new String[5];
+        tableColumnNames1[0] = "Nombre";
+        tableColumnNames1[1] = "Tipo";
+        tableColumnNames1[2] = "Const";
+        tableColumnNames1[3] = "Valor";
+        tableColumnNames1[4] = "sjdioañpinasoihdnasoihdasoihoidsahoash";
         tableModel.setColumnIdentifiers(tableColumnNames);
         
-        tableModel.addRow(tableColumnNames);
+        tableModel.addRow(tableColumnNames1);
         
         symbolTable.setModel(tableModel);
         symbolTable.setVisible(true);
