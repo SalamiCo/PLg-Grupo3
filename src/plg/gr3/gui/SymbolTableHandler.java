@@ -68,14 +68,12 @@ public class SymbolTableHandler {
     private void fillColumns (DefaultTableModel model, SymbolTable st) {
         
         Object[] row = new Object[5];
-        System.out.println("fillColumns. Null? " + st == null);
         for (Entry<String, Row> stEntry : st) {
-            System.out.println("dentro del for");
             row[0] = stEntry.getKey();
             row[1] = stEntry.getValue().getType();
             row[2] = stEntry.getValue().isConstant();
-            row[3] = stEntry.getValue().getValue();
-            row[4] = stEntry.getValue().getAddress();
+            row[3] = (boolean) row[2] ? stEntry.getValue().getValue() : "-";
+            row[4] = (boolean) row[2] ? "-" : stEntry.getValue().getAddress();
             model.addRow(row);
         }
         
