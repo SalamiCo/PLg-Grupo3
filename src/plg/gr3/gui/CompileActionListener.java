@@ -13,7 +13,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-import plg.gr3.code.ListCodeWriter;
+import plg.gr3.code.CodeWriter;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
@@ -37,7 +37,7 @@ public class CompileActionListener implements ActionListener {
         try {
             localReader = new InputStreamReader(new FileInputStream(sourceCodeFile), Charset.forName("UTF-8"));
             invoker.setLexer(new Lexer(localReader));
-            invoker.setCodeWriter(new ListCodeWriter());
+            invoker.setCodeWriter(new CodeWriter());
             invoker.setParser(new Parser(invoker.getLexer(), invoker.getCodeWriter()));
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
