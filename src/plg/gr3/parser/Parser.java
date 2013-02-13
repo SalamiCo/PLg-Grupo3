@@ -108,6 +108,11 @@ public final class Parser implements Closeable {
         throw new NoSuchElementException();
     }
     
+    /** @return Tabla de símbolos obtenida */
+    public SymbolTable getSymbolTable () {
+        return symbolTable;
+    }
+    
     /**
      * @return <tt>true</tt> si se ha reconocido el lenguaje sin errores, <tt>false</tt> en caso contratrio
      * @throws IOException si ocurre un error de E/S
@@ -129,13 +134,15 @@ public final class Parser implements Closeable {
                 CompileError error = new UnexpectedTokenError(token, expected);
                 errors.add(error);
             }
+            
+            return false;
         }
         
         for (CompileError error : errors) {
             error.print();
         }
         
-        return true;
+        return errors.isEmpty();
     }
     
     private Attributes parseProgram (Attributes attr) throws IOException {
@@ -208,7 +215,8 @@ public final class Parser implements Closeable {
                 attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
                 attrDec.getValue());
             
-            parseRDecs(last, Attributes.DEFAULT);
+            Attributes attrInhDecs = new Attributes.Builder().address(attrDec.getAddress()).create();
+            parseRDecs(last, attrInhDecs);
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -402,6 +410,9 @@ public final class Parser implements Closeable {
                      */
                     Type identType = symbolTable.getIdentfierType(tokenRead.getLexeme());
                     Type exprType = exprAttributes.getType();
+                    if (exprType == null) {
+                        return null;
+                    }
                     
                     if (!Type.assignable(identType, exprType)) {
                         AssignError error = new AssignError(identType, exprType, tokenRead);

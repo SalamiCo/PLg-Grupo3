@@ -73,17 +73,17 @@ public final class CharacterValue extends Value {
     
     @Override
     public NaturalValue toNaturalValue () {
-        throw new IllegalArgumentException(toString());
+        return NaturalValue.valueOf(value);
     }
     
     @Override
     public IntegerValue toIntegerValue () {
-        throw new IllegalArgumentException(toString());
+        return IntegerValue.valueOf(value);
     }
     
     @Override
     public FloatValue toFloatValue () {
-        throw new IllegalArgumentException(toString());
+        return FloatValue.valueOf(value);
     }
     
     @Override
