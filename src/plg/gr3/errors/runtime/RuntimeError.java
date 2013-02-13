@@ -18,10 +18,8 @@ public abstract class RuntimeError extends Error {
     private final Instruction instruction;
     
     /**
-     * @param position
-     *            Posición del programa en la que dio el error
-     * @param instruction
-     *            Instrucción que dio el error
+     * @param position Posición del programa en la que dio el error
+     * @param instruction Instrucción que dio el error
      */
     /* package */RuntimeError (int position, Instruction instruction) {
         this.position = position;
