@@ -11,7 +11,6 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 
 import plg.gr3.code.ListCodeWriter;
-import plg.gr3.data.Type;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
@@ -38,8 +37,9 @@ public class CompileActionListener implements ActionListener {
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
 //                invoker.getSymbolTableArea().replaceModel(invoker.getParser().getSymbolTable());
-                SymbolTable st = new SymbolTable();
-                st.putIdentifier("ident", Type.BOOLEAN, false, 1234, null);
+//                SymbolTable st = new SymbolTable();
+//                st.putIdentifier("ident", Type.BOOLEAN, false, 1234, null);
+                SymbolTable st = invoker.getParser().getSymbolTable();
                 invoker.getSymbolTableArea().replaceModel(st);
             } else {
                 CompilerUI.log(LogType.ERROR, "Compilation error/s");
