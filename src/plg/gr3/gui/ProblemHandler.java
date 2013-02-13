@@ -22,12 +22,13 @@ public class ProblemHandler {
     public ProblemHandler () {
         problemPane = new JTextPane();
         problemPane.setEditable(false);
+        problemPane.setText("affafaaf");
     }
     
     /**
      * Obtiene el área de texto que representa los problemas en tiempo de compilación.
      * */
-    public JTextPane getLogPane () {
+    public JTextPane getProblemPane () {
         return problemPane;
     }
     
