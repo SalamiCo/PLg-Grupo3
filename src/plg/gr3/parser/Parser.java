@@ -108,10 +108,8 @@ public final class Parser implements Closeable {
         throw new NoSuchElementException();
     }
     
-<<<<<<< HEAD
-=======
     /** @return Tabla de símbolos obtenida */
->>>>>>> natneg
+    
     public SymbolTable getSymbolTable () {
         return symbolTable;
     }
