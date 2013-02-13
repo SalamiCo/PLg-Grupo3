@@ -10,6 +10,7 @@ import plg.gr3.code.ListCodeWriter;
 import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
+import plg.gr3.vm.VirtualMachine;
 
 public final class Util {
     
@@ -27,5 +28,8 @@ public final class Util {
         parser.parse();
         
         System.out.println(codeWriter.getList());
+        
+        VirtualMachine vm = new VirtualMachine(codeWriter.getList());
+        vm.execute();
     }
 }

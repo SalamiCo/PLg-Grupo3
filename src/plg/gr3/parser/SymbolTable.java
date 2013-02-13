@@ -1,10 +1,13 @@
 package plg.gr3.parser;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import plg.gr3.data.Type;
 import plg.gr3.data.Value;
+import plg.gr3.parser.SymbolTable.Row;
 
 /**
  * Representación de la tabla de símbolos mediante una tabla con clave el identificador de la variable o costante que se
@@ -12,33 +15,59 @@ import plg.gr3.data.Value;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public final class SymbolTable {
+public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
     
     /**
-     * Estructura simple estilo C para representar internamente los atributos de los identificadores
+     * Fila de la tabla de símbolos, sin incluir el identificador en sí.
      * 
      * @author PLg Grupo 03 2012/2013
      */
-    private final class Entry {
+    public static final class Row {
         
-        public final Type type;
+        private final Type type;
         
-        public final boolean constant;
+        private final boolean constant;
         
-        public final int address;
+        private final int address;
         
-        public final Value value;
+        private final Value value;
         
-        public Entry (Type type, boolean constant, int address, Value value) {
+        /**
+         * @param type Type of the identifier
+         * @param constant Whether the identifier is a constant
+         * @param address Address of the identifier
+         * @param value Value for the identifier
+         */
+        public Row (Type type, boolean constant, int address, Value value) {
             this.type = type;
             this.constant = constant;
             this.address = address;
             this.value = value;
         }
+        
+        /** @return The type of the identifier */
+        public Type getType () {
+            return type;
+        }
+        
+        /** @return Whether the identifier is constant */
+        public boolean isConstant () {
+            return constant;
+        }
+        
+        /** @return The address of the identifier */
+        public int getAddress () {
+            return address;
+        }
+        
+        /** @return The value of the identifier */
+        public Value getValue () {
+            return value;
+        }
     }
     
     /** Estructura interna de la tabla */
-    private final HashMap<String, Entry> table = new HashMap<>();
+    private final HashMap<String, Row> table = new HashMap<>();
     
     /**
      * Construye una tabla de símbolos vacía
@@ -63,14 +92,14 @@ public final class SymbolTable {
      * @param value Valor del identificador
      */
     public void putIdentifier (String ident, Type type, boolean constant, int address, Value value) {
-        table.put(ident, new Entry(type, constant, address, value));
+        table.put(ident, new Row(type, constant, address, value));
     }
     
     /**
      * @param ident Identificador a consultar
      * @return Fila de la tabla completa
      */
-    private Entry getEntry (String ident) {
+    private Row getRow (String ident) {
         if (!hasIdentifier(ident)) {
             throw new NoSuchElementException(ident);
         }
@@ -83,7 +112,7 @@ public final class SymbolTable {
      * @return Dirección del identificador
      */
     public int getIdentifierAddress (String ident) {
-        return getEntry(ident).address;
+        return getRow(ident).getAddress();
     }
     
     /**
@@ -91,7 +120,7 @@ public final class SymbolTable {
      * @return Tipo del identificador
      */
     public Type getIdentfierType (String ident) {
-        return getEntry(ident).type;
+        return getRow(ident).getType();
     }
     
     /**
@@ -99,7 +128,7 @@ public final class SymbolTable {
      * @return Si el identificador es una constante
      */
     public boolean isIdentifierConstant (String ident) {
-        return getEntry(ident).constant;
+        return getRow(ident).constant;
     }
     
     /**
@@ -116,12 +145,17 @@ public final class SymbolTable {
      * @return Valor del identificador
      */
     public <T extends Value> T getIdentifierValue (String ident, Class<T> type) {
-        Value obj = getEntry(ident).value;
+        Value obj = getRow(ident).value;
         
         if (type.isInstance(obj)) {
             return type.cast(obj);
         } else {
             return null;
         }
+    }
+    
+    @Override
+    public Iterator<Map.Entry<String, Row>> iterator () {
+        return table.entrySet().iterator();
     }
 }
