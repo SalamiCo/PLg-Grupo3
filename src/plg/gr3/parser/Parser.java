@@ -108,6 +108,10 @@ public final class Parser implements Closeable {
         throw new NoSuchElementException();
     }
     
+    public SymbolTable getSymbolTable () {
+        return symbolTable;
+    }
+    
     /**
      * @return <tt>true</tt> si se ha reconocido el lenguaje sin errores, <tt>false</tt> en caso contratrio
      * @throws IOException si ocurre un error de E/S
