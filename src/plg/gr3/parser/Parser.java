@@ -398,6 +398,9 @@ public final class Parser implements Closeable {
                     Type asigType = symbolTable.getIdentfierType(tokenRead.getLexeme());
                     Attributes attrInhExpr = new Attributes.Builder().asignationType(asigType).create();
                     Attributes exprAttributes = parseExpr(last, attrInhExpr);
+                    if (exprAttributes == null) {
+                        return null;
+                    }
                     
                     // Comprobamos que el identificador existe
                     if (!symbolTable.hasIdentifier(tokenRead.getLexeme())) {
