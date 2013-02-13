@@ -212,7 +212,8 @@ public final class Parser implements Closeable {
                 attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
                 attrDec.getValue());
             
-            parseRDecs(last, Attributes.DEFAULT);
+            Attributes attrInhDecs = new Attributes.Builder().address(attrDec.getAddress()).create();
+            parseRDecs(last, attrInhDecs);
             
         } catch (NoSuchElementException exc) {
             return null;
