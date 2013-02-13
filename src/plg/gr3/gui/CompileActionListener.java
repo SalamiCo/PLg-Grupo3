@@ -5,9 +5,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
 
 import plg.gr3.code.ListCodeWriter;
@@ -27,19 +30,26 @@ public class CompileActionListener implements ActionListener {
     @Override
     public void actionPerformed (ActionEvent e) {
         CompilerUI.log(LogType.LOG, "Compiling...");
-        File file = new File(invoker.getFileHandler().getFilePath());
+        File sourceCodeFile = new File(invoker.getFileHandler().getFilePath());
+        File byteCodeFile = new File("");
         Reader localReader;
+        Writer localWriter;
         try {
-            localReader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
+            localReader = new InputStreamReader(new FileInputStream(sourceCodeFile), Charset.forName("UTF-8"));
             invoker.setLexer(new Lexer(localReader));
             invoker.setCodeWriter(new ListCodeWriter());
             invoker.setParser(new Parser(invoker.getLexer(), invoker.getCodeWriter()));
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
+                
+                // mostramos la tabla de símbolos
                 SymbolTable st = invoker.getParser().getSymbolTable();
                 invoker.getSymbolTableArea().replaceModel(st);
                 
-                // guardamos en el bytecode
+                // ponemos el codigo generado en el editor de bytecode
+                localWriter = new OutputStreamWriter(new FileOutputStream(byteCodeFile), Charset.forName("UTF-8"));
+                
+                // invoker.getBytecodeFileHandler().getTextEditor().setText(invoker.getCodeWriter().getList().toString());
                 
             } else {
                 CompilerUI.log(LogType.ERROR, "Compilation error/s");

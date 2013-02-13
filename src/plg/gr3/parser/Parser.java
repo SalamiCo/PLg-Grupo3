@@ -277,6 +277,9 @@ public final class Parser implements Closeable {
                 case RW_VAR: {
                     // Type
                     Attributes attrType = parseType(last, Attributes.DEFAULT);
+                    if (attrType == null) {
+                        return null;
+                    }
                     // ident
                     LocatedToken token = expect(last, TokenType.IDENTIFIER);
                     
