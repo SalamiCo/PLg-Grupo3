@@ -1,6 +1,8 @@
 package plg.gr3.vm.instr;
 
 import plg.gr3.data.Type;
+import plg.gr3.data.Value;
+import plg.gr3.errors.runtime.TypeMismatchError;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -27,14 +29,29 @@ public class CastInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
-        // TODO crear un metodo para convertir los tipos "cast"
-        // Type castingType = Type.forValue(vm.peekValue());
-        // type del valor de la cima de la pila Type castedType =
-        // this.castType;
-        // if (Type.canCast(castingType, castedType)){
-        // cast(vm.peekValue(),castedType);
-        // }
-        
+        try {
+            Value val = vm.popValue();
+            Value casted = null;
+            
+            if (castType.equals(Type.CHARACTER)) {
+                casted = val.toCharacterValue();
+                
+            } else if (castType.equals(Type.FLOAT)) {
+                casted = val.toFloatValue();
+                
+            } else if (castType.equals(Type.INTEGER)) {
+                casted = val.toIntegerValue();
+                
+            } else if (castType.equals(Type.NATURAL)) {
+                casted = val.toNaturalValue();
+                
+            }
+            
+            vm.pushValue(casted);
+            
+        } catch (IllegalArgumentException exc) {
+            vm.abort(new TypeMismatchError(vm.getProgramCounter(), this));
+        }
     }
     
     @Override

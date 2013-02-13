@@ -129,10 +129,10 @@ public final class Parser implements Closeable {
                 CompileError error = new UnexpectedTokenError(token, expected);
                 errors.add(error);
             }
-            
-            for (CompileError error : errors) {
-                error.print();
-            }
+        }
+        
+        for (CompileError error : errors) {
+            error.print();
         }
         
         return true;
@@ -226,9 +226,10 @@ public final class Parser implements Closeable {
             expect(false, TokenType.SYM_SEMICOLON);
             
             // Dec
-            Attributes attrDec = parseDec(last, Attributes.DEFAULT);
+            Attributes attrInhDec = new Attributes.Builder().address(attr.getAddress()).create();
+            Attributes attrDec = parseDec(last, attrInhDec);
             if (attrDec == null) {
-                return Attributes.DEFAULT;
+                return null;
             }
             
             if (symbolTable.hasIdentifier(attrDec.getIdentifier())) {
@@ -236,12 +237,11 @@ public final class Parser implements Closeable {
                     new DuplicateIdentifierError(attrDec.getIdentifier(), lexer.getLine(), lexer.getColumn());
                 errors.add(error);
                 
-            } else {
-                // RDecs
-                symbolTable.putIdentifier(
-                    attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
-                    attrDec.getValue());
             }
+            // RDecs
+            symbolTable.putIdentifier(
+                attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
+                attrDec.getValue());
             
             Attributes inhAttr = new Attributes.Builder().address(attrDec.getAddress()).create();
             parseRDecs(last, inhAttr);
@@ -403,7 +403,7 @@ public final class Parser implements Closeable {
                     Type identType = symbolTable.getIdentfierType(tokenRead.getLexeme());
                     Type exprType = exprAttributes.getType();
                     
-                    if (!Type.assignable(exprType, identType)) {
+                    if (!Type.assignable(identType, exprType)) {
                         AssignError error = new AssignError(identType, exprType, tokenRead);
                         errors.add(error);
                         codeWriter.inhibit();
