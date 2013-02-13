@@ -5,11 +5,13 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.Map.Entry;
 
 import plg.gr3.code.ListCodeWriter;
 import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
+import plg.gr3.parser.SymbolTable.Row;
 import plg.gr3.vm.VirtualMachine;
 
 public final class Util {
@@ -28,6 +30,10 @@ public final class Util {
             parser.parse();
             
             System.out.println(codeWriter.getList());
+            
+            for (Entry<String, Row> entry : parser.getSymbolTable()) {
+                System.out.println(entry.getKey() + " ==> " + entry.getValue());
+            }
             
             VirtualMachine vm = new VirtualMachine(codeWriter.getList());
             vm.execute();
