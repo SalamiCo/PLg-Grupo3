@@ -19,6 +19,7 @@ import plg.gr3.data.IntegerValue;
 import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.Value;
+import plg.gr3.errors.runtime.InvalidInstructionAddressError;
 import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.vm.instr.Instruction;
 
@@ -62,11 +63,17 @@ public final class VirtualMachine {
     
     public void step () {
         Instruction inst = getInstruction(programCounter);
-        inst.execute(this);
-        programCounter++;
+        if (inst != null) {
+            inst.execute(this);
+            programCounter++;
+        }
     }
     
     public Instruction getInstruction (int address) {
+        if (address < 0 || address >= program.size()) {
+            abort(new InvalidInstructionAddressError(address));
+            return null;
+        }
         return program.get(address);
     }
     
