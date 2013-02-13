@@ -1,10 +1,10 @@
 package plg.gr3.vm;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +40,7 @@ public final class VirtualMachine {
     
     private BufferedReader reader;
     
-    private BufferedWriter writer;
+    private Writer writer;
     
     private RuntimeError error;
     
@@ -50,7 +50,7 @@ public final class VirtualMachine {
         memory = new ArrayList<>();
         stack = new Stack<>();
         reader = new BufferedReader(new InputStreamReader(System.in));
-        writer = new BufferedWriter(new OutputStreamWriter(System.out));
+        writer = new OutputStreamWriter(System.out);
         reset();
     }
     
@@ -71,13 +71,18 @@ public final class VirtualMachine {
     }
     
     public Value getMemoryValue (int address) {
-        if (address >= 0 && address < memory.size()) {
-            memory.get(address);
+        if (address < 0 && address >= memory.size()) {
+            return null;
         }
-        return null;
+        return memory.get(address);
+        
     }
     
     public void setMemoryValue (int address, Value value) {
+        while (memory.size() <= address) {
+            memory.add(null);
+        }
+        
         memory.set(address, value);
     }
     
@@ -138,16 +143,20 @@ public final class VirtualMachine {
     }
     
     // FIXME OMGWTFBBQ QUÉ COJONES
-    public Value getInput (Type type) throws IOException {
+    public Value readValue (Type type) throws IOException {
         String str = reader.readLine();
         if (type.equals(Type.NATURAL)) {
             return NaturalValue.valueOf(str);
+            
         } else if (type.equals(Type.INTEGER)) {
             return IntegerValue.valueOf(str);
+            
         } else if (type.equals(Type.FLOAT)) {
             return FloatValue.valueOf(str);
+            
         } else if (type.equals(Type.CHARACTER)) {
             return CharacterValue.valueOf(str);
+            
         } else if (type.equals(Type.BOOLEAN)) {
             return BooleanValue.valueOf(str);
         }
@@ -155,8 +164,9 @@ public final class VirtualMachine {
         throw new IllegalArgumentException(type.toString());
     }
     
-    public void setOutput (Object value) throws IOException {
+    public void writeValue (Value value) throws IOException {
         writer.write(value.toString());
+        writer.flush();
     }
     
     public RuntimeError getError () {

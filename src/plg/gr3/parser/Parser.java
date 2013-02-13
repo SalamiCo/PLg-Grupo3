@@ -984,10 +984,11 @@ public final class Parser implements Closeable {
                     PushInstruction inst = new PushInstruction(symbolTable.getIdentifierValue(tokenRead.getLexeme()));
                     codeWriter.write(inst);
                     
+                } else {
+                    int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
+                    LoadInstruction inst = new LoadInstruction(addr);
+                    codeWriter.write(inst);
                 }
-                int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
-                LoadInstruction inst = new LoadInstruction(addr);
-                codeWriter.write(inst);
                 
             } else {
                 attrb.type(litAttributes.getType());
@@ -1002,8 +1003,6 @@ public final class Parser implements Closeable {
         
         return attrb.create();
     }
-    
-    // XXX Fin de la puta mierda
     
     private Attributes parseOp0 (boolean last, Attributes attr) throws IOException {
         try {
