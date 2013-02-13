@@ -25,7 +25,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import plg.gr3.gui.LogHandler.LogType;
@@ -480,13 +479,16 @@ public final class CompilerUI extends JFrame {
         
         // crear nuevo panel de pestañas
         JTabbedPane symTabbedPane = new JTabbedPane();
-        symTabbedPane.setPreferredSize(new Dimension(283, 464));
+        symTabbedPane.setPreferredSize(new Dimension(380, 464));
         
         // crear paneles para Tabla de Símbolos y Lista de Tokens, añadir dichas pestañas
-        JComponent panel1 = new JPanel();
-        JScrollPane scrollPane = new JScrollPane(symbolTableArea.getSymbolTable());
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        panel1.add(scrollPane);
+        JComponent panel1 = new JPanel(new BorderLayout());
+        JScrollPane scrollPane =
+            new JScrollPane(
+                symbolTableArea.getSymbolTable(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        panel1.add(scrollPane, BorderLayout.CENTER);
         symTabbedPane.addTab("Symbol table", iconTable, panel1, "Shows symbol table content");
         
         JComponent panel2 = new JPanel();
