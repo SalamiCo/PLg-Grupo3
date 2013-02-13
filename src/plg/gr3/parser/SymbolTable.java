@@ -33,10 +33,10 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
         private final Value value;
         
         /**
-         * @param type Type of the identifier
-         * @param constant Whether the identifier is a constant
-         * @param address Address of the identifier
-         * @param value Value for the identifier
+         * @param type Tipo del identificador
+         * @param constant Si el identificador es una constant
+         * @param address Dirección del identificador
+         * @param value Valor del identificador
          */
         public Row (Type type, boolean constant, int address, Value value) {
             this.type = type;
@@ -45,22 +45,22 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
             this.value = value;
         }
         
-        /** @return The type of the identifier */
+        /** @return Tipo del identificador */
         public Type getType () {
             return type;
         }
         
-        /** @return Whether the identifier is constant */
+        /** @return Si el identificador es una constante */
         public boolean isConstant () {
             return constant;
         }
         
-        /** @return The address of the identifier */
+        /** @return Dirección del identificador */
         public int getAddress () {
             return address;
         }
         
-        /** @return The value of the identifier */
+        /** @return Valor del identificador */
         public Value getValue () {
             return value;
         }
@@ -144,7 +144,7 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
      * @param type Tipo del valor
      * @return Valor del identificador
      */
-    public <T extends Value> T getIdentifierValue (String ident, Class<T> type) {
+    public <V extends Value> V getIdentifierValue (String ident, Class<V> type) {
         Value obj = getRow(ident).value;
         
         if (type.isInstance(obj)) {

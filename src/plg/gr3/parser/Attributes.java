@@ -163,43 +163,93 @@ public final class Attributes {
         
         private final List<Instruction> instructions = new LinkedList<>();
         
+        /**
+         * @param ident Identificador
+         * @return <tt>this</tt>
+         */
         public Builder identifier (String ident) {
             this.ident = ident;
             return this;
         }
         
+        /**
+         * @param address Dirección de memoria
+         * @return <tt>this</tt>
+         */
         public Builder address (int address) {
             this.address = address;
             return this;
         }
         
+        /**
+         * @param constant Si se trata de una constante
+         * @return <tt>this</tt>
+         */
         public Builder constant (boolean constant) {
             this.constant = constant;
             return this;
         }
         
-        public Builder error (Collection<CompileError> errors) {
+        /**
+         * @param errors Errores de compilación
+         * @return <tt>this</tt>
+         */
+        public Builder errors (Collection<CompileError> errors) {
             this.errors.addAll(errors);
             return this;
         }
         
+        /**
+         * @param error Error de compilación
+         * @return <tt>this</tt>
+         */
         public Builder error (CompileError error) {
             this.errors.add(error);
             return this;
         }
         
+        /**
+         * @param operator Operador
+         * @return <tt>this</tt>
+         */
         public Builder operator (Operator operator) {
             this.operator = operator;
             return this;
         }
         
+        /**
+         * @param type Tipo
+         * @return <tt>this</tt>
+         */
         public Builder type (Type type) {
             this.type = type;
             return this;
         }
         
+        /**
+         * @param value Valor
+         * @return <tt>this</tt>
+         */
         public Builder value (Value value) {
             this.value = value;
+            return this;
+        }
+        
+        /**
+         * @param instructions Instrucciones
+         * @return <tt>this</tt>
+         */
+        public Builder instructions (Collection<? extends Instruction> instructions) {
+            this.instructions.addAll(instructions);
+            return this;
+        }
+        
+        /**
+         * @param instruction Instrucción
+         * @return <tt>this</tt>
+         */
+        public Builder instruction (Instruction instruction) {
+            this.instructions.add(instruction);
             return this;
         }
         
