@@ -35,6 +35,11 @@ import plg.gr3.parser.Parser;
 public final class CompilerUI extends JFrame {
     
     /**
+     * 
+     */
+    private static final long serialVersionUID = 2565659028089012814L;
+    
+    /**
      * Fuente por defecto para los paneles y consolas.
      * */
     private static final Font FONT = new Font("Monospaced", Font.PLAIN, 15);
