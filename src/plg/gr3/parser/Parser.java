@@ -108,6 +108,10 @@ public final class Parser implements Closeable {
         throw new NoSuchElementException();
     }
     
+<<<<<<< HEAD
+=======
+    /** @return Tabla de símbolos obtenida */
+>>>>>>> natneg
     public SymbolTable getSymbolTable () {
         return symbolTable;
     }
@@ -134,13 +138,15 @@ public final class Parser implements Closeable {
                 CompileError error = new UnexpectedTokenError(token, expected);
                 errors.add(error);
             }
+            
+            return false;
         }
         
         for (CompileError error : errors) {
             error.print();
         }
         
-        return true;
+        return errors.isEmpty();
     }
     
     private Attributes parseProgram (Attributes attr) throws IOException {
@@ -408,6 +414,9 @@ public final class Parser implements Closeable {
                      */
                     Type identType = symbolTable.getIdentfierType(tokenRead.getLexeme());
                     Type exprType = exprAttributes.getType();
+                    if (exprType == null) {
+                        return null;
+                    }
                     
                     if (!Type.assignable(identType, exprType)) {
                         AssignError error = new AssignError(identType, exprType, tokenRead);
