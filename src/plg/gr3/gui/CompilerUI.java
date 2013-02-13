@@ -27,7 +27,10 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import plg.gr3.code.ListCodeWriter;
 import plg.gr3.gui.LogHandler.LogType;
+import plg.gr3.lexer.Lexer;
+import plg.gr3.parser.Parser;
 
 public final class CompilerUI extends JFrame {
     
@@ -75,6 +78,13 @@ public final class CompilerUI extends JFrame {
     private JTextPane consoleArea;
     
     private JTextPane errorsArea;
+    
+    // Objetos encargados de la compilación.
+    private Lexer lexer;
+    
+    private Parser parser;
+    
+    private ListCodeWriter codeWriter;
     
     public static void log (LogType type, String msg) {
         logArea.log(type, msg);
@@ -604,6 +614,34 @@ public final class CompilerUI extends JFrame {
             break;
         }
         return file;
+    }
+    
+    public Lexer getLexer () {
+        return lexer;
+    }
+    
+    public void setLexer (Lexer lexer) {
+        this.lexer = lexer;
+    }
+    
+    public Parser getParser () {
+        return parser;
+    }
+    
+    public void setParser (Parser parser) {
+        this.parser = parser;
+    }
+    
+    public ListCodeWriter getCodeWriter () {
+        return codeWriter;
+    }
+    
+    public void setCodeWriter (ListCodeWriter codeWriter) {
+        this.codeWriter = codeWriter;
+    }
+    
+    public SymbolTableHandler getSymbolTableArea () {
+        return symbolTableArea;
     }
     
     /**
