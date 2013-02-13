@@ -31,6 +31,9 @@ public final class Attributes {
     /** Tipo de una variable o expresión */
     private final Type type;
     
+    /** Tipo de una variable o expresión */
+    private final Type asigType;
+    
     /** Si se trata de una constante o variable */
     private final boolean constant;
     
@@ -56,12 +59,13 @@ public final class Attributes {
      * @param errors Si hubo errores y cual
      * @param operator El operador a usar
      * @param type Tipo de una variable o expresión
+     * @param asigType Tipo de la asignación
      * @param value El valor a usar
      * @param instructions Lista de instrucciones
      */
     private Attributes (
         String ident, int address, boolean constant, Collection<CompileError> errors, Operator operator, Type type,
-        Value value, List<Instruction> instructions)
+        Type asigType, Value value, List<Instruction> instructions)
     {
         this.ident = ident;
         this.address = address;
@@ -70,6 +74,7 @@ public final class Attributes {
         this.instructions.addAll(instructions);
         this.operator = operator;
         this.type = type;
+        this.asigType = asigType;
         this.value = value;
     }
     
@@ -140,6 +145,11 @@ public final class Attributes {
         return address;
     }
     
+    /** @return El tipo de la asignaión */
+    public Type getAsigType () {
+        return asigType;
+    }
+    
     /**
      * Clase constructora de objetos de atributos, creada para facilitarnos la vida en la mayoría de casos y eliminar
      * los constructores kilométricos del resto del código.
@@ -150,6 +160,8 @@ public final class Attributes {
         private String ident;
         
         private Type type;
+        
+        private Type asigType;
         
         private boolean constant;
         
@@ -227,6 +239,15 @@ public final class Attributes {
         }
         
         /**
+         * @param type Tipo de la asignación
+         * @return <tt>this</tt>
+         */
+        public Builder asignationType (Type type) {
+            this.asigType = type;
+            return this;
+        }
+        
+        /**
          * @param value Valor
          * @return <tt>this</tt>
          */
@@ -255,7 +276,7 @@ public final class Attributes {
         
         /** @return El objeto {@link Attributes} construído */
         public Attributes create () {
-            return new Attributes(ident, address, constant, errors, operator, type, value, instructions);
+            return new Attributes(ident, address, constant, errors, operator, type, asigType, value, instructions);
         }
     }
 }

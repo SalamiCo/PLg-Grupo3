@@ -136,8 +136,6 @@ public final class Parser implements Closeable {
                 CompileError error = new UnexpectedTokenError(token, expected);
                 errors.add(error);
             }
-            
-            return false;
         }
         
         for (CompileError error : errors) {
@@ -186,7 +184,9 @@ public final class Parser implements Closeable {
             expect(last, TokenType.SYM_CURLY_LEFT);
             
             // Decs
-            parseDecs(last, Attributes.DEFAULT);
+            if (parseDecs(last, Attributes.DEFAULT) == null) {
+                return null;
+            }
             
             // fllave
             expect(last, TokenType.SYM_CURLY_RIGHT);
@@ -314,7 +314,9 @@ public final class Parser implements Closeable {
             expect(last, TokenType.SYM_CURLY_LEFT);
             
             // Insts
-            parseInsts(last, Attributes.DEFAULT);
+            if (parseInsts(last, Attributes.DEFAULT) == null) {
+                return null;
+            }
             
             // fllave
             expect(last, TokenType.SYM_CURLY_RIGHT);
