@@ -64,7 +64,7 @@ public final class CompilerUI extends JFrame {
     
     private FileHandler sourceFile;
     
-    private FileHandler bytecodeFile;
+    private FileHandler bytecodeFileHandler;
     
     private SymbolTableHandler symbolTableArea;
     
@@ -419,7 +419,7 @@ public final class CompilerUI extends JFrame {
         byteCodeEditor.setFont(FONT);
         
         // nuevo archivo de bytecode
-        bytecodeFile = new FileHandler(byteCodeEditor);
+        bytecodeFileHandler = new FileHandler(byteCodeEditor);
         
         // lo añadimos a un scrollPane con contador de líneas
         JScrollPane scrollPane = new JScrollPane(byteCodeEditor);
@@ -607,7 +607,7 @@ public final class CompilerUI extends JFrame {
                 file = sourceFile;
             break;
             case DEBUGGER:
-                file = bytecodeFile;
+                file = bytecodeFileHandler;
             break;
             default:
                 file = sourceFile;
@@ -644,6 +644,14 @@ public final class CompilerUI extends JFrame {
         return symbolTableArea;
     }
     
+    public FileHandler getBytecodeFileHandler () {
+        return bytecodeFileHandler;
+    }
+    
+    public void setBytecodeFileHandler (FileHandler bytecodeFileHandler) {
+        this.bytecodeFileHandler = bytecodeFileHandler;
+    }
+    
     /**
      * Cambia de vista y produce un cambio de paneles
      * */
@@ -673,7 +681,7 @@ public final class CompilerUI extends JFrame {
      * */
     public void closeFilesAndExit () {
         boolean canClose1 = sourceFile.askBeforeClose();
-        boolean canClose2 = bytecodeFile.askBeforeClose();
+        boolean canClose2 = bytecodeFileHandler.askBeforeClose();
         if (canClose1 && canClose2) {
             System.exit(0);
         }

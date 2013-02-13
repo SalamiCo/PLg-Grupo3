@@ -38,6 +38,9 @@ public class CompileActionListener implements ActionListener {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
                 SymbolTable st = invoker.getParser().getSymbolTable();
                 invoker.getSymbolTableArea().replaceModel(st);
+                
+                // guardamos en el bytecode
+                
             } else {
                 CompilerUI.log(LogType.ERROR, "Compilation error/s");
                 invoker.getSymbolTableArea().replaceModel(new SymbolTable());
