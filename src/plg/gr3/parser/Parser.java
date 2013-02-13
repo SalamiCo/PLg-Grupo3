@@ -246,6 +246,7 @@ public final class Parser implements Closeable {
                 DuplicateIdentifierError error =
                     new DuplicateIdentifierError(attrDec.getIdentifier(), lexer.getLine(), lexer.getColumn());
                 errors.add(error);
+                codeWriter.inhibit();
                 
             }
             // RDecs
