@@ -1,9 +1,12 @@
 package plg.gr3.gui;
 
+import java.util.Map.Entry;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import plg.gr3.parser.SymbolTable;
+import plg.gr3.parser.SymbolTable.Row;
 
 /**
  * Clase que crea un manejador para el JTable que alberga la tabla de símbolos de la aplicación.
@@ -63,13 +66,17 @@ public class SymbolTableHandler {
     }
     
     private void fillColumns (DefaultTableModel model, SymbolTable st) {
-        /*
-         * Set<String> keySet = st.getTable().keySet();
-         * 
-         * String[] tableEntry = new String[5]; String nextEntry; Iterator<String> it = keySet.iterator(); while
-         * (it.hasNext()) { nextEntry = it.next(); tableEntry[0] = nextEntry; // hay que meter en tableEntry[1], 2, etc,
-         * los valores de entry Entry aaa = st.getTable().get(nextEntry); }
-         */
-        // TODO model.addRow(tableColumnNames);
+        
+        Object[] row = new Object[5];
+        
+        for (Entry<String, Row> stEntry : st) {
+            row[0] = stEntry.getKey();
+            row[1] = stEntry.getValue().getType();
+            row[2] = stEntry.getValue().isConstant();
+            row[3] = stEntry.getValue().getValue();
+            row[4] = stEntry.getValue().getAddress();
+            model.addRow(row);
+        }
+        
     }
 }
