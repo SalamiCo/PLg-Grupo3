@@ -129,6 +129,7 @@ public final class Parser implements Closeable {
         Attributes attr = parseProgram(Attributes.DEFAULT);
         
         if (attr == null) {
+            codeWriter.inhibit();
             if (token != null) {
                 CompileError error = new UnexpectedTokenError(token, expected);
                 errors.add(error);
