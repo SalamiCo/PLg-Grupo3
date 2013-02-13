@@ -24,12 +24,13 @@ public final class Util {
         Lexer lexer = new Lexer(reader);
         ListCodeWriter codeWriter = new ListCodeWriter();
         
-        Parser parser = new Parser(lexer, codeWriter);
-        parser.parse();
-        
-        System.out.println(codeWriter.getList());
-        
-        VirtualMachine vm = new VirtualMachine(codeWriter.getList());
-        vm.execute();
+        try (Parser parser = new Parser(lexer, codeWriter)) {
+            parser.parse();
+            
+            System.out.println(codeWriter.getList());
+            
+            VirtualMachine vm = new VirtualMachine(codeWriter.getList());
+            vm.execute();
+        }
     }
 }

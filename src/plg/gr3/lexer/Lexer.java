@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public final class Lexer implements Closeable {
     
     /** Patrón usado para ignorar los espacios y los comentarios */
-    private static final Pattern PATTERN_IGNORE = Pattern.compile("#.*|\\s+(@.*$)?");
+    private static final Pattern PATTERN_IGNORE = Pattern.compile("#.*|\\s+(@.*$)?|@.*$");
     
     /** Reader para obtener el programa línea a línea */
     private final BufferedReader reader;

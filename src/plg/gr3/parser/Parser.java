@@ -448,6 +448,9 @@ public final class Parser implements Closeable {
                 case RW_OUT:
                     expect(last, TokenType.SYM_PAR_LEFT);
                     Attributes attrExpr = parseExpr(last, Attributes.DEFAULT);
+                    if (attrExpr == null) {
+                        return null;
+                    }
                     expect(last, TokenType.SYM_PAR_RIGHT);
                     
                     // Inst.cod = Expr.cod || out}
@@ -843,6 +846,7 @@ public final class Parser implements Closeable {
                 // Unary0.cod = Unary1.cod || Op4.op
                 codeWriter.write(new UnaryOperatorInstruction(op)); // FIXME
                 
+                attrb.type(attrUnary.getType());
             } else {
                 
                 Attributes attrParen2 = parseParen2(last, Attributes.DEFAULT);
