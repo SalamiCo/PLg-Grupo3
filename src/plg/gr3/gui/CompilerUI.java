@@ -31,23 +31,21 @@ import plg.gr3.gui.LogHandler.LogType;
 
 public final class CompilerUI extends JFrame {
     
-    private static final long serialVersionUID = 1L;
-    
     /**
      * Fuente por defecto para los paneles y consolas.
      * */
-    private static final Font mono_font = new Font("Monospaced", Font.PLAIN, 15);
+    private static final Font FONT = new Font("Monospaced", Font.PLAIN, 15);
     
     /**
      * Vistas de trabajo: modo compilador, modo debugger.
      * */
-    private enum Views {
+    private enum View {
         COMPILER,
         DEBUGGER
     };
     
     // Miembros privados de la clase
-    private Views view;
+    private View view;
     
     private JPanel mainPanel;
     
@@ -86,7 +84,7 @@ public final class CompilerUI extends JFrame {
      * Crea la interfaz de usuario con la vista en modo Compilador cargada
      * */
     public CompilerUI () {
-        view = Views.COMPILER; // vista de compilador
+        view = View.COMPILER; // vista de compilador
         symbolTableArea = new SymbolTableHandler();
         initUI();
     }
@@ -389,7 +387,7 @@ public final class CompilerUI extends JFrame {
      * */
     private JScrollPane initSourceCodeArea () {
         sourceCodeEditor = new JTextPane();
-        sourceCodeEditor.setFont(mono_font);
+        sourceCodeEditor.setFont(FONT);
         
         // nuevo archivo fuente
         sourceFile = new FileHandler(sourceCodeEditor);
@@ -406,7 +404,7 @@ public final class CompilerUI extends JFrame {
      * */
     private JScrollPane initByteCodeArea () {
         byteCodeEditor = new JTextPane();
-        byteCodeEditor.setFont(mono_font);
+        byteCodeEditor.setFont(FONT);
         
         // nuevo archivo de bytecode
         bytecodeFile = new FileHandler(byteCodeEditor);
@@ -613,16 +611,16 @@ public final class CompilerUI extends JFrame {
         String panelName;
         switch (view) {
             case COMPILER: // cambiar a DEBUGGER
-                view = Views.DEBUGGER;
+                view = View.DEBUGGER;
                 panelName = "panelDebugger";
             break;
             case DEBUGGER: // cambiar a COMPILER
-                view = Views.COMPILER;
+                view = View.COMPILER;
                 panelName = "panelCompiler";
             
             break;
             default: // cambiar a DEBUGGER
-                view = Views.DEBUGGER;
+                view = View.DEBUGGER;
                 panelName = "panelDebugger";
             break;
         }
