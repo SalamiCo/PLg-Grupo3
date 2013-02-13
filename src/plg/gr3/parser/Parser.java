@@ -13,9 +13,11 @@ import plg.gr3.data.BinaryOperator;
 import plg.gr3.data.BooleanValue;
 import plg.gr3.data.CharacterValue;
 import plg.gr3.data.FloatValue;
+import plg.gr3.data.IntegerValue;
 import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
+import plg.gr3.data.Value;
 import plg.gr3.debug.Debugger;
 import plg.gr3.errors.compile.AssignError;
 import plg.gr3.errors.compile.AssignToConstantError;
@@ -391,7 +393,10 @@ public final class Parser implements Closeable {
                     
                     // FIXME Probablemente no haya que pasar default
                     expect(last, TokenType.SYM_ASIGNATION);
-                    Attributes exprAttributes = parseExpr(last, Attributes.DEFAULT);
+                    
+                    Type asigType = symbolTable.getIdentfierType(tokenRead.getLexeme());
+                    Attributes attrInhExpr = new Attributes.Builder().asignationType(asigType).create();
+                    Attributes exprAttributes = parseExpr(last, attrInhExpr);
                     
                     // Comprobamos que el identificador existe
                     if (!symbolTable.hasIdentifier(tokenRead.getLexeme())) {
@@ -577,11 +582,12 @@ public final class Parser implements Closeable {
     private Attributes parseExpr (boolean last, Attributes attr) throws IOException {
         Attributes.Builder attrb = new Attributes.Builder();
         try {
-            Attributes attrTerm = parseTerm(last, Attributes.DEFAULT);
+            Attributes attrTerm = parseTerm(last, attr);
             if (attrTerm == null) {
                 return null;
             }
-            Attributes attrInhFExpr = new Attributes.Builder().type(attrTerm.getType()).create();
+            Attributes attrInhFExpr =
+                new Attributes.Builder().type(attrTerm.getType()).asignationType(attr.getAsigType()).create();
             Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
             
             // Expr.cod = Term.cod || FExpr.cod }
@@ -599,7 +605,7 @@ public final class Parser implements Closeable {
         int actColumn = lexer.getColumn();
         int actLine = lexer.getLine();
         try {
-            Attributes attrOp0 = parseOp0(last, Attributes.DEFAULT);
+            Attributes attrOp0 = parseOp0(last, attr);
             if (attrOp0 != null) {
                 Attributes attrTerm = parseTerm(last, attrOp0);
                 
@@ -631,12 +637,13 @@ public final class Parser implements Closeable {
         Attributes.Builder attrb = new Attributes.Builder();
         
         try {
-            Attributes attrFact = parseFact(last, Attributes.DEFAULT);
+            Attributes attrFact = parseFact(last, attr);
             if (attrFact == null) {
                 return null;
             }
             
-            Attributes attrInhRTerm = new Attributes.Builder().type(attrFact.getType()).create();
+            Attributes attrInhRTerm =
+                new Attributes.Builder().type(attrFact.getType()).asignationType(attr.getAsigType()).create();
             Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
             
             return attrb.type(attrRTerm.getType()).create();
@@ -651,13 +658,15 @@ public final class Parser implements Closeable {
         int actLine = lexer.getLine();
         
         try {
-            Attributes attrOp1 = parseOp1(last, Attributes.DEFAULT);
+            Attributes attrOp1 = parseOp1(last, attr);
             if (attrOp1 != null) {
-                Attributes attrInhFact = new Attributes.Builder().type(attrOp1.getType()).create();
+                Attributes attrInhFact =
+                    new Attributes.Builder().type(attrOp1.getType()).asignationType(attr.getAsigType()).create();
                 Attributes attrFact = parseFact(last, attrInhFact);
                 if (attrFact != null) {
                     Type t = attrOp1.getOperator(BinaryOperator.class).getApplyType(attrFact.getType(), attr.getType());
-                    Attributes attrInhRTerm = new Attributes.Builder().type(t).create();
+                    Attributes attrInhRTerm =
+                        new Attributes.Builder().type(t).asignationType(attr.getAsigType()).create();
                     Attributes attrRTerm = parseRTerm(last, attrInhRTerm);
                     
                     // Comprobamos que podamos aplicar el operador (que los tipos casen)
@@ -696,12 +705,13 @@ public final class Parser implements Closeable {
         // Fact ::=
         try {
             // Shft
-            Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+            Attributes shftSynAttr = parseShft(true, attr);
             // Rfact
             if (shftSynAttr == null) {
                 return null;
             }
-            Attributes rfactInhAttr = new Attributes.Builder().type(shftSynAttr.getType()).create();
+            Attributes rfactInhAttr =
+                new Attributes.Builder().type(shftSynAttr.getType()).asignationType(attr.getAsigType()).create();
             Attributes rfactSynAttr = parseRFact(true, rfactInhAttr);
             
             attrb.type(rfactSynAttr.getType());
@@ -721,11 +731,12 @@ public final class Parser implements Closeable {
         // Rfact
         try {
             // Op2
-            Attributes attrOp2 = parseOp2(true, Attributes.DEFAULT);
+            Attributes attrOp2 = parseOp2(true, attr);
             
             if (attrOp2 != null) {
                 // Shft
-                Attributes attrInhShft = new Attributes.Builder().type(attrOp2.getType()).create();
+                Attributes attrInhShft =
+                    new Attributes.Builder().type(attrOp2.getType()).asignationType(attr.getAsigType()).create();
                 Attributes attrShft = parseShft(last, attrInhShft);
                 
                 if (attrShft == null) {
@@ -743,7 +754,8 @@ public final class Parser implements Closeable {
                 
                 if (attrShft != null) {
                     Type t = attrOp2.getOperator(BinaryOperator.class).getApplyType(attrShft.getType(), attr.getType());
-                    Attributes attrInhRFact = new Attributes.Builder().type(t).create();
+                    Attributes attrInhRFact =
+                        new Attributes.Builder().type(t).asignationType(attr.getAsigType()).create();
                     Attributes attrRFact = parseRFact(last, attrInhRFact);
                     
                     // RFact1.codh = RFact0.codh || Shft.cod || Op2.op }
@@ -770,13 +782,14 @@ public final class Parser implements Closeable {
         // Shft ::=
         try {
             // Unary
-            Attributes unarySynAttr = parseUnary(true, Attributes.DEFAULT);
+            Attributes unarySynAttr = parseUnary(true, attr);
             if (unarySynAttr == null) {
                 return null;
             }
             
             // FShft
-            Attributes fshftInhAttr = new Attributes.Builder().type(unarySynAttr.getType()).create();
+            Attributes fshftInhAttr =
+                new Attributes.Builder().type(unarySynAttr.getType()).asignationType(attr.getAsigType()).create();
             Attributes fshftSynAttr = parseFShft(true, fshftInhAttr);
             
             attrb.type(fshftSynAttr.getType());
@@ -802,11 +815,11 @@ public final class Parser implements Closeable {
         // FShft
         try {
             // Op3
-            Attributes op3SynAttr = parseOp3(true, Attributes.DEFAULT);
+            Attributes op3SynAttr = parseOp3(true, attr);
             
             if (op3SynAttr != null) {
                 // Shft
-                Attributes shftSynAttr = parseShft(true, Attributes.DEFAULT);
+                Attributes shftSynAttr = parseShft(true, attr);
                 
                 // Comprobamos que podamos aplicar el operador (que los tipos casen)
                 BinaryOperator op = (BinaryOperator) op3SynAttr.getOperator();
@@ -844,11 +857,11 @@ public final class Parser implements Closeable {
         // Unary ::=
         try {
             // Op4
-            Attributes attrOp4 = parseOp4(last, Attributes.DEFAULT);
+            Attributes attrOp4 = parseOp4(last, attr);
             
             if (attrOp4 != null) {
                 // Unary
-                Attributes attrUnary = parseUnary(last, Attributes.DEFAULT);
+                Attributes attrUnary = parseUnary(last, attr);
                 
                 // Comprobamos que el operador unario se puede aplicar (que los tipos casan)
                 UnaryOperator op = (UnaryOperator) attrOp4.getOperator();
@@ -864,13 +877,13 @@ public final class Parser implements Closeable {
                 attrb.type(attrUnary.getType());
             } else {
                 
-                Attributes attrParen2 = parseParen2(last, Attributes.DEFAULT);
+                Attributes attrParen2 = parseParen2(last, attr);
                 if (attrParen2 != null) {
                     attrb.type(attrParen2.getType());
                     
                 } else {
                     expect(last, TokenType.SYM_PAR_LEFT);
-                    Attributes attrFUnary = parseFUnary(last, Attributes.DEFAULT);
+                    Attributes attrFUnary = parseFUnary(last, attr);
                     if (attrFUnary == null) {
                         return null;
                     }
@@ -892,19 +905,19 @@ public final class Parser implements Closeable {
         int line = lexer.getLine();
         
         try {
-            Attributes attrFParen = parseFParen(last, Attributes.DEFAULT);
+            Attributes attrFParen = parseFParen(last, attr);
             if (attrFParen != null) {
                 attrb.type(attrFParen.getType());
                 
             } else {
-                Attributes attrCast = parseCast(last, Attributes.DEFAULT);
+                Attributes attrCast = parseCast(last, attr);
                 if (attrCast == null) {
                     return null;
                 }
                 
                 expect(last, TokenType.SYM_PAR_RIGHT);
                 
-                Attributes attrParen = parseParen(last, Attributes.DEFAULT);
+                Attributes attrParen = parseParen(last, attr);
                 if (attrParen == null) {
                     return null;
                 }
@@ -931,7 +944,7 @@ public final class Parser implements Closeable {
         Attributes.Builder attrb = new Attributes.Builder();
         
         try {
-            Attributes attrExpr = parseExpr(last, Attributes.DEFAULT);
+            Attributes attrExpr = parseExpr(last, attr);
             if (attrExpr == null) {
                 return null;
             }
@@ -952,13 +965,13 @@ public final class Parser implements Closeable {
         
         try {
             
-            Attributes attrParen2 = parseParen2(last, Attributes.DEFAULT);
+            Attributes attrParen2 = parseParen2(last, attr);
             
             if (attrParen2 != null) {
                 attrb.type(attrParen2.getType());
             } else {
                 expect(last, TokenType.SYM_PAR_LEFT);
-                Attributes attrFParen = parseFParen(last, Attributes.DEFAULT);
+                Attributes attrFParen = parseFParen(last, attr);
                 if (attrFParen == null) {
                     return null;
                 }
@@ -981,7 +994,7 @@ public final class Parser implements Closeable {
         // Paren ::=
         try {
             // Lit
-            Attributes litAttributes = parseLit(last, Attributes.DEFAULT);
+            Attributes litAttributes = parseLit(last, attr);
             
             if (litAttributes == null) {
                 LocatedToken tokenRead = expect(last, TokenType.IDENTIFIER);
@@ -1150,24 +1163,20 @@ public final class Parser implements Closeable {
         Attributes.Builder attrb = new Attributes.Builder();
         
         try {
-            Attributes attrSynLitBool = parseLitBool(last, Attributes.DEFAULT);
+            Attributes attrSynLitBool = parseLitBool(last, attr);
             if (attrSynLitBool != null) {
                 attrb.type(attrSynLitBool.getType()).value(attrSynLitBool.getValue());
                 return attrb.create();
             }
             
-            Attributes attrSynLitNum = parseLitNum(last, Attributes.DEFAULT);
+            Attributes attrSynLitNum = parseLitNum(last, attr);
             if (attrSynLitNum != null) {
                 attrb.type(attrSynLitNum.getType()).value(attrSynLitNum.getValue());
                 return attrb.create();
             }
             
-            LocatedToken token = expect(last, TokenType.LIT_NATURAL, TokenType.LIT_CHARACTER);
-            if (token.getType() == TokenType.LIT_NATURAL) {
-                attrb.type(Type.NATURAL).value(NaturalValue.valueOf(token.getLexeme()));
-            } else {
-                attrb.type(Type.CHARACTER).value(CharacterValue.valueOf(token.getLexeme()));
-            }
+            LocatedToken token = expect(last, TokenType.LIT_CHARACTER);
+            attrb.type(Type.CHARACTER).value(CharacterValue.valueOf(token.getLexeme()));
             
             return attrb.create();
             
@@ -1210,27 +1219,45 @@ public final class Parser implements Closeable {
         try {
             LocatedToken token = expect(last, TokenType.LIT_NATURAL, TokenType.LIT_FLOAT, TokenType.SYM_MINUS);
             
+            Value val = null;
             switch (token.getToken().getType()) {
             
             // litnat
                 case LIT_NATURAL:
-                    attrb.type(Type.NATURAL).value(NaturalValue.valueOf(token.getLexeme()));
+                    attrb.type(Type.NATURAL);
+                    val = IntegerValue.valueOf(token.getLexeme());
                 break;
                 
                 // litfloat
                 case LIT_FLOAT:
-                    attrb.type(Type.FLOAT).value(FloatValue.valueOf(token.getLexeme()));
+                    attrb.type(Type.FLOAT);
+                    val = FloatValue.valueOf(token.getLexeme());
                 break;
                 
                 // menos
                 case SYM_MINUS:
                     // FLitNum
                     Attributes attrFLitNum = parseFLitNum(last, Attributes.DEFAULT);
-                    attrb.type(attrFLitNum.getType()).value(UnaryOperator.MINUS.apply(attrFLitNum.getValue()));
+                    attrb.type(attrFLitNum.getType());
+                    val = UnaryOperator.MINUS.apply(attrFLitNum.getValue());
                 break;
             }
             
-            return attrb.create();
+            // Convert the value
+            Type asigType = attr.getAsigType();
+            if (asigType != null && asigType.isNumeric()) {
+                if (asigType == Type.NATURAL) {
+                    val = val.toNaturalValue();
+                    
+                } else if (asigType == Type.INTEGER) {
+                    val = val.toIntegerValue();
+                    
+                } else if (asigType == Type.FLOAT) {
+                    val = val.toFloatValue();
+                }
+            }
+            
+            return attrb.value(val).create();
         } catch (NoSuchElementException e) {
             return null;
         }
