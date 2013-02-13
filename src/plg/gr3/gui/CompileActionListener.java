@@ -36,13 +36,11 @@ public class CompileActionListener implements ActionListener {
             invoker.setParser(new Parser(invoker.getLexer(), invoker.getCodeWriter()));
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
-//                invoker.getSymbolTableArea().replaceModel(invoker.getParser().getSymbolTable());
-//                SymbolTable st = new SymbolTable();
-//                st.putIdentifier("ident", Type.BOOLEAN, false, 1234, null);
                 SymbolTable st = invoker.getParser().getSymbolTable();
                 invoker.getSymbolTableArea().replaceModel(st);
             } else {
                 CompilerUI.log(LogType.ERROR, "Compilation error/s");
+                invoker.getSymbolTableArea().replaceModel(new SymbolTable());
             }
             
         } catch (FileNotFoundException e1) {
