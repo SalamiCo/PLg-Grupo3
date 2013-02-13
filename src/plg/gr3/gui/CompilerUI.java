@@ -354,9 +354,11 @@ public final class CompilerUI extends JFrame {
         toolbar.add(newFileButton);
         toolbar.add(openFileButton);
         toolbar.add(saveFileButton);
+        toolbar.addSeparator();
         toolbar.add(cutButton);
         toolbar.add(copyButton);
         toolbar.add(pasteButton);
+        toolbar.addSeparator();
         toolbar.add(compileButton);
         toolbar.add(loadButton);
         toolbar.add(exitButton);
@@ -649,7 +651,6 @@ public final class CompilerUI extends JFrame {
                 compiler.setVisible(true);
             }
         });
-        
     }
     
 }
