@@ -27,7 +27,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import plg.gr3.code.ListCodeWriter;
+import plg.gr3.code.CodeWriter;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
@@ -84,7 +84,7 @@ public final class CompilerUI extends JFrame {
     
     private Parser parser;
     
-    private ListCodeWriter codeWriter;
+    private CodeWriter codeWriter;
     
     public static void log (LogType type, String msg) {
         logArea.log(type, msg);
@@ -629,11 +629,11 @@ public final class CompilerUI extends JFrame {
         this.parser = parser;
     }
     
-    public ListCodeWriter getCodeWriter () {
+    public CodeWriter getCodeWriter () {
         return codeWriter;
     }
     
-    public void setCodeWriter (ListCodeWriter codeWriter) {
+    public void setCodeWriter (CodeWriter codeWriter) {
         this.codeWriter = codeWriter;
     }
     
