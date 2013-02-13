@@ -71,7 +71,7 @@ public final class VirtualMachine {
     }
     
     public Value getMemoryValue (int address) {
-        if (address < 0 && address >= memory.size()) {
+        if (address < 0 || address >= memory.size()) {
             return null;
         }
         return memory.get(address);
