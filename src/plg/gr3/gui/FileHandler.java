@@ -170,7 +170,7 @@ public class FileHandler {
         }
     }
     
-    private List<Instruction> openByteCodeFile (File myFile) throws FileNotFoundException {
+    private List<Instruction> openByteCodeFile (File myFile) throws IOException {
         List<Instruction> instructions = new ArrayList<>();
         StreamCodeReader codeReader = new StreamCodeReader(new FileInputStream(myFile));
         Instruction instruction = codeReader.read();
