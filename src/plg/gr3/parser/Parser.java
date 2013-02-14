@@ -233,19 +233,24 @@ public final class Parser implements Closeable {
             // Dec
             Attributes attrDec = parseDec(last, Attributes.DEFAULT);
             if (attrDec == null) {
-                return Attributes.DEFAULT;
+                return null;
             }
             
             // Se supone que en esta produccion se crea la tabla de símbolos. Así que no me tengo que preocupar si el
             // identificador ya ha sido declarado porque es el 1º
             
             // RDecs
-            symbolTable.putIdentifier(
-                attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
-                attrDec.getValue());
+            if (attrDec.getIdentifier() != null) {
+                symbolTable.putIdentifier(
+                    attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
+                    attrDec.getValue());
+            }
             
             Attributes attrInhDecs = new Attributes.Builder().address(attrDec.getAddress()).create();
-            parseRDecs(last, attrInhDecs);
+            
+            if (parseRDecs(last, attrInhDecs) == null) {
+                return null;
+            }
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -277,15 +282,19 @@ public final class Parser implements Closeable {
                 
             }
             // RDecs
-            symbolTable.putIdentifier(
-                attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
-                attrDec.getValue());
+            if (attrDec.getIdentifier() != null) {
+                symbolTable.putIdentifier(
+                    attrDec.getIdentifier(), attrDec.getType(), attrDec.getConstant(), attrDec.getAddress(),
+                    attrDec.getValue());
+            }
             
             Attributes inhAttr = new Attributes.Builder().address(attrDec.getAddress()).create();
-            parseRDecs(last, inhAttr);
+            if (parseRDecs(last, inhAttr) == null) {
+                return null;
+            }
             
         } catch (NoSuchElementException exc) {
-            return null;
+            return Attributes.DEFAULT;
         }
         
         return attrb.create();
@@ -298,38 +307,52 @@ public final class Parser implements Closeable {
         try {
             // var || const
             LocatedToken lt = expect(last, TokenType.RW_VAR, TokenType.RW_CONST);
-            switch (lt.getToken().getType()) {
-                case RW_VAR: {
-                    // Type
-                    Attributes attrType = parseType(last, Attributes.DEFAULT);
-                    if (attrType == null) {
-                        return null;
-                    }
-                    // ident
-                    LocatedToken token = expect(last, TokenType.IDENTIFIER);
-                    
-                    attrb.constant(false).type(attrType.getType()).identifier(token.getToken().getLexeme())
-                        .address(attr.getAddress() + 1);
-                }
-                break;
-                
-                case RW_CONST: {
-                    // Type
-                    Attributes attrType = parseType(last, Attributes.DEFAULT);
-                    // ident
-                    LocatedToken id = expect(last, TokenType.IDENTIFIER);
-                    // dpigual
-                    expect(last, TokenType.SYM_CONST_ASIGNATION);
-                    // Lit
-                    Attributes attrLit = parseLit(last, Attributes.DEFAULT);
-                    
-                    attrb.constant(true).type(attrType.getType()).identifier(id.getLexeme()).value(attrLit.getValue());
-                }
-                break;
             
+            try {
+                switch (lt.getToken().getType()) {
+                    case RW_VAR: {
+                        // Type
+                        Attributes attrType = parseType(last, Attributes.DEFAULT);
+                        if (attrType == null) {
+                            return null;
+                        }
+                        // ident
+                        LocatedToken token = expect(last, TokenType.IDENTIFIER);
+                        
+                        attrb.constant(false).type(attrType.getType()).identifier(token.getToken().getLexeme())
+                            .address(attr.getAddress() + 1);
+                    }
+                    break;
+                    
+                    case RW_CONST: {
+                        // Type
+                        Attributes attrType = parseType(last, Attributes.DEFAULT);
+                        if (attrType == null) {
+                            return null;
+                        }
+                        // ident
+                        LocatedToken id = expect(last, TokenType.IDENTIFIER);
+                        // dpigual
+                        expect(last, TokenType.SYM_CONST_ASIGNATION);
+                        // Lit
+                        Attributes attrLit = parseLit(last, Attributes.DEFAULT);
+                        
+                        if (!Type.assignable(attrType.getType(), attrLit.getType())) {
+                            CompileError error = new AssignationTypeError(attrLit.getType(), attrType.getType(), id);
+                            errors.add(error);
+                        }
+                        
+                        attrb.constant(true).type(attrType.getType()).identifier(id.getLexeme())
+                            .value(attrLit.getValue());
+                    }
+                    break;
+                
+                }
+            } catch (NoSuchElementException exc) {
+                return null;
             }
         } catch (NoSuchElementException exc) {
-            return null;
+            return Attributes.DEFAULT;
         }
         
         return attrb.create();
@@ -367,11 +390,13 @@ public final class Parser implements Closeable {
         try {
             // Inst
             if (parseInst(last, Attributes.DEFAULT) == null) {
-                return Attributes.DEFAULT;
+                return null;
             }
             
             // RInsts
-            parseRInsts(last, Attributes.DEFAULT);
+            if (parseRInsts(last, Attributes.DEFAULT) == null) {
+                return null;
+            }
             
         } catch (NoSuchElementException exc) {
             return null;
@@ -398,10 +423,12 @@ public final class Parser implements Closeable {
             codeWriter.write(attrInst.getInstructions());
             
             // RInsts
-            parseRInsts(last, Attributes.DEFAULT);
+            if (parseRInsts(last, Attributes.DEFAULT) == null) {
+                return null;
+            }
             
         } catch (NoSuchElementException exc) {
-            return null;
+            return Attributes.DEFAULT;
         }
         
         return attrb.create();
@@ -416,127 +443,132 @@ public final class Parser implements Closeable {
                 expect(
                     last, TokenType.IDENTIFIER, TokenType.RW_IN, TokenType.RW_OUT, TokenType.RW_SWAP1,
                     TokenType.RW_SWAP2);
-            
-            switch (tokenRead.getToken().getType())
-            
-            { // ident asig Expr
-                case IDENTIFIER:
-                    
-                    expect(last, TokenType.SYM_ASIGNATION);
-                    
-                    // Comprobamos que el identificador existe
-                    if (!symbolTable.hasIdentifier(tokenRead.getLexeme())) {
-                        UndefinedIdentifierError errorIDExist =
-                            new UndefinedIdentifierError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
-                        errors.add(errorIDExist);
-                        codeWriter.inhibit();
+            try {
+                switch (tokenRead.getToken().getType()) {
+                // ident asig Expr
+                    case IDENTIFIER:
                         
-                        // Comprobamos que no estamos asignando la expresion a una constante
-                    } else if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
-                        AssignationToConstantError errorConstant =
-                            new AssignationToConstantError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
-                        errors.add(errorConstant);
-                        codeWriter.inhibit();
-                    }
-                    
-                    Type asigType = symbolTable.getIdentfierType(tokenRead.getLexeme());
-                    Attributes attrInhExpr = new Attributes.Builder().asignationType(asigType).create();
-                    Attributes exprAttributes = parseExpr(last, attrInhExpr);
-                    if (exprAttributes == null) {
-                        return null;
-                    }
-                    
-                    /*
-                     * Comprobamos que el tipo de la expresion y del identificador son compatibles para la asignacion
-                     */
-                    Type identType = symbolTable.getIdentfierType(tokenRead.getLexeme());
-                    Type exprType = exprAttributes.getType();
-                    if (exprType == null) {
-                        return null;
-                    }
-                    
-                    if (!Type.assignable(identType, exprType)) {
-                        AssignationTypeError error = new AssignationTypeError(exprType, identType, tokenRead);
-                        errors.add(error);
-                        codeWriter.inhibit();
-                    }
-                    
-                    // Inst.cod = Expr.cod || desapila-dir(Inst.tsh[ident.lex].dir) }
-                    if (!codeWriter.isInhibited()) {
-                        codeWriter.write(exprAttributes.getInstructions());
-                        codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(tokenRead.getLexeme())));
-                    }
-                
-                break;
-                
-                // in lpar ident rpar
-                case RW_IN:
-                    
-                    expect(last, TokenType.SYM_PAR_LEFT);
-                    LocatedToken identRead = expect(last, TokenType.IDENTIFIER);
-                    
-                    /* Comprobamos que el identificador existe */
-                    if (!this.symbolTable.hasIdentifier(identRead.getLexeme())) {
-                        UndefinedIdentifierError error =
-                            new UndefinedIdentifierError(identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
-                        errors.add(error);
+                        expect(last, TokenType.SYM_ASIGNATION);
                         
-                    } else if (this.symbolTable.isIdentifierConstant(identRead.getLexeme())) {
-                        AssignationToConstantError error =
-                            new AssignationToConstantError(identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
-                        errors.add(error);
-                    }
+                        // Comprobamos que el identificador existe
+                        if (!symbolTable.hasIdentifier(tokenRead.getLexeme())) {
+                            UndefinedIdentifierError errorIDExist =
+                                new UndefinedIdentifierError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            errors.add(errorIDExist);
+                            codeWriter.inhibit();
+                            
+                            // Comprobamos que no estamos asignando la expresion a una constante
+                        } else if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
+                            CompileError errorConstant =
+                                new AssignationToConstantError(
+                                    tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            errors.add(errorConstant);
+                            codeWriter.inhibit();
+                        }
+                        
+                        Type asigType = symbolTable.getIdentfierType(tokenRead.getLexeme());
+                        Attributes attrInhExpr = new Attributes.Builder().asignationType(asigType).create();
+                        Attributes exprAttributes = parseExpr(last, attrInhExpr);
+                        if (exprAttributes == null) {
+                            return null;
+                        }
+                        
+                        /*
+                         * Comprobamos que el tipo de la expresion y del identificador son compatibles para la
+                         * asignacion
+                         */
+                        Type identType = symbolTable.getIdentfierType(tokenRead.getLexeme());
+                        Type exprType = exprAttributes.getType();
+                        if (exprType == null) {
+                            return null;
+                        }
+                        
+                        if (!Type.assignable(identType, exprType)) {
+                            AssignationTypeError error = new AssignationTypeError(exprType, identType, tokenRead);
+                            errors.add(error);
+                            codeWriter.inhibit();
+                        }
+                        
+                        // Inst.cod = Expr.cod || desapila-dir(Inst.tsh[ident.lex].dir) }
+                        if (!codeWriter.isInhibited()) {
+                            codeWriter.write(exprAttributes.getInstructions());
+                            codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(tokenRead
+                                .getLexeme())));
+                        }
+                    break;
                     
-                    // Inst.cod = in(Inst.tsh[ident.lex].type) || desapila-dir(Inst.tsh[ident.lex].dir) }
-                    if (!codeWriter.isInhibited()) {
-                        codeWriter.write(new InputInstruction(symbolTable.getIdentfierType(identRead.getLexeme())));
-                        codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(identRead.getLexeme())));
-                    }
+                    // in lpar ident rpar
+                    case RW_IN:
+                        
+                        expect(last, TokenType.SYM_PAR_LEFT);
+                        LocatedToken identRead = expect(last, TokenType.IDENTIFIER);
+                        
+                        /* Comprobamos que el identificador existe */
+                        if (!this.symbolTable.hasIdentifier(identRead.getLexeme())) {
+                            UndefinedIdentifierError error =
+                                new UndefinedIdentifierError(identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            errors.add(error);
+                            
+                        } else if (this.symbolTable.isIdentifierConstant(identRead.getLexeme())) {
+                            CompileError error =
+                                new AssignationToConstantError(
+                                    identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            errors.add(error);
+                        }
+                        
+                        // Inst.cod = in(Inst.tsh[ident.lex].type) || desapila-dir(Inst.tsh[ident.lex].dir) }
+                        if (!codeWriter.isInhibited()) {
+                            codeWriter.write(new InputInstruction(symbolTable.getIdentfierType(identRead.getLexeme())));
+                            codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(identRead
+                                .getLexeme())));
+                        }
+                        
+                        expect(last, TokenType.SYM_PAR_RIGHT);
                     
-                    expect(last, TokenType.SYM_PAR_RIGHT);
-                
-                break;
-                
-                // out lpar Expr rpar
-                case RW_OUT:
-                    expect(last, TokenType.SYM_PAR_LEFT);
-                    Attributes attrExpr = parseExpr(last, Attributes.DEFAULT);
-                    if (attrExpr == null) {
-                        return null;
-                    }
-                    expect(last, TokenType.SYM_PAR_RIGHT);
+                    break;
                     
-                    // Inst.cod = Expr.cod || out}
-                    codeWriter.write(attrExpr.getInstructions());
-                    codeWriter.write(new OutputInstruction());
-                
-                break;
-                
-                // swap1 lpar rpar
-                case RW_SWAP1:
-                    expect(last, TokenType.SYM_PAR_LEFT);
-                    expect(last, TokenType.SYM_PAR_RIGHT);
+                    // out lpar Expr rpar
+                    case RW_OUT:
+                        expect(last, TokenType.SYM_PAR_LEFT);
+                        Attributes attrExpr = parseExpr(last, Attributes.DEFAULT);
+                        if (attrExpr == null) {
+                            return null;
+                        }
+                        expect(last, TokenType.SYM_PAR_RIGHT);
+                        
+                        // Inst.cod = Expr.cod || out}
+                        codeWriter.write(attrExpr.getInstructions());
+                        codeWriter.write(new OutputInstruction());
                     
-                    // FIXME Comprobar que este bien
-                    // Inst.cod = swap1
-                    codeWriter.write(new Swap1Instruction());
-                
-                break;
-                
-                // swap2 lpar rpar
-                case RW_SWAP2:
-                    expect(last, TokenType.SYM_PAR_LEFT);
-                    expect(last, TokenType.SYM_PAR_RIGHT);
+                    break;
                     
-                    // Inst.cod = swap2
-                    codeWriter.write(new Swap2Instruction());
+                    // swap1 lpar rpar
+                    case RW_SWAP1:
+                        expect(last, TokenType.SYM_PAR_LEFT);
+                        expect(last, TokenType.SYM_PAR_RIGHT);
+                        
+                        // FIXME Comprobar que este bien
+                        // Inst.cod = swap1
+                        codeWriter.write(new Swap1Instruction());
+                    
+                    break;
+                    
+                    // swap2 lpar rpar
+                    case RW_SWAP2:
+                        expect(last, TokenType.SYM_PAR_LEFT);
+                        expect(last, TokenType.SYM_PAR_RIGHT);
+                        
+                        // Inst.cod = swap2
+                        codeWriter.write(new Swap2Instruction());
+                    
+                    break;
                 
-                break;
-            
+                }
+            } catch (NoSuchElementException exc) {
+                return null;
             }
-            
         } catch (NoSuchElementException exc) {
-            return null;
+            return Attributes.DEFAULT;
         }
         
         return attrb.create();

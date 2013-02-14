@@ -133,7 +133,7 @@ public final class StreamCodeWriter extends CodeWriter {
     }
     
     private void writeLoad (LoadInstruction inst) throws IOException {
-        stream.writeByte(Instruction.OPCODE_STORE);
+        stream.writeByte(Instruction.OPCODE_LOAD);
         stream.writeInt(inst.getAddress());
     }
     

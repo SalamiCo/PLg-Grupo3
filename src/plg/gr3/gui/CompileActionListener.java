@@ -11,10 +11,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import plg.gr3.code.StreamCodeWriter;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
+import plg.gr3.lexer.LocatedToken;
 import plg.gr3.parser.Parser;
 import plg.gr3.parser.SymbolTable;
 
@@ -52,9 +54,16 @@ public class CompileActionListener implements ActionListener {
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
                 
+                // limpiamos los errores
+                invoker.getProblemsHandler().getProblemPane().setText("");
+                
                 // mostramos la tabla de símbolos
                 SymbolTable st = invoker.getParser().getSymbolTable();
                 invoker.getSymbolTableArea().replaceModel(st);
+                
+                // mostramos la lista de tokens
+                List<LocatedToken> tokenList = invoker.getParser().getTokenList();
+                invoker.getTokenHandler().populateList(tokenList);
                 
             } else {
                 CompilerUI.log(LogType.ERROR, "Compilation error/s");

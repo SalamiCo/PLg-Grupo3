@@ -588,16 +588,19 @@ public final class CompilerUI extends JFrame {
         
         // crear paneles para Tabla de Símbolos y Lista de Tokens, añadir dichas pestañas
         JComponent panel1 = new JPanel(new BorderLayout());
-        JScrollPane scrollPane =
+        JScrollPane scrollTableArea =
             new JScrollPane(
                 symbolTableArea.getSymbolTable(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        
-        panel1.add(scrollPane, BorderLayout.CENTER);
+        panel1.add(scrollTableArea, BorderLayout.CENTER);
         symTabbedPane.addTab("Symbol table", iconTable, panel1, "Shows symbol table content");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        panel2.add(tokenArea.getTokenList(), BorderLayout.CENTER);
+        JScrollPane scrollTokenArea =
+            new JScrollPane(
+                tokenArea.getTokenList(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel2.add(scrollTokenArea, BorderLayout.CENTER);
         symTabbedPane.addTab("Tokens", iconToken, panel2, "Shows token list");
         
         return symTabbedPane;
@@ -617,11 +620,19 @@ public final class CompilerUI extends JFrame {
         
         // Paneles para Símbolos de Debug y Máquina Virtual, añadir dichas pestañas
         JComponent panel1 = new JPanel(new BorderLayout());
-        panel1.add(debugArea.getDebugList(), BorderLayout.CENTER);
+        JScrollPane scrollDebugArea =
+            new JScrollPane(
+                debugArea.getDebugList(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel1.add(scrollDebugArea, BorderLayout.CENTER);
         dbgTabbedPane.addTab("Debug", iconDebug, panel1, "Shows debug symbols");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        panel2.add(vmArea.getVmList(), BorderLayout.CENTER);
+        JScrollPane scrollVmArea =
+            new JScrollPane(
+                vmArea.getVmList(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel2.add(scrollVmArea, BorderLayout.CENTER);
         dbgTabbedPane.addTab("Virtual Machine", iconMachine, panel2, "Shows virtual machine status");
         
         return dbgTabbedPane;
@@ -738,8 +749,16 @@ public final class CompilerUI extends JFrame {
         this.codeWriter = codeWriter;
     }
     
+    public ProblemHandler getProblemsHandler () {
+        return problemsArea;
+    }
+    
     public SymbolTableHandler getSymbolTableArea () {
         return symbolTableArea;
+    }
+    
+    public TokenHandler getTokenHandler () {
+        return tokenArea;
     }
     
     public FileHandler getBytecodeFileHandler () {

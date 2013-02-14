@@ -22,7 +22,6 @@ public class ProblemHandler {
     public ProblemHandler () {
         problemPane = new JTextPane();
         problemPane.setEditable(false);
-        problemPane.setText("affafaaf");
     }
     
     /**

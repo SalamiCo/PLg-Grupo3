@@ -1,7 +1,11 @@
 package plg.gr3.gui;
 
+import java.util.List;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+
+import plg.gr3.lexer.LocatedToken;
 
 /**
  * Clase que crea un manejador para el JList que muestra los tokens.
@@ -18,17 +22,18 @@ public class TokenHandler {
      * Crea una nueva lista de solo lectura para mostrar los tokens.
      * */
     public TokenHandler () {
-        DefaultListModel<String> listModel = populateList();
         tokenList = new JList<String>();
-        listModel.addElement("pruebaParaLaListaDeTokens");
-        tokenList.setModel(listModel);
         tokenList.setEnabled(false);
     }
     
-    private DefaultListModel<String> populateList () {
+    public void populateList (List<LocatedToken> tokens) {
         DefaultListModel<String> listModel = new DefaultListModel<String>();
         
-        return listModel;
+        for (LocatedToken token : tokens) {
+            listModel.addElement(token.toString());
+        }
+        
+        tokenList.setModel(listModel);
     }
     
     /**
