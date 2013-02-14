@@ -1,7 +1,7 @@
 package plg.gr3.errors.compile;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import plg.gr3.lexer.LocatedToken;
@@ -9,8 +9,9 @@ import plg.gr3.lexer.Token;
 import plg.gr3.lexer.TokenType;
 
 /**
+ * Identificador no esperado
  * 
- * @author darkhogg
+ * @author PLg Grupo 03 2012/2013
  */
 public final class UnexpectedTokenError extends CompileError {
     
@@ -20,11 +21,15 @@ public final class UnexpectedTokenError extends CompileError {
     /** Tipos de token que seesperaban */
     private final Set<TokenType> expected;
     
+    /**
+     * @param found Token encontrado
+     * @param expected Tipos de token esperados
+     */
     public UnexpectedTokenError (LocatedToken found, Set<TokenType> expected) {
         super(found.getLine(), found.getColumn());
         
         this.found = found.getToken();
-        this.expected = Collections.unmodifiableSet(new HashSet<>(expected));
+        this.expected = Collections.unmodifiableSet(EnumSet.copyOf(expected));
     }
     
     @Override
