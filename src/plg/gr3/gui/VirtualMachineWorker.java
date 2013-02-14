@@ -47,6 +47,7 @@ public final class VirtualMachineWorker extends SwingWorker<Void, Void> {
                 boolean execL = false;
                 do {
                     vm.step();
+                    publish();
                     
                     lock.lock();
                     try {
@@ -56,7 +57,6 @@ public final class VirtualMachineWorker extends SwingWorker<Void, Void> {
                         lock.unlock();
                     }
                 } while (execL);
-                publish();
             }
         }
         
