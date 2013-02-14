@@ -28,6 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -796,10 +797,10 @@ public final class CompilerUI extends JFrame {
     private void bindConsoleInput (VirtualMachine vm) throws IOException {
         final PipedWriter writer = new PipedWriter();
         final PipedReader reader = new PipedReader(writer);
-        final JTextPane pane = consoleArea.getConsoleInputPane();
+        final JTextField consoleField = consoleArea.getConsoleInputField();
         
         if (inputKeyAdapter != null) {
-            pane.removeKeyListener(inputKeyAdapter);
+            consoleField.removeKeyListener(inputKeyAdapter);
         }
         
         inputKeyAdapter = new KeyAdapter() {
@@ -807,10 +808,10 @@ public final class CompilerUI extends JFrame {
             @Override
             public void keyTyped (KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    String text = pane.getText();
+                    String text = consoleField.getText();
                     try {
                         writer.write(text);
-                        pane.setText("");
+                        consoleField.setText("");
                     } catch (IOException exc) {
                         // Cosas chungas
                     }
@@ -818,7 +819,7 @@ public final class CompilerUI extends JFrame {
             }
         };
         
-        pane.addKeyListener(inputKeyAdapter);
+        consoleField.addKeyListener(inputKeyAdapter);
         
         vm.setReader(reader);
     }
