@@ -84,6 +84,10 @@ public final class CompilerUI extends JFrame {
     
     private static ErrorHandler errorsArea = new ErrorHandler();
     
+    private DebugHandler debugArea = new DebugHandler();
+    
+    private VMHandler vmArea = new VMHandler();
+    
     // Objetos encargados de la compilación.
     private Lexer lexer;
     
@@ -580,11 +584,13 @@ public final class CompilerUI extends JFrame {
         dbgTabbedPane.setPreferredSize(new Dimension(483, 464));
         
         // Paneles para Símbolos de Debug y Máquina Virtual, añadir dichas pestañas
-        JComponent panel1 = new JPanel();
+        JComponent panel1 = new JPanel(new BorderLayout());
         dbgTabbedPane.addTab("Debug", iconDebug, panel1, "Shows debug symbols");
+        panel1.add(debugArea.getDebugList(), BorderLayout.CENTER);
         
-        JComponent panel2 = new JPanel();
+        JComponent panel2 = new JPanel(new BorderLayout());
         dbgTabbedPane.addTab("Virtual Machine", iconMachine, panel2, "Shows virtual machine status");
+        panel2.add(vmArea.getVmList(), BorderLayout.CENTER);
         
         return dbgTabbedPane;
     }

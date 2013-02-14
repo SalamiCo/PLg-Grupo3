@@ -1,6 +1,7 @@
 package plg.gr3.gui;
 
-import javax.swing.JTextPane;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 
 /**
  * Clase que crea un manejador para el JTextPane que alberga la máquina virtual.
@@ -11,20 +12,25 @@ public class VMHandler {
     /**
      * Área de texto que representa la maquina virtual.
      * */
-    private static JTextPane vmPane;
+    private JList<String> vmList;
     
     /**
      * Crea un nuevo área de texto de sólo lectura para la máquina virtual.
      * */
     public VMHandler () {
-        vmPane = new JTextPane();
-        vmPane.setEditable(false);
+        DefaultListModel<String> listModel = new DefaultListModel<String>();
+        listModel.addElement("prueba1");
+        listModel.addElement("prueba2");
+        listModel.addElement("prueba3");
+        
+        vmList = new JList<String>(listModel);
+        vmList.setEnabled(false);
     }
     
     /**
      * Obtiene el área de texto que representa la máquina virtual
      * */
-    public static JTextPane getVmPane () {
-        return vmPane;
+    public JList<String> getVmList () {
+        return vmList;
     }
 }
