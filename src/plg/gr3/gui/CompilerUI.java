@@ -27,12 +27,17 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import plg.gr3.code.ListCodeWriter;
+import plg.gr3.code.CodeWriter;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
 
 public final class CompilerUI extends JFrame {
+    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2565659028089012814L;
     
     /**
      * Fuente por defecto para los paneles y consolas.
@@ -72,19 +77,19 @@ public final class CompilerUI extends JFrame {
     // se crea un LogHandler static para que sea accedido desde cualquier objeto del programa
     private static LogHandler logArea = new LogHandler();
     
-    private JTextPane problemsArea;
+    private static ProblemHandler problemsArea = new ProblemHandler();
     
     // Contenido de las pestañas de consola y errores de ejecución
-    private JTextPane consoleArea;
+    private static ConsoleHandler consoleArea = new ConsoleHandler();
     
-    private JTextPane errorsArea;
+    private static ErrorHandler errorsArea = new ErrorHandler();
     
     // Objetos encargados de la compilación.
     private Lexer lexer;
     
     private Parser parser;
     
-    private ListCodeWriter codeWriter;
+    private CodeWriter codeWriter;
     
     public static void log (LogType type, String msg) {
         logArea.log(type, msg);
@@ -446,8 +451,7 @@ public final class CompilerUI extends JFrame {
         logTabbedPane.addTab("Events", iconLog, panel1, "Event monitor");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        problemsArea = new JTextPane();
-        panel2.add(problemsArea, BorderLayout.CENTER);
+        panel2.add(problemsArea.getProblemPane(), BorderLayout.CENTER);
         logTabbedPane.addTab("Problems", iconError, panel2, "Shows runtime errors");
         
         return logTabbedPane;
@@ -467,13 +471,11 @@ public final class CompilerUI extends JFrame {
         
         // Crear paneles para Consola y Errores y añadir dichas pestañas
         JComponent panel1 = new JPanel(new BorderLayout());
-        consoleArea = new JTextPane();
-        panel1.add(consoleArea, BorderLayout.CENTER);
+        panel1.add(consoleArea.getConsoleLogPane(), BorderLayout.CENTER);
         consoleTabbedPane.addTab("Console", iconConsole, panel1, "I/O Console");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        errorsArea = new JTextPane();
-        panel2.add(errorsArea, BorderLayout.CENTER);
+        panel2.add(errorsArea.getErrorPane(), BorderLayout.CENTER);
         consoleTabbedPane.addTab("Errors", iconError, panel2, "Shows runtime errors");
         
         return consoleTabbedPane;
@@ -632,11 +634,11 @@ public final class CompilerUI extends JFrame {
         this.parser = parser;
     }
     
-    public ListCodeWriter getCodeWriter () {
+    public CodeWriter getCodeWriter () {
         return codeWriter;
     }
     
-    public void setCodeWriter (ListCodeWriter codeWriter) {
+    public void setCodeWriter (CodeWriter codeWriter) {
         this.codeWriter = codeWriter;
     }
     

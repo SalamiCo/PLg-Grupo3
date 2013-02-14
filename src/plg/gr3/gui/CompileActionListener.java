@@ -5,12 +5,14 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
-import plg.gr3.code.ListCodeWriter;
+import plg.gr3.code.StreamCodeWriter;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
@@ -26,20 +28,28 @@ public class CompileActionListener implements ActionListener {
     
     @Override
     public void actionPerformed (ActionEvent e) {
-        CompilerUI.log(LogType.LOG, "Compiling...");
-        File file = new File(invoker.getFileHandler().getFilePath());
-        Reader localReader;
         try {
-            localReader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
+            CompilerUI.log(LogType.LOG, "Compiling...");
+            File sourceCodeFile = new File(invoker.getFileHandler().getFilePath());
+            String parentDir = sourceCodeFile.getParent();
+            String byteCodeName = sourceCodeFile.getName().substring(0, sourceCodeFile.getName().lastIndexOf('.'));
+            String byteCodePath = parentDir + "/" + byteCodeName + ".bytecode";
+            File byteCodeFile = new File(byteCodePath);
+            byteCodeFile.createNewFile();
+            Reader localReader;
+            OutputStream localWriter;
+            
+            localReader = new InputStreamReader(new FileInputStream(sourceCodeFile), Charset.forName("UTF-8"));
+            localWriter = new FileOutputStream(byteCodeFile);
             invoker.setLexer(new Lexer(localReader));
-            invoker.setCodeWriter(new ListCodeWriter());
+            invoker.setCodeWriter(new StreamCodeWriter(localWriter));
             invoker.setParser(new Parser(invoker.getLexer(), invoker.getCodeWriter()));
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
+                
+                // mostramos la tabla de símbolos
                 SymbolTable st = invoker.getParser().getSymbolTable();
                 invoker.getSymbolTableArea().replaceModel(st);
-                
-                // guardamos en el bytecode
                 
             } else {
                 CompilerUI.log(LogType.ERROR, "Compilation error/s");
