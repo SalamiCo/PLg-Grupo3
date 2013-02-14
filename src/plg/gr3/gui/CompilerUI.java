@@ -97,7 +97,7 @@ public final class CompilerUI extends JFrame {
     
     /**
      * Crea la interfaz de usuario con la vista en modo Compilador cargada
-     * */
+     */
     public CompilerUI () {
         view = View.COMPILER; // vista de compilador
         symbolTableArea = new SymbolTableHandler();

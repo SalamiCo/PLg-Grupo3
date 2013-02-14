@@ -1,10 +1,7 @@
 package plg.gr3.vm.instr;
 
-import java.util.EmptyStackException;
-
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
-import plg.gr3.errors.runtime.EmptyStackError;
 import plg.gr3.errors.runtime.TypeMismatchError;
 import plg.gr3.vm.VirtualMachine;
 
@@ -32,20 +29,14 @@ public final class UnaryOperatorInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
+        Value val = vm.popValue();
         try {
-            // aplicar el operador al valor de la Cima
-            // TODO el apply de UnaryOperator devuelve null si no puede aplicar, cambiarlo por un
-            // IllegalArgumentException
-            Value result = operator.apply(vm.popValue());
-            // poner el resultado en la Cima
+            Value result = operator.apply(val);
             vm.pushValue(result);
         } catch (IllegalArgumentException e) {
             // error, no se puede aplicar el operador (type mismatch)
-            vm.abort(new TypeMismatchError(vm.getProgramCounter(), this));
+            vm.abort(new TypeMismatchError(vm.getProgramCounter(), this, operator, val));
             
-        } catch (EmptyStackException e1) {
-            // error de pila vacía
-            vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
     }
     
