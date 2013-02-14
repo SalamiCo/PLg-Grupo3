@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 import plg.gr3.code.StreamCodeWriter;
@@ -67,7 +68,12 @@ public class CompileActionListener implements ActionListener {
                 
             } else {
                 CompilerUI.log(LogType.ERROR, "Compilation error/s");
+                
+                // limpiamos la lista de símbolos
                 invoker.getSymbolTableArea().replaceModel(new SymbolTable());
+                
+                // limpiamos la lista de tokens
+                invoker.getTokenHandler().populateList(new ArrayList<LocatedToken>());
             }
             
         } catch (FileNotFoundException e1) {
