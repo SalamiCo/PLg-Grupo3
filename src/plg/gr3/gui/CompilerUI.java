@@ -447,11 +447,20 @@ public final class CompilerUI extends JFrame {
         
         // crear paneles para Log y Errores y añadir dichas pestañas
         JComponent panel1 = new JPanel(new BorderLayout());
-        panel1.add(logArea.getLogPane(), BorderLayout.CENTER);
+        
+        JScrollPane scrollLogArea =
+            new JScrollPane(
+                LogHandler.getLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel1.add(scrollLogArea, BorderLayout.CENTER);
         logTabbedPane.addTab("Events", iconLog, panel1, "Event monitor");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        panel2.add(problemsArea.getProblemPane(), BorderLayout.CENTER);
+        JScrollPane scrollProblemsArea =
+            new JScrollPane(
+                ProblemHandler.getProblemPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel2.add(scrollProblemsArea, BorderLayout.CENTER);
         logTabbedPane.addTab("Problems", iconError, panel2, "Shows runtime errors");
         
         return logTabbedPane;
@@ -471,11 +480,19 @@ public final class CompilerUI extends JFrame {
         
         // Crear paneles para Consola y Errores y añadir dichas pestañas
         JComponent panel1 = new JPanel(new BorderLayout());
-        panel1.add(consoleArea.getConsoleLogPane(), BorderLayout.CENTER);
+        JScrollPane scrollConsoleArea =
+            new JScrollPane(
+                ConsoleHandler.getConsoleLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel1.add(scrollConsoleArea, BorderLayout.CENTER);
         consoleTabbedPane.addTab("Console", iconConsole, panel1, "I/O Console");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        panel2.add(errorsArea.getErrorPane(), BorderLayout.CENTER);
+        JScrollPane scrollErrorArea =
+            new JScrollPane(
+                ErrorHandler.getErrorPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel2.add(scrollErrorArea, BorderLayout.CENTER);
         consoleTabbedPane.addTab("Errors", iconError, panel2, "Shows runtime errors");
         
         return consoleTabbedPane;

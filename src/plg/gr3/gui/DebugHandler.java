@@ -24,7 +24,7 @@ public class DebugHandler {
     /**
      * Obtiene el área de texto que representa el debugger
      * */
-    public JTextPane getDebugPane () {
+    public static JTextPane getDebugPane () {
         return debugPane;
     }
 }

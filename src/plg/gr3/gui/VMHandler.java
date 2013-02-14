@@ -24,7 +24,7 @@ public class VMHandler {
     /**
      * Obtiene el área de texto que representa la máquina virtual
      * */
-    public JTextPane getVmPane () {
+    public static JTextPane getVmPane () {
         return vmPane;
     }
 }
