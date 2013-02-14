@@ -146,7 +146,7 @@ public final class CompilerUI extends JFrame {
             PipedWriter lpout = new PipedWriter(lpin);
             Debugger.INSTANCE.useErrorStream(new PrintWriter(lpout));
             
-            logWorker = new DebugWorker(lpout, lpin, LogHandler.getLogPane());
+            logWorker = new DebugWorker(lpout, lpin, logArea.getLogPane());
             logWorker.execute();
             
             // Problems
@@ -526,7 +526,7 @@ public final class CompilerUI extends JFrame {
         
         JScrollPane scrollLogArea =
             new JScrollPane(
-                LogHandler.getLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                logArea.getLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel1.add(scrollLogArea, BorderLayout.CENTER);
         logTabbedPane.addTab("Events", iconLog, panel1, "Event monitor");

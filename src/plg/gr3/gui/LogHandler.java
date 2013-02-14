@@ -19,7 +19,7 @@ public class LogHandler {
     /**
      * Área de texto que representa el Log.
      * */
-    private static JTextPane logPane;
+    private JTextPane logPane;
     
     /**
      * Crea un nuevo área de texto (Log) de sólo lectura.
@@ -32,7 +32,7 @@ public class LogHandler {
     /**
      * Obtiene el área de texto que representa el Log.
      * */
-    public static JTextPane getLogPane () {
+    public JTextPane getLogPane () {
         return logPane;
     }
     
