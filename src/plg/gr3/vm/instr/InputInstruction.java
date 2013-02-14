@@ -34,10 +34,8 @@ public class InputInstruction extends Instruction {
     @Override
     public void execute (VirtualMachine vm) {
         try {
-            // FIXME Qué
             vm.pushValue(vm.readValue(inputType)); // Cima <= BufferIN
         } catch (IOException e) {
-            // TODO Error en tiempo de ejecución: error al leer de BufferIN
             vm.abort(new IOError(vm.getProgramCounter(), this));
         }
     }
