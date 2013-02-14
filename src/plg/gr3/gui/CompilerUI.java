@@ -10,6 +10,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.PipedReader;
+import java.io.PipedWriter;
+import java.io.PrintWriter;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,6 +32,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import plg.gr3.code.CodeWriter;
+import plg.gr3.debug.Debugger;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
@@ -95,6 +100,10 @@ public final class CompilerUI extends JFrame {
     
     private CodeWriter codeWriter;
     
+    private DebugWorker logWorker;
+    
+    private DebugWorker problemWorker;
+    
     public static void log (LogType type, String msg) {
         logArea.log(type, msg);
     }
@@ -128,6 +137,27 @@ public final class CompilerUI extends JFrame {
         mainPanel.add(initDebugPanel(), "panelDebugger");
         
         this.add(mainPanel);
+        
+        try {
+            // Log
+            PipedReader lpin = new PipedReader();
+            PipedWriter lpout = new PipedWriter(lpin);
+            Debugger.INSTANCE.useErrorStream(new PrintWriter(lpout));
+            
+            logWorker = new DebugWorker(lpout, lpin, LogHandler.getLogPane());
+            logWorker.execute();
+            
+            // Problems
+            PipedReader ppin = new PipedReader();
+            PipedWriter ppout = new PipedWriter(ppin);
+            Debugger.INSTANCE.useErrorStream(new PrintWriter(ppout));
+            
+            problemWorker = new DebugWorker(ppout, ppin, ProblemHandler.getProblemPane());
+            problemWorker.execute();
+            
+        } catch (IOException exc) {
+            // TODO CAGONDIOS
+        }
         
         CompilerUI.log(LogType.LOG, "Application initialized correctly");
     }
@@ -747,8 +777,12 @@ public final class CompilerUI extends JFrame {
     public void closeFilesAndExit () {
         boolean canClose1 = sourceFile.askBeforeClose();
         boolean canClose2 = bytecodeFileHandler.askBeforeClose();
+        
         if (canClose1 && canClose2) {
-            System.exit(0);
+            // System.exit(0);
+            logWorker.cancel();
+            problemWorker.cancel();
+            dispose();
         }
     }
     
