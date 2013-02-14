@@ -113,9 +113,11 @@ public final class CompilerUI extends JFrame {
     
     private CodeWriter codeWriter;
     
-    private DebugWorker logWorker;
+    private DebugWorker eventsWorker;
     
     private DebugWorker problemWorker;
+    
+    private DebugWorker logWorker;
     
     // Objetos encargados de la máquina virtual
     private List<Instruction> program;
@@ -175,8 +177,8 @@ public final class CompilerUI extends JFrame {
             PipedWriter lpout = new PipedWriter(lpin);
             Debugger.INSTANCE.useErrorStream(new PrintWriter(lpout));
             
-            logWorker = new DebugWorker(lpout, lpin, logArea.getLogPane());
-            logWorker.execute();
+            eventsWorker = new DebugWorker(lpout, lpin, logArea.getLogPane());
+            eventsWorker.execute();
             
             // Problems
             PipedReader ppin = new PipedReader();
@@ -828,6 +830,7 @@ public final class CompilerUI extends JFrame {
                     String text = field.getText();
                     try {
                         writer.write(text);
+                        writer.write('\n');
                         field.setText("");
                         
                     } catch (IOException exc) {
@@ -842,8 +845,18 @@ public final class CompilerUI extends JFrame {
         vm.setReader(reader);
     }
     
-    private void bindConsoleOutput (VirtualMachine vm) {
+    private void bindConsoleOutput (VirtualMachine vm) throws IOException {
+        if (logWorker != null) {
+            logWorker.cancel();
+        }
         
+        final PipedWriter writer = new PipedWriter();
+        final PipedReader reader = new PipedReader(writer);
+        
+        vm.setWriter(writer);
+        
+        logWorker = new DebugWorker(writer, reader, consoleArea.getConsoleLogPane());
+        logWorker.execute();
     }
     
     public CodeWriter getCodeWriter () {
@@ -919,7 +932,10 @@ public final class CompilerUI extends JFrame {
         
         if (canClose1 && canClose2) {
             // System.exit(0);
-            logWorker.cancel();
+            if (logWorker != null) {
+                logWorker.cancel();
+            }
+            eventsWorker.cancel();
             problemWorker.cancel();
             if (vmWorker != null) {
                 vmWorker.stopProgram();
