@@ -37,6 +37,7 @@ import plg.gr3.debug.Debugger;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
+import plg.gr3.vm.VirtualMachine;
 import plg.gr3.vm.instr.Instruction;
 
 public final class CompilerUI extends JFrame {
@@ -58,6 +59,8 @@ public final class CompilerUI extends JFrame {
     
     // Miembros privados de la clase
     private View view;
+    
+    private VirtualMachineWorker vmWorker;
     
     private JPanel mainPanel;
     
@@ -753,7 +756,11 @@ public final class CompilerUI extends JFrame {
     }
     
     public VirtualMachineWorker getVirtualMachineWorker () {
-        return null;
+        if (vmWorker == null || vmWorker.isDone()) {
+            VirtualMachine vm = new VirtualMachine(program);
+            vmWorker = new VirtualMachineWorker(vm, null);
+        }
+        return vmWorker;
     }
     
     public CodeWriter getCodeWriter () {
