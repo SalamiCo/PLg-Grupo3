@@ -589,7 +589,7 @@ public final class CompilerUI extends JFrame {
         // input de la consola
         JScrollPane scrollInputConsole =
             new JScrollPane(
-                consoleArea.getConsoleInputPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                consoleArea.getConsoleInputField(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel1.add(scrollInputConsole, BorderLayout.SOUTH);
         

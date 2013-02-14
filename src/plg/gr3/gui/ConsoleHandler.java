@@ -1,5 +1,6 @@
 package plg.gr3.gui;
 
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
 public class ConsoleHandler {
@@ -11,7 +12,7 @@ public class ConsoleHandler {
      * */
     private JTextPane consoleLogPane;
     
-    private JTextPane consoleInputPane;
+    private JTextField consoleInputField;
     
     /**
      * Crea dos paneles de texto, uno para la salida de la consola y otro para la entrada de texto.
@@ -19,8 +20,8 @@ public class ConsoleHandler {
     public ConsoleHandler () {
         consoleLogPane = new JTextPane();
         consoleLogPane.setEditable(false);
-        consoleInputPane = new JTextPane();
-        consoleInputPane.setEditable(true);
+        consoleInputField = new JTextField();
+        consoleInputField.setEditable(true);
     }
     
     /**
@@ -30,8 +31,8 @@ public class ConsoleHandler {
         return consoleLogPane;
     }
     
-    public JTextPane getConsoleInputPane () {
-        return consoleInputPane;
+    public JTextField getConsoleInputField () {
+        return consoleInputField;
     }
     
     /**
