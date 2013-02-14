@@ -13,6 +13,7 @@ public class StopActionListener implements ActionListener {
     
     @Override
     public void actionPerformed (ActionEvent e) {
-        // TODO stop
+        VirtualMachineWorker vmw = invoker.getVirtualMachineWorker();
+        vmw.stopProgram();
     }
 }
