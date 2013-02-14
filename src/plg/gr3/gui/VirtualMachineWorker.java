@@ -33,6 +33,7 @@ public final class VirtualMachineWorker extends SwingWorker<Void, Void> {
     
     @Override
     protected Void doInBackground () throws Exception {
+        publish();
         while (!vm.isStopped()) {
             lock.lock();
             try {
