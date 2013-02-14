@@ -27,6 +27,7 @@ import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentifierError;
 import plg.gr3.errors.compile.UnexpectedTokenError;
+import plg.gr3.errors.compile.UnrecognizedTokenError;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.lexer.LocatedToken;
 import plg.gr3.lexer.TokenType;
@@ -57,6 +58,9 @@ public final class Parser implements Closeable {
     
     /** Token leído sin consumir */
     private LocatedToken token;
+    
+    /** Token no reconocido leído */
+    private String unrecognizedToken;
     
     /** Categorías que se esperaban y no se encontraron */
     private final Set<TokenType> expected = new HashSet<>();
@@ -91,7 +95,14 @@ public final class Parser implements Closeable {
             token = lexer.nextToken();
         }
         
-        if (token != null) {
+        // Si sigue siendo null, es que no ha conseguido nada reconocible
+        if (token == null) {
+            for (TokenType category : categories) {
+                expected.add(category);
+            }
+            unrecognizedToken = lexer.nextStringToken();
+            
+        } else {
             for (TokenType category : categories) {
                 expected.add(category);
                 
@@ -133,9 +144,12 @@ public final class Parser implements Closeable {
         
         if (attr == null) {
             codeWriter.inhibit();
+            
             if (token != null) {
-                CompileError error = new UnexpectedTokenError(token, expected);
-                errors.add(error);
+                errors.add(new UnexpectedTokenError(token, expected));
+                
+            } else if (unrecognizedToken != null) {
+                errors.add(new UnrecognizedTokenError(unrecognizedToken, lexer.getLine(), lexer.getColumn(), expected));
             }
         }
         

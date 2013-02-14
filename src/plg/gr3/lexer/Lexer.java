@@ -134,6 +134,19 @@ public final class Lexer implements Closeable {
     }
     
     /**
+     * @return Siguiente token sin reconocer un tipo concreto
+     * @throws IOException si ocurre un error de E/S
+     */
+    public String nextStringToken () throws IOException {
+        prepareInput();
+        
+        matcher.usePattern(Pattern.compile("\\S+"));
+        matcher.find();
+        
+        return matcher.group();
+    }
+    
+    /**
      * Prepara el analizador léxico para empezar a reconocer un token, saltándose espacios y comentarios así como
      * leyendo nuevas líneas si fuera necesario
      * 

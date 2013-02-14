@@ -23,6 +23,11 @@ import plg.gr3.errors.runtime.InvalidInstructionAddressError;
 import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.vm.instr.Instruction;
 
+/**
+ * Máquina virtual del lenguaje
+ * 
+ * @author PLg Grupo 03 2012/2013
+ */
 public final class VirtualMachine {
     
     private List<Value> memory;
