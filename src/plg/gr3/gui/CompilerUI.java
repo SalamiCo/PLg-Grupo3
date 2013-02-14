@@ -80,15 +80,17 @@ public final class CompilerUI extends JFrame {
     
     private SymbolTableHandler symbolTableArea;
     
-    // Contenido de las pestañas de log y errores de compilación
+    // Contenido de la pestaña del log de ejecución
     // se crea un LogHandler static para que sea accedido desde cualquier objeto del programa
     private static LogHandler logArea = new LogHandler();
     
+    // Contenido de la pestaña de los errores de compilación
     private ProblemHandler problemsArea = new ProblemHandler();
     
-    // Contenido de las pestañas de consola y errores de ejecución
+    // Contenido de la pestaña de la consola de ejecución
     private ConsoleHandler consoleArea = new ConsoleHandler();
     
+    // Contenido de la pestaña de errores de ejecución
     private ErrorHandler errorsArea = new ErrorHandler();
     
     private TokenHandler tokenArea = new TokenHandler();
@@ -561,6 +563,14 @@ public final class CompilerUI extends JFrame {
                 consoleArea.getConsoleLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel1.add(scrollConsoleArea, BorderLayout.CENTER);
+        
+        // input de la consola
+        JScrollPane scrollInputConsole =
+            new JScrollPane(
+                consoleArea.getConsoleInputPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel1.add(scrollInputConsole, BorderLayout.SOUTH);
+        
         consoleTabbedPane.addTab("Console", iconConsole, panel1, "I/O Console");
         
         JComponent panel2 = new JPanel(new BorderLayout());
