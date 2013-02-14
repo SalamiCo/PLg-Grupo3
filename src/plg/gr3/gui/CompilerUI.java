@@ -755,6 +755,10 @@ public final class CompilerUI extends JFrame {
         this.parser = parser;
     }
     
+    public VirtualMachineWorker getVirtualMachineWorker () {
+        return null;
+    }
+    
     public CodeWriter getCodeWriter () {
         return codeWriter;
     }
