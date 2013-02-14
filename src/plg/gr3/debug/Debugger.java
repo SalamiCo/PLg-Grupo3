@@ -3,6 +3,11 @@ package plg.gr3.debug;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 
+import javax.swing.JTextPane;
+
+import plg.gr3.gui.ConsoleHandler;
+import plg.gr3.gui.ErrorHandler;
+
 /**
  * Depurador de la práctica. Capaz de imprimir mensajes de información, de depuración o de error.
  * 
@@ -32,6 +37,10 @@ public enum Debugger {
     
     /** Si el modo depuración está activado */
     private boolean debug;
+    
+    private static JTextPane outPane = ConsoleHandler.getConsoleLogPane();;
+    
+    private static JTextPane errPane = ErrorHandler.getErrorPane();
     
     /** Devuelve el depurador a su estado original */
     private void reset () {
@@ -80,6 +89,12 @@ public enum Debugger {
         
         pw.printf(fmt, type, message, line, column, file);
         pw.flush();
+        
+        if (pw == this.out) {
+            outPane.setText(outPane.getText() + String.format(fmt, type, message, line, column, file));
+        } else {
+            errPane.setText(errPane.getText() + String.format(fmt, type, message, line, column, file));
+        }
     }
     
     public void log (String format, Object... params) {

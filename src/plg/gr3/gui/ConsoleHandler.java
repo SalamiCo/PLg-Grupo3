@@ -9,7 +9,9 @@ public class ConsoleHandler {
     /**
      * Área de texto que representa la consola.
      * */
-    private final JTextPane consoleLogPane, consoleInputPane;
+    private static JTextPane consoleLogPane;
+    
+    private static JTextPane consoleInputPane;
     
     /**
      * Crea dos paneles de texto, uno para la salida de la consola y otro para la entrada de texto.
@@ -24,11 +26,11 @@ public class ConsoleHandler {
     /**
      * Obtiene el área de texto que representa la salida de la consola.
      * */
-    public JTextPane getConsoleLogPane () {
+    public static JTextPane getConsoleLogPane () {
         return consoleLogPane;
     }
     
-    public JTextPane getConsoleInputPane () {
+    public static JTextPane getConsoleInputPane () {
         return consoleInputPane;
     }
     
