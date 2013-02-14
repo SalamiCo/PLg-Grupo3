@@ -179,7 +179,7 @@ public final class CompilerUI extends JFrame {
      * */
     private void initFrame () {
         this.setSize(957, 577);
-        setTitle("Implacable Compiler");
+        setTitle("Compilador PLg. Grupo 3. 2012/2013.");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         
@@ -362,38 +362,47 @@ public final class CompilerUI extends JFrame {
         
         // botón nuevo
         JButton newFileButton = new JButton(iconNew);
+        newFileButton.setToolTipText("Nuevo fichero");
         newFileButton.addActionListener(new NewFileActionListener(this));
         
         // botón open
         JButton openFileButton = new JButton(iconOpen);
+        openFileButton.setToolTipText("Abrir fichero");
         openFileButton.addActionListener(new OpenFileActionListener(this));
         
         // botón save
         JButton saveFileButton = new JButton(iconSave);
+        saveFileButton.setToolTipText("Guardar fichero");
         saveFileButton.addActionListener(new SaveFileActionListener(this));
         
         // botón cut
         JButton cutButton = new JButton(iconCut);
+        cutButton.setToolTipText("Cortar");
         cutButton.addActionListener(new CutTextActionListener(this));
         
         // botón copy
         JButton copyButton = new JButton(iconCopy);
+        copyButton.setToolTipText("Copiar");
         copyButton.addActionListener(new CopyTextActionListener(this));
         
         // botón paste
         JButton pasteButton = new JButton(iconPaste);
+        pasteButton.setToolTipText("Pegar");
         pasteButton.addActionListener(new PasteTextActionListener(this));
         
         // botón compilar
         JButton compileButton = new JButton(iconCompile);
+        compileButton.setToolTipText("Compilar");
         compileButton.addActionListener(new CompileActionListener(this));
         
         // botón compilar y cargar en la vm
         JButton loadButton = new JButton(iconLoad);
+        loadButton.setToolTipText("Compilar y cargar en VM");
         loadButton.addActionListener(new LoadActionListener(this));
         
         // botón exit
         JButton exitButton = new JButton(iconExit);
+        exitButton.setToolTipText("Salir");
         exitButton.addActionListener(new ExitActionListener(this));
         
         // añadir botones al toolbar
@@ -432,38 +441,47 @@ public final class CompilerUI extends JFrame {
         
         // botón nuevo
         JButton newFileButton = new JButton(iconNew);
+        newFileButton.setToolTipText("Nuevo");
         newFileButton.addActionListener(new NewFileActionListener(this));
         
         // botón open
         JButton openFileButton = new JButton(iconOpen);
+        openFileButton.setToolTipText("Abrir");
         openFileButton.addActionListener(new OpenFileActionListener(this));
         
         // botón cut
         JButton cutButton = new JButton(iconCut);
+        cutButton.setToolTipText("Cortar");
         cutButton.addActionListener(new CutTextActionListener(this));
         
         // botón copy
         JButton copyButton = new JButton(iconCopy);
+        copyButton.setToolTipText("Copiar");
         copyButton.addActionListener(new CopyTextActionListener(this));
         
         // botón paste
         JButton pasteButton = new JButton(iconPaste);
+        pasteButton.setToolTipText("Pegar");
         pasteButton.addActionListener(new PasteTextActionListener(this));
         
         // botón run
         JButton runButton = new JButton(iconRun);
+        runButton.setToolTipText("Ejecutar");
         runButton.addActionListener(new RunActionListener(this));
         
         // botón step
         JButton stepButton = new JButton(iconStep);
+        stepButton.setToolTipText("Avanzar un paso");
         stepButton.addActionListener(new StepActionListener(this));
         
         // botón stop
         JButton stopButton = new JButton(iconStop);
+        stopButton.setToolTipText("Parar");
         stopButton.addActionListener(new StopActionListener(this));
         
         // botón salir
         JButton exitButton = new JButton(iconExit);
+        exitButton.setToolTipText("Salir");
         exitButton.addActionListener(new ExitActionListener(this));
         
         // añadir botones al toolbar
