@@ -138,6 +138,7 @@ public final class CompilerUI extends JFrame {
             
             @Override
             public void actionPerformed (ActionEvent e) {
+                System.out.println("@@@");
                 ArrayList<String> stackList = vm.getStackToArrayList();
                 stackList.add(0, "PC: " + Integer.toString(vm.getProgramCounter()));
                 stackList.add(1, "Swap1: " + Boolean.toString(vm.isSwapped1()));
