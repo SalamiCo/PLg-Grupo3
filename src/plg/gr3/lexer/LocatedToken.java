@@ -21,14 +21,10 @@ public final class LocatedToken {
     /**
      * Constructora parametrizada de la clase LocatedToken
      * 
-     * @param token
-     *            Token al que se hace referencia. Debe ser distinto de null.
-     * @param line
-     *            Linea donde se ubica el token en el fichero. Debe ser mayor que 0.
-     * @param column
-     *            Columna donde se ubica el token en el fichero. Debe ser mayor que 0.
-     * @throws IllegalArgumentException
-     *             Si alguna de las precondiciones no se cumple.
+     * @param token Token al que se hace referencia. Debe ser distinto de null.
+     * @param line Linea donde se ubica el token en el fichero. Debe ser mayor que 0.
+     * @param column Columna donde se ubica el token en el fichero. Debe ser mayor que 0.
+     * @throws IllegalArgumentException Si alguna de las precondiciones no se cumple.
      * 
      * */
     public LocatedToken (Token token, int line, int column) throws IllegalArgumentException {
@@ -82,5 +78,10 @@ public final class LocatedToken {
         
         LocatedToken lt = (LocatedToken) obj;
         return Objects.equals(lt.token, token) && lt.line == line && lt.column == column;
+    }
+    
+    @Override
+    public String toString () {
+        return "[" + token.toString() + ", " + line + ", " + column + "]";
     }
 }
