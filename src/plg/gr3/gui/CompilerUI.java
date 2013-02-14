@@ -804,7 +804,7 @@ public final class CompilerUI extends JFrame {
                 bindConsoleInput(vm);
                 bindConsoleOutput(vm);
                 
-                vmWorker = new VirtualMachineWorker(vm, null);
+                vmWorker = new VirtualMachineWorker(vm, vmListener);
                 vmWorker.execute();
             }
             return vmWorker;
