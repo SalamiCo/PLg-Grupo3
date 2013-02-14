@@ -238,7 +238,7 @@ public final class VirtualMachine {
         ArrayList<String> memoryArrayList = new ArrayList<String>();
         
         for (Value value : memory) {
-            memoryArrayList.add(value.toString());
+            memoryArrayList.add(value == null ? "--" : value.toString());
         }
         
         return memoryArrayList;

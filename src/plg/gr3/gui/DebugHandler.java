@@ -1,5 +1,6 @@
 package plg.gr3.gui;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -20,14 +21,11 @@ public class DebugHandler {
      * Crea una nueva lista de sólo lectura para la pestaña debug.
      * */
     public DebugHandler () {
-        DefaultListModel<String> listModel = populateList();
         debugList = new JList<String>();
-        listModel.addElement("pruebaPruebaPrueba");
-        debugList.setModel(listModel);
         debugList.setEnabled(false);
     }
     
-    private DefaultListModel<String> populateList () {
+    public DefaultListModel<String> populateList () {
         DefaultListModel<String> listModel = new DefaultListModel<String>();
         
         return listModel;
@@ -43,8 +41,12 @@ public class DebugHandler {
     public void populateList (List<String> memoryList) {
         DefaultListModel<String> listModel = new DefaultListModel<String>();
         
-        for (String memoryEntry : memoryList) {
-            listModel.addElement(memoryEntry);
+        int i = 0;
+        Iterator<String> it = memoryList.iterator();
+        
+        while (it.hasNext()) {
+            listModel.addElement("[" + i + "] " + it.next());
+            i++;
         }
         
         debugList.setModel(listModel);
