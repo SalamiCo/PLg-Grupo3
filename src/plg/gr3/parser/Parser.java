@@ -593,9 +593,13 @@ public final class Parser implements Closeable {
             if (attrTerm == null) {
                 return null;
             }
+            
             Attributes attrInhFExpr =
                 new Attributes.Builder().type(attrTerm.getType()).asignationType(attr.getAsigType()).create();
             Attributes attrFExpr = parseFExpr(last, attrInhFExpr);
+            if (attrFExpr == null) {
+                return null;
+            }
             
             // Expr.cod = Term.cod || FExpr.cod }
             codeWriter.write(attrTerm.getInstructions());
@@ -615,6 +619,9 @@ public final class Parser implements Closeable {
             Attributes attrOp0 = parseOp0(last, attr);
             if (attrOp0 != null) {
                 Attributes attrTerm = parseTerm(last, attrOp0);
+                if (attrTerm == null) {
+                    return null;
+                }
                 
                 // Comprobamos que podamos aplicar el operador (que los tipos casen)
                 BinaryOperator op = attrOp0.getOperator(BinaryOperator.class);
@@ -652,6 +659,9 @@ public final class Parser implements Closeable {
             Attributes attrInhRTerm =
                 new Attributes.Builder().type(attrFact.getType()).asignationType(attr.getAsigType()).create();
             Attributes attrRTerm = parseRTerm(true, attrInhRTerm);
+            if (attrRTerm == null) {
+                return null;
+            }
             
             return attrb.type(attrRTerm.getType()).create();
         } catch (NoSuchElementException e) {
@@ -675,6 +685,9 @@ public final class Parser implements Closeable {
                     Attributes attrInhRTerm =
                         new Attributes.Builder().type(t).asignationType(attr.getAsigType()).create();
                     Attributes attrRTerm = parseRTerm(last, attrInhRTerm);
+                    if (attrRTerm == null) {
+                        return null;
+                    }
                     
                     // Comprobamos que podamos aplicar el operador (que los tipos casen)
                     BinaryOperator op = (BinaryOperator) attrOp1.getOperator();
@@ -798,6 +811,9 @@ public final class Parser implements Closeable {
             Attributes fshftInhAttr =
                 new Attributes.Builder().type(unarySynAttr.getType()).asignationType(attr.getAsigType()).create();
             Attributes fshftSynAttr = parseFShft(true, fshftInhAttr);
+            if (fshftSynAttr == null) {
+                return null;
+            }
             
             attrb.type(fshftSynAttr.getType());
             
@@ -827,6 +843,9 @@ public final class Parser implements Closeable {
             if (op3SynAttr != null) {
                 // Shft
                 Attributes shftSynAttr = parseShft(true, attr);
+                if (shftSynAttr == null) {
+                    return null;
+                }
                 
                 // Comprobamos que podamos aplicar el operador (que los tipos casen)
                 BinaryOperator op = (BinaryOperator) op3SynAttr.getOperator();
@@ -869,6 +888,9 @@ public final class Parser implements Closeable {
             if (attrOp4 != null) {
                 // Unary
                 Attributes attrUnary = parseUnary(last, attr);
+                if (attrUnary == null) {
+                    return null;
+                }
                 
                 // Comprobamos que el operador unario se puede aplicar (que los tipos casan)
                 UnaryOperator op = (UnaryOperator) attrOp4.getOperator();
