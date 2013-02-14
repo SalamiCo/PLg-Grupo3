@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -36,6 +37,7 @@ import plg.gr3.debug.Debugger;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
+import plg.gr3.vm.instr.Instruction;
 
 public final class CompilerUI extends JFrame {
     
@@ -107,6 +109,9 @@ public final class CompilerUI extends JFrame {
     private DebugWorker logWorker;
     
     private DebugWorker problemWorker;
+    
+    // Objetos encargados de la máquina virtual
+    private List<Instruction> program;
     
     public static void log (LogType type, String msg) {
         logArea.log(type, msg);
@@ -479,7 +484,7 @@ public final class CompilerUI extends JFrame {
         sourceCodeEditor.setFont(FONT);
         
         // nuevo archivo fuente
-        sourceFile = new FileHandler(View.COMPILER, sourceCodeEditor);
+        sourceFile = new FileHandler(this, View.COMPILER, sourceCodeEditor);
         
         // lo añadimos a un scrollPane con contador de líneas
         JScrollPane scrollPane = new JScrollPane(sourceCodeEditor);
@@ -497,7 +502,7 @@ public final class CompilerUI extends JFrame {
         byteCodeEditor.setFont(FONT);
         
         // nuevo archivo de bytecode
-        bytecodeFileHandler = new FileHandler(View.DEBUGGER, byteCodeEditor);
+        bytecodeFileHandler = new FileHandler(this, View.DEBUGGER, byteCodeEditor);
         
         // lo añadimos a un scrollPane con contador de líneas
         JScrollPane scrollPane = new JScrollPane(byteCodeEditor);
@@ -772,6 +777,18 @@ public final class CompilerUI extends JFrame {
     
     public void setBytecodeFileHandler (FileHandler bytecodeFileHandler) {
         this.bytecodeFileHandler = bytecodeFileHandler;
+    }
+    
+    public List<Instruction> getProgram () {
+        return program;
+    }
+    
+    public void setProgram (List<Instruction> program) {
+        this.program = program;
+    }
+    
+    public VMHandler getVMHandler () {
+        return vmArea;
     }
     
     /**
