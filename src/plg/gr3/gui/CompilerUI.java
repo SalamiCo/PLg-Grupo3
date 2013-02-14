@@ -147,6 +147,7 @@ public final class CompilerUI extends JFrame {
                 vmArea.populateList(stackList);
                 
                 ArrayList<String> memoryList = vm.getMemoryToArrayList();
+                
                 debugArea.populateList(memoryList);
             }
         };

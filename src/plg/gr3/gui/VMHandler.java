@@ -20,12 +20,7 @@ public class VMHandler {
      * Crea una nueva lista de sólo lectura para la pila de la máquina virtual.
      * */
     public VMHandler () {
-        DefaultListModel<String> listModel = new DefaultListModel<String>();
-        listModel.addElement("prueba1");
-        listModel.addElement("prueba2");
-        listModel.addElement("prueba3");
-        
-        vmList = new JList<String>(listModel);
+        vmList = new JList<String>();
         vmList.setEnabled(false);
     }
     
