@@ -587,7 +587,6 @@ public final class CompilerUI extends JFrame {
             new JScrollPane(
                 symbolTableArea.getSymbolTable(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        
         panel1.add(scrollTableArea, BorderLayout.CENTER);
         symTabbedPane.addTab("Symbol table", iconTable, panel1, "Shows symbol table content");
         
@@ -616,11 +615,19 @@ public final class CompilerUI extends JFrame {
         
         // Paneles para Símbolos de Debug y Máquina Virtual, añadir dichas pestañas
         JComponent panel1 = new JPanel(new BorderLayout());
-        panel1.add(debugArea.getDebugList(), BorderLayout.CENTER);
+        JScrollPane scrollDebugArea =
+            new JScrollPane(
+                debugArea.getDebugList(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel1.add(scrollDebugArea, BorderLayout.CENTER);
         dbgTabbedPane.addTab("Debug", iconDebug, panel1, "Shows debug symbols");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        panel2.add(vmArea.getVmList(), BorderLayout.CENTER);
+        JScrollPane scrollVmArea =
+            new JScrollPane(
+                vmArea.getVmList(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel2.add(scrollVmArea, BorderLayout.CENTER);
         dbgTabbedPane.addTab("Virtual Machine", iconMachine, panel2, "Shows virtual machine status");
         
         return dbgTabbedPane;
