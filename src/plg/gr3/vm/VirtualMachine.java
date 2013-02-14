@@ -171,7 +171,11 @@ public final class VirtualMachine {
     }
     
     public Value readValue (Type type) throws IOException {
+        writer.write("<INPUT> ");
         String str = reader.readLine();
+        writer.write(str);
+        writer.write('\n');
+        writer.flush();
         if (type.equals(Type.NATURAL)) {
             return NaturalValue.valueOf(str);
             
@@ -192,7 +196,9 @@ public final class VirtualMachine {
     }
     
     public void writeValue (Value value) throws IOException {
+        writer.write("<OUTPUT> ");
         writer.write(value.toString());
+        writer.write('\n');
         writer.flush();
     }
     

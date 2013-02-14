@@ -27,8 +27,8 @@ public final class DebugWorker extends SwingWorker<Void, String> {
     protected Void doInBackground () throws Exception {
         char[] buf = new char[128];
         while (!isCancelled()) {
-            reader.read(buf);
-            pane.setText(pane.getText() + new String(buf));
+            int n = reader.read(buf, 0, buf.length);
+            pane.setText(pane.getText() + new String(buf, 0, n));
         }
         
         return null;
