@@ -275,4 +275,19 @@ public class FileHandler {
         }
         return !cancelled;
     }
+    
+    /**
+     * Chequea si está guardado el archivo antes de compilarlo
+     * */
+    public boolean savedBeforeCompile () {
+        boolean saved;
+        // si está modificado o no se le ha asignado una ruta, guardar
+        if (this.isModified() || this.getFilePath() == "") {
+            saved = this.saveFileAction();
+        } else { // no está modificado y no tiene asignada una ruta
+            saved = true;
+        }
+        
+        return saved;
+    }
 }

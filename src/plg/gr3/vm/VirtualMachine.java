@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
@@ -19,6 +20,7 @@ import plg.gr3.data.IntegerValue;
 import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.Value;
+import plg.gr3.errors.runtime.EmptyStackError;
 import plg.gr3.errors.runtime.InvalidInstructionAddressError;
 import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.vm.instr.Instruction;
@@ -68,9 +70,14 @@ public final class VirtualMachine {
     
     public void step () {
         Instruction inst = getInstruction(programCounter);
-        if (inst != null) {
-            inst.execute(this);
-            programCounter++;
+        try {
+            if (inst != null) {
+                inst.execute(this);
+                programCounter++;
+            }
+        } catch (EmptyStackException e) {
+            // Error de pila vacía
+            this.abort(new EmptyStackError(programCounter, inst));
         }
     }
     
