@@ -4,18 +4,18 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
 /**
- * Clase que crea un manejador para el JTextPane que alberga el debugger.
+ * Clase que crea un manejador para el JList que se muestra en la pestaña de debug.
  * */
 
 public class DebugHandler {
     
     /**
-     * Área de texto que representa la maquina virtual.
+     * Lista para la pestaña debug.
      * */
     private JList<String> debugList;
     
     /**
-     * Crea un nuevo área de texto de sólo lectura para el debugger.
+     * Crea una nueva lista de sólo lectura para la pestaña debug.
      * */
     public DebugHandler () {
         DefaultListModel<String> listModel = populateList();
@@ -32,7 +32,7 @@ public class DebugHandler {
     }
     
     /**
-     * Obtiene el área de texto que representa el debugger
+     * Obtiene la lista que se muestra en la pestaña debug.
      * */
     public JList<String> getDebugList () {
         return debugList;

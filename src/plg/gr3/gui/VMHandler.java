@@ -4,18 +4,18 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
 /**
- * Clase que crea un manejador para el JTextPane que alberga la máquina virtual.
+ * Clase que crea un manejador para el JList que muestra la pila de la máquina virtual.
  * */
 
 public class VMHandler {
     
     /**
-     * Área de texto que representa la maquina virtual.
+     * Lista que representa la pila de la máquina virtual.
      * */
     private JList<String> vmList;
     
     /**
-     * Crea un nuevo área de texto de sólo lectura para la máquina virtual.
+     * Crea una nueva lista de sólo lectura para la pila de la máquina virtual.
      * */
     public VMHandler () {
         DefaultListModel<String> listModel = new DefaultListModel<String>();
@@ -28,7 +28,7 @@ public class VMHandler {
     }
     
     /**
-     * Obtiene el área de texto que representa la máquina virtual
+     * Obtiene la lista que representa la pila de la máquina virtual
      * */
     public JList<String> getVmList () {
         return vmList;
