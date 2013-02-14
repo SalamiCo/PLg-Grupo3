@@ -1,14 +1,19 @@
 package plg.gr3.errors.compile;
 
-/*
- * Clase que hereda de Compile error que maneja los errores en los que se usa un identificador que no ha sido
- * previamente declarado
+/**
+ * Error de identificador no definido
+ * 
+ * @author PLg Grupo 03 2012/2013
  */
-
 public class UndefinedIdentifierError extends CompileError {
     
     private String identName;
     
+    /**
+     * @param identName Nombre del identificador
+     * @param line Línea en la que se dio
+     * @param column Columna en la que se dio
+     */
     public UndefinedIdentifierError (String identName, int line, int column) {
         super(line, column);
         this.identName = identName;

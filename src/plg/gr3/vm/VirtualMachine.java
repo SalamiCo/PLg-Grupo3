@@ -154,7 +154,6 @@ public final class VirtualMachine {
         return swapped2;
     }
     
-    // FIXME OMGWTFBBQ QUÉ COJONES
     public Value readValue (Type type) throws IOException {
         String str = reader.readLine();
         if (type.equals(Type.NATURAL)) {

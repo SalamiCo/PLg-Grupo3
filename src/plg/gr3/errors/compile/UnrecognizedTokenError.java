@@ -1,13 +1,13 @@
 package plg.gr3.errors.compile;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import plg.gr3.lexer.TokenType;
 
 /**
- * Error de token sin reconocer
+ * Error de token sin reconocer.
  * 
  * @author PLg Grupo 03 2012/2013
  */
@@ -28,7 +28,7 @@ public final class UnrecognizedTokenError extends CompileError {
         super(line, column);
         
         this.found = found;
-        this.expected = Collections.unmodifiableSet(new HashSet<>(expected));
+        this.expected = Collections.unmodifiableSet(EnumSet.copyOf(expected));
     }
     
     @Override
