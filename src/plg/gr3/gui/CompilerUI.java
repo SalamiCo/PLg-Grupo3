@@ -425,7 +425,6 @@ public final class CompilerUI extends JFrame {
         ImageIcon iconExit = new ImageIcon(getClass().getResource("exit.png"));
         ImageIcon iconNew = new ImageIcon(getClass().getResource("new.png"));
         ImageIcon iconOpen = new ImageIcon(getClass().getResource("open.png"));
-        ImageIcon iconSave = new ImageIcon(getClass().getResource("save.png"));
         ImageIcon iconCut = new ImageIcon(getClass().getResource("cut.png"));
         ImageIcon iconCopy = new ImageIcon(getClass().getResource("copy.png"));
         ImageIcon iconPaste = new ImageIcon(getClass().getResource("paste.png"));
@@ -440,10 +439,6 @@ public final class CompilerUI extends JFrame {
         // botón open
         JButton openFileButton = new JButton(iconOpen);
         openFileButton.addActionListener(new OpenFileActionListener(this));
-        
-        // botón save
-        JButton saveFileButton = new JButton(iconSave);
-        saveFileButton.addActionListener(new SaveFileActionListener(this));
         
         // botón cut
         JButton cutButton = new JButton(iconCut);
@@ -464,7 +459,6 @@ public final class CompilerUI extends JFrame {
         // añadir botones al toolbar
         toolbar.add(newFileButton);
         toolbar.add(openFileButton);
-        toolbar.add(saveFileButton);
         toolbar.addSeparator();
         toolbar.add(cutButton);
         toolbar.add(copyButton);
@@ -497,6 +491,7 @@ public final class CompilerUI extends JFrame {
      * */
     private JScrollPane initByteCodeArea () {
         byteCodeEditor = new JTextPane();
+        byteCodeEditor.setEditable(false);
         byteCodeEditor.setFont(FONT);
         
         // nuevo archivo de bytecode

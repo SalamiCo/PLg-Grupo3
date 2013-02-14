@@ -144,7 +144,7 @@ public class FileHandler {
                 if (view == CompilerUI.View.DEBUGGER) {
                     // Abrir el fichero binario correspondiente al bytecode
                     List<Instruction> instructions = openByteCodeFile(myFile);
-                    this.getTextEditor().setText(instructions.toString());
+                    this.getTextEditor().setText(printInstructionList(instructions));
                 } else {
                     // Abrir el archivo de texto correspondiente al código fuente
                     Reader reader = new InputStreamReader(new FileInputStream(myFile), Charset.forName("UTF-8"));
@@ -181,11 +181,22 @@ public class FileHandler {
         return instructions;
     }
     
+    private String printInstructionList (List<Instruction> list) {
+        String str = "";
+        for (Instruction inst : list) {
+            str += inst.toString() + "\n";
+        }
+        return str;
+    }
+    
     /**
      * Guarda el archivo del manejador de archivos. Si no tiene fichero asociado y está modificado, da la opción de
      * elegir la ruta del archivo Si tiene fichero asociado y está modificado, lo guarda directamente.
      * */
     public boolean saveFileAction () {
+        if (view == CompilerUI.View.DEBUGGER) {
+            return true;
+        }
         String path = getFilePath();
         
         if (path == "") {
@@ -201,6 +212,9 @@ public class FileHandler {
      * Guardar el archivo en el manejador de archivos, dando a elegir la ruta.
      * */
     public boolean saveAsFileAction () {
+        if (view == CompilerUI.View.DEBUGGER) {
+            return true;
+        }
         // Elegir la ruta del archivo
         JFileChooser fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
