@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -124,6 +125,10 @@ public final class Parser implements Closeable {
     
     public SymbolTable getSymbolTable () {
         return symbolTable;
+    }
+    
+    public List<LocatedToken> getTokenList () {
+        return new ArrayList<>();
     }
     
     /**
