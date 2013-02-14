@@ -10,6 +10,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.PipedReader;
+import java.io.PipedWriter;
+import java.io.PrintWriter;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,6 +32,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import plg.gr3.code.CodeWriter;
+import plg.gr3.debug.Debugger;
 import plg.gr3.gui.LogHandler.LogType;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
@@ -47,7 +52,7 @@ public final class CompilerUI extends JFrame {
     /**
      * Vistas de trabajo: modo compilador, modo debugger.
      * */
-    private enum View {
+    public enum View {
         COMPILER,
         DEBUGGER
     };
@@ -77,12 +82,18 @@ public final class CompilerUI extends JFrame {
     // se crea un LogHandler static para que sea accedido desde cualquier objeto del programa
     private static LogHandler logArea = new LogHandler();
     
-    private static ProblemHandler problemsArea = new ProblemHandler();
+    private ProblemHandler problemsArea = new ProblemHandler();
     
     // Contenido de las pestañas de consola y errores de ejecución
-    private static ConsoleHandler consoleArea = new ConsoleHandler();
+    private ConsoleHandler consoleArea = new ConsoleHandler();
     
-    private static ErrorHandler errorsArea = new ErrorHandler();
+    private ErrorHandler errorsArea = new ErrorHandler();
+    
+    private TokenHandler tokenArea = new TokenHandler();
+    
+    private DebugHandler debugArea = new DebugHandler();
+    
+    private VMHandler vmArea = new VMHandler();
     
     // Objetos encargados de la compilación.
     private Lexer lexer;
@@ -90,6 +101,10 @@ public final class CompilerUI extends JFrame {
     private Parser parser;
     
     private CodeWriter codeWriter;
+    
+    private DebugWorker logWorker;
+    
+    private DebugWorker problemWorker;
     
     public static void log (LogType type, String msg) {
         logArea.log(type, msg);
@@ -124,6 +139,27 @@ public final class CompilerUI extends JFrame {
         mainPanel.add(initDebugPanel(), "panelDebugger");
         
         this.add(mainPanel);
+        
+        try {
+            // Log
+            PipedReader lpin = new PipedReader();
+            PipedWriter lpout = new PipedWriter(lpin);
+            Debugger.INSTANCE.useErrorStream(new PrintWriter(lpout));
+            
+            logWorker = new DebugWorker(lpout, lpin, logArea.getLogPane());
+            logWorker.execute();
+            
+            // Problems
+            PipedReader ppin = new PipedReader();
+            PipedWriter ppout = new PipedWriter(ppin);
+            Debugger.INSTANCE.useErrorStream(new PrintWriter(ppout));
+            
+            problemWorker = new DebugWorker(ppout, ppin, problemsArea.getProblemPane());
+            problemWorker.execute();
+            
+        } catch (IOException exc) {
+            // TODO CAGONDIOS
+        }
         
         CompilerUI.log(LogType.LOG, "Application initialized correctly");
     }
@@ -386,11 +422,9 @@ public final class CompilerUI extends JFrame {
      * */
     private JToolBar initDebugToolBar () {
         // iconos
-        ImageIcon iconLoad = new ImageIcon(getClass().getResource("load.png"));
         ImageIcon iconExit = new ImageIcon(getClass().getResource("exit.png"));
         ImageIcon iconNew = new ImageIcon(getClass().getResource("new.png"));
         ImageIcon iconOpen = new ImageIcon(getClass().getResource("open.png"));
-        ImageIcon iconSave = new ImageIcon(getClass().getResource("save.png"));
         ImageIcon iconCut = new ImageIcon(getClass().getResource("cut.png"));
         ImageIcon iconCopy = new ImageIcon(getClass().getResource("copy.png"));
         ImageIcon iconPaste = new ImageIcon(getClass().getResource("paste.png"));
@@ -405,10 +439,6 @@ public final class CompilerUI extends JFrame {
         // botón open
         JButton openFileButton = new JButton(iconOpen);
         openFileButton.addActionListener(new OpenFileActionListener(this));
-        
-        // botón save
-        JButton saveFileButton = new JButton(iconSave);
-        saveFileButton.addActionListener(new SaveFileActionListener(this));
         
         // botón cut
         JButton cutButton = new JButton(iconCut);
@@ -429,7 +459,6 @@ public final class CompilerUI extends JFrame {
         // añadir botones al toolbar
         toolbar.add(newFileButton);
         toolbar.add(openFileButton);
-        toolbar.add(saveFileButton);
         toolbar.addSeparator();
         toolbar.add(cutButton);
         toolbar.add(copyButton);
@@ -448,7 +477,7 @@ public final class CompilerUI extends JFrame {
         sourceCodeEditor.setFont(FONT);
         
         // nuevo archivo fuente
-        sourceFile = new FileHandler(sourceCodeEditor);
+        sourceFile = new FileHandler(View.COMPILER, sourceCodeEditor);
         
         // lo añadimos a un scrollPane con contador de líneas
         JScrollPane scrollPane = new JScrollPane(sourceCodeEditor);
@@ -462,10 +491,11 @@ public final class CompilerUI extends JFrame {
      * */
     private JScrollPane initByteCodeArea () {
         byteCodeEditor = new JTextPane();
+        byteCodeEditor.setEditable(false);
         byteCodeEditor.setFont(FONT);
         
         // nuevo archivo de bytecode
-        bytecodeFileHandler = new FileHandler(byteCodeEditor);
+        bytecodeFileHandler = new FileHandler(View.DEBUGGER, byteCodeEditor);
         
         // lo añadimos a un scrollPane con contador de líneas
         JScrollPane scrollPane = new JScrollPane(byteCodeEditor);
@@ -491,7 +521,7 @@ public final class CompilerUI extends JFrame {
         
         JScrollPane scrollLogArea =
             new JScrollPane(
-                LogHandler.getLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                logArea.getLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel1.add(scrollLogArea, BorderLayout.CENTER);
         logTabbedPane.addTab("Events", iconLog, panel1, "Event monitor");
@@ -499,7 +529,7 @@ public final class CompilerUI extends JFrame {
         JComponent panel2 = new JPanel(new BorderLayout());
         JScrollPane scrollProblemsArea =
             new JScrollPane(
-                ProblemHandler.getProblemPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                problemsArea.getProblemPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel2.add(scrollProblemsArea, BorderLayout.CENTER);
         logTabbedPane.addTab("Problems", iconError, panel2, "Shows runtime errors");
@@ -523,7 +553,7 @@ public final class CompilerUI extends JFrame {
         JComponent panel1 = new JPanel(new BorderLayout());
         JScrollPane scrollConsoleArea =
             new JScrollPane(
-                ConsoleHandler.getConsoleLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                consoleArea.getConsoleLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel1.add(scrollConsoleArea, BorderLayout.CENTER);
         consoleTabbedPane.addTab("Console", iconConsole, panel1, "I/O Console");
@@ -531,7 +561,7 @@ public final class CompilerUI extends JFrame {
         JComponent panel2 = new JPanel(new BorderLayout());
         JScrollPane scrollErrorArea =
             new JScrollPane(
-                ErrorHandler.getErrorPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                errorsArea.getErrorPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel2.add(scrollErrorArea, BorderLayout.CENTER);
         consoleTabbedPane.addTab("Errors", iconError, panel2, "Shows runtime errors");
@@ -561,7 +591,8 @@ public final class CompilerUI extends JFrame {
         panel1.add(scrollPane, BorderLayout.CENTER);
         symTabbedPane.addTab("Symbol table", iconTable, panel1, "Shows symbol table content");
         
-        JComponent panel2 = new JPanel();
+        JComponent panel2 = new JPanel(new BorderLayout());
+        panel2.add(tokenArea.getTokenList(), BorderLayout.CENTER);
         symTabbedPane.addTab("Tokens", iconToken, panel2, "Shows token list");
         
         return symTabbedPane;
@@ -580,10 +611,12 @@ public final class CompilerUI extends JFrame {
         dbgTabbedPane.setPreferredSize(new Dimension(483, 464));
         
         // Paneles para Símbolos de Debug y Máquina Virtual, añadir dichas pestañas
-        JComponent panel1 = new JPanel();
+        JComponent panel1 = new JPanel(new BorderLayout());
+        panel1.add(debugArea.getDebugList(), BorderLayout.CENTER);
         dbgTabbedPane.addTab("Debug", iconDebug, panel1, "Shows debug symbols");
         
-        JComponent panel2 = new JPanel();
+        JComponent panel2 = new JPanel(new BorderLayout());
+        panel2.add(vmArea.getVmList(), BorderLayout.CENTER);
         dbgTabbedPane.addTab("Virtual Machine", iconMachine, panel2, "Shows virtual machine status");
         
         return dbgTabbedPane;
@@ -742,8 +775,12 @@ public final class CompilerUI extends JFrame {
     public void closeFilesAndExit () {
         boolean canClose1 = sourceFile.askBeforeClose();
         boolean canClose2 = bytecodeFileHandler.askBeforeClose();
+        
         if (canClose1 && canClose2) {
-            System.exit(0);
+            // System.exit(0);
+            logWorker.cancel();
+            problemWorker.cancel();
+            dispose();
         }
     }
     

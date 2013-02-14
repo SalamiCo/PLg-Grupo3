@@ -45,7 +45,7 @@ public class StreamCodeReader extends CodeReader {
     }
     
     @Override
-    public Instruction read () {
+    public Instruction read () throws IOException {
         try {
             byte byteRead = stream.readByte();
             
@@ -123,8 +123,6 @@ public class StreamCodeReader extends CodeReader {
         } catch (EOFException exc) {
             return null;
             
-        } catch (IOException exc) {
-            throw new RuntimeException(exc);
         }
     }
 }

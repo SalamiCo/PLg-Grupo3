@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
 import plg.gr3.debug.Debugger;
-import plg.gr3.errors.compile.AssignToConstantError;
+import plg.gr3.errors.compile.AssignationToConstantError;
 import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.CastingError;
 import plg.gr3.errors.compile.CompileError;
@@ -124,6 +125,10 @@ public final class Parser implements Closeable {
     
     public SymbolTable getSymbolTable () {
         return symbolTable;
+    }
+    
+    public List<LocatedToken> getTokenList () {
+        return new ArrayList<>();
     }
     
     /**
@@ -454,8 +459,9 @@ public final class Parser implements Closeable {
                             
                             // Comprobamos que no estamos asignando la expresion a una constante
                         } else if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
-                            AssignToConstantError errorConstant =
-                                new AssignToConstantError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            CompileError errorConstant =
+                                new AssignationToConstantError(
+                                    tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
                             errors.add(errorConstant);
                             codeWriter.inhibit();
                         }
@@ -489,7 +495,6 @@ public final class Parser implements Closeable {
                             codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(tokenRead
                                 .getLexeme())));
                         }
-                    
                     break;
                     
                     // in lpar ident rpar
@@ -505,8 +510,9 @@ public final class Parser implements Closeable {
                             errors.add(error);
                             
                         } else if (this.symbolTable.isIdentifierConstant(identRead.getLexeme())) {
-                            AssignToConstantError error =
-                                new AssignToConstantError(identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
+                            CompileError error =
+                                new AssignationToConstantError(
+                                    identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
                             errors.add(error);
                         }
                         
