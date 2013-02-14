@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,34 +33,42 @@ import plg.gr3.vm.instr.Instruction;
  */
 public final class VirtualMachine {
     
-    private List<Value> memory;
+    private volatile List<Value> memory;
     
-    private List<Instruction> program;
+    private volatile List<Instruction> program;
     
-    private Stack<Value> stack;
+    private volatile Stack<Value> stack;
     
-    private int programCounter;
+    private volatile int programCounter;
     
-    private boolean stopped;
+    private volatile boolean stopped;
     
-    private boolean swapped1;
+    private volatile boolean swapped1;
     
-    private boolean swapped2;
+    private volatile boolean swapped2;
     
-    private BufferedReader reader;
+    private volatile BufferedReader reader;
     
-    private Writer writer;
+    private volatile Writer writer;
     
-    private RuntimeError error;
+    private volatile RuntimeError error;
     
     public VirtualMachine (List<Instruction> program) {
         this.program = Collections.unmodifiableList(program);
         
-        memory = new ArrayList<>();
+        memory = Collections.synchronizedList(new ArrayList<Value>());
         stack = new Stack<>();
         reader = new BufferedReader(new InputStreamReader(System.in));
         writer = new OutputStreamWriter(System.out);
         reset();
+    }
+    
+    public void setReader (Reader reader) {
+        this.reader = new BufferedReader(reader);
+    }
+    
+    public void setWriter (Writer writer) {
+        this.writer = writer;
     }
     
     public void execute () {
