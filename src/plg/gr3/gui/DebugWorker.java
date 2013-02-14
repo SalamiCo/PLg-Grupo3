@@ -13,7 +13,7 @@ public final class DebugWorker extends SwingWorker<Void, String> {
     
     private final Writer writer;
     
-    private final BufferedReader reader;
+    private final Reader reader;
     
     private final JTextPane pane;
     
@@ -25,9 +25,10 @@ public final class DebugWorker extends SwingWorker<Void, String> {
     
     @Override
     protected Void doInBackground () throws Exception {
-        String line;
-        while (!isCancelled() && (line = reader.readLine()) != null) {
-            publish(line);
+        char[] buf = new char[128];
+        while (!isCancelled()) {
+            reader.read(buf);
+            pane.setText(pane.getText() + new String(buf));
         }
         
         return null;
