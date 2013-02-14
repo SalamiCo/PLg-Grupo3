@@ -92,7 +92,7 @@ public final class Type {
      * @return Tipo asociado a dicho código, o {@link #ERROR Type.ERROR} si no existiera
      */
     public static Type forCode (int code) {
-        Type type = TYPES.get(Integer.valueOf(code));
+        Type type = TYPECODES.get(Integer.valueOf(code));
         if (type == null) {
             return Type.ERROR;
         } else {
@@ -218,6 +218,9 @@ public final class Type {
             
             Type type = new Type(name, code);
             TYPES.put(name, type);
+            if (code != 0xFFFFFFFF) {
+                TYPECODES.put(code, type);
+            }
             return type;
         }
     }
