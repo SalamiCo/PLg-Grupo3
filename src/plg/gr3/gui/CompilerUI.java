@@ -815,6 +815,7 @@ public final class CompilerUI extends JFrame {
                     try {
                         writer.write(text);
                         field.setText("");
+                        
                     } catch (IOException exc) {
                         // Cosas chungas
                     }
