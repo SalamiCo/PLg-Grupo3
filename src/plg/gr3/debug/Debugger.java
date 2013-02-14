@@ -77,8 +77,8 @@ public enum Debugger {
     }
     
     private void message (String type, String message, PrintWriter pw) {
-        String fmtInstr = instr == null ? "" : " pos %5$s";
-        String fmtPos = pos <= 0 ? "" : ", %6$s";
+        String fmtInstr = instr == null ? "" : ", %5$s";
+        String fmtPos = pos <= 0 ? "" : " pos %6$s";
         
         String fmtLine = line <= 0 ? "" : " line %3$d";
         String fmtCol = column <= 0 ? "" : ", col %4$d";
