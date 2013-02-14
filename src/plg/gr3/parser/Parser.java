@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -60,6 +61,9 @@ public final class Parser implements Closeable {
     /** Token leído sin consumir */
     private LocatedToken token;
     
+    /** Tokens ya leídos */
+    private final List<LocatedToken> tokens = new ArrayList<>();
+    
     /** Token no reconocido leído */
     private String unrecognizedToken;
     
@@ -109,9 +113,12 @@ public final class Parser implements Closeable {
                 
                 if (category.equals(token.getToken().getType())) {
                     expected.clear();
+                    
                     Debugger.INSTANCE.at(token.getLine(), token.getColumn()).debug("Reconocido " + token.getToken());
                     
+                    tokens.add(token);
                     LocatedToken ret = token;
+                    
                     token = null;
                     return ret;
                 }
@@ -122,13 +129,13 @@ public final class Parser implements Closeable {
     }
     
     /** @return Tabla de símbolos obtenida */
-    
     public SymbolTable getSymbolTable () {
         return symbolTable;
     }
     
+    /** @return Lista con todos los tokens */
     public List<LocatedToken> getTokenList () {
-        return new ArrayList<>();
+        return Collections.unmodifiableList(new ArrayList<LocatedToken>(tokens));
     }
     
     /**
