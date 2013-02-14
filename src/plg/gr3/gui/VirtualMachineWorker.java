@@ -57,7 +57,7 @@ public final class VirtualMachineWorker extends SwingWorker<Void, Void> {
                     } finally {
                         lock.unlock();
                     }
-                } while (execL);
+                } while (execL && !vm.isStopped());
             }
         }
         
