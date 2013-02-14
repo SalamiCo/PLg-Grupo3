@@ -742,6 +742,10 @@ public final class CompilerUI extends JFrame {
         return symbolTableArea;
     }
     
+    public TokenHandler getTokenHandler () {
+        return tokenArea;
+    }
+    
     public FileHandler getBytecodeFileHandler () {
         return bytecodeFileHandler;
     }
