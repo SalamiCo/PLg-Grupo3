@@ -2,7 +2,7 @@ package plg.gr3.vm.instr;
 
 import plg.gr3.data.Type;
 import plg.gr3.data.Value;
-import plg.gr3.errors.runtime.TypeMismatchError;
+import plg.gr3.errors.runtime.CastingError;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -29,10 +29,10 @@ public class CastInstruction extends Instruction {
     
     @Override
     public void execute (VirtualMachine vm) {
+        Value val = vm.popValue();
+        Value casted = null;
+        
         try {
-            Value val = vm.popValue();
-            Value casted = null;
-            
             if (castType.equals(Type.CHARACTER)) {
                 casted = val.toCharacterValue();
                 
@@ -50,7 +50,7 @@ public class CastInstruction extends Instruction {
             vm.pushValue(casted);
             
         } catch (IllegalArgumentException exc) {
-            vm.abort(new TypeMismatchError(vm.getProgramCounter(), this));
+            vm.abort(new CastingError(vm.getProgramCounter(), this, val, castType));
         }
     }
     

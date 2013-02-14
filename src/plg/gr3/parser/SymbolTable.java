@@ -118,7 +118,11 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
      * @return Dirección del identificador
      */
     public int getIdentifierAddress (String ident) {
-        return getRow(ident).getAddress();
+        try {
+            return getRow(ident).getAddress();
+        } catch (NoSuchElementException exc) {
+            return 0;
+        }
     }
     
     /**
@@ -126,7 +130,11 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
      * @return Tipo del identificador
      */
     public Type getIdentfierType (String ident) {
-        return getRow(ident).getType();
+        try {
+            return getRow(ident).getType();
+        } catch (NoSuchElementException exc) {
+            return Type.ERROR;
+        }
     }
     
     /**
@@ -134,7 +142,11 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
      * @return Si el identificador es una constante
      */
     public boolean isIdentifierConstant (String ident) {
-        return getRow(ident).constant;
+        try {
+            return getRow(ident).constant;
+        } catch (NoSuchElementException exc) {
+            return false;
+        }
     }
     
     /**
@@ -142,7 +154,11 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
      * @return Valor del identificador
      */
     public Value getIdentifierValue (String ident) {
-        return getIdentifierValue(ident, Value.class);
+        try {
+            return getIdentifierValue(ident, Value.class);
+        } catch (NoSuchElementException exc) {
+            return null;
+        }
     }
     
     /**

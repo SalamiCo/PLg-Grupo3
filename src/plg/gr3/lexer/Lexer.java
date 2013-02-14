@@ -110,7 +110,8 @@ public final class Lexer implements Closeable {
                 // Adelantamos el proceso
                 // y evitamos problemas devolviendo directamente el token de fin de fichero
                 if (category == TokenType.EOF) {
-                    return new LocatedToken(new Token(category, ""), currentLine, currentColumn);
+                    return new LocatedToken(new Token(category, ""), Math.max(1, currentLine), Math.max(
+                        1, currentColumn));
                 }
                 
                 int column = currentColumn;
