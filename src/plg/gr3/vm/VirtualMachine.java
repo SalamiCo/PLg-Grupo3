@@ -227,4 +227,14 @@ public final class VirtualMachine {
         
         return stackArrayList;
     }
+    
+    public ArrayList<String> getMemoryToArrayList () {
+        ArrayList<String> memoryArrayList = new ArrayList<String>();
+        
+        for (Value value : memory) {
+            memoryArrayList.add(value.toString());
+        }
+        
+        return memoryArrayList;
+    }
 }

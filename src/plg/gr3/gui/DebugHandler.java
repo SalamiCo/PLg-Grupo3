@@ -1,5 +1,7 @@
 package plg.gr3.gui;
 
+import java.util.List;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
@@ -37,4 +39,15 @@ public class DebugHandler {
     public JList<String> getDebugList () {
         return debugList;
     }
+    
+    public void populateList (List<String> memoryList) {
+        DefaultListModel<String> listModel = new DefaultListModel<String>();
+        
+        for (String memoryEntry : memoryList) {
+            listModel.addElement(memoryEntry);
+        }
+        
+        debugList.setModel(listModel);
+    }
+    
 }
