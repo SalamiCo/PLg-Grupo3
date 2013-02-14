@@ -47,7 +47,7 @@ public final class CompilerUI extends JFrame {
     /**
      * Vistas de trabajo: modo compilador, modo debugger.
      * */
-    private enum View {
+    public enum View {
         COMPILER,
         DEBUGGER
     };
@@ -386,7 +386,6 @@ public final class CompilerUI extends JFrame {
      * */
     private JToolBar initDebugToolBar () {
         // iconos
-        ImageIcon iconLoad = new ImageIcon(getClass().getResource("load.png"));
         ImageIcon iconExit = new ImageIcon(getClass().getResource("exit.png"));
         ImageIcon iconNew = new ImageIcon(getClass().getResource("new.png"));
         ImageIcon iconOpen = new ImageIcon(getClass().getResource("open.png"));
@@ -448,7 +447,7 @@ public final class CompilerUI extends JFrame {
         sourceCodeEditor.setFont(FONT);
         
         // nuevo archivo fuente
-        sourceFile = new FileHandler(sourceCodeEditor);
+        sourceFile = new FileHandler(View.COMPILER, sourceCodeEditor);
         
         // lo añadimos a un scrollPane con contador de líneas
         JScrollPane scrollPane = new JScrollPane(sourceCodeEditor);
@@ -465,7 +464,7 @@ public final class CompilerUI extends JFrame {
         byteCodeEditor.setFont(FONT);
         
         // nuevo archivo de bytecode
-        bytecodeFileHandler = new FileHandler(byteCodeEditor);
+        bytecodeFileHandler = new FileHandler(View.DEBUGGER, byteCodeEditor);
         
         // lo añadimos a un scrollPane con contador de líneas
         JScrollPane scrollPane = new JScrollPane(byteCodeEditor);
