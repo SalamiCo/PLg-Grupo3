@@ -14,7 +14,7 @@ public class ProblemHandler {
     /**
      * Área de texto que representa los problemas en tiempo de compilación
      * */
-    private final JTextPane problemPane;
+    private static JTextPane problemPane;
     
     /**
      * Crea un nuevo área de texto (Problem) de sólo lectura.
@@ -28,7 +28,7 @@ public class ProblemHandler {
     /**
      * Obtiene el área de texto que representa los problemas en tiempo de compilación.
      * */
-    public JTextPane getProblemPane () {
+    public static JTextPane getProblemPane () {
         return problemPane;
     }
     
