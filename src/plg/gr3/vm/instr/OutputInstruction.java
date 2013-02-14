@@ -19,7 +19,6 @@ public final class OutputInstruction extends Instruction {
         try {
             vm.writeValue(vm.popValue()); // bufferOut = Cima
         } catch (IOException e1) {
-            // TODO error en tiempo de ejecución: fallo del buffer de salida
             vm.abort(new IOError(vm.getProgramCounter(), this));
         } catch (EmptyStackException e2) {
             vm.abort(new EmptyStackError(vm.getProgramCounter(), this));

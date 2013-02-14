@@ -98,12 +98,16 @@ public final class CompilerUI extends JFrame {
     // Contenido de la pestaña de errores de ejecución
     private ErrorHandler errorsArea = new ErrorHandler();
     
+    // Contenido de la pestaña de tokens
     private TokenHandler tokenArea = new TokenHandler();
     
+    // Contenido de la pestaña de debug
     private DebugHandler debugArea = new DebugHandler();
     
+    // Contenido de la pestaña de la VM
     private VMHandler vmArea = new VMHandler();
     
+    // Listener encargado de actualizar las pestañas Debug y VM
     private final ActionListener vmListener;
     
     // Objetos encargados de la compilación.
@@ -194,7 +198,6 @@ public final class CompilerUI extends JFrame {
             problemWorker.execute();
             
         } catch (IOException exc) {
-            // TODO CAGONDIOS
         }
         
         CompilerUI.log(LogType.LOG, "Application initialized correctly");
@@ -355,16 +358,6 @@ public final class CompilerUI extends JFrame {
         
         return viewMenu;
     }
-    
-//	private JMenu initActionsMenu() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	private JMenu initHelpMenu() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
     
     /**
      * @return ToolBar inicializado con los botones de la vista "compilador"
