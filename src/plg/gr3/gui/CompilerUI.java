@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -112,6 +113,8 @@ public final class CompilerUI extends JFrame {
     
     // Objetos encargados de la máquina virtual
     private List<Instruction> program;
+    
+    private KeyAdapter inputKeyAdapter;
     
     public static void log (LogType type, String msg) {
         logArea.log(type, msg);
@@ -756,11 +759,54 @@ public final class CompilerUI extends JFrame {
     }
     
     public VirtualMachineWorker getVirtualMachineWorker () {
-        if (vmWorker == null || vmWorker.isDone()) {
-            VirtualMachine vm = new VirtualMachine(program);
-            vmWorker = new VirtualMachineWorker(vm, null);
+        try {
+            if (vmWorker == null || vmWorker.isDone()) {
+                VirtualMachine vm = new VirtualMachine(program);
+                
+                bindConsoleInput(vm);
+                bindConsoleOutput(vm);
+                
+                vmWorker = new VirtualMachineWorker(vm, null);
+            }
+            return vmWorker;
+            
+        } catch (IOException exc) {
+            return null;
         }
-        return vmWorker;
+    }
+    
+    private void bindConsoleInput (VirtualMachine vm) throws IOException {
+        final PipedWriter writer = new PipedWriter();
+        final PipedReader reader = new PipedReader(writer);
+        final JTextPane pane = consoleArea.getConsoleInputPane();
+        
+        if (inputKeyAdapter != null) {
+            pane.removeKeyListener(inputKeyAdapter);
+        }
+        
+        inputKeyAdapter = new KeyAdapter() {
+            
+            @Override
+            public void keyTyped (KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String text = pane.getText();
+                    try {
+                        writer.write(text);
+                        pane.setText("");
+                    } catch (IOException exc) {
+                        // Cosas chungas
+                    }
+                }
+            }
+        };
+        
+        pane.addKeyListener(inputKeyAdapter);
+        
+        vm.setReader(reader);
+    }
+    
+    private void bindConsoleOutput (VirtualMachine vm) {
+        
     }
     
     public CodeWriter getCodeWriter () {
