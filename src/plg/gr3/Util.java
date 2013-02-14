@@ -5,9 +5,16 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Map.Entry;
 
-import plg.gr3.code.ListCodeWriter;
+import plg.gr3.code.CodeReader;
+import plg.gr3.code.CodeWriter;
+import plg.gr3.code.StreamCodeReader;
+import plg.gr3.code.StreamCodeWriter;
 import plg.gr3.debug.Debugger;
 import plg.gr3.lexer.Lexer;
 import plg.gr3.parser.Parser;
@@ -23,19 +30,21 @@ public final class Util {
         File file = new File("/home/darkhogg/Universidad/PLg/EjemploMem.li");
         Reader reader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
         
+        Path path = Paths.get("/tmp/bytecode");
+        
         Lexer lexer = new Lexer(reader);
-        ListCodeWriter codeWriter = new ListCodeWriter();
+        CodeWriter codeWriter = new StreamCodeWriter(Files.newOutputStream(path, StandardOpenOption.CREATE));
         
         try (Parser parser = new Parser(lexer, codeWriter)) {
             parser.parse();
             if (!codeWriter.isInhibited()) {
-                System.out.println(codeWriter.getList());
-                
                 for (Entry<String, Row> entry : parser.getSymbolTable()) {
                     System.out.println(entry.getKey() + " ==> " + entry.getValue());
                 }
                 
-                VirtualMachine vm = new VirtualMachine(codeWriter.getList());
+                CodeReader codeReader = new StreamCodeReader(Files.newInputStream(path, StandardOpenOption.READ));
+                
+                VirtualMachine vm = new VirtualMachine(codeReader.readAll());
                 vm.execute();
             }
         }
