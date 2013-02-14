@@ -131,6 +131,7 @@ public final class Lexer implements Closeable {
                 return new LocatedToken(new Token(category, lexeme), currentLine, column);
             }
         }
+        
         return null;
     }
     
@@ -141,10 +142,14 @@ public final class Lexer implements Closeable {
     public String nextStringToken () throws IOException {
         prepareInput();
         
-        matcher.usePattern(Pattern.compile("\\S+"));
+        matcher.usePattern(Pattern.compile(".*$"));
+        matcher.lookingAt();
+        String rest = matcher.group();
+        
+        Matcher matcher = Pattern.compile("\\s+|$").matcher(rest);
         matcher.find();
         
-        return matcher.group();
+        return rest.substring(0, matcher.start());
     }
     
     /**
