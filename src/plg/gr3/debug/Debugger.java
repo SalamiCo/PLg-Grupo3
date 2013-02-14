@@ -9,6 +9,7 @@ import java.nio.file.Path;
  * @author PLg Grupo 03 2012/2013
  */
 public enum Debugger {
+    /** Singleton del depurador */
     INSTANCE;
     
     /** Flujo de salida de todos los mensajes */
@@ -44,10 +45,12 @@ public enum Debugger {
         this.err = new PrintWriter(System.err);
     }
     
+    /** @param logging <tt>true</tt> para activar el <i>logging</i>, <tt>false</tt> para desactivarlo */
     public void setLoggingEnabled (boolean logging) {
         this.logging = logging;
     }
     
+    /** @param debug <tt>true</tt> para activar el <i>debug</i>, <tt>false</tt> para desactivarlo */
     public void setDebugEnabled (boolean debug) {
         this.debug = debug;
     }

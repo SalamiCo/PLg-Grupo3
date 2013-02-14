@@ -1,6 +1,7 @@
 package plg.gr3.code;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -119,6 +120,9 @@ public class StreamCodeReader extends CodeReader {
                 // El código de operador no se reconoce
                 throw new IOException("Formato de bytecode inválido");
             }
+        } catch (EOFException exc) {
+            return null;
+            
         } catch (IOException exc) {
             throw new RuntimeException(exc);
         }

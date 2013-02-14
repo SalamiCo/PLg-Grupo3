@@ -1,7 +1,7 @@
 package plg.gr3.vm.instr;
 
 import plg.gr3.data.Value;
-import plg.gr3.errors.runtime.UninitializedError;
+import plg.gr3.errors.runtime.UninitializedMemoryError;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -36,7 +36,7 @@ public final class LoadInstruction extends Instruction {
             vm.pushValue(value); // Cima = Mem[dir]
             
         } else {
-            vm.abort(new UninitializedError(vm.getProgramCounter(), this, address));
+            vm.abort(new UninitializedMemoryError(vm.getProgramCounter(), this, address));
         }
     }
     

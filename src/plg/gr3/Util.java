@@ -28,15 +28,16 @@ public final class Util {
         
         try (Parser parser = new Parser(lexer, codeWriter)) {
             parser.parse();
-            
-            System.out.println(codeWriter.getList());
-            
-            for (Entry<String, Row> entry : parser.getSymbolTable()) {
-                System.out.println(entry.getKey() + " ==> " + entry.getValue());
+            if (!codeWriter.isInhibited()) {
+                System.out.println(codeWriter.getList());
+                
+                for (Entry<String, Row> entry : parser.getSymbolTable()) {
+                    System.out.println(entry.getKey() + " ==> " + entry.getValue());
+                }
+                
+                VirtualMachine vm = new VirtualMachine(codeWriter.getList());
+                vm.execute();
             }
-            
-            VirtualMachine vm = new VirtualMachine(codeWriter.getList());
-            vm.execute();
         }
     }
 }

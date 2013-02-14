@@ -19,8 +19,8 @@ import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
 import plg.gr3.debug.Debugger;
-import plg.gr3.errors.compile.AssignError;
 import plg.gr3.errors.compile.AssignToConstantError;
+import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.CastingError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
@@ -65,7 +65,6 @@ public final class Parser implements Closeable {
     private final Collection<CompileError> errors = new ArrayList<>();
     
     /** Generador de código */
-    
     private final CodeWriter codeWriter;
     
     /**
@@ -158,8 +157,15 @@ public final class Parser implements Closeable {
             expect(true, TokenType.SYM_CURLY_LEFT);
             
             // SDecs SInsts
-            parseSDecs(true, Attributes.DEFAULT);
+            Attributes attrSDecs = parseSDecs(true, Attributes.DEFAULT);
+            if (attrSDecs == null) {
+                return null;
+            }
+            
             Attributes attrSInsts = parseSInsts(true, Attributes.DEFAULT);
+            if (attrSInsts == null) {
+                return null;
+            }
             
             // fllave fin
             expect(true, TokenType.SYM_CURLY_RIGHT);
@@ -431,7 +437,7 @@ public final class Parser implements Closeable {
                     }
                     
                     if (!Type.assignable(identType, exprType)) {
-                        AssignError error = new AssignError(identType, exprType, tokenRead);
+                        AssignationTypeError error = new AssignationTypeError(exprType, identType, tokenRead);
                         errors.add(error);
                         codeWriter.inhibit();
                     }
