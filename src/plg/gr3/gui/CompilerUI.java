@@ -269,21 +269,12 @@ public final class CompilerUI extends JFrame {
      * */
     private JMenu initEditMenu () {
         // iconos
-        ImageIcon iconUndo = new ImageIcon(getClass().getResource("undo.png"));
-        ImageIcon iconRedo = new ImageIcon(getClass().getResource("redo.png"));
         ImageIcon iconCut = new ImageIcon(getClass().getResource("cut.png"));
         ImageIcon iconCopy = new ImageIcon(getClass().getResource("copy.png"));
         ImageIcon iconPaste = new ImageIcon(getClass().getResource("paste.png"));
-        ImageIcon iconFind = new ImageIcon(getClass().getResource("find.png"));
         
         // crear menú y crear items
         JMenu editMenu = new JMenu("Edit");
-        
-        // Item Editar->Deshacer
-        JMenuItem editUndo = new JMenuItem("Undo", iconUndo);
-        
-        // Item Editar->Rehacer
-        JMenuItem editRedo = new JMenuItem("Redo", iconRedo);
         
         // Item Editar->Cortar
         JMenuItem editCut = new JMenuItem("Cut", iconCut);
@@ -305,19 +296,13 @@ public final class CompilerUI extends JFrame {
         editSelect.addActionListener(new SelectAllTextActionListener(this));
         editSelect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
         
-        // Item Editar->Buscar
-        JMenuItem editFind = new JMenuItem("Find", iconFind);
-        
         // añadir items al menú
-        editMenu.add(editUndo);
-        editMenu.add(editRedo);
         editMenu.addSeparator();
         editMenu.add(editCut);
         editMenu.add(editCopy);
         editMenu.add(editPaste);
         editMenu.addSeparator();
         editMenu.add(editSelect);
-        editMenu.add(editFind);
         
         return editMenu;
     }
@@ -435,6 +420,9 @@ public final class CompilerUI extends JFrame {
         ImageIcon iconCut = new ImageIcon(getClass().getResource("cut.png"));
         ImageIcon iconCopy = new ImageIcon(getClass().getResource("copy.png"));
         ImageIcon iconPaste = new ImageIcon(getClass().getResource("paste.png"));
+        ImageIcon iconRun = new ImageIcon(getClass().getResource("run.png"));
+        ImageIcon iconStep = new ImageIcon(getClass().getResource("step.png"));
+        ImageIcon iconStop = new ImageIcon(getClass().getResource("stop.png"));
         
         // crear toolbar y botones
         JToolBar toolbar = new JToolBar();
@@ -459,6 +447,18 @@ public final class CompilerUI extends JFrame {
         JButton pasteButton = new JButton(iconPaste);
         pasteButton.addActionListener(new PasteTextActionListener(this));
         
+        // botón run
+        JButton runButton = new JButton(iconRun);
+        runButton.addActionListener(new RunActionListener(this));
+        
+        // botón step
+        JButton stepButton = new JButton(iconStep);
+        stepButton.addActionListener(new StepActionListener(this));
+        
+        // botón stop
+        JButton stopButton = new JButton(iconStop);
+        stopButton.addActionListener(new StopActionListener(this));
+        
         // botón salir
         JButton exitButton = new JButton(iconExit);
         exitButton.addActionListener(new ExitActionListener(this));
@@ -470,6 +470,10 @@ public final class CompilerUI extends JFrame {
         toolbar.add(cutButton);
         toolbar.add(copyButton);
         toolbar.add(pasteButton);
+        toolbar.addSeparator();
+        toolbar.add(runButton);
+        toolbar.add(stepButton);
+        toolbar.add(stopButton);
         toolbar.addSeparator();
         toolbar.add(exitButton);
         
