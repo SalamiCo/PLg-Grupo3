@@ -14,7 +14,7 @@ public class ErrorHandler {
     /**
      * Área de texto que representa los errores de tiempo de ejecución.
      * */
-    private static JTextPane errorPane;
+    private JTextPane errorPane;
     
     /**
      * Crea un nuevo área de texto (Error) de sólo lectura.
@@ -27,7 +27,7 @@ public class ErrorHandler {
     /**
      * Obtiene el área de texto que representa los errores de tiempo de ejecución.
      * */
-    public static JTextPane getErrorPane () {
+    public JTextPane getErrorPane () {
         return errorPane;
     }
     

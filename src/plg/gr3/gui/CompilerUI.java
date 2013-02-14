@@ -82,12 +82,12 @@ public final class CompilerUI extends JFrame {
     // se crea un LogHandler static para que sea accedido desde cualquier objeto del programa
     private static LogHandler logArea = new LogHandler();
     
-    private static ProblemHandler problemsArea = new ProblemHandler();
+    private ProblemHandler problemsArea = new ProblemHandler();
     
     // Contenido de las pestañas de consola y errores de ejecución
-    private static ConsoleHandler consoleArea = new ConsoleHandler();
+    private ConsoleHandler consoleArea = new ConsoleHandler();
     
-    private static ErrorHandler errorsArea = new ErrorHandler();
+    private ErrorHandler errorsArea = new ErrorHandler();
     
     private TokenHandler tokenArea = new TokenHandler();
     
@@ -154,7 +154,7 @@ public final class CompilerUI extends JFrame {
             PipedWriter ppout = new PipedWriter(ppin);
             Debugger.INSTANCE.useErrorStream(new PrintWriter(ppout));
             
-            problemWorker = new DebugWorker(ppout, ppin, ProblemHandler.getProblemPane());
+            problemWorker = new DebugWorker(ppout, ppin, problemsArea.getProblemPane());
             problemWorker.execute();
             
         } catch (IOException exc) {
@@ -534,7 +534,7 @@ public final class CompilerUI extends JFrame {
         JComponent panel2 = new JPanel(new BorderLayout());
         JScrollPane scrollProblemsArea =
             new JScrollPane(
-                ProblemHandler.getProblemPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                problemsArea.getProblemPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel2.add(scrollProblemsArea, BorderLayout.CENTER);
         logTabbedPane.addTab("Problems", iconError, panel2, "Shows runtime errors");
@@ -558,7 +558,7 @@ public final class CompilerUI extends JFrame {
         JComponent panel1 = new JPanel(new BorderLayout());
         JScrollPane scrollConsoleArea =
             new JScrollPane(
-                ConsoleHandler.getConsoleLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                consoleArea.getConsoleLogPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel1.add(scrollConsoleArea, BorderLayout.CENTER);
         consoleTabbedPane.addTab("Console", iconConsole, panel1, "I/O Console");
@@ -566,7 +566,7 @@ public final class CompilerUI extends JFrame {
         JComponent panel2 = new JPanel(new BorderLayout());
         JScrollPane scrollErrorArea =
             new JScrollPane(
-                ErrorHandler.getErrorPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                errorsArea.getErrorPane(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panel2.add(scrollErrorArea, BorderLayout.CENTER);
         consoleTabbedPane.addTab("Errors", iconError, panel2, "Shows runtime errors");
@@ -597,7 +597,7 @@ public final class CompilerUI extends JFrame {
         symTabbedPane.addTab("Symbol table", iconTable, panel1, "Shows symbol table content");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        panel1.add(tokenArea.getTokenList(), BorderLayout.CENTER);
+        panel2.add(tokenArea.getTokenList(), BorderLayout.CENTER);
         symTabbedPane.addTab("Tokens", iconToken, panel2, "Shows token list");
         
         return symTabbedPane;
@@ -617,12 +617,12 @@ public final class CompilerUI extends JFrame {
         
         // Paneles para Símbolos de Debug y Máquina Virtual, añadir dichas pestañas
         JComponent panel1 = new JPanel(new BorderLayout());
-        dbgTabbedPane.addTab("Debug", iconDebug, panel1, "Shows debug symbols");
         panel1.add(debugArea.getDebugList(), BorderLayout.CENTER);
+        dbgTabbedPane.addTab("Debug", iconDebug, panel1, "Shows debug symbols");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        dbgTabbedPane.addTab("Virtual Machine", iconMachine, panel2, "Shows virtual machine status");
         panel2.add(vmArea.getVmList(), BorderLayout.CENTER);
+        dbgTabbedPane.addTab("Virtual Machine", iconMachine, panel2, "Shows virtual machine status");
         
         return dbgTabbedPane;
     }
