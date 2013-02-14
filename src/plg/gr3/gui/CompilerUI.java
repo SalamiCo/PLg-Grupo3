@@ -583,16 +583,20 @@ public final class CompilerUI extends JFrame {
         
         // crear paneles para Tabla de Símbolos y Lista de Tokens, añadir dichas pestañas
         JComponent panel1 = new JPanel(new BorderLayout());
-        JScrollPane scrollPane =
+        JScrollPane scrollTableArea =
             new JScrollPane(
                 symbolTableArea.getSymbolTable(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
-        panel1.add(scrollPane, BorderLayout.CENTER);
+        panel1.add(scrollTableArea, BorderLayout.CENTER);
         symTabbedPane.addTab("Symbol table", iconTable, panel1, "Shows symbol table content");
         
         JComponent panel2 = new JPanel(new BorderLayout());
-        panel2.add(tokenArea.getTokenList(), BorderLayout.CENTER);
+        JScrollPane scrollTokenArea =
+            new JScrollPane(
+                tokenArea.getTokenList(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        panel2.add(scrollTokenArea, BorderLayout.CENTER);
         symTabbedPane.addTab("Tokens", iconToken, panel2, "Shows token list");
         
         return symTabbedPane;
@@ -731,6 +735,10 @@ public final class CompilerUI extends JFrame {
     
     public void setCodeWriter (CodeWriter codeWriter) {
         this.codeWriter = codeWriter;
+    }
+    
+    public ProblemHandler getProblemsHandler () {
+        return problemsArea;
     }
     
     public SymbolTableHandler getSymbolTableArea () {

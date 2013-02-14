@@ -54,6 +54,9 @@ public class CompileActionListener implements ActionListener {
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
                 
+                // limpiamos los errores
+                invoker.getProblemsHandler().getProblemPane().setText("");
+                
                 // mostramos la tabla de símbolos
                 SymbolTable st = invoker.getParser().getSymbolTable();
                 invoker.getSymbolTableArea().replaceModel(st);
