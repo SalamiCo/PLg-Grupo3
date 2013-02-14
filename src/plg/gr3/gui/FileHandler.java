@@ -8,17 +8,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 
+import plg.gr3.code.StreamCodeReader;
 import plg.gr3.gui.LogHandler.LogType;
+import plg.gr3.vm.instr.Instruction;
 
 /**
  * Clase que crea un manejador de archivos.
  * */
 public class FileHandler {
+    
+    /**
+     * Vista en la que se encuentra el manejador de archivos
+     * */
+    private CompilerUI.View view;
     
     /**
      * Si se ha guardado un archivo en el sistema de ficheros, filePath indica la ruta hasta dicho archivo.
@@ -39,8 +48,9 @@ public class FileHandler {
      * Genera un nuevo manejador de archivos, sin un archivo asociado, y con un área de texto donde cargar o guardar el
      * contenido.
      * */
-    public FileHandler (JTextPane txtPane) {
+    public FileHandler (CompilerUI.View view, JTextPane txtPane) {
         // inicializar los atributos
+        this.view = view;
         this.setFilePath("");
         this.setModified(false);
         this.setTextEditor(txtPane);
@@ -131,13 +141,18 @@ public class FileHandler {
             }
             
             try {
-                // Abrir el archivo para lectura
-                Reader reader = new InputStreamReader(new FileInputStream(myFile), Charset.forName("UTF-8"));
-                textEditor.read(reader, null);
-                
-                // Al hacer read, crea un nuevo Document (sin Listeners)
-                this.getTextEditor().getDocument().addDocumentListener(new CodeDocumentListener(this));
-                
+                if (view == CompilerUI.View.DEBUGGER) {
+                    // Abrir el fichero binario correspondiente al bytecode
+                    List<Instruction> instructions = openByteCodeFile(myFile);
+                    this.getTextEditor().setText(instructions.toString());
+                } else {
+                    // Abrir el archivo de texto correspondiente al código fuente
+                    Reader reader = new InputStreamReader(new FileInputStream(myFile), Charset.forName("UTF-8"));
+                    textEditor.read(reader, null);
+                    
+                    // Al hacer read, crea un nuevo Document (sin Listeners)
+                    this.getTextEditor().getDocument().addDocumentListener(new CodeDocumentListener(this));
+                }
                 // Cambiar los atributos del manejador de archivos
                 this.setFilePath(myFile.getPath());
                 this.setModified(false);
@@ -153,6 +168,17 @@ public class FileHandler {
                 CompilerUI.log(LogType.ERROR, "Could not open file: " + e.getMessage());
             }
         }
+    }
+    
+    private List<Instruction> openByteCodeFile (File myFile) throws FileNotFoundException {
+        List<Instruction> instructions = new ArrayList<>();
+        StreamCodeReader codeReader = new StreamCodeReader(new FileInputStream(myFile));
+        Instruction instruction = codeReader.read();
+        while (instruction != null) {
+            instructions.add(instruction);
+            instruction = codeReader.read();
+        }
+        return instructions;
     }
     
     /**

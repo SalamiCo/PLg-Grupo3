@@ -208,4 +208,14 @@ public final class VirtualMachine {
             return operator;
         }
     }
+    
+    public ArrayList<String> getStackToArrayList () {
+        ArrayList<String> stackArrayList = new ArrayList<String>();
+        
+        for (Value value : stack) {
+            stackArrayList.add(value.toString());
+        }
+        
+        return stackArrayList;
+    }
 }

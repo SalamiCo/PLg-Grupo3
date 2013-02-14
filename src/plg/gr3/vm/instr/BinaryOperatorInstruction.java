@@ -39,7 +39,7 @@ public final class BinaryOperatorInstruction extends Instruction {
             Value v1 = vm.popValue();
             BinaryOperator swop = vm.getSwappedOperator(operator);
             
-            if (swop.canApply(v1.getType(), v2.getType())) {
+            if (!swop.canApply(v1.getType(), v2.getType())) {
                 vm.abort(new TypeMismatchError(vm.getProgramCounter(), this, swop, v1, v2));
                 
             } else {
