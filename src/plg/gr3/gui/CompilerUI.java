@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -103,6 +104,8 @@ public final class CompilerUI extends JFrame {
     
     private VMHandler vmArea = new VMHandler();
     
+    private final ActionListener vmListener;
+    
     // Objetos encargados de la compilación.
     private Lexer lexer;
     
@@ -131,6 +134,19 @@ public final class CompilerUI extends JFrame {
     public CompilerUI () {
         view = View.COMPILER; // vista de compilador
         symbolTableArea = new SymbolTableHandler();
+        vmListener = new ActionListener() {
+            
+            @Override
+            public void actionPerformed (ActionEvent e) {
+                ArrayList<String> stackList = vm.getStackToArrayList();
+                stackList.add(0, Integer.toString(vm.getProgramCounter()));
+                vmArea.populateList(stackList);
+                
+                ArrayList<String> memoryList = vm.getMemoryToArrayList();
+                debugArea.populateList(memoryList);
+            }
+        };
+        
         initUI();
     }
     
@@ -209,9 +225,7 @@ public final class CompilerUI extends JFrame {
         menubar.add(initFileMenu());
         menubar.add(initEditMenu());
         menubar.add(initViewMenu());
-        // TODO descomentar cuando estén implementados
-        // menubar.add(initActionsMenu());
-        // menubar.add(initHelpMenu());
+        
         return menubar;
     }
     

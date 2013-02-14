@@ -1,5 +1,7 @@
 package plg.gr3.gui;
 
+import java.util.List;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
@@ -33,4 +35,15 @@ public class VMHandler {
     public JList<String> getVmList () {
         return vmList;
     }
+    
+    public void populateList (List<String> stackList) {
+        DefaultListModel<String> listModel = new DefaultListModel<String>();
+        
+        for (String stackEntry : stackList) {
+            listModel.addElement(stackEntry);
+        }
+        
+        vmList.setModel(listModel);
+    }
+    
 }
