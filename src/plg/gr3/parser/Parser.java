@@ -228,7 +228,7 @@ public final class Parser implements Closeable {
             // Dec
             Attributes attrDec = parseDec(last, Attributes.DEFAULT);
             if (attrDec == null) {
-                return null;
+                return Attributes.DEFAULT;
             }
             
             // Se supone que en esta produccion se crea la tabla de símbolos. Así que no me tengo que preocupar si el
@@ -361,7 +361,9 @@ public final class Parser implements Closeable {
         // Insts ::=
         try {
             // Inst
-            parseInst(last, Attributes.DEFAULT);
+            if (parseInst(last, Attributes.DEFAULT) == null) {
+                return Attributes.DEFAULT;
+            }
             
             // RInsts
             parseRInsts(last, Attributes.DEFAULT);
@@ -415,15 +417,7 @@ public final class Parser implements Closeable {
             { // ident asig Expr
                 case IDENTIFIER:
                     
-                    // FIXME Probablemente no haya que pasar default
                     expect(last, TokenType.SYM_ASIGNATION);
-                    
-                    Type asigType = symbolTable.getIdentfierType(tokenRead.getLexeme());
-                    Attributes attrInhExpr = new Attributes.Builder().asignationType(asigType).create();
-                    Attributes exprAttributes = parseExpr(last, attrInhExpr);
-                    if (exprAttributes == null) {
-                        return null;
-                    }
                     
                     // Comprobamos que el identificador existe
                     if (!symbolTable.hasIdentifier(tokenRead.getLexeme())) {
@@ -431,14 +425,20 @@ public final class Parser implements Closeable {
                             new UndefinedIdentifierError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
                         errors.add(errorIDExist);
                         codeWriter.inhibit();
-                    }
-                    
-                    // Comprobamos que no estamos asignando la expresion a una constante
-                    if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
+                        
+                        // Comprobamos que no estamos asignando la expresion a una constante
+                    } else if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
                         AssignToConstantError errorConstant =
                             new AssignToConstantError(tokenRead.getLexeme(), lexer.getLine(), lexer.getColumn());
                         errors.add(errorConstant);
                         codeWriter.inhibit();
+                    }
+                    
+                    Type asigType = symbolTable.getIdentfierType(tokenRead.getLexeme());
+                    Attributes attrInhExpr = new Attributes.Builder().asignationType(asigType).create();
+                    Attributes exprAttributes = parseExpr(last, attrInhExpr);
+                    if (exprAttributes == null) {
+                        return null;
                     }
                     
                     /*
@@ -457,8 +457,10 @@ public final class Parser implements Closeable {
                     }
                     
                     // Inst.cod = Expr.cod || desapila-dir(Inst.tsh[ident.lex].dir) }
-                    codeWriter.write(exprAttributes.getInstructions());
-                    codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(tokenRead.getLexeme())));
+                    if (!codeWriter.isInhibited()) {
+                        codeWriter.write(exprAttributes.getInstructions());
+                        codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(tokenRead.getLexeme())));
+                    }
                 
                 break;
                 
@@ -474,18 +476,17 @@ public final class Parser implements Closeable {
                             new UndefinedIdentifierError(identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
                         errors.add(error);
                         
-                    }
-                    
-                    /* Comprobamos que no estamos asignando la expresion a una constante */
-                    if (this.symbolTable.isIdentifierConstant(identRead.getLexeme())) {
+                    } else if (this.symbolTable.isIdentifierConstant(identRead.getLexeme())) {
                         AssignToConstantError error =
                             new AssignToConstantError(identRead.getLexeme(), lexer.getLine(), lexer.getColumn());
                         errors.add(error);
                     }
                     
                     // Inst.cod = in(Inst.tsh[ident.lex].type) || desapila-dir(Inst.tsh[ident.lex].dir) }
-                    codeWriter.write(new InputInstruction(symbolTable.getIdentfierType(identRead.getLexeme())));
-                    codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(identRead.getLexeme())));
+                    if (!codeWriter.isInhibited()) {
+                        codeWriter.write(new InputInstruction(symbolTable.getIdentfierType(identRead.getLexeme())));
+                        codeWriter.write(new StoreInstruction(symbolTable.getIdentifierAddress(identRead.getLexeme())));
+                    }
                     
                     expect(last, TokenType.SYM_PAR_RIGHT);
                 
@@ -1053,22 +1054,26 @@ public final class Parser implements Closeable {
                     UndefinedIdentifierError error = new UndefinedIdentifierError(tokenRead.getLexeme(), line, column);
                     errors.add(error);
                     
+                    attrb.type(Type.ERROR);
+                } else {
+                    attrb.type(symbolTable.getIdentfierType(tokenRead.getLexeme()));
                 }
-                
-                attrb.type(this.symbolTable.getIdentfierType(tokenRead.getLexeme()));
                 
                 /*
                  * Paren.cod = Si Paren.tsh[ident.lex].const = true apila(Paren.tsh[ident.lex].value) Si no
                  * apila-dir(Paren.tsh[ident.lex].dir)
                  */
-                if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
-                    PushInstruction inst = new PushInstruction(symbolTable.getIdentifierValue(tokenRead.getLexeme()));
-                    codeWriter.write(inst);
-                    
-                } else {
-                    int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
-                    LoadInstruction inst = new LoadInstruction(addr);
-                    codeWriter.write(inst);
+                if (!codeWriter.isInhibited()) {
+                    if (symbolTable.isIdentifierConstant(tokenRead.getLexeme())) {
+                        PushInstruction inst =
+                            new PushInstruction(symbolTable.getIdentifierValue(tokenRead.getLexeme()));
+                        codeWriter.write(inst);
+                        
+                    } else {
+                        int addr = symbolTable.getIdentifierAddress(tokenRead.getLexeme());
+                        LoadInstruction inst = new LoadInstruction(addr);
+                        codeWriter.write(inst);
+                    }
                 }
                 
             } else {

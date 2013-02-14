@@ -1,6 +1,7 @@
 package plg.gr3.debug;
 
 import java.io.PrintWriter;
+import java.util.Objects;
 
 import plg.gr3.vm.instr.Instruction;
 
@@ -14,10 +15,10 @@ public enum Debugger {
     INSTANCE;
     
     /** Flujo de salida de todos los mensajes */
-    private final PrintWriter out;
+    private volatile PrintWriter out;
     
     /** Flujo de salida de todos los mensajes */
-    private final PrintWriter err;
+    private volatile PrintWriter err;
     
     /** Línea en la que se envía un mensaje */
     private int line = 0;
@@ -46,8 +47,20 @@ public enum Debugger {
     }
     
     private Debugger () {
-        this.out = new PrintWriter(System.out);
-        this.err = new PrintWriter(System.err);
+        useStandardStreams();
+    }
+    
+    public void useStandardStreams () {
+        useOutputStream(new PrintWriter(System.out));
+        useErrorStream(new PrintWriter(System.err));
+    }
+    
+    public void useOutputStream (PrintWriter output) {
+        this.out = Objects.requireNonNull(output, "output");
+    }
+    
+    public void useErrorStream (PrintWriter error) {
+        this.err = Objects.requireNonNull(error, "error");
     }
     
     /** @param logging <tt>true</tt> para activar el <i>logging</i>, <tt>false</tt> para desactivarlo */
