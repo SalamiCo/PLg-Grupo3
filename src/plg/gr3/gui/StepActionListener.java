@@ -13,6 +13,7 @@ public class StepActionListener implements ActionListener {
     
     @Override
     public void actionPerformed (ActionEvent e) {
-        // TODO step
+        VirtualMachineWorker vmw = invoker.getVirtualMachineWorker();
+        vmw.stepProgram();
     }
 }

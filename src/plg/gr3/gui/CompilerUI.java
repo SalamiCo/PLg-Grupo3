@@ -42,9 +42,6 @@ import plg.gr3.vm.instr.Instruction;
 
 public final class CompilerUI extends JFrame {
     
-    /**
-     * 
-     */
     private static final long serialVersionUID = 2565659028089012814L;
     
     /**

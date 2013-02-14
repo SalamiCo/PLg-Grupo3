@@ -13,6 +13,7 @@ public class RunActionListener implements ActionListener {
     
     @Override
     public void actionPerformed (ActionEvent e) {
-        // TODO run
+        VirtualMachineWorker vmw = invoker.getVirtualMachineWorker();
+        vmw.executeProgram();
     }
 }
