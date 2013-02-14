@@ -25,6 +25,11 @@ import plg.gr3.vm.instr.Instruction;
 public class FileHandler {
     
     /**
+     * Objeto que invoca a FileHandler
+     * */
+    private CompilerUI invoker;
+    
+    /**
      * Vista en la que se encuentra el manejador de archivos
      * */
     private CompilerUI.View view;
@@ -48,8 +53,9 @@ public class FileHandler {
      * Genera un nuevo manejador de archivos, sin un archivo asociado, y con un área de texto donde cargar o guardar el
      * contenido.
      * */
-    public FileHandler (CompilerUI.View view, JTextPane txtPane) {
+    public FileHandler (CompilerUI invoker, CompilerUI.View view, JTextPane txtPane) {
         // inicializar los atributos
+        this.invoker = invoker;
         this.view = view;
         this.setFilePath("");
         this.setModified(false);
@@ -144,6 +150,9 @@ public class FileHandler {
                 if (view == CompilerUI.View.DEBUGGER) {
                     // Abrir el fichero binario correspondiente al bytecode
                     List<Instruction> instructions = openByteCodeFile(myFile);
+                    // Las instrucciones se las pasamos al programa
+                    invoker.setProgram(instructions);
+                    // Las mostramos en el panel
                     this.getTextEditor().setText(printInstructionList(instructions));
                 } else {
                     // Abrir el archivo de texto correspondiente al código fuente
