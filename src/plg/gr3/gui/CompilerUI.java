@@ -28,6 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -62,6 +63,8 @@ public final class CompilerUI extends JFrame {
     private View view;
     
     private VirtualMachineWorker vmWorker;
+    
+    private VirtualMachine vm;
     
     private JPanel mainPanel;
     
@@ -779,7 +782,7 @@ public final class CompilerUI extends JFrame {
     public VirtualMachineWorker getVirtualMachineWorker () {
         try {
             if (vmWorker == null || vmWorker.isDone()) {
-                VirtualMachine vm = new VirtualMachine(program);
+                vm = new VirtualMachine(program);
                 
                 bindConsoleInput(vm);
                 bindConsoleOutput(vm);
@@ -797,21 +800,21 @@ public final class CompilerUI extends JFrame {
     private void bindConsoleInput (VirtualMachine vm) throws IOException {
         final PipedWriter writer = new PipedWriter();
         final PipedReader reader = new PipedReader(writer);
-        final JTextPane pane = consoleArea.getConsoleInputPane();
+        final JTextField field = consoleArea.getConsoleInputField();
         
         if (inputKeyAdapter != null) {
-            pane.removeKeyListener(inputKeyAdapter);
+            field.removeKeyListener(inputKeyAdapter);
         }
         
         inputKeyAdapter = new KeyAdapter() {
             
             @Override
             public void keyTyped (KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    String text = pane.getText();
+                if (e.getKeyChar() == '\n' || e.getKeyChar() == '\r') {
+                    String text = field.getText();
                     try {
                         writer.write(text);
-                        pane.setText("");
+                        field.setText("");
                     } catch (IOException exc) {
                         // Cosas chungas
                     }
@@ -819,7 +822,7 @@ public final class CompilerUI extends JFrame {
             }
         };
         
-        pane.addKeyListener(inputKeyAdapter);
+        field.addKeyListener(inputKeyAdapter);
         
         vm.setReader(reader);
     }
