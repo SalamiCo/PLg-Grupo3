@@ -785,6 +785,7 @@ public final class CompilerUI extends JFrame {
                 bindConsoleOutput(vm);
                 
                 vmWorker = new VirtualMachineWorker(vm, null);
+                vmWorker.execute();
             }
             return vmWorker;
             
@@ -902,6 +903,9 @@ public final class CompilerUI extends JFrame {
             // System.exit(0);
             logWorker.cancel();
             problemWorker.cancel();
+            if (vmWorker != null) {
+                vmWorker.stopProgram();
+            }
             dispose();
         }
     }

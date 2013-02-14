@@ -21,6 +21,8 @@ public final class VirtualMachineWorker extends SwingWorker<Void, Void> {
     
     private volatile boolean exec = false;
     
+    private volatile boolean step = false;
+    
     /**
      * @param vm Máquina virtual a usar
      */
@@ -34,7 +36,9 @@ public final class VirtualMachineWorker extends SwingWorker<Void, Void> {
         while (!vm.isStopped()) {
             lock.lock();
             try {
-                cond.await();
+                if (!step && !exec) {
+                    cond.await();
+                }
             } finally {
                 lock.unlock();
             }
@@ -59,6 +63,7 @@ public final class VirtualMachineWorker extends SwingWorker<Void, Void> {
         lock.lock();
         try {
             exec = true;
+            step = false;
             cond.signal();
         } finally {
             lock.unlock();
@@ -69,6 +74,7 @@ public final class VirtualMachineWorker extends SwingWorker<Void, Void> {
         lock.lock();
         try {
             exec = false;
+            step = true;
             cond.signal();
         } finally {
             lock.unlock();
