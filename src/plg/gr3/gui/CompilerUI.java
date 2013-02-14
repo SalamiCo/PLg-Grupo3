@@ -89,6 +89,8 @@ public final class CompilerUI extends JFrame {
     
     private static ErrorHandler errorsArea = new ErrorHandler();
     
+    private TokenHandler tokenArea = new TokenHandler();
+    
     private DebugHandler debugArea = new DebugHandler();
     
     private VMHandler vmArea = new VMHandler();
@@ -594,7 +596,8 @@ public final class CompilerUI extends JFrame {
         panel1.add(scrollPane, BorderLayout.CENTER);
         symTabbedPane.addTab("Symbol table", iconTable, panel1, "Shows symbol table content");
         
-        JComponent panel2 = new JPanel();
+        JComponent panel2 = new JPanel(new BorderLayout());
+        panel1.add(tokenArea.getTokenList(), BorderLayout.CENTER);
         symTabbedPane.addTab("Tokens", iconToken, panel2, "Shows token list");
         
         return symTabbedPane;

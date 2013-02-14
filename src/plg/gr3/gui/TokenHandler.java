@@ -20,7 +20,7 @@ public class TokenHandler {
     public TokenHandler () {
         DefaultListModel<String> listModel = populateList();
         tokenList = new JList<String>();
-        listModel.addElement("pruebaPruebaPrueba");
+        listModel.addElement("pruebaParaLaListaDeTokens");
         tokenList.setModel(listModel);
         tokenList.setEnabled(false);
     }
