@@ -38,6 +38,6 @@ public abstract class RuntimeError extends Error {
     
     @Override
     public final void print () {
-        Debugger.INSTANCE.error("%s", getErrorMessage());
+        Debugger.INSTANCE.in(position, instruction).error("%s", getErrorMessage());
     }
 }

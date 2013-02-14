@@ -29,6 +29,11 @@ public class CompileActionListener implements ActionListener {
     @Override
     public void actionPerformed (ActionEvent e) {
         try {
+            if (!invoker.getFileHandler().isSavedBeforeCompile()) {
+                CompilerUI.log(LogType.ERROR, "The file must be saved before compile.");
+                return;
+            }
+            // Guardado y con path asignado procedemos a compilar
             CompilerUI.log(LogType.LOG, "Compiling...");
             File sourceCodeFile = new File(invoker.getFileHandler().getFilePath());
             String parentDir = sourceCodeFile.getParent();

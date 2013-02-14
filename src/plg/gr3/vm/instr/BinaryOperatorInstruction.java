@@ -7,6 +7,7 @@ import plg.gr3.data.Value;
 import plg.gr3.errors.runtime.DivisionByZeroError;
 import plg.gr3.errors.runtime.EmptyStackError;
 import plg.gr3.errors.runtime.NegativeNaturalError;
+import plg.gr3.errors.runtime.TypeMismatchError;
 import plg.gr3.vm.VirtualMachine;
 
 /**
@@ -34,18 +35,21 @@ public final class BinaryOperatorInstruction extends Instruction {
     @Override
     public void execute (VirtualMachine vm) {
         try {
-            Value op2 = vm.popValue();
-            Value op1 = vm.popValue();
-            BinaryOperator swappedOperator = vm.getSwappedOperator(operator);
+            Value v2 = vm.popValue();
+            Value v1 = vm.popValue();
+            BinaryOperator swop = vm.getSwappedOperator(operator);
             
-            Value res = swappedOperator.apply(op1, op2);
-            
-            vm.pushValue(res);
-            
+            if (swop.canApply(v1.getType(), v2.getType())) {
+                vm.abort(new TypeMismatchError(vm.getProgramCounter(), this, swop, v1, v2));
+                
+            } else {
+                Value res = swop.apply(v1, v2);
+                
+                vm.pushValue(res);
+            }
         } catch (IllegalArgumentException e1) {
             // Si se restan 2 naturales y a < b, error en tiempo de ejecución
             vm.abort(new NegativeNaturalError(vm.getProgramCounter(), this));
-            // TODO Añadir TypeMismatchError
             
         } catch (ArithmeticException e2) {
             vm.abort(new DivisionByZeroError(vm.getProgramCounter(), this));

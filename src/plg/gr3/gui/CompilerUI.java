@@ -97,7 +97,7 @@ public final class CompilerUI extends JFrame {
     
     /**
      * Crea la interfaz de usuario con la vista en modo Compilador cargada
-     * */
+     */
     public CompilerUI () {
         view = View.COMPILER; // vista de compilador
         symbolTableArea = new SymbolTableHandler();
@@ -386,14 +386,55 @@ public final class CompilerUI extends JFrame {
      * */
     private JToolBar initDebugToolBar () {
         // iconos
+        ImageIcon iconLoad = new ImageIcon(getClass().getResource("load.png"));
         ImageIcon iconExit = new ImageIcon(getClass().getResource("exit.png"));
+        ImageIcon iconNew = new ImageIcon(getClass().getResource("new.png"));
+        ImageIcon iconOpen = new ImageIcon(getClass().getResource("open.png"));
+        ImageIcon iconSave = new ImageIcon(getClass().getResource("save.png"));
+        ImageIcon iconCut = new ImageIcon(getClass().getResource("cut.png"));
+        ImageIcon iconCopy = new ImageIcon(getClass().getResource("copy.png"));
+        ImageIcon iconPaste = new ImageIcon(getClass().getResource("paste.png"));
         
         // crear toolbar y botones
         JToolBar toolbar = new JToolBar();
+        
+        // botón nuevo
+        JButton newFileButton = new JButton(iconNew);
+        newFileButton.addActionListener(new NewFileActionListener(this));
+        
+        // botón open
+        JButton openFileButton = new JButton(iconOpen);
+        openFileButton.addActionListener(new OpenFileActionListener(this));
+        
+        // botón save
+        JButton saveFileButton = new JButton(iconSave);
+        saveFileButton.addActionListener(new SaveFileActionListener(this));
+        
+        // botón cut
+        JButton cutButton = new JButton(iconCut);
+        cutButton.addActionListener(new CutTextActionListener(this));
+        
+        // botón copy
+        JButton copyButton = new JButton(iconCopy);
+        copyButton.addActionListener(new CopyTextActionListener(this));
+        
+        // botón paste
+        JButton pasteButton = new JButton(iconPaste);
+        pasteButton.addActionListener(new PasteTextActionListener(this));
+        
+        // botón salir
         JButton exitButton = new JButton(iconExit);
         exitButton.addActionListener(new ExitActionListener(this));
         
         // añadir botones al toolbar
+        toolbar.add(newFileButton);
+        toolbar.add(openFileButton);
+        toolbar.add(saveFileButton);
+        toolbar.addSeparator();
+        toolbar.add(cutButton);
+        toolbar.add(copyButton);
+        toolbar.add(pasteButton);
+        toolbar.addSeparator();
         toolbar.add(exitButton);
         
         return toolbar;

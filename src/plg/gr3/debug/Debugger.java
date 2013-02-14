@@ -1,12 +1,8 @@
 package plg.gr3.debug;
 
 import java.io.PrintWriter;
-import java.nio.file.Path;
 
-import javax.swing.JTextPane;
-
-import plg.gr3.gui.ConsoleHandler;
-import plg.gr3.gui.ErrorHandler;
+import plg.gr3.vm.instr.Instruction;
 
 /**
  * Depurador de la práctica. Capaz de imprimir mensajes de información, de depuración o de error.
@@ -29,8 +25,11 @@ public enum Debugger {
     /** Columna en la que se envía un mensaje */
     private int column = 0;
     
+    /** Posición en la que se dioel error */
+    private int pos = 0;
+    
     /** Fichero en el que se envía un mensaje */
-    private Path file = null;
+    private Instruction instr = null;
     
     /** Si el *logging* está activado */
     private boolean logging;
@@ -38,15 +37,12 @@ public enum Debugger {
     /** Si el modo depuración está activado */
     private boolean debug;
     
-    private static JTextPane outPane = ConsoleHandler.getConsoleLogPane();;
-    
-    private static JTextPane errPane = ErrorHandler.getErrorPane();
-    
     /** Devuelve el depurador a su estado original */
     private void reset () {
         line = 0;
         column = 0;
-        file = null;
+        pos = 0;
+        instr = null;
     }
     
     private Debugger () {
@@ -64,37 +60,34 @@ public enum Debugger {
         this.debug = debug;
     }
     
-    public Debugger at (int line) {
+    public Debugger at (int line, int column) {
         this.line = line;
+        this.column = column;
+        this.pos = 0;
+        this.instr = null;
+        return this;
+    }
+    
+    public Debugger in (int pos, Instruction instr) {
+        this.pos = pos;
+        this.instr = instr;
+        this.line = 0;
         this.column = 0;
         return this;
     }
     
-    public Debugger at (int line, int column) {
-        this.line = line;
-        this.column = column;
-        return this;
-    }
-    
-    public Debugger in (Path file) {
-        this.file = file;
-        return this;
-    }
-    
     private void message (String type, String message, PrintWriter pw) {
-        String fmtFile = file == null ? "" : " (%5$s)";
+        String fmtInstr = instr == null ? "" : ", %5$s";
+        String fmtPos = pos <= 0 ? "" : " pos %6$s";
+        
         String fmtLine = line <= 0 ? "" : " line %3$d";
         String fmtCol = column <= 0 ? "" : ", col %4$d";
-        String fmt = "[%1$s]" + fmtFile + fmtLine + fmtCol + ": %2$s%n";
         
-        pw.printf(fmt, type, message, line, column, file);
+        String fmt = "[%1$s]" + fmtPos + fmtInstr + fmtLine + fmtCol + ": %2$s%n";
+        
+        String msg = String.format(fmt, type, message, line, column, instr, pos);
+        pw.printf(msg);
         pw.flush();
-        
-        if (pw == this.out) {
-            outPane.setText(outPane.getText() + String.format(fmt, type, message, line, column, file));
-        } else {
-            errPane.setText(errPane.getText() + String.format(fmt, type, message, line, column, file));
-        }
     }
     
     public void log (String format, Object... params) {

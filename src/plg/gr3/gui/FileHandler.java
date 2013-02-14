@@ -279,11 +279,18 @@ public class FileHandler {
     /**
      * Chequea si está guardado el archivo antes de compilarlo
      * */
-    public boolean savedBeforeCompile () {
+    public boolean isSavedBeforeCompile () {
         boolean saved;
         // si está modificado o no se le ha asignado una ruta, guardar
         if (this.isModified() || this.getFilePath() == "") {
-            saved = this.saveFileAction();
+            int result =
+                JOptionPane.showConfirmDialog(
+                    this.getTextEditor(), "The file must be saved before. \nDo you want to save?");
+            if (result == 0) {
+                saved = this.saveFileAction();
+            } else {
+                saved = false;
+            }
         } else { // no está modificado y no tiene asignada una ruta
             saved = true;
         }
