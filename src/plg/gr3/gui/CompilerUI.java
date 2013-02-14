@@ -139,7 +139,8 @@ public final class CompilerUI extends JFrame {
             @Override
             public void actionPerformed (ActionEvent e) {
                 ArrayList<String> stackList = vm.getStackToArrayList();
-                stackList.add(0, Integer.toString(vm.getProgramCounter()));
+                stackList.add(0, "PC: " + Integer.toString(vm.getProgramCounter()));
+                stackList.add(1, "Stack: ");
                 vmArea.populateList(stackList);
                 
                 ArrayList<String> memoryList = vm.getMemoryToArrayList();
