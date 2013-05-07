@@ -26,9 +26,13 @@ Subprog → subprogram ident lpar SParams rpar illave SVars SInsts fllave
 
 
 
-SParams → SParam | ɛ
-SParam → SParam coma Param | Param
-Param → TypeDesc ident | TypeDesc mul ident
+SFParams → FParam | ɛ
+FParams → FParams coma FParam | FParam
+FParam → TypeDesc ident | TypeDesc mul ident
+
+
+
+Desig → ident | Desig icorchete Expr fcorchete | Desig barrabaja litnat
 
 
 
@@ -36,3 +40,4 @@ Param → TypeDesc ident | TypeDesc mul ident
 subprograms ≡ "subprograms"
 subprogram ≡ "subprogram:"
 coma ≡ ","
+barrabaja ≡ "_"
