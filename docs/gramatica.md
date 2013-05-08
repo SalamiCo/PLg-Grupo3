@@ -1,62 +1,45 @@
-
-******** RAUL - MARINA *********
-
-Program → program ident illave SDecs SInsts fllave fin
-
-SDecs → varconsts illave Decs fllave
-Decs → Decs pyc Dec | Dec
-Dec → var Type ident | const Type ident dpigual Lit | ɛ
-
 program ident illave SConsts STypes SVars SSubProgs SInsts fllave fin
 
 SConsts → const illave Consts fllave | ɛ
-Consts → Consts Const | Const
-Const → const Prim ident asig Lit pyc
+Consts → Consts pyc Const | Const
+Const → const TPrim ident asig Lit | ɛ
 
 STypes → tipos illave Types fllave | ɛ
-Types → Types Type | Type
-Type → tipo TypeDesc ident pyc
+Types → Types pyc Type | Type
+Type → tipo TypeDesc ident | ɛ
 
 SVars → vars illave Vars fllave | ɛ
-Vars → Vars Var | Var
-Var → var TypeDesc ident pyc
+Vars → Vars pyc Var | Var
+Var → var TypeDesc ident | ɛ
 
+TypeDesc → TPrim | TArray | TTupla | ident
 
-TypeDesc → Prim | TArray | TTupla | ident
+TPrim → natural | integer | float | boolean | character
+Cast → char | int | nat | float
 
-Prim → natural | integer | float | boolean | character
-
-TArray → Prim icorchete ident fcorchete Array | Prim icorchete litnat fcorchete Array
+TArray → TPrim icorchete ident fcorchete Array | TPrim icorchete litnat fcorchete Array
 Array → Array icorchete ident fcorchete | Array icorchete litnat fcorchete | ɛ
 
-TTuplas → lpar TTupla rpar
+TTuplas → ipar TTupla fpar
 TTupla → ident coma TTupla | ident | ɛ
 
-
-TODO: cambiar Type por Prim (tipo primitivo)
-TODO: lpar, fpar
-
-
-******** DANI - ARTURO *********
-
 SInsts → instructions illave Insts fllave
-Insts → Inst pyc Insts | 훆
-Inst → Desig asig Expr | 
-       in lpar Desig rpar |
-       out lpar Expr rpar |
-       swap1 lpar rpar |
-       swap2 lpar rpar | 
-       InstIf | InstWhile
-InstIf → if Expr then Insts ElseIf
+Insts → Insts pyc Inst | Inst
+Inst → Desig asig Expr
+     | in ipar Desig fpar
+     | out ipar Expr fpar
+     | swap1 ipar fpar
+     | swap2 ipar fpar
+     | if Expr then Insts ElseIf
+     | while Expr do Insts endwhile
+     | InstCall
+     | ɛ
 ElseIf → else Insts endif | endif
-InstWhile → while Expr do Insts endwhile
-
-
-******** ANTONIO - PEDRO *********
+InstCall → TODO
 
 SSubprogs → subprograms illave Subprogs fllave | ɛ
 Subprogs → Subprogs Subprog | Subprog
-Subprog → subprogram ident lpar SParams rpar illave SVars SInsts fllave
+Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 
 SFParams → FParam | ɛ
 FParams → FParams coma FParam | FParam
@@ -64,8 +47,27 @@ FParam → TypeDesc ident | TypeDesc mul ident
 
 Desig → ident | Desig icorchete Expr fcorchete | Desig barrabaja litnat
 
+Expr → Term Op0 Term | Term
+Term → Term Op1 Fact | Fact
+Fact → Fact Op2 Shft | Shft
+Shft → Unary Op3 Shft | Unary
+Unary → Op4 Unary | lpar Cast rpar Paren | Paren
+Paren → lpar Expr rpar | Lit | Desig
+
+Op0 → igual | noigual | men | may | menoig | mayoig
+Op1 → or | menos | mas
+Op2 → and | mod | div | mul
+Op3 → lsh | rsh
+Op4 → not | menos
+
+Lit → LitBool | LitNum | litchar
+LitBool → true | false
+LitNum → litnat | menos litnat | litfloat | menos litfloat
+
+/////////////////////////////////
 //Esto es para añadir en el léxico
 subprograms ≡ "subprograms"
 subprogram ≡ "subprogram:"
 coma ≡ ","
 barrabaja ≡ "_"
+
