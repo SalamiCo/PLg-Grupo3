@@ -1,5 +1,6 @@
 package plg.gr3.code;
 
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import plg.gr3.vm.instr.UnaryOperatorInstruction;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public class StreamCodeReader extends CodeReader {
+public class StreamCodeReader extends CodeReader implements Closeable {
     
     /** Stream usado por el lector */
     private final DataInputStream stream;
@@ -124,5 +125,10 @@ public class StreamCodeReader extends CodeReader {
             return null;
             
         }
+    }
+    
+    @Override
+    public void close () throws IOException {
+        stream.close();
     }
 }
