@@ -17,11 +17,10 @@ TypeDesc → TPrim | TArray | TTupla | ident
 TPrim → natural | integer | float | boolean | character
 Cast → char | int | nat | float
 
-TArray → TPrim icorchete ident fcorchete Array | TPrim icorchete litnat fcorchete Array
-Array → Array icorchete ident fcorchete | Array icorchete litnat fcorchete | ɛ
+TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
 
-TTuplas → ipar TTupla fpar
-TTupla → TypeDesc coma TTupla | TypeDesc | ɛ
+TTuplas → ipar TTupla fpar | ipar fpar
+TTupla → TypeDesc coma TTupla | TypeDesc
 
 SInsts → instructions illave Insts fllave
 Insts → Insts pyc Inst | Inst
