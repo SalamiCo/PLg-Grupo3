@@ -1,3 +1,4 @@
+### 2.1. Descripciónn de los operadores
 
 |        Operador         | Prioridad | Aridad  | Asociatividad |
 |:-----------------------:|:---------:|:-------:|:-------------:|
