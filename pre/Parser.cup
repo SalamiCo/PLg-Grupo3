@@ -121,3 +121,98 @@ Inst ::= WHILE Expr DO Insts ENDWHILE;
 Inst ::= InstCall;
 Inst ::= ;
 
+
+ElseIf ::= ELSE Insts ENDIF;
+ElseIf ::= ENDIF;
+
+InstCall ::= CALL IDENT LPAR SRParams RPAR;
+
+
+SRParams ::= RParams;
+SRParams ::=  ;
+
+RParams ::= RParams COMA RParam;
+RParams ::= RParam;
+
+RParam ::= IDENT IGUAL Expr;
+
+
+SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs FLLAVE;
+SSubprogs ::=  ;
+
+Subprogs ::= Subprogs Subprog;
+Subprogs ::= Subprog;
+
+Subprog ::= SUBPROGRAM IDENT IPAR SParams FPAR ILLAVE SVars SInsts FLLAVE;
+
+
+SFParams ::= FParams;
+SFParams ::=  ;
+
+FParams ::= FParams COMA FParam;
+FParams ::= FParam;
+
+FParam ::= TypeDesc IDENT;
+FParam ::= TypeDesc MUL IDENT;
+
+
+Desig ::= IDENT;
+Desig ::= Desig ICORCHETE Expr FCORCHETE;
+Desig ::= Desig BARRABAJA LITNAT;
+
+
+Expr ::= Term Op0 Term;
+Expr ::= Term;
+
+Term ::= Term Op1 Fact;
+Term ::= Fact;
+
+Fact ::= Fact Op2 Shft;
+Fact ::= Shft;
+
+Shft ::= Unary Op3 Shft;
+Shft ::= Unary;
+
+Unary ::= Op4 Unary;
+Unary ::= LPAR Cast RPAR Paren;
+Unary ::= Paren;
+
+Paren ::= LPAR Expr RPAR;
+Paren ::= Lit;
+Paren ::= Desig;
+
+
+Op0 ::= IGUAL;
+Op0 ::= NOIGUAL;
+Op0 ::= MEN;
+Op0 ::= MAY;
+Op0 ::= MENOIG;
+Op0 ::= MAYOIG;
+
+Op1 ::= OR;
+Op1 ::= MENOS;
+Op1 ::= MAS;
+
+Op2 ::= AND;
+Op2 ::= MOD;
+Op2 ::= DIV;
+Op2 ::= MUL;
+
+Op3 ::= LSH;
+Op3 ::= RSH;
+
+Op4 ::= NOT;
+Op4 ::= MENOS;
+
+
+Lit ::= LitBool;
+Lit ::= LitNum;
+Lit ::= LitChar;
+
+LitBool ::= TRUE;
+LitBool ::= FALSE;
+
+LitNum ::= LITNAT;
+LitNum ::= MENOS LITNAT;
+LitNum ::= LITFLOAT;
+LitNum ::= MENOS LITFLOAT;
