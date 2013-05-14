@@ -1,0 +1,57 @@
+package plg.pruebas;
+
+import java_cup.runtime.*;
+import es.ucm.fdi.plg.evlib.TAtributos;
+
+// Se crea el objeto que contiene las funciones de atribución
+action code {:
+   private EAtribucion atrb = new EAtribucion();
+:}
+
+// Definición de los terminales del lenguaje 
+terminal String IDENT;
+terminal String LITNAT;
+terminal String LITFLOAT;
+terminal String LITCHAR;
+
+terminal TRUE, FALSE, PROGRAM,
+ SUBPROGRAM, VARS, CONSTS, SUBPROGRAMS, INSTRUCTIONS, VAR, CONST, 
+ IN, OUT, SWAP1, SWAP2, FLOAT, INTEGER, NATURAL, CHARACTER, BOOLEAN, 
+ INT, NAT, CHAR, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDWHILE, ASIG, 
+ DPIGUAL, LPAR, RPAR, ILLAVE, FLLAVE, PYC, COMA, BARRABAJA, MEN, 
+ MAY, MENOIG, MAYOIG, IGUAL, NOIGUAL, MAS, MENOS, MUL, DIV, MOD, 
+ AND, OR, NOT, LSH, RSH;
+
+// Definición de los no terminales del lenguaje
+non terminal S;
+non terminal TAtributos I, T, F, E;
+
+// Definición de las reglas sintácticas
+
+S ::= I:i {:
+  RESULT = atrb.sR1(i);
+:};
+
+I ::= TRUE{:
+  RESULT = atrb.iR1();
+:};
+
+I ::= FALSE{:
+  RESULT = atrb.iR2();
+:};
+
+I ::= LITNAT:litnat{:
+  RESULT = atrb.iR3(litnat);
+:};
+
+I ::= LITFLOAT:litfloat{:
+  RESULT = atrb.iR4(litfloat);
+:};
+
+I ::= LITCHAR:litchar{:
+  RESULT = atrb.iR5(litchar);
+:};
+
+I ::= IDENT:ident{:
+  RESULT = atrb.iR6(ident);
+:};
