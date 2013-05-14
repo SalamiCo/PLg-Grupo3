@@ -1,4 +1,4 @@
-program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 
 SConsts → const illave Consts fllave | ɛ
 Consts → Consts pyc Const | Const
@@ -35,13 +35,17 @@ Inst → Desig asig Expr
      | InstCall
      | ɛ
 ElseIf → else Insts endif | endif
-InstCall → TODO
+InstCall → call ident lpar SRParams rpar
+
+SRParams → RParams | ɛ
+RParams → RParams coma RParam | RParam
+RParam → ident igual Expr
 
 SSubprogs → subprograms illave Subprogs fllave | ɛ
 Subprogs → Subprogs Subprog | Subprog
 Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 
-SFParams → FParam | ɛ
+SFParams → FParams | ɛ
 FParams → FParams coma FParam | FParam
 FParam → TypeDesc ident | TypeDesc mul ident
 

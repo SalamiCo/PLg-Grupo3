@@ -26,6 +26,7 @@ in ≡ "in"
 out ≡ "out" 
 swap1 ≡ "swap1" 
 swap2 ≡ "swap2"
+call ≡ "call"
 
 Símbolos y operadores
 Asig ≡ "=" 
