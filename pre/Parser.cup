@@ -23,35 +23,27 @@ terminal TRUE, FALSE, PROGRAM,
  AND, OR, NOT, LSH, RSH;
 
 // Definición de los no terminales del lenguaje
-non terminal S;
-non terminal TAtributos I, T, F, E;
+non terminal Program;
+non terminal TAtributos
+	SConsts, Consts, Const,
+	STypes, Types, Type,
+	SVars, Vars, Var,
+	SSubprogs, Subprogs, Subprog,
+	TypeDesc, TPrim, Cast,
+	TArray, 
+	TTupla, Tupla
+	SInsts, Insts, Inst,
+	ElseIf, InstCall,
+	SRParams, RParams, RParam,
+	SSubprogs, Subprogs, Subprog,
+	SFParams, FParams, FParam,
+	Desig,
+	Expr, Term, Fact, Shft, Unary, Paren,
+	Op0, Op1, Op2, Op3, Op4,
+	Lit, LitBool, LitNum
 
 // Definición de las reglas sintácticas
 
-S ::= I:i {:
-  RESULT = atrb.sR1(i);
-:};
+// TODO ¿End of file?
+Program ::= PROGRAM IDENT ILLAVE SConsts Stypes SVars SSubprogs SInsts FLLAVE 
 
-I ::= TRUE{:
-  RESULT = atrb.iR1();
-:};
-
-I ::= FALSE{:
-  RESULT = atrb.iR2();
-:};
-
-I ::= LITNAT:litnat{:
-  RESULT = atrb.iR3(litnat);
-:};
-
-I ::= LITFLOAT:litfloat{:
-  RESULT = atrb.iR4(litfloat);
-:};
-
-I ::= LITCHAR:litchar{:
-  RESULT = atrb.iR5(litchar);
-:};
-
-I ::= IDENT:ident{:
-  RESULT = atrb.iR6(ident);
-:};
