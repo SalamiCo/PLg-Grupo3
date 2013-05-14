@@ -8,6 +8,8 @@ false ≡ "false"
 
 Palabras reservadas
 program ≡ "program:" 
+subprograms ≡ "subprograms"
+subprogram ≡ "subprogram:"
 varconsts ≡ "vars-consts" 
 instructions ≡ "instructions" 
 var ≡ "var" 
@@ -24,6 +26,7 @@ in ≡ "in"
 out ≡ "out" 
 swap1 ≡ "swap1" 
 swap2 ≡ "swap2"
+call ≡ "call"
 
 Símbolos y operadores
 Asig ≡ "=" 
@@ -49,6 +52,8 @@ or ≡ "or"
 not ≡ "not" 
 lsh ≡ "<<" 
 rsh ≡ ">>"
+coma ≡ ","
+barrabaja ≡ "_"
 
 Expresiones auxiliares
 _min ≡ ['a'-'z'] 

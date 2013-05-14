@@ -1,15 +1,27 @@
 package plg.gr3;
 
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Scanner;
 
+import java_cup.runtime.DefaultSymbolFactory;
+import java_cup.runtime.Symbol;
+import java_cup.runtime.SymbolFactory;
 import plg.gr3.code.StreamCodeReader;
 import plg.gr3.debug.Debugger;
 import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.vm.VirtualMachine;
+import plg.pruebas.Parser;
 
 /**
  * Aplicación principal en consola
@@ -72,7 +84,17 @@ public final class Main {
         Debugger.INSTANCE.setLoggingEnabled(true);
         Debugger.INSTANCE.setDebugEnabled(true);
         
-        // TODO Llamar al parser y esas cosas que hacen falta
+        @SuppressWarnings("deprecation")
+        SymbolFactory symbolFactory = new DefaultSymbolFactory();
+        
+        try (InputStream input = Files.newInputStream(pathInput, READ)) {
+            Parser p = new Parser(new Scanner(input), symbolFactory));
+            Symbol s = p.parse();
+            
+            try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
+                // TODO Output results
+            }
+        }
     }
     
     /**
