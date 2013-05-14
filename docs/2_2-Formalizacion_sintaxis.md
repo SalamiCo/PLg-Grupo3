@@ -1,4 +1,4 @@
-program ident illave SConsts STypes SVars SSubProgs SInsts fllave fin
+program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 
 SConsts → const illave Consts fllave | ɛ
 Consts → Consts pyc Const | Const
@@ -63,11 +63,3 @@ Op4 → not | menos
 Lit → LitBool | LitNum | litchar
 LitBool → true | false
 LitNum → litnat | menos litnat | litfloat | menos litfloat
-
-/////////////////////////////////
-//Esto es para añadir en el léxico
-subprograms ≡ "subprograms"
-subprogram ≡ "subprogram:"
-coma ≡ ","
-barrabaja ≡ "_"
-
