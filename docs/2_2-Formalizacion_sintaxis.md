@@ -1,4 +1,4 @@
-program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 
 SConsts → const illave Consts fllave | ɛ
 Consts → Consts pyc Const | Const
@@ -17,11 +17,10 @@ TypeDesc → TPrim | TArray | TTupla | ident
 TPrim → natural | integer | float | boolean | character
 Cast → char | int | nat | float
 
-TArray → TPrim icorchete ident fcorchete Array | TPrim icorchete litnat fcorchete Array
-Array → Array icorchete ident fcorchete | Array icorchete litnat fcorchete | ɛ
+TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
 
-TTuplas → ipar TTupla fpar
-TTupla → ident coma TTupla | ident | ɛ
+TTuplas → ipar TTupla fpar | ipar fpar
+TTupla → TypeDesc coma TTupla | TypeDesc
 
 SInsts → instructions illave Insts fllave
 Insts → Insts pyc Inst | Inst
@@ -35,13 +34,17 @@ Inst → Desig asig Expr
      | InstCall
      | ɛ
 ElseIf → else Insts endif | endif
-InstCall → TODO
+InstCall → call ident lpar SRParams rpar
+
+SRParams → RParams | ɛ
+RParams → RParams coma RParam | RParam
+RParam → ident igual Expr
 
 SSubprogs → subprograms illave Subprogs fllave | ɛ
 Subprogs → Subprogs Subprog | Subprog
 Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 
-SFParams → FParam | ɛ
+SFParams → FParams | ɛ
 FParams → FParams coma FParam | FParam
 FParam → TypeDesc ident | TypeDesc mul ident
 
