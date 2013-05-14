@@ -19,8 +19,8 @@ Cast → char | int | nat | float
 
 TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
 
-TTuplas → ipar TTupla fpar | ipar fpar
-TTupla → TypeDesc coma TTupla | TypeDesc
+TTupla → ipar Tupla fpar | ipar fpar
+Tupla → TypeDesc coma Tupla | TypeDesc
 
 SInsts → instructions illave Insts fllave
 Insts → Insts pyc Inst | Inst
