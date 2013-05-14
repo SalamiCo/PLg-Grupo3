@@ -1,0 +1,50 @@
+<project name="PLg-Grupo3" default="all">
+	<!-- Directorios del proyecto -->
+	<property name="dir.lib" value="lib" />
+	<property name="dir.src" value="src" />
+	<property name="dir.bin" value="bin" />
+	<property name="dir.gen" value="gen" />
+	<property name="dir.pre" value="pre" />
+
+	<!-- JARs del proyecto -->
+	<property name="jar.cup" value="${dir.lib}/cup.jar" />
+	<property name="jar.jflex" value="${dir.lib}/jflex.jar" />
+
+	<!-- Otros ficheros del proyecto -->
+	<property name="file.pre.scanner.in" value="${dir.pre}/Scanner.l" />
+	<property name="file.pre.scanner.out" value="${dir.pre}/Scanner.java" />
+	<property name="file.pre.parser.in" value="${dir.pre}/Parser.cup" />
+	<property name="file.pre.parser.out" value="Parser.java" />
+	<property name="file.pre.sym.out" value="sym.java" />
+
+	<!-- Ficheros generados -->
+	<property name="file.gen.scanner" value="${dir.gen}/plg/gr3/lexer/Scanner.java" />
+	<property name="file.gen.parser" value="${dir.gen}/plg/gr3/parser/Parser.java" />
+	<property name="file.gen.sym" value="${dir.gen}/plg/gr3/lexer/sym.java" />
+
+	<!-- Clases del proyecto -->
+	<property name="class.parser" value="Parser" />
+	<property name="class.main" value="plg.gr3.Main" />
+
+	<target name="all" depends="gen" />
+	
+	<!-- Generadores del proyecto -->
+	<target name="gen" depends="-gen-scanner,-gen-parser" />
+
+	<!-- Genera el Scanner -->
+	<target name="-gen-scanner">
+		<java jar="${jar.jflex}" fork="true">
+			<arg value="${file.pre.scanner.in}" />
+		</java>
+		<move file="${file.pre.scanner.out}" tofile="${file.gen.scanner}" />
+	</target>
+
+	<!-- Genera el Parser -->
+	<target name="-gen-parser" depends="-gen-scanner">
+		<java jar="${jar.cup}" fork="true" input="${file.pre.parser.in}">
+			<arg line="-parser ${class.parser}" />
+		</java>
+		<move file="${file.pre.parser.out}" tofile="${file.gen.parser}" />
+		<move file="${file.pre.sym.out}" tofile="${file.gen.sym}" />
+	</target>
+</project>
