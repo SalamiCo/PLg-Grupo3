@@ -63,11 +63,3 @@ Op4 → not | menos
 Lit → LitBool | LitNum | litchar
 LitBool → true | false
 LitNum → litnat | menos litnat | litfloat | menos litfloat
-
-/////////////////////////////////
-//Esto es para añadir en el léxico
-subprograms ≡ "subprograms"
-subprogram ≡ "subprogram:"
-coma ≡ ","
-barrabaja ≡ "_"
-
