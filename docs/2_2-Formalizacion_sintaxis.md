@@ -1,6 +1,6 @@
 Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 
-SConsts → const illave Consts fllave | ɛ
+SConsts → consts illave Consts fllave | ɛ
 Consts → Consts pyc Const | Const
 Const → const TPrim ident asig Lit | ɛ
 

@@ -40,10 +40,84 @@ non terminal TAtributos
 	Desig,
 	Expr, Term, Fact, Shft, Unary, Paren,
 	Op0, Op1, Op2, Op3, Op4,
-	Lit, LitBool, LitNum
+	Lit, LitBool, LitNum;
 
 // Definición de las reglas sintácticas
 
 // TODO ¿End of file?
-Program ::= PROGRAM IDENT ILLAVE SConsts Stypes SVars SSubprogs SInsts FLLAVE 
+Program ::= PROGRAM IDENT ILLAVE SConsts Stypes SVars SSubprogs SInsts FLLAVE;
+
+
+SConsts ::= CONSTS ILLAVE Consts FLLAVE;
+SConsts ::= ;
+
+Consts ::= Consts PYC Const;
+Consts ::= Const;
+
+Const ::= CONST TPrim IDENT ASIG Lit;
+Const ::= ;
+
+
+STypes ::= TIPOS ILLAVE Types FLLAVE;
+STypes ::= ;
+
+Types ::= Types PYC Type;
+Types ::= Type;
+
+Type ::= TIPO TypeDesc IDENT;
+Type ::= ;
+
+
+SVars ::= VARS ILLAVE Vars FLLAVE;
+SVars ::= ;
+
+Vars ::= Vars PYC Var;
+Vars ::= Var;
+
+Var ::= VAR TypeDesc IDENT;
+Var ::= ;
+
+TypeDesc ::= TPrim;
+TypeDesc ::= TArray;
+TypeDesc ::= TTupla;
+TypeDesc ::= IDENT;
+
+
+TPrim ::= NATURAL;
+TPrim ::= INTEGER;
+TPrim ::= FLOAT;
+TPrim ::= BOOLEAN;
+TPrim ::= CHARACTER;
+
+Cast ::= CHAR;
+Cast ::= INT;
+Cast ::= NAT;
+Cast := FLOAT;
+
+
+TArray ::= TypeDesc ICORCHETE IDENT FCORCHETE;
+TArray ::= TypeDesc ICORCHETE LITNAT FCORCHETE;
+
+
+TTupla ::= IPAR Tupla FPAR;
+TTupla ::= IPAR FPAR;
+
+Tupla ::= TypeDesc COMA Tupla;
+Tupla ::= TypeDesc;
+
+
+SInsts ::= INSTRUCTIONS ILLAVE Insts FLLAVE;
+
+Insts ::= Insts PYC Inst;
+Insts ::= Inst;
+
+Inst ::= Desig ASIG Expr;
+Inst ::= IN IPAR Desig FPAR;
+Inst ::= OUT IPAR Expr FPAR;
+Inst ::= SWAP1 IPAR FPAR;
+Inst ::= SWAP2 IPAR FPAR;
+Inst ::= IF Expr THEN Insts ElseIf;
+Inst ::= WHILE Expr DO Insts ENDWHILE;
+Inst ::= InstCall;
+Inst ::= ;
 
