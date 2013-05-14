@@ -21,7 +21,7 @@ TArray → TPrim icorchete ident fcorchete Array | TPrim icorchete litnat fcorch
 Array → Array icorchete ident fcorchete | Array icorchete litnat fcorchete | ɛ
 
 TTuplas → ipar TTupla fpar
-TTupla → ident coma TTupla | ident | ɛ
+TTupla → TypeDesc coma TTupla | TypeDesc | ɛ
 
 SInsts → instructions illave Insts fllave
 Insts → Insts pyc Inst | Inst
