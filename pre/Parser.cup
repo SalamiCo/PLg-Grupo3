@@ -1,4 +1,4 @@
-package plg.pruebas;
+package plg.gr3.parser;
 
 import java_cup.runtime.*;
 import es.ucm.fdi.plg.evlib.TAtributos;

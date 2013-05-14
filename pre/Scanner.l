@@ -1,4 +1,4 @@
-package plg.pruebas;
+package plg.gr3.lexer;
 
 import java_cup.runtime.*;
 
