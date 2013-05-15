@@ -9,14 +9,18 @@ añade(ts:TS, id:String, clase:String, nivel:String, dir:Int, tipo:CTipo) : TS
 campo?(ts:TS, campos:CCampo, id:String) : Boolean
 >Devuelve true cuando la lista de campos de Campo contenga campo id. 
 
-desplazamiento(ts:TS, tipo:CTipo, id:String) : Integer
+desplazamiento(tipo:CTipo, id:String) : Integer
 >Devuelve el tamaño que ocupa en memoria el identificador id
+
+###Revisar desplazamiento
 
 existeID(ts:TS, id:String) : Boolean
 >Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, ha sido previamente declarado.
 
-TODO obtieneCtipo(typeDesc:TypeDesc) : CTipo
->Dado un descriptor de tipos obtiene el CTipo asociado
+obtieneCtipo(typeDesc:TypeDesc) : CTipo
+>Dado un descriptor de tipos devuelve el CTipo asociado
+
+###Revisar obtieneCTipo
 
 ## CTipo
 CTipo es el conjunto de propiedades con la información necesaria del tipo. CTipo guarda información diferente dependiendo de si es un tipo construido, un array, una tupla, una variable de todo lo anterior dicho o bien una variable o constante de tipo básico. 
@@ -53,6 +57,9 @@ Cuando la tabla de símbolos guarda una constante o, una variable con tipos prim
     <t:float, tam:1>
     <t:bool, tam:1>
     <t:char, tam:1>
+
+### Ctipo en subprogramas
+TODO
 
 
 ## 3.2.2 Atributos semánticos
@@ -160,7 +167,9 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         Type.id = ident.lex
         Type.clase = Type
         Type.nivel = global
-        FIX   Type.tipo = <t:TypeDesc.type, tipo:<> tam:1>
+        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc) tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)>
+
+###Revisar Type.tipo = ...
 
     Type → ɛ
         Type.ts = Type.tsh
@@ -183,7 +192,7 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         Var.dir = Vars1.dir
         Vars0.ts = Vars1.ts
         Vars0.dir = Vars1.dir
-        Vars0.dir = Vars1.dir + desplazamiento(Vars1.ts, Vars1.tipo, Vars1.id)
+        Vars0.dir = Vars1.dir + desplazamiento(Vars1.tipo, Vars1.id)
         Vars0.ts = añade(Vars1.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
 
     Vars → Var
