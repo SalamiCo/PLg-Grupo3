@@ -29,8 +29,7 @@ swap2 ≡ "swap2"
 call ≡ "call"
 
 Símbolos y operadores
-Asig ≡ "=" 
-dpigual ≡ ":=" 
+asig ≡ "=" 
 lpar ≡ "(" 
 rpar ≡ ")" 
 illave ≡ "{" 
