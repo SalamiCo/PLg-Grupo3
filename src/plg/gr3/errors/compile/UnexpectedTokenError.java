@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import plg.gr3.lexer.LocatedToken;
-import plg.gr3.lexer.Token;
-import plg.gr3.lexer.TokenType;
+import plg.gr3.lexer.OLD.LocatedToken;
+import plg.gr3.lexer.OLD.Token;
+import plg.gr3.lexer.OLD.TokenType;
 
 /**
  * Identificador no esperado

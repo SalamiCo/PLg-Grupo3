@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import plg.gr3.parser.SymbolTable;
-import plg.gr3.parser.SymbolTable.Row;
+import plg.gr3.parser.OLD.SymbolTable;
+import plg.gr3.parser.OLD.SymbolTable.Row;
 
 /**
  * Clase que crea un manejador para el JTable que alberga la tabla de símbolos de la aplicación.

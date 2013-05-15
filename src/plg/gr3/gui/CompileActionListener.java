@@ -16,10 +16,10 @@ import java.util.List;
 
 import plg.gr3.code.StreamCodeWriter;
 import plg.gr3.gui.LogHandler.LogType;
-import plg.gr3.lexer.Lexer;
-import plg.gr3.lexer.LocatedToken;
-import plg.gr3.parser.Parser;
-import plg.gr3.parser.SymbolTable;
+import plg.gr3.lexer.OLD.Lexer;
+import plg.gr3.lexer.OLD.LocatedToken;
+import plg.gr3.parser.OLD.Parser_OLD;
+import plg.gr3.parser.OLD.SymbolTable;
 
 public class CompileActionListener implements ActionListener {
     
@@ -51,7 +51,7 @@ public class CompileActionListener implements ActionListener {
             localWriter = new FileOutputStream(byteCodeFile);
             invoker.setLexer(new Lexer(localReader));
             invoker.setCodeWriter(new StreamCodeWriter(localWriter));
-            invoker.setParser(new Parser(invoker.getLexer(), invoker.getCodeWriter()));
+            invoker.setParser(new Parser_OLD(invoker.getLexer(), invoker.getCodeWriter()));
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
                 

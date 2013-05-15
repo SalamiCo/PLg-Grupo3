@@ -5,7 +5,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
-import plg.gr3.lexer.LocatedToken;
+import plg.gr3.lexer.OLD.LocatedToken;
 
 /**
  * Clase que crea un manejador para el JList que muestra los tokens.

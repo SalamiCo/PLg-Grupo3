@@ -1,4 +1,4 @@
-package plg.gr3.parser;
+package plg.gr3.parser.OLD;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -30,9 +30,9 @@ import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentifierError;
 import plg.gr3.errors.compile.UnexpectedTokenError;
 import plg.gr3.errors.compile.UnrecognizedTokenError;
-import plg.gr3.lexer.Lexer;
-import plg.gr3.lexer.LocatedToken;
-import plg.gr3.lexer.TokenType;
+import plg.gr3.lexer.OLD.Lexer;
+import plg.gr3.lexer.OLD.LocatedToken;
+import plg.gr3.lexer.OLD.TokenType;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
 import plg.gr3.vm.instr.CastInstruction;
 import plg.gr3.vm.instr.InputInstruction;
@@ -50,7 +50,7 @@ import plg.gr3.vm.instr.UnaryOperatorInstruction;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public final class Parser implements Closeable {
+public final class Parser_OLD implements Closeable {
     
     /** Analizador léxico a utilizar */
     private final Lexer lexer;
@@ -80,7 +80,7 @@ public final class Parser implements Closeable {
      * @param lexer Analizador léxico que será utilizado por este analizador sintáctico
      * @param codeWriter Escritor al que se escribirá todo el código
      */
-    public Parser (Lexer lexer, CodeWriter codeWriter) {
+    public Parser_OLD (Lexer lexer, CodeWriter codeWriter) {
         this.lexer = lexer;
         this.codeWriter = codeWriter;
         this.symbolTable = new SymbolTable();

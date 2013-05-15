@@ -38,8 +38,8 @@ import javax.swing.SwingUtilities;
 import plg.gr3.code.CodeWriter;
 import plg.gr3.debug.Debugger;
 import plg.gr3.gui.LogHandler.LogType;
-import plg.gr3.lexer.Lexer;
-import plg.gr3.parser.Parser;
+import plg.gr3.lexer.OLD.Lexer;
+import plg.gr3.parser.OLD.Parser_OLD;
 import plg.gr3.vm.VirtualMachine;
 import plg.gr3.vm.instr.Instruction;
 
@@ -113,7 +113,7 @@ public final class CompilerUI extends JFrame {
     // Objetos encargados de la compilación.
     private Lexer lexer;
     
-    private Parser parser;
+    private Parser_OLD parser;
     
     private CodeWriter codeWriter;
     
@@ -785,11 +785,11 @@ public final class CompilerUI extends JFrame {
         this.lexer = lexer;
     }
     
-    public Parser getParser () {
+    public Parser_OLD getParser () {
         return parser;
     }
     
-    public void setParser (Parser parser) {
+    public void setParser (Parser_OLD parser) {
         this.parser = parser;
     }
     

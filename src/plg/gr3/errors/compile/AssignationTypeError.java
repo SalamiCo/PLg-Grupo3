@@ -1,7 +1,7 @@
 package plg.gr3.errors.compile;
 
 import plg.gr3.data.Type;
-import plg.gr3.lexer.LocatedToken;
+import plg.gr3.lexer.OLD.LocatedToken;
 
 /**
  * Error de tipos en la asignación

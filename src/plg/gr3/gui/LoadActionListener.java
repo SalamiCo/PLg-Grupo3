@@ -13,10 +13,10 @@ import java.util.List;
 
 import plg.gr3.code.ListCodeWriter;
 import plg.gr3.gui.LogHandler.LogType;
-import plg.gr3.lexer.Lexer;
-import plg.gr3.lexer.LocatedToken;
-import plg.gr3.parser.Parser;
-import plg.gr3.parser.SymbolTable;
+import plg.gr3.lexer.OLD.Lexer;
+import plg.gr3.lexer.OLD.LocatedToken;
+import plg.gr3.parser.OLD.Parser_OLD;
+import plg.gr3.parser.OLD.SymbolTable;
 import plg.gr3.vm.instr.Instruction;
 
 public class LoadActionListener implements ActionListener {
@@ -51,7 +51,7 @@ public class LoadActionListener implements ActionListener {
             ListCodeWriter codeWriter = new ListCodeWriter();
             
             invoker.setLexer(new Lexer(localReader));
-            invoker.setParser(new Parser(invoker.getLexer(), codeWriter));
+            invoker.setParser(new Parser_OLD(invoker.getLexer(), codeWriter));
             if (invoker.getParser().parse()) {
                 CompilerUI.log(LogType.LOG, "Succesfully compiled.");
                 

@@ -1,4 +1,4 @@
-package plg.gr3.lexer;
+package plg.gr3.lexer.OLD;
 
 import java.util.Collections;
 import java.util.EnumSet;

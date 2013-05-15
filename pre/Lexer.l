@@ -1,14 +1,18 @@
-package plg.gr3.lexer;
+package plg.gr3.parser;
 
 import java_cup.runtime.*;
 
 %%
 
-%class Scanner
+%class Lexer
+%public
 %unicode
 %cup 
 %line 
 %column
+
+/* Comentarios */
+_comment = "@" [^\r\n]* (\r|\n|\r\n)
 
 /*Expresiones auxiliares*/
 minus    = [a-z]
@@ -24,7 +28,7 @@ parteexp = ("e" | "E") \-? {litnat}
 litnat   = 0 | {digitn0} {digit}*
 litfloat = {litnat} ({partedec} {parteexp}? | {parteexp})
 litchar  = \'[^\']*\'
-ident    = {minus} {alfanum}*
+ident    = {letra} {alfanum}*
 true     = "true"
 false    = "false"
 
@@ -32,13 +36,16 @@ false    = "false"
 program    = "program:"
 subprogram = "subprogram:"
 vars   = "vars"
+tipos  = "tipos"
 consts = "consts"
 subprograms  = "subprograms"
 instructions = "instructions"
 var   = "var"
 const = "const"
+tipo  = "tipo"
 in  = "in"
 out = "out"
+call = "call"
 swap1 = "swap1"
 swap2 = "swap2"
 float = "float"
@@ -59,11 +66,12 @@ endwhile = "endwhile"
 
 /*Simbolos y operadores*/
 asig = "="
-dpigual = ":="
-lpar = "("
-rpar = ")"
+ipar = "("
+fpar = ")"
 illave = "{"
 fllave = "}"
+icorchete = "["
+fcorchete = "]"
 pyc = ";"
 coma = ","
 barrabaja = "_"
@@ -88,6 +96,7 @@ rsh = ">>"
 
 [\t\r\n ] {}
 #[^\n]*   {}
+{_comment} {}
 
 {litnat}   {return new Symbol(sym.LITNAT, yytext());}
 {litfloat} {return new Symbol(sym.LITFLOAT, yytext());}
@@ -98,13 +107,16 @@ rsh = ">>"
 {program}      {return new Symbol(sym.PROGRAM);}
 {subprogram}   {return new Symbol(sym.SUBPROGRAM);}
 {vars}         {return new Symbol(sym.VARS);}
+{tipos}        {return new Symbol(sym.TIPOS);}
 {consts}       {return new Symbol(sym.CONSTS);}
 {subprograms}  {return new Symbol(sym.SUBPROGRAMS);}
 {instructions} {return new Symbol(sym.INSTRUCTIONS);}
 {var}       {return new Symbol(sym.VAR);}
+{tipo}      {return new Symbol(sym.TIPO);}
 {const}     {return new Symbol(sym.CONST);}
 {in}        {return new Symbol(sym.IN);}
 {out}       {return new Symbol(sym.OUT);}
+{call}      {return new Symbol(sym.CALL);}
 {swap1}     {return new Symbol(sym.SWAP1);}
 {swap2}     {return new Symbol(sym.SWAP2);}
 {float}     {return new Symbol(sym.FLOAT);}
@@ -124,11 +136,12 @@ rsh = ">>"
 {endwhile}  {return new Symbol(sym.ENDWHILE);}
 
 {asig}    {return new Symbol(sym.ASIG);}
-{dpigual} {return new Symbol(sym.DPIGUAL);}
-{lpar}    {return new Symbol(sym.LPAR);}
-{rpar}    {return new Symbol(sym.RPAR);}
+{ipar}    {return new Symbol(sym.IPAR);}
+{fpar}    {return new Symbol(sym.FPAR);}
 {illave}  {return new Symbol(sym.ILLAVE);}
 {fllave}  {return new Symbol(sym.FLLAVE);}
+{icorchete} {return new Symbol(sym.ICORCHETE);}
+{fcorchete} {return new Symbol(sym.FCORCHETE);}
 {pyc}     {return new Symbol(sym.PYC);}
 {coma}    {return new Symbol(sym.COMA);}
 {barrabaja} {return new Symbol(sym.BARRABAJA);}

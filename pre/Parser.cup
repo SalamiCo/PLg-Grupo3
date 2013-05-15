@@ -5,22 +5,19 @@ import es.ucm.fdi.plg.evlib.TAtributos;
 
 // Se crea el objeto que contiene las funciones de atribución
 action code {:
-   private EAtribucion atrb = new EAtribucion();
+   private Attribution attr = new Attribution();
 :}
 
 // Definición de los terminales del lenguaje 
-terminal String IDENT;
-terminal String LITNAT;
-terminal String LITFLOAT;
-terminal String LITCHAR;
+terminal String IDENT, LITNAT, LITFLOAT, LITCHAR;
 
 terminal TRUE, FALSE, PROGRAM,
- SUBPROGRAM, VARS, CONSTS, SUBPROGRAMS, INSTRUCTIONS, VAR, CONST, 
- IN, OUT, SWAP1, SWAP2, FLOAT, INTEGER, NATURAL, CHARACTER, BOOLEAN, 
+ SUBPROGRAM, VARS, TIPOS, CONSTS, SUBPROGRAMS, INSTRUCTIONS, VAR, CONST, TIPO,
+ IN, OUT, CALL, SWAP1, SWAP2, FLOAT, INTEGER, NATURAL, CHARACTER, BOOLEAN, 
  INT, NAT, CHAR, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDWHILE, ASIG, 
- DPIGUAL, LPAR, RPAR, ILLAVE, FLLAVE, PYC, COMA, BARRABAJA, MEN, 
+ IPAR, FPAR, ILLAVE, FLLAVE, PYC, COMA, BARRABAJA, MEN, 
  MAY, MENOIG, MAYOIG, IGUAL, NOIGUAL, MAS, MENOS, MUL, DIV, MOD, 
- AND, OR, NOT, LSH, RSH;
+ AND, OR, NOT, LSH, RSH, ICORCHETE, FCORCHETE;
 
 // Definición de los no terminales del lenguaje
 non terminal Program;
@@ -31,11 +28,10 @@ non terminal TAtributos
 	SSubprogs, Subprogs, Subprog,
 	TypeDesc, TPrim, Cast,
 	TArray, 
-	TTupla, Tupla
+	TTupla, Tupla,
 	SInsts, Insts, Inst,
 	ElseIf, InstCall,
 	SRParams, RParams, RParam,
-	SSubprogs, Subprogs, Subprog,
 	SFParams, FParams, FParam,
 	Desig,
 	Expr, Term, Fact, Shft, Unary, Paren,
@@ -45,7 +41,7 @@ non terminal TAtributos
 // Definición de las reglas sintácticas
 
 // TODO ¿End of file?
-Program ::= PROGRAM IDENT ILLAVE SConsts Stypes SVars SSubprogs SInsts FLLAVE {:
+Program ::= PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE {:
 
 :};
 
@@ -229,7 +225,7 @@ ElseIf ::= ELSE Insts ENDIF {:
 
 :};
 
-InstCall ::= CALL IDENT LPAR SRParams RPAR {:
+InstCall ::= CALL IDENT IPAR SRParams FPAR {:
 
 :};
 
@@ -248,12 +244,15 @@ RParams ::= RParams COMA RParam {:
 
 :};
 
-RParam ::= IDENT IGUAL Expr {:
+RParam ::= IDENT ASIG Expr {:
 
 :};
 
 
 SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs FLLAVE {:
+
+:}
+            | SUBPROGRAMS ILLAVE FLLAVE {:
 
 :}
             | {:
@@ -267,7 +266,7 @@ Subprogs ::= Subprogs Subprog {:
 
 :};
 
-Subprog ::= SUBPROGRAM IDENT IPAR SParams FPAR ILLAVE SVars SInsts FLLAVE {:
+Subprog ::= SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE {:
 
 :};
 
@@ -336,14 +335,14 @@ Shft ::= Unary Op3 Shft {:
 Unary ::= Op4 Unary {:
 
 :}
-        | LPAR Cast RPAR Paren {:
+        | IPAR Cast FPAR Paren {:
 
 :}
         | Paren {:
 
 :};
 
-Paren ::= LPAR Expr RPAR {:
+Paren ::= IPAR Expr FPAR {:
 
 :}
         | Lit {:
@@ -417,7 +416,7 @@ Lit ::= LitBool {:
       | LitNum {:
 
 :}
-      | LitChar {:
+      | LITCHAR {:
 
 :};
 
@@ -431,12 +430,8 @@ LitBool ::= TRUE {:
 LitNum ::= LITNAT {:
 
 :}
-         | MENOS LITNAT {:
-
-:}
+//| MENOS LITNAT {::}
          | LITFLOAT {:
 
-:}
-         | MENOS LITFLOAT {:
-
 :};
+//| MENOS LITFLOAT {::};

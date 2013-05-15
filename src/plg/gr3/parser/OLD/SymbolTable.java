@@ -1,4 +1,4 @@
-package plg.gr3.parser;
+package plg.gr3.parser.OLD;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 import plg.gr3.data.Type;
 import plg.gr3.data.Value;
-import plg.gr3.parser.SymbolTable.Row;
+import plg.gr3.parser.OLD.SymbolTable.Row;
 
 /**
  * Representación de la tabla de símbolos mediante una tabla con clave el identificador de la variable o costante que se

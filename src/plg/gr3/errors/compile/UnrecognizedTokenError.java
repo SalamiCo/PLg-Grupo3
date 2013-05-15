@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import plg.gr3.lexer.TokenType;
+import plg.gr3.lexer.OLD.TokenType;
 
 /**
  * Error de token sin reconocer.

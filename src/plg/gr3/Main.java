@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Scanner;
 
 import java_cup.runtime.DefaultSymbolFactory;
 import java_cup.runtime.Symbol;
@@ -20,8 +19,9 @@ import java_cup.runtime.SymbolFactory;
 import plg.gr3.code.StreamCodeReader;
 import plg.gr3.debug.Debugger;
 import plg.gr3.errors.runtime.RuntimeError;
+import plg.gr3.parser.Lexer;
+import plg.gr3.parser.Parser;
 import plg.gr3.vm.VirtualMachine;
-import plg.pruebas.Parser;
 
 /**
  * Aplicación principal en consola
@@ -52,20 +52,25 @@ public final class Main {
     public static void main (String[] args) {
         if (args.length < 1) {
             printUsage();
-        }
-        
-        String command = args[0];
-        switch (command) {
-            case "compile":
-                compile(Arrays.copyOfRange(args, 1, args.length));
-            break;
+        } else {
             
-            case "run":
-                run(Arrays.copyOfRange(args, 1, args.length));
-            break;
-            
-            default:
-                printUsage();
+            try {
+                String command = args[0];
+                switch (command) {
+                    case "compile":
+                        compile(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                    
+                    case "run":
+                        run(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                    
+                    default:
+                        printUsage();
+                }
+            } catch (Exception exc) {
+                exc.printStackTrace();
+            }
         }
     }
     
@@ -73,8 +78,10 @@ public final class Main {
      * Comando de compilación
      * 
      * @param args Argumentos de línea de comandos
+     * @throws IOException Si hay unproblema de E/S
+     * @throws Exception Si falla otra cosa
      */
-    public static void compile (String[] args) {
+    public static void compile (String[] args) throws Exception {
         if (args.length != 2) {
             printUsage();
         }
@@ -88,8 +95,9 @@ public final class Main {
         SymbolFactory symbolFactory = new DefaultSymbolFactory();
         
         try (InputStream input = Files.newInputStream(pathInput, READ)) {
-            Parser p = new Parser(new Scanner(input), symbolFactory));
-            Symbol s = p.parse();
+            Lexer lexer = new Lexer(input);
+            Parser parser = new Parser(lexer, symbolFactory);
+            Symbol symbol = parser.parse();
             
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 // TODO Output results
