@@ -40,7 +40,7 @@ SRParams → RParams | ɛ
 RParams → RParams coma RParam | RParam
 RParam → ident igual Expr
 
-SSubprogs → subprograms illave Subprogs fllave | ɛ
+SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | ɛ
 Subprogs → Subprogs Subprog | Subprog
 Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 
@@ -65,4 +65,4 @@ Op4 → not | menos
 
 Lit → LitBool | LitNum | litchar
 LitBool → true | false
-LitNum → litnat | menos litnat | litfloat | menos litfloat
+LitNum → litnat | litfloat
