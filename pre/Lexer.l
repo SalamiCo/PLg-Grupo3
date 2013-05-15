@@ -11,6 +11,11 @@ import java_cup.runtime.*;
 %line 
 %column
 
+%{
+	   int yyline() { return yyline+1; }
+	   int yycolumn() { return yycolumn+1; }
+%}
+
 /* Comentarios */
 _comment = "@" [^\r\n]* (\r|\n|\r\n)
 
@@ -98,71 +103,71 @@ rsh = ">>"
 #[^\n]*   {}
 {_comment} {}
 
-{litnat}   {return new Symbol(sym.LITNAT, yytext());}
-{litfloat} {return new Symbol(sym.LITFLOAT, yytext());}
-{litchar}  {return new Symbol(sym.LITCHAR, yytext());}
-{true}     {return new Symbol(sym.TRUE);}
-{false}    {return new Symbol(sym.FALSE);}
+{litnat}   {return new Symbol(sym.LITNAT, yyline(), yycolumn(), yytext());}
+{litfloat} {return new Symbol(sym.LITFLOAT, yyline(), yycolumn(), yytext());}
+{litchar}  {return new Symbol(sym.LITCHAR, yyline(), yycolumn(), yytext());}
+{true}     {return new Symbol(sym.TRUE, yyline(), yycolumn(), yytext());}
+{false}    {return new Symbol(sym.FALSE, yyline(), yycolumn(), yytext());}
 
-{program}      {return new Symbol(sym.PROGRAM);}
-{subprogram}   {return new Symbol(sym.SUBPROGRAM);}
-{vars}         {return new Symbol(sym.VARS);}
-{tipos}        {return new Symbol(sym.TIPOS);}
-{consts}       {return new Symbol(sym.CONSTS);}
-{subprograms}  {return new Symbol(sym.SUBPROGRAMS);}
-{instructions} {return new Symbol(sym.INSTRUCTIONS);}
-{var}       {return new Symbol(sym.VAR);}
-{tipo}      {return new Symbol(sym.TIPO);}
-{const}     {return new Symbol(sym.CONST);}
-{in}        {return new Symbol(sym.IN);}
-{out}       {return new Symbol(sym.OUT);}
-{call}      {return new Symbol(sym.CALL);}
-{swap1}     {return new Symbol(sym.SWAP1);}
-{swap2}     {return new Symbol(sym.SWAP2);}
-{float}     {return new Symbol(sym.FLOAT);}
-{integer}   {return new Symbol(sym.INTEGER);}
-{natural}   {return new Symbol(sym.NATURAL);}
-{character} {return new Symbol(sym.CHARACTER);}
-{boolean}   {return new Symbol(sym.BOOLEAN);}
-{int}       {return new Symbol(sym.INT);}
-{nat}       {return new Symbol(sym.NAT);}
-{char}      {return new Symbol(sym.CHAR);}
-{if}        {return new Symbol(sym.IF);}
-{then}      {return new Symbol(sym.THEN);}
-{else}      {return new Symbol(sym.ELSE);}
-{endif}     {return new Symbol(sym.ENDIF);}
-{while}     {return new Symbol(sym.WHILE);}
-{do}        {return new Symbol(sym.DO);}
-{endwhile}  {return new Symbol(sym.ENDWHILE);}
+{program}      {return new Symbol(sym.PROGRAM, yyline(), yycolumn(), yytext());}
+{subprogram}   {return new Symbol(sym.SUBPROGRAM, yyline(), yycolumn(), yytext());}
+{vars}         {return new Symbol(sym.VARS, yyline(), yycolumn(), yytext());}
+{tipos}        {return new Symbol(sym.TIPOS, yyline(), yycolumn(), yytext());}
+{consts}       {return new Symbol(sym.CONSTS, yyline(), yycolumn(), yytext());}
+{subprograms}  {return new Symbol(sym.SUBPROGRAMS, yyline(), yycolumn(), yytext());}
+{instructions} {return new Symbol(sym.INSTRUCTIONS, yyline(), yycolumn(), yytext());}
+{var}       {return new Symbol(sym.VAR, yyline(), yycolumn(), yytext());}
+{tipo}      {return new Symbol(sym.TIPO, yyline(), yycolumn(), yytext());}
+{const}     {return new Symbol(sym.CONST, yyline(), yycolumn(), yytext());}
+{in}        {return new Symbol(sym.IN, yyline(), yycolumn(), yytext());}
+{out}       {return new Symbol(sym.OUT, yyline(), yycolumn(), yytext());}
+{call}      {return new Symbol(sym.CALL, yyline(), yycolumn(), yytext());}
+{swap1}     {return new Symbol(sym.SWAP1, yyline(), yycolumn(), yytext());}
+{swap2}     {return new Symbol(sym.SWAP2, yyline(), yycolumn(), yytext());}
+{float}     {return new Symbol(sym.FLOAT, yyline(), yycolumn(), yytext());}
+{integer}   {return new Symbol(sym.INTEGER, yyline(), yycolumn(), yytext());}
+{natural}   {return new Symbol(sym.NATURAL, yyline(), yycolumn(), yytext());}
+{character} {return new Symbol(sym.CHARACTER, yyline(), yycolumn(), yytext());}
+{boolean}   {return new Symbol(sym.BOOLEAN, yyline(), yycolumn(), yytext());}
+{int}       {return new Symbol(sym.INT, yyline(), yycolumn(), yytext());}
+{nat}       {return new Symbol(sym.NAT, yyline(), yycolumn(), yytext());}
+{char}      {return new Symbol(sym.CHAR, yyline(), yycolumn(), yytext());}
+{if}        {return new Symbol(sym.IF, yyline(), yycolumn(), yytext());}
+{then}      {return new Symbol(sym.THEN, yyline(), yycolumn(), yytext());}
+{else}      {return new Symbol(sym.ELSE, yyline(), yycolumn(), yytext());}
+{endif}     {return new Symbol(sym.ENDIF, yyline(), yycolumn(), yytext());}
+{while}     {return new Symbol(sym.WHILE, yyline(), yycolumn(), yytext());}
+{do}        {return new Symbol(sym.DO, yyline(), yycolumn(), yytext());}
+{endwhile}  {return new Symbol(sym.ENDWHILE, yyline(), yycolumn(), yytext());}
 
-{asig}    {return new Symbol(sym.ASIG);}
-{ipar}    {return new Symbol(sym.IPAR);}
-{fpar}    {return new Symbol(sym.FPAR);}
-{illave}  {return new Symbol(sym.ILLAVE);}
-{fllave}  {return new Symbol(sym.FLLAVE);}
-{icorchete} {return new Symbol(sym.ICORCHETE);}
-{fcorchete} {return new Symbol(sym.FCORCHETE);}
-{pyc}     {return new Symbol(sym.PYC);}
-{coma}    {return new Symbol(sym.COMA);}
-{barrabaja} {return new Symbol(sym.BARRABAJA);}
-{men}     {return new Symbol(sym.MEN);}
-{may}     {return new Symbol(sym.MAY);}
-{menoig}  {return new Symbol(sym.MENOIG);}
-{mayoig}  {return new Symbol(sym.MAYOIG);}
-{igual}   {return new Symbol(sym.IGUAL);}
-{noigual} {return new Symbol(sym.NOIGUAL);}
-{mas}     {return new Symbol(sym.MAS);}
-{menos}   {return new Symbol(sym.MENOS);}
-{mul}     {return new Symbol(sym.MUL);}
-{div}     {return new Symbol(sym.DIV);}
-{mod}     {return new Symbol(sym.MOD);}
-{and}     {return new Symbol(sym.AND);}
-{or}      {return new Symbol(sym.OR);}
-{not}     {return new Symbol(sym.NOT);}
-{lsh}     {return new Symbol(sym.LSH);}
-{rsh}     {return new Symbol(sym.RSH);}
+{asig}    {return new Symbol(sym.ASIG, yyline(), yycolumn(), yytext());}
+{ipar}    {return new Symbol(sym.IPAR, yyline(), yycolumn(), yytext());}
+{fpar}    {return new Symbol(sym.FPAR, yyline(), yycolumn(), yytext());}
+{illave}  {return new Symbol(sym.ILLAVE, yyline(), yycolumn(), yytext());}
+{fllave}  {return new Symbol(sym.FLLAVE, yyline(), yycolumn(), yytext());}
+{icorchete} {return new Symbol(sym.ICORCHETE, yyline(), yycolumn(), yytext());}
+{fcorchete} {return new Symbol(sym.FCORCHETE, yyline(), yycolumn(), yytext());}
+{pyc}     {return new Symbol(sym.PYC, yyline(), yycolumn(), yytext());}
+{coma}    {return new Symbol(sym.COMA, yyline(), yycolumn(), yytext());}
+{barrabaja} {return new Symbol(sym.BARRABAJA, yyline(), yycolumn(), yytext());}
+{men}     {return new Symbol(sym.MEN, yyline(), yycolumn(), yytext());}
+{may}     {return new Symbol(sym.MAY, yyline(), yycolumn(), yytext());}
+{menoig}  {return new Symbol(sym.MENOIG, yyline(), yycolumn(), yytext());}
+{mayoig}  {return new Symbol(sym.MAYOIG, yyline(), yycolumn(), yytext());}
+{igual}   {return new Symbol(sym.IGUAL, yyline(), yycolumn(), yytext());}
+{noigual} {return new Symbol(sym.NOIGUAL, yyline(), yycolumn(), yytext());}
+{mas}     {return new Symbol(sym.MAS, yyline(), yycolumn(), yytext());}
+{menos}   {return new Symbol(sym.MENOS, yyline(), yycolumn(), yytext());}
+{mul}     {return new Symbol(sym.MUL, yyline(), yycolumn(), yytext());}
+{div}     {return new Symbol(sym.DIV, yyline(), yycolumn(), yytext());}
+{mod}     {return new Symbol(sym.MOD, yyline(), yycolumn(), yytext());}
+{and}     {return new Symbol(sym.AND, yyline(), yycolumn(), yytext());}
+{or}      {return new Symbol(sym.OR, yyline(), yycolumn(), yytext());}
+{not}     {return new Symbol(sym.NOT, yyline(), yycolumn(), yytext());}
+{lsh}     {return new Symbol(sym.LSH, yyline(), yycolumn(), yytext());}
+{rsh}     {return new Symbol(sym.RSH, yyline(), yycolumn(), yytext());}
 
-{ident}    {return new Symbol(sym.IDENT, yytext());}
-[^]       {throw new Error("Caracter no reconocido:"+yytext());}
+{ident}    {return new Symbol(sym.IDENT, yyline(), yycolumn(), yytext());}
+[^]       {throw new RuntimeException("Caracter no reconocido: "+yytext());}
 
 

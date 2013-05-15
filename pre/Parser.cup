@@ -1,11 +1,21 @@
 package plg.gr3.parser;
 
 import java_cup.runtime.*;
+import plg.gr3.errors.Error;
+import plg.gr3.errors.compile.*;
 import es.ucm.fdi.plg.evlib.TAtributos;
 
 // Se crea el objeto que contiene las funciones de atribución
 action code {:
    private Attribution attr = new Attribution();
+:}
+
+parser code {:
+	@Override
+	public void syntax_error (Symbol symbol) {
+		Error error = new SyntaxError(symbol);
+		error.print();
+	}
 :}
 
 // Definición de los terminales del lenguaje 
