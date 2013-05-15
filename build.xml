@@ -26,20 +26,36 @@
 	<property name="class.parser" value="Parser" />
 	<property name="class.main" value="plg.gr3.Main" />
 
-	<target name="all" depends="gen" />
-	
+	<path id="project.class.path">
+		<pathelement location="${dir.lib}" />
+		<pathelement path="${jar.cup}" />
+		<pathelement path="${jar.jflex}" />
+	</path>
+
+	<target name="all" depends="gen,compile" />
+
 	<!-- Generadores del proyecto -->
-	<target name="gen" depends="-gen-scanner,-gen-parser" />
-	
+	<target name="gen" depends="clean,-gen-scanner,-gen-parser" />
+
+	<!-- Compilación -->
+	<target name="compile" depends="gen">
+	    <mkdir dir="${dir.bin}" />
+		<javac srcdir="${dir.src}" destdir="${dir.bin}" fork="true" includeantruntime="true">
+			<classpath refid="project.class.path" />
+			<src path="${dir.src}" />
+			<src path="${dir.gen}" />
+		</javac>
+	</target>
+
 	<!-- Limpia el directorio de ficheros generados -->
 	<target name="clean">
-	    <delete dir="${dir.gen}" />
-	    <!-- <delete dir="${dir.bin} /> -->
+		<delete dir="${dir.gen}" />
+		<delete dir="${dir.bin}" />
 	</target>
-	
+
 
 	<!-- Genera el Lexer -->
-	<target name="-gen-scanner">
+	<target name="-gen-scanner" depends="clean">
 		<java jar="${jar.jflex}" fork="true">
 			<arg value="${file.pre.scanner.in}" />
 		</java>
@@ -47,7 +63,7 @@
 	</target>
 
 	<!-- Genera el Parser -->
-	<target name="-gen-parser" depends="-gen-scanner">
+	<target name="-gen-parser" depends="clean,-gen-scanner">
 		<java jar="${jar.cup}" fork="true" input="${file.pre.parser.in}">
 			<arg line="-parser ${class.parser}" />
 		</java>
