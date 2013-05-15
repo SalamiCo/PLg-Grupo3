@@ -23,35 +23,420 @@ terminal TRUE, FALSE, PROGRAM,
  AND, OR, NOT, LSH, RSH;
 
 // Definición de los no terminales del lenguaje
-non terminal S;
-non terminal TAtributos I, T, F, E;
+non terminal Program;
+non terminal TAtributos
+	SConsts, Consts, Const,
+	STypes, Types, Type,
+	SVars, Vars, Var,
+	SSubprogs, Subprogs, Subprog,
+	TypeDesc, TPrim, Cast,
+	TArray, 
+	TTupla, Tupla
+	SInsts, Insts, Inst,
+	ElseIf, InstCall,
+	SRParams, RParams, RParam,
+	SSubprogs, Subprogs, Subprog,
+	SFParams, FParams, FParam,
+	Desig,
+	Expr, Term, Fact, Shft, Unary, Paren,
+	Op0, Op1, Op2, Op3, Op4,
+	Lit, LitBool, LitNum;
 
 // Definición de las reglas sintácticas
 
-S ::= I:i {:
-  RESULT = atrb.sR1(i);
+// TODO ¿End of file?
+Program ::= PROGRAM IDENT ILLAVE SConsts Stypes SVars SSubprogs SInsts FLLAVE {:
+
 :};
 
-I ::= TRUE{:
-  RESULT = atrb.iR1();
+
+SConsts ::= CONSTS ILLAVE Consts FLLAVE{:
+
+:}
+          | {:
+
 :};
 
-I ::= FALSE{:
-  RESULT = atrb.iR2();
+Consts ::= Consts PYC Const {:
+
+:}
+         | Const {:
+
 :};
 
-I ::= LITNAT:litnat{:
-  RESULT = atrb.iR3(litnat);
+Const ::= CONST TPrim IDENT ASIG Lit {:
+
+:}
+        | {:
+
 :};
 
-I ::= LITFLOAT:litfloat{:
-  RESULT = atrb.iR4(litfloat);
+
+STypes ::= TIPOS ILLAVE Types FLLAVE {:
+
+:}
+         | {:
+
 :};
 
-I ::= LITCHAR:litchar{:
-  RESULT = atrb.iR5(litchar);
+Types ::= Types PYC Type {:
+
+:}
+        | {:
+
+:}Type;
+
+Type ::= TIPO TypeDesc IDENT {:
+
+:}
+       | {:
+
 :};
 
-I ::= IDENT:ident{:
-  RESULT = atrb.iR6(ident);
+
+SVars ::= VARS ILLAVE Vars FLLAVE {:
+
+:}
+        | {:
+
+:};
+
+Vars ::= Vars PYC Var {:
+
+:}
+       | Var {:
+
+:};
+
+Var ::= VAR TypeDesc IDENT {:
+
+:}
+      | {:
+
+:};
+
+TypeDesc ::= TPrim {:
+
+:}
+           | TArray {:
+
+:}
+           | TTupla {:
+
+:}
+           | IDENT {:
+
+:};
+
+
+TPrim ::= NATURAL {:
+
+:}
+        | INTEGER {:
+
+:}
+        | FLOAT {:
+
+:}
+        | BOOLEAN {:
+
+:}
+        | CHARACTER {:
+
+:};
+
+Cast ::= CHAR {:
+
+:}
+       | INT {:
+
+:}
+       | NAT {:
+
+:}
+       | FLOAT {:
+
+:};
+
+
+TArray ::= TypeDesc ICORCHETE IDENT FCORCHETE {:
+
+:}
+         | TypeDesc ICORCHETE LITNAT FCORCHETE {:
+
+:};
+
+
+TTupla ::= IPAR Tupla FPAR {:
+
+:}
+         | IPAR FPAR {:
+
+:};
+
+Tupla ::= TypeDesc COMA Tupla {:
+
+:}
+        | TypeDesc {:
+
+:};
+
+
+SInsts ::= INSTRUCTIONS ILLAVE Insts FLLAVE {:
+
+:};
+
+Insts ::= Insts PYC Inst {:
+
+:}
+        | Inst {:
+
+:};
+
+Inst ::= Desig ASIG Expr {:
+
+:}
+       | IN IPAR Desig FPAR {:
+
+:}
+       | OUT IPAR Expr FPAR {:
+
+:}
+       | SWAP1 IPAR FPAR {:
+
+:}
+       | SWAP2 IPAR FPAR {:
+
+:}
+       | IF Expr THEN Insts ElseIf {:
+
+:}
+       | WHILE Expr DO Insts ENDWHILE {:
+
+:}
+       | InstCall {:
+
+:}
+       | {:
+
+:};
+
+
+ElseIf ::= ELSE Insts ENDIF {:
+
+:}
+         | ENDIF {:
+
+:};
+
+InstCall ::= CALL IDENT LPAR SRParams RPAR {:
+
+:};
+
+
+SRParams ::= RParams {:
+
+:}
+       | {:
+
+:};
+
+RParams ::= RParams COMA RParam {:
+
+:}
+          | RParam {:
+
+:};
+
+RParam ::= IDENT IGUAL Expr {:
+
+:};
+
+
+SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs FLLAVE {:
+
+:}
+            | {:
+
+:};
+
+Subprogs ::= Subprogs Subprog {:
+
+:}
+           | Subprog {:
+
+:};
+
+Subprog ::= SUBPROGRAM IDENT IPAR SParams FPAR ILLAVE SVars SInsts FLLAVE {:
+
+:};
+
+
+SFParams ::= FParams {:
+
+:}
+           | {:
+
+:};
+
+FParams ::= FParams COMA FParam {:
+
+:}
+          | FParam {:
+
+:};
+
+FParam ::= TypeDesc IDENT {:
+
+:}
+         | TypeDesc MUL IDENT {:
+
+:};
+
+
+Desig ::= IDENT {:
+
+:}
+        | Desig ICORCHETE Expr FCORCHETE {:
+
+:}
+        | Desig BARRABAJA LITNAT {:
+
+:};
+
+
+Expr ::= Term Op0 Term {:
+
+:}
+       | Term {:
+
+:};
+
+Term ::= Term Op1 Fact {:
+
+:}
+       | Fact {:
+
+:};
+
+Fact ::= Fact Op2 Shft {:
+
+:}
+       | Shft {:
+
+:};
+
+Shft ::= Unary Op3 Shft {:
+
+:}
+       | Unary {:
+
+:};
+
+Unary ::= Op4 Unary {:
+
+:}
+        | LPAR Cast RPAR Paren {:
+
+:}
+        | Paren {:
+
+:};
+
+Paren ::= LPAR Expr RPAR {:
+
+:}
+        | Lit {:
+
+:}
+        | Desig {:
+
+:};
+
+
+Op0 ::= IGUAL {:
+
+:}
+      | NOIGUAL {:
+
+:}
+      | MEN {:
+
+:}
+      | MAY {:
+
+:}
+      | MENOIG {:
+
+:}
+      | MAYOIG {:
+
+:};
+
+Op1 ::= OR {:
+
+:}
+      | MENOS {:
+
+:}
+      | MAS {:
+
+:};
+
+Op2 ::= AND {:
+
+:}
+      | MOD {:
+
+:}
+      | DIV {:
+
+:}
+      | MUL {:
+
+:};
+
+Op3 ::= LSH {:
+
+:}
+      | RSH {:
+
+:};
+
+Op4 ::= NOT {:
+
+:}
+      | MENOS {:
+
+:};
+
+
+Lit ::= LitBool {:
+
+:}
+      | LitNum {:
+
+:}
+      | LitChar {:
+
+:};
+
+LitBool ::= TRUE {:
+
+:}
+          | FALSE {:
+
+:};
+
+LitNum ::= LITNAT {:
+
+:}
+         | MENOS LITNAT {:
+
+:}
+         | LITFLOAT {:
+
+:}
+         | MENOS LITFLOAT {:
+
 :};

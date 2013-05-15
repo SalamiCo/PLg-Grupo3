@@ -1,6 +1,6 @@
 Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 
-SConsts → const illave Consts fllave | ɛ
+SConsts → consts illave Consts fllave | ɛ
 Consts → Consts pyc Const | Const
 Const → const TPrim ident asig Lit | ɛ
 
@@ -19,8 +19,8 @@ Cast → char | int | nat | float
 
 TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
 
-TTuplas → ipar TTupla fpar | ipar fpar
-TTupla → TypeDesc coma TTupla | TypeDesc
+TTupla → ipar Tupla fpar | ipar fpar
+Tupla → TypeDesc coma Tupla | TypeDesc
 
 SInsts → instructions illave Insts fllave
 Insts → Insts pyc Inst | Inst
