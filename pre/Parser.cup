@@ -23,35 +23,196 @@ terminal TRUE, FALSE, PROGRAM,
  AND, OR, NOT, LSH, RSH;
 
 // Definición de los no terminales del lenguaje
-non terminal S;
-non terminal TAtributos I, T, F, E;
+non terminal Program;
+non terminal TAtributos
+	SConsts, Consts, Const,
+	STypes, Types, Type,
+	SVars, Vars, Var,
+	SSubprogs, Subprogs, Subprog,
+	TypeDesc, TPrim, Cast,
+	TArray, 
+	TTupla, Tupla
+	SInsts, Insts, Inst,
+	ElseIf, InstCall,
+	SRParams, RParams, RParam,
+	SSubprogs, Subprogs, Subprog,
+	SFParams, FParams, FParam,
+	Desig,
+	Expr, Term, Fact, Shft, Unary, Paren,
+	Op0, Op1, Op2, Op3, Op4,
+	Lit, LitBool, LitNum;
 
 // Definición de las reglas sintácticas
 
-S ::= I:i {:
-  RESULT = atrb.sR1(i);
-:};
+// TODO ¿End of file?
+Program ::= PROGRAM IDENT ILLAVE SConsts Stypes SVars SSubprogs SInsts FLLAVE;
 
-I ::= TRUE{:
-  RESULT = atrb.iR1();
-:};
 
-I ::= FALSE{:
-  RESULT = atrb.iR2();
-:};
+SConsts ::= CONSTS ILLAVE Consts FLLAVE;
+SConsts ::= ;
 
-I ::= LITNAT:litnat{:
-  RESULT = atrb.iR3(litnat);
-:};
+Consts ::= Consts PYC Const;
+Consts ::= Const;
 
-I ::= LITFLOAT:litfloat{:
-  RESULT = atrb.iR4(litfloat);
-:};
+Const ::= CONST TPrim IDENT ASIG Lit;
+Const ::= ;
 
-I ::= LITCHAR:litchar{:
-  RESULT = atrb.iR5(litchar);
-:};
 
-I ::= IDENT:ident{:
-  RESULT = atrb.iR6(ident);
-:};
+STypes ::= TIPOS ILLAVE Types FLLAVE;
+STypes ::= ;
+
+Types ::= Types PYC Type;
+Types ::= Type;
+
+Type ::= TIPO TypeDesc IDENT;
+Type ::= ;
+
+
+SVars ::= VARS ILLAVE Vars FLLAVE;
+SVars ::= ;
+
+Vars ::= Vars PYC Var;
+Vars ::= Var;
+
+Var ::= VAR TypeDesc IDENT;
+Var ::= ;
+
+TypeDesc ::= TPrim;
+TypeDesc ::= TArray;
+TypeDesc ::= TTupla;
+TypeDesc ::= IDENT;
+
+
+TPrim ::= NATURAL;
+TPrim ::= INTEGER;
+TPrim ::= FLOAT;
+TPrim ::= BOOLEAN;
+TPrim ::= CHARACTER;
+
+Cast ::= CHAR;
+Cast ::= INT;
+Cast ::= NAT;
+Cast := FLOAT;
+
+
+TArray ::= TypeDesc ICORCHETE IDENT FCORCHETE;
+TArray ::= TypeDesc ICORCHETE LITNAT FCORCHETE;
+
+
+TTupla ::= IPAR Tupla FPAR;
+TTupla ::= IPAR FPAR;
+
+Tupla ::= TypeDesc COMA Tupla;
+Tupla ::= TypeDesc;
+
+
+SInsts ::= INSTRUCTIONS ILLAVE Insts FLLAVE;
+
+Insts ::= Insts PYC Inst;
+Insts ::= Inst;
+
+Inst ::= Desig ASIG Expr;
+Inst ::= IN IPAR Desig FPAR;
+Inst ::= OUT IPAR Expr FPAR;
+Inst ::= SWAP1 IPAR FPAR;
+Inst ::= SWAP2 IPAR FPAR;
+Inst ::= IF Expr THEN Insts ElseIf;
+Inst ::= WHILE Expr DO Insts ENDWHILE;
+Inst ::= InstCall;
+Inst ::= ;
+
+
+ElseIf ::= ELSE Insts ENDIF;
+ElseIf ::= ENDIF;
+
+InstCall ::= CALL IDENT LPAR SRParams RPAR;
+
+
+SRParams ::= RParams;
+SRParams ::=  ;
+
+RParams ::= RParams COMA RParam;
+RParams ::= RParam;
+
+RParam ::= IDENT IGUAL Expr;
+
+
+SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs FLLAVE;
+SSubprogs ::=  ;
+
+Subprogs ::= Subprogs Subprog;
+Subprogs ::= Subprog;
+
+Subprog ::= SUBPROGRAM IDENT IPAR SParams FPAR ILLAVE SVars SInsts FLLAVE;
+
+
+SFParams ::= FParams;
+SFParams ::=  ;
+
+FParams ::= FParams COMA FParam;
+FParams ::= FParam;
+
+FParam ::= TypeDesc IDENT;
+FParam ::= TypeDesc MUL IDENT;
+
+
+Desig ::= IDENT;
+Desig ::= Desig ICORCHETE Expr FCORCHETE;
+Desig ::= Desig BARRABAJA LITNAT;
+
+
+Expr ::= Term Op0 Term;
+Expr ::= Term;
+
+Term ::= Term Op1 Fact;
+Term ::= Fact;
+
+Fact ::= Fact Op2 Shft;
+Fact ::= Shft;
+
+Shft ::= Unary Op3 Shft;
+Shft ::= Unary;
+
+Unary ::= Op4 Unary;
+Unary ::= LPAR Cast RPAR Paren;
+Unary ::= Paren;
+
+Paren ::= LPAR Expr RPAR;
+Paren ::= Lit;
+Paren ::= Desig;
+
+
+Op0 ::= IGUAL;
+Op0 ::= NOIGUAL;
+Op0 ::= MEN;
+Op0 ::= MAY;
+Op0 ::= MENOIG;
+Op0 ::= MAYOIG;
+
+Op1 ::= OR;
+Op1 ::= MENOS;
+Op1 ::= MAS;
+
+Op2 ::= AND;
+Op2 ::= MOD;
+Op2 ::= DIV;
+Op2 ::= MUL;
+
+Op3 ::= LSH;
+Op3 ::= RSH;
+
+Op4 ::= NOT;
+Op4 ::= MENOS;
+
+
+Lit ::= LitBool;
+Lit ::= LitNum;
+Lit ::= LitChar;
+
+LitBool ::= TRUE;
+LitBool ::= FALSE;
+
+LitNum ::= LITNAT;
+LitNum ::= MENOS LITNAT;
+LitNum ::= LITFLOAT;
+LitNum ::= MENOS LITFLOAT;
