@@ -38,7 +38,7 @@ InstCall → call ident lpar SRParams rpar
 
 SRParams → RParams | ɛ
 RParams → RParams coma RParam | RParam
-RParam → ident igual Expr
+RParam → ident asig Expr
 
 SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | ɛ
 Subprogs → Subprogs Subprog | Subprog
