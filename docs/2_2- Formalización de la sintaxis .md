@@ -1,4 +1,4 @@
-program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 
 SConsts → const illave Consts fllave | ɛ
 Consts → Consts pyc Const | Const
