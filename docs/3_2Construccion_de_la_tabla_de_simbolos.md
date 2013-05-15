@@ -12,7 +12,6 @@ campo?(ts:TS, campos:CCampo, id:String) : Boolean
 desplazamiento(tipo:CTipo, id:String) : Integer
 >Devuelve el tamaño que ocupa en memoria el identificador id
 
-###Revisar desplazamiento
 
 existeID(ts:TS, id:String) : Boolean
 >Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, ha sido previamente declarado.
@@ -20,7 +19,6 @@ existeID(ts:TS, id:String) : Boolean
 obtieneCtipo(typeDesc:TypeDesc) : CTipo
 >Dado un descriptor de tipos devuelve el CTipo asociado
 
-###Revisar obtieneCTipo
 
 ## CTipo
 CTipo es el conjunto de propiedades con la información necesaria del tipo. CTipo guarda información diferente dependiendo de si es un tipo construido, un array, una tupla, una variable de todo lo anterior dicho o bien una variable o constante de tipo básico. 
@@ -167,9 +165,7 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         Type.id = ident.lex
         Type.clase = Type
         Type.nivel = global
-        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc) tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)>
-
-###Revisar Type.tipo = ...
+        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)>
 
     Type → ɛ
         Type.ts = Type.tsh
@@ -209,7 +205,7 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         Var.clase = Var
         Var.nivel = global
         Var.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
-                   si no {<t:ref, id:Var.id, tam: desplazamiento(Var.ts, TypeDesc.tipo, Var.id)>} )
+                   si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
 
     Var → ɛ
         Var.ts = Var.tsh
