@@ -1,7 +1,10 @@
-## 3.2.1 Funciones semanticas
+## 3.2.1 Funciones semánticas
 
 creaTS() : TS
 > Crea una tabla de símbolos vacía. 
+
+creaTS(ts:TS) : TS
+> Dada una tabla de símbolos crea otra tabla de símbolos que contiene toda la información de la tabla recibida por parámetro. Esta constructora se usa para las tablas de símbolos de los subprogramas
 
 añade(ts:TS, id:String, clase:String, nivel:String, dir:Int, tipo:CTipo) : TS
 >Añade a la tabla de símbolos el nuevo tipo construido, una variable o una constante. CTipo es el conjunto de propiedades con la información necesaria del tipo. Está explicado más adelante
@@ -57,7 +60,14 @@ Cuando la tabla de símbolos guarda una constante o, una variable con tipos prim
     <t:char, tam:1>
 
 ### Ctipo en subprogramas
-TODO
+Cuando la tabla de símbolos guarda la cabecera de un subprograma, el campo tipo guarda la siguiente información.
+
+    <t:subprog, params[...]>
+
+La lista `params` guarda los parámetros de entrada que recibe el subprograma. Se distinguen entre los parámetros que son por valor o los que son por referencia. El campo idparam es el string que identifica el parámetro al hacer la llamada al subprograma.  
+
+    <tipo:CTipo, modo:valor, idparam:String>
+    <tipo:CTipo, modo:variable, idparam:String>
 
 
 ## 3.2.2 Atributos semánticos
@@ -78,9 +88,11 @@ TODO
 
 A continuación se detalla la construcción de los atributos relevantes para la creación de la tabla de símbolos. Otros atributos, como la tabla de símbolos heredada (que tan solo se propaga) o el tipo y el valor de las expresiones se detallarán más adelante en sus correspondientes secciones.
 
+La tabla de símbolos comienda a guardar las declaraciones a partir de la dirección 0 de memoria. Ya que la dirección 0 está reservada para la `cima de la pila` y la dirección 1 para la `base`. La base apunta al inicio de los datos del procedimiento actualmente activo. 
+
     Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
         Program.tsh = creaTS()
-        Program.dirh = 0
+        Program.dirh = 2
         SConsts.tsh = Program.ts
         SConsts.dirh = Program.dir
         STypes.tsh = SConsts.ts
@@ -89,7 +101,8 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         SVars.dirh = STypes.dir
         SSubprogs.tsh = SVars.ts
         SSubprogs.dirh = SVars.dir
-        Program.ts ##???##
+        Program.ts = SVars.ts
+        SInsts.tsh = Program.ts
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
@@ -163,7 +176,7 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         Type.ts = Type.tsh
         Type.dir = Type.dirh
         Type.id = ident.lex
-        Type.clase = Type
+        Type.clase = Tipo
         Type.nivel = global
         Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)>
 
@@ -211,6 +224,25 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         Var.ts = Var.tsh
         Var.dir = Var.dirh
 
-    SSubprogs → subprograms illave Subprogs fllave | ɛ
-    Subprogs → Subprogs Subprog | Subprog
-    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllaveP
+    SSubprogs → subprograms illave Subprogs fllave 
+        Subprogs.tsh = SSubprogs.tsh
+        SSubprogs.ts = Subprogs.ts 
+
+    SSubprogs → subprograms illave fllave 
+
+    SSubprogs → ɛ
+
+    Subprogs → Subprogs Subprog | Subprog      
+    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+
+    SParams → FParams | ɛ
+    FParams → FParams coma FParam | FParam
+    FParam → TypeDesc ident | TypeDesc mul ident
+
+### NOTA DE MARINA PARA QUE ELLA SE RECUERDE
+Hay que bajar la tabla de simbolos global y crear una tabla de símbolos global para pada Subprograma. Una vez creada y con toda la información relevante rellena, se la paso a la zona de instrucciones del subgrograma, que la usará para generar su código
+
+### DUDAS
+- Cuando un subprograma genera su código. Dónde lo pone¿? Que direcciones de memoria usa.
+- Cuándo se la dirección donde se guarda un subprograma, para poder saltar a él guando haga la llamada?
+- ¿Donde genero el código del prólogo y el epílogo del subprograma?
