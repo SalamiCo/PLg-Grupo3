@@ -41,397 +41,397 @@ non terminal TAtributos
 // Definición de las reglas sintácticas
 
 // TODO ¿End of file?
-Program ::= PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE {:
-
+Program ::= PROGRAM IDENT ILLAVE SConsts:sConsts STypes:sTypes SVars:sVars SSubprogs:sSubprogs SInsts:sInsts FLLAVE {:
+	RESULT = attr.program_R1(sConsts, sTypes, sVars, sSubprogs, sInsts);
 :};
 
 
-SConsts ::= CONSTS ILLAVE Consts FLLAVE{:
-
+SConsts ::= CONSTS ILLAVE Consts:consts FLLAVE{:
+	RESULT = attr.sConsts_R1(consts);
 :}
           | {:
-
+	RESULT = attr.sConsts_R2(consts);
 :};
 
-Consts ::= Consts PYC Const {:
-
+Consts ::= Consts:consts_1 PYC Const:cons {:
+	RESULT = attr.consts_R1(consts_1, cons);
 :}
-         | Const {:
-
+         | Const:cons {:
+	RESULT = attr.consts_R2(cons);
 :};
 
-Const ::= CONST TPrim IDENT ASIG Lit {:
-
+Const ::= CONST TPrim:tPrim IDENT:ident ASIG Lit:lit {:
+	RESULT = attr.const_R1(tPrim, ident, lit);
 :}
         | {:
-
+	RESULT = attr.const_R2();
 :};
 
 
-STypes ::= TIPOS ILLAVE Types FLLAVE {:
-
+STypes ::= TIPOS ILLAVE Types:types FLLAVE {:
+	RESULT = attr.sTypes_R1(types);
 :}
          | {:
-
+	RESULT = attr.sTypes_R2();
 :};
 
-Types ::= Types PYC Type {:
-
+Types ::= Types:types_1 PYC Type:type {:
+	RESULT = attr.types_R1(types_1, type);
 :}
-        | {:
+        | Type {:
+	RESULT = attr.types_R2();
+:};
 
-:}Type;
-
-Type ::= TIPO TypeDesc IDENT {:
-
+Type ::= TIPO TypeDesc:typeDesc IDENT {:
+	RESULT = attr.type_R1(typeDesc);
 :}
        | {:
-
+	RESULT = attr.type_R2();
 :};
 
 
-SVars ::= VARS ILLAVE Vars FLLAVE {:
-
+SVars ::= VARS ILLAVE Vars:vars FLLAVE {:
+	RESULT = attr.sVars_R1(vars);
 :}
         | {:
-
+	RESULT = attr.sVars_R2();
 :};
 
-Vars ::= Vars PYC Var {:
-
+Vars ::= Vars:vars_1 PYC Var:var {:
+	RESULT = attr.vars_R1(vars_1, var);
 :}
-       | Var {:
-
+       | Var:var {:
+	RESULT = attr.vars_R1(var);
 :};
 
-Var ::= VAR TypeDesc IDENT {:
-
+Var ::= VAR TypeDesc:typeDesc IDENT:ident {:
+	RESULT = attr.var_R1(typeDesc);
 :}
       | {:
-
+	RESULT = attr.var_R2();
 :};
 
-TypeDesc ::= TPrim {:
-
+TypeDesc ::= TPrim:tPrim {:
+	RESULT = attr.typeDesc_R1(tPrim);
 :}
-           | TArray {:
-
+           | TArray:tArray {:
+	RESULT = attr.typeDesc_R2(tArray);
 :}
-           | TTupla {:
-
+           | TTupla:tTupla {:
+	RESULT = attr.typeDesc_R3(tTupla);
 :}
-           | IDENT {:
-
+           | IDENT:ident {:
+	RESULT = attr.typeDesc_R4(ident);
 :};
 
 
 TPrim ::= NATURAL {:
-
+	RESULT = attr.tPrim_R1();
 :}
         | INTEGER {:
-
+	RESULT = attr.tPrim_R2();
 :}
         | FLOAT {:
-
+	RESULT = attr.tPrim_R3();
 :}
         | BOOLEAN {:
-
+	RESULT = attr.tPrim_R4();
 :}
         | CHARACTER {:
-
+	RESULT = attr.tPrim_R5();
 :};
 
 Cast ::= CHAR {:
-
+	RESULT = attr.cast_R1();
 :}
        | INT {:
-
+	RESULT = attr.cast_R2();
 :}
        | NAT {:
-
+	RESULT = attr.cast_R3();
 :}
        | FLOAT {:
-
+	RESULT = attr.cast_R4();
 :};
 
 
-TArray ::= TypeDesc ICORCHETE IDENT FCORCHETE {:
-
+TArray ::= TypeDesc:typeDesc ICORCHETE IDENT:ident FCORCHETE {:
+	RESULT = attr.tArray_R1(typeDesc, ident);
 :}
-         | TypeDesc ICORCHETE LITNAT FCORCHETE {:
-
+         | TypeDesc:typeDesc ICORCHETE LITNAT:litnat FCORCHETE {:
+	RESULT = attr.tArray_R2(typeDesc, litnat);
 :};
 
 
 TTupla ::= IPAR Tupla FPAR {:
-
+	RESULT = attr.tTupla_R1(tupla);
 :}
          | IPAR FPAR {:
-
+	RESULT = attr.tTupla_R2();
 :};
 
-Tupla ::= TypeDesc COMA Tupla {:
-
+Tupla ::= TypeDesc:typeDesc COMA Tupla:tupla_1 {:
+	RESULT = attr.tupla_R1(typeDesc, tupla_1);
 :}
-        | TypeDesc {:
-
+        | TypeDesc:typeDesc {:
+	RESULT = attr.tupla_R2(typeDesc);
 :};
 
 
-SInsts ::= INSTRUCTIONS ILLAVE Insts FLLAVE {:
-
+SInsts ::= INSTRUCTIONS ILLAVE Insts:insts FLLAVE {:
+	RESULT = attr.sInsts_R1(insts);
 :};
 
-Insts ::= Insts PYC Inst {:
-
+Insts ::= Insts:insts_1 PYC Inst:inst {:
+	RESULT = attr.insts_R1(insts_1, inst);
 :}
-        | Inst {:
-
+        | Inst:inst {:
+	RESULT = attr.insts_R2(inst);
 :};
 
-Inst ::= Desig ASIG Expr {:
-
+Inst ::= Desig:desig ASIG Expr:expr {:
+	RESULT = attr.inst_R1(desig, expr);
 :}
-       | IN IPAR Desig FPAR {:
-
+       | IN IPAR Desig:desig FPAR {:
+	RESULT = attr.inst_R2(desig);
 :}
-       | OUT IPAR Expr FPAR {:
-
+       | OUT IPAR Expr:expr FPAR {:
+	RESULT = attr.inst_R3(expr);
 :}
        | SWAP1 IPAR FPAR {:
-
+	RESULT = attr.inst_R4();
 :}
        | SWAP2 IPAR FPAR {:
-
+	RESULT = attr.inst_R5();
 :}
-       | IF Expr THEN Insts ElseIf {:
-
+       | IF Expr:expr THEN Insts:insts ElseIf:elseIf {:
+	RESULT = attr.inst_R6(expr, insts, elseif);
 :}
-       | WHILE Expr DO Insts ENDWHILE {:
-
+       | WHILE Expr:expr DO Insts:insts ENDWHILE {:
+	RESULT = attr.inst_R7(expr, insts);
 :}
-       | InstCall {:
-
+       | InstCall:instCall {:
+	RESULT = attr.inst_R8(instCall);
 :}
        | {:
-
+	RESULT = attr.inst_R9();
 :};
 
 
-ElseIf ::= ELSE Insts ENDIF {:
-
+ElseIf ::= ELSE Insts:insts ENDIF {:
+	RESULT = attr.elseIf_R1(insts);
 :}
          | ENDIF {:
-
+	RESULT = attr.elseIf_R2();
 :};
 
-InstCall ::= CALL IDENT IPAR SRParams FPAR {:
-
+InstCall ::= CALL IDENT:ident IPAR SRParams:srParams FPAR {:
+	RESULT = attr.instCall_R1(ident, srParams);
 :};
 
 
 SRParams ::= RParams {:
-
+	RESULT = attr.srParams_R1(rParams);
 :}
        | {:
-
+	RESULT = attr.srParams_R2();
 :};
 
-RParams ::= RParams COMA RParam {:
-
+RParams ::= RParams:rParams_1 COMA RParam:rParam {:
+	RESULT = attr.rParams_R1(rParams_1, rParam);
 :}
-          | RParam {:
-
+          | RParam:rParam {:
+	RESULT = attr.rParams_R2(rParam);
 :};
 
-RParam ::= IDENT ASIG Expr {:
-
+RParam ::= IDENT:ident ASIG Expr:expr {:
+	RESULT = attr.rParam_R1(ident, expr);
 :};
 
 
-SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs FLLAVE {:
-
+SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs:subprogs FLLAVE {:
+	RESULT = attr.sSubprogs_R1(subprogs);
 :}
             | SUBPROGRAMS ILLAVE FLLAVE {:
-
+	RESULT = attr.sSubprogs_R2();
 :}
             | {:
-
+	RESULT = attr.sSubprogs_R3();
 :};
 
-Subprogs ::= Subprogs Subprog {:
-
+Subprogs ::= Subprogs:subprogs_1 Subprog:subprog {:
+	RESULT = attr.subprogs_R1(subprogs_1, subprog);
 :}
-           | Subprog {:
-
+           | Subprog:subprog {:
+	RESULT = attr.subprogs_R2(subprog);
 :};
 
-Subprog ::= SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE {:
-
+Subprog ::= SUBPROGRAM IDENT:ident IPAR SFParams:sfParams FPAR ILLAVE SVars:sVars SInsts:sInsts FLLAVE {:
+	RESULT = attr.subprog_R1(ident, sfParams, sVars, sInsts);
 :};
 
 
 SFParams ::= FParams {:
-
+	RESULT = attr.sfParams_R1(fParams);
 :}
            | {:
-
+	RESULT = attr.sfParams_R2();
 :};
 
-FParams ::= FParams COMA FParam {:
-
+FParams ::= FParams:fParams_1 COMA FParam:fParam {:
+	RESULT = attr.fParams_R1(fParams_1, fParam);
 :}
-          | FParam {:
-
+          | FParam:fParam {:
+	RESULT = attr.fParams_R2(fParam);
 :};
 
-FParam ::= TypeDesc IDENT {:
-
+FParam ::= TypeDesc:typedesc IDENT:ident {:
+	RESULT = attr.fParam_R1(typedesc, ident);
 :}
-         | TypeDesc MUL IDENT {:
-
-:};
-
-
-Desig ::= IDENT {:
-
-:}
-        | Desig ICORCHETE Expr FCORCHETE {:
-
-:}
-        | Desig BARRABAJA LITNAT {:
-
+         | TypeDesc:typedesc MUL IDENT:ident {:
+	RESULT = attr.fParam_R2(typedesc, ident);
 :};
 
 
-Expr ::= Term Op0 Term {:
-
+Desig ::= IDENT:ident {:
+	RESULT = attr.desig_R1(ident);
 :}
-       | Term {:
-
+        | Desig:desig_1 ICORCHETE Expr:expr FCORCHETE {:
+	RESULT = attr.desig_R2(desig_1, expr);
+:}
+        | Desig:desig_1 BARRABAJA LITNAT:litnat {:
+	RESULT = attr.desig_R3(desig_1, litnat);
 :};
 
-Term ::= Term Op1 Fact {:
 
+Expr ::= Term:term_1 Op0:op0 Term:term_2 {:
+	RESULT = attr.expr_R1(term_1, op0, term_2);
 :}
-       | Fact {:
-
+       | Term:term {:
+	RESULT = attr.expr_R2(term);
 :};
 
-Fact ::= Fact Op2 Shft {:
+Term ::= Term:term_1 Op1:op1 Fact:fact {:
+	RESULT = attr.term_R1(term_1, op1, fact);
+:}
+       | Fact:fact {:
+	RESULT = attr.term_R2(fact);
+:};
 
+Fact ::= Fact:fact_1 Op2:op3 Shft:shft {:
+	RESULT = attr.fact_R1(fact_1, op3, shft);
 :}
        | Shft {:
-
+	RESULT = attr.fact_R2(shft);
 :};
 
-Shft ::= Unary Op3 Shft {:
-
+Shft ::= Unary:unary Op3:op3 Shft:shft {:
+	RESULT = attr.shft_R1(unary, op4, shft);
 :}
-       | Unary {:
-
+       | Unary:unary {:
+	RESULT = attr.shft_R2(unary);
 :};
 
-Unary ::= Op4 Unary {:
-
+Unary ::= Op4:op4 Unary:unary_1 {:
+	RESULT = attr.unary_R1(op4, unary_1);
 :}
-        | IPAR Cast FPAR Paren {:
-
+        | IPAR Cast:cast FPAR Paren:paren {:
+	RESULT = attr.unary_R2(cast, paren);
 :}
-        | Paren {:
-
+        | Paren:paren {:
+	RESULT = attr.unary_R3(paren);
 :};
 
-Paren ::= IPAR Expr FPAR {:
-
+Paren ::= IPAR Expr:expr FPAR {:
+	RESULT = attr.paren_R1(expr);
 :}
-        | Lit {:
-
+        | Lit:lit {:
+	RESULT = attr.paren_R2(lit);
 :}
-        | Desig {:
-
+        | Desig:desig {:
+	RESULT = attr.paren_R3(desig);
 :};
 
 
 Op0 ::= IGUAL {:
-
+	RESULT = attr.op0_R1();
 :}
       | NOIGUAL {:
-
+	RESULT = attr.op0_R2();
 :}
       | MEN {:
-
+	RESULT = attr.op0_R3();
 :}
       | MAY {:
-
+	RESULT = attr.op0_R4();
 :}
       | MENOIG {:
-
+	RESULT = attr.op0_R5();
 :}
       | MAYOIG {:
-
+	RESULT = attr.op0_R6();
 :};
 
 Op1 ::= OR {:
-
+	RESULT = attr.op1_R1();
 :}
       | MENOS {:
-
+	RESULT = attr.op1_R2();
 :}
       | MAS {:
-
+	RESULT = attr.op1_R3();
 :};
 
 Op2 ::= AND {:
-
+	RESULT = attr.op2_R1();
 :}
       | MOD {:
-
+	RESULT = attr.op2_R2();
 :}
       | DIV {:
-
+	RESULT = attr.op2_R3();
 :}
       | MUL {:
-
+	RESULT = attr.op2_R4();
 :};
 
 Op3 ::= LSH {:
-
+	RESULT = attr.op3_R1();
 :}
       | RSH {:
-
+	RESULT = attr.op3_R2();
 :};
 
 Op4 ::= NOT {:
-
+	RESULT = attr.op4_R1();
 :}
       | MENOS {:
-
+    RESULT = attr.op4_R2();
 :};
 
 
-Lit ::= LitBool {:
-
+Lit ::= LitBool:litBool {:
+	RESULT = attr.lit_R1(litbool);
 :}
-      | LitNum {:
-
+      | LitNum:litNum {:
+	RESULT = attr.lit_R2(litNum);
 :}
-      | LITCHAR {:
-
+      | LITCHAR:litchar {:
+	RESULT = attr.lit_R3(litchar);
 :};
 
 LitBool ::= TRUE {:
-
+	RESULT = attr.litBool_R1();
 :}
           | FALSE {:
-
+	RESULT = attr.litBool_R2();
 :};
 
-LitNum ::= LITNAT {:
-
+LitNum ::= LITNAT:litnat {:
+	RESULT = attr.litNum_R1(litnat);
 :}
 //| MENOS LITNAT {::}
-         | LITFLOAT {:
-
+         | LITFLOAT:litfloat {:
+	RESULT = attr.litNum_R2(litfloat);
 :};
 //| MENOS LITFLOAT {::};
