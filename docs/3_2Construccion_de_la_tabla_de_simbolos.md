@@ -1,7 +1,10 @@
-## 3.2.1 Funciones semanticas
+## 3.2.1 Funciones semánticas
 
 creaTS() : TS
-> Crea una tbala de símbolos vacía. 
+> Crea una tabla de símbolos vacía. 
+
+creaTS(ts:TS) : TS
+> Dada una tabla de símbolos crea otra tabla de símbolos que contiene toda la información de la tabla recibida por parámetro. Esta constructora se usa para las tablas de símbolos de los subprogramas
 
 añade(ts:TS, id:String, clase:String, nivel:String, dir:Int, tipo:CTipo) : TS
 >Añade a la tabla de símbolos el nuevo tipo construido, una variable o una constante. CTipo es el conjunto de propiedades con la información necesaria del tipo. Está explicado más adelante
@@ -9,8 +12,16 @@ añade(ts:TS, id:String, clase:String, nivel:String, dir:Int, tipo:CTipo) : TS
 campo?(ts:TS, campos:CCampo, id:String) : Boolean
 >Devuelve true cuando la lista de campos de Campo contenga campo id. 
 
-desplazamiento(ts:TS, tipo:CTipo, id:String) : Integer
+desplazamiento(tipo:CTipo, id:String) : Integer
 >Devuelve el tamaño que ocupa en memoria el identificador id
+
+
+existeID(ts:TS, id:String) : Boolean
+>Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, ha sido previamente declarado.
+
+obtieneCtipo(typeDesc:TypeDesc) : CTipo
+>Dado un descriptor de tipos devuelve el CTipo asociado
+
 
 ## CTipo
 CTipo es el conjunto de propiedades con la información necesaria del tipo. CTipo guarda información diferente dependiendo de si es un tipo construido, un array, una tupla, una variable de todo lo anterior dicho o bien una variable o constante de tipo básico. 
@@ -18,12 +29,7 @@ CTipo es el conjunto de propiedades con la información necesaria del tipo. CTip
 ### CTipo en tipos construidos
 Cuando la tabla de símbolos guarda un tipo construido, el campo tipo guarda la siguiente información
 
-    <t:reg, campos:CCampo, tam:int>
-
-Donde `CCampo` es una lista de elementos de la forma
-
-    <id:String, tipo:Ctipo>
-
+    <t:reg, tipo:Ctipo, tam:int>
 
 ### CTipo en arrays
 Cuando la tabla de símbolos guarda un array, el campo tipo guarda la siguiente información. 
@@ -53,21 +59,40 @@ Cuando la tabla de símbolos guarda una constante o, una variable con tipos prim
     <t:bool, tam:1>
     <t:char, tam:1>
 
+### Ctipo en subprogramas
+Cuando la tabla de símbolos guarda la cabecera de un subprograma, el campo tipo guarda la siguiente información.
+
+    <t:subprog, params[...]>
+
+La lista `params` guarda los parámetros de entrada que recibe el subprograma. Se distinguen entre los parámetros que son por valor o los que son por referencia. El campo idparam es el string que identifica el parámetro al hacer la llamada al subprograma.  
+
+    <tipo:CTipo, modo:valor, idparam:String>
+    <tipo:CTipo, modo:variable, idparam:String>
+
 
 ## 3.2.2 Atributos semánticos
 
 **ts:** tabla de símbolos sintetizada
+
 **id:** nombre del identificador
+
 **dir:** Dirección de memoria. Dónde se guarda la variable o la constante
-**clase:** Indica si es la declaración de un tipo construido, un variable o una constante. 
+
+**nivel** Indica si el identificador es de ámbito global o local
+
+**tipo** Almacena los conjuntos de propiedades con la información necesaria del tipo
+
+**clase:** Indica si es la declaración de un tipo construido, un variable o una constante 
 
 ## 3.2.3 Gramáticas de atributos
 
 A continuación se detalla la construcción de los atributos relevantes para la creación de la tabla de símbolos. Otros atributos, como la tabla de símbolos heredada (que tan solo se propaga) o el tipo y el valor de las expresiones se detallarán más adelante en sus correspondientes secciones.
 
+La tabla de símbolos comienda a guardar las declaraciones a partir de la dirección 0 de memoria. Ya que la dirección 0 está reservada para la `cima de la pila` y la dirección 1 para la `base`. La base apunta al inicio de los datos del procedimiento actualmente activo. 
+
     Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
         Program.tsh = creaTS()
-        Program.dirh = 0
+        Program.dirh = 2
         SConsts.tsh = Program.ts
         SConsts.dirh = Program.dir
         STypes.tsh = SConsts.ts
@@ -76,7 +101,8 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         SVars.dirh = STypes.dir
         SSubprogs.tsh = SVars.ts
         SSubprogs.dirh = SVars.dir
-        Program.ts ##???##
+        Program.ts = SVars.ts
+        SInsts.tsh = Program.ts
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
@@ -85,6 +111,8 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         SConsts.dir = Consts.dir
 
     SConsts → ɛ
+        SConsts.ts = SConsts.tsh
+        SConsts.dir = SConsts.dirh
 
     Consts → Consts pyc Const
         Consts0.tsh = Consts1.tsh
@@ -113,15 +141,108 @@ A continuación se detalla la construcción de los atributos relevantes para la 
         Const.tipo = <t:TPrim.type, tam:1>
 
     Const → ɛ
+        Const.ts = Const.tsh
+        Const.dir = Const.dirh
 
-    STypes → tipos illave Types fllave | ɛ
-    Types → Types pyc Type | Type
-    Type → tipo TypeDesc ident | ɛ
+    STypes → tipos illave Types fllave 
+        Types.tsh = STypes.tsh
+        Types.tsh = STypes.tsh
+        STypes.ts = Types.ts 
+        STypes.dir = Types.dir 
 
-    SVars → vars illave Vars fllave | ɛ
-    Vars → Vars pyc Var | Var
-    Var → var TypeDesc ident | ɛ
+    STypes → ɛ
+        STypes.ts = STypes.tsh
+        Types.dir = STypes.dirh
 
-    SSubprogs → subprograms illave Subprogs fllave | ɛ
-    Subprogs → Subprogs Subprog | Subprog
-    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllaveP
+    Types → Types pyc Type 
+        Types0.tsh = Types1.tsh
+        Types0.dirh = Types1.dirh
+        Type.ts = Types1.ts
+        Type.dir = Types1.dir
+        Types0.ts = Types1.ts
+        Types0.dir = Types1.dir
+        Types0.dir = Types1.dir + desplazamiento(Types1.ts, Types1.tipo, Types1.id)
+        Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, Types0.dir, Type.tipo)
+
+    Types → Type
+        Types.tsh = Type.tsh
+        Types.dirh = Type.dirh
+        Types.ts = Type.ts
+        Types.dir = Type.ts
+        Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, Type.dir, Type.tipo)
+
+
+    Type → tipo TypeDesc ident 
+        Type.ts = Type.tsh
+        Type.dir = Type.dirh
+        Type.id = ident.lex
+        Type.clase = Tipo
+        Type.nivel = global
+        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)>
+
+    Type → ɛ
+        Type.ts = Type.tsh
+        Type.dir = Type.dirh
+
+    SVars → vars illave Vars fllave 
+        Vars.tsh = SVars.tsh
+        Vars.dirh = SVars.dirh
+        SVars.ts = Vars.ts
+        SVars.dir = Vars.dir
+
+    SVars → ɛ
+        SVars.ts = SVars.tsh
+        SVars.dir = SVars.dirh
+
+    Vars → Vars pyc Var 
+        Vars0.tsh = Vars1.tsh
+        Vars0.dirh = Vars1.dirh
+        Var.ts = Vars1.ts
+        Var.dir = Vars1.dir
+        Vars0.ts = Vars1.ts
+        Vars0.dir = Vars1.dir
+        Vars0.dir = Vars1.dir + desplazamiento(Vars1.tipo, Vars1.id)
+        Vars0.ts = añade(Vars1.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
+
+    Vars → Var
+        Vars.tsh = Var.tsh
+        Vars.dirh = Var.dirh
+        Vars.ts = Var.ts
+        Vars.dir = Var.ts
+        Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
+
+    Var → var TypeDesc ident 
+        Var.ts = Var.tsh
+        Var.dir = Var.dirh
+        Var.id = ident.lex
+        Var.clase = Var
+        Var.nivel = global
+        Var.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+                   si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
+
+    Var → ɛ
+        Var.ts = Var.tsh
+        Var.dir = Var.dirh
+
+    SSubprogs → subprograms illave Subprogs fllave 
+        Subprogs.tsh = SSubprogs.tsh
+        SSubprogs.ts = Subprogs.ts 
+
+    SSubprogs → subprograms illave fllave 
+
+    SSubprogs → ɛ
+
+    Subprogs → Subprogs Subprog | Subprog      
+    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+
+    SParams → FParams | ɛ
+    FParams → FParams coma FParam | FParam
+    FParam → TypeDesc ident | TypeDesc mul ident
+
+### NOTA DE MARINA PARA QUE ELLA SE RECUERDE
+Hay que bajar la tabla de simbolos global y crear una tabla de símbolos global para pada Subprograma. Una vez creada y con toda la información relevante rellena, se la paso a la zona de instrucciones del subgrograma, que la usará para generar su código
+
+### DUDAS
+- Cuando un subprograma genera su código. Dónde lo pone¿? Que direcciones de memoria usa.
+- Cuándo se la dirección donde se guarda un subprograma, para poder saltar a él guando haga la llamada?
+- ¿Donde genero el código del prólogo y el epílogo del subprograma?

@@ -12,6 +12,14 @@ SVars → vars illave Vars fllave | ɛ
 Vars → Vars pyc Var | Var
 Var → var TypeDesc ident | ɛ
 
+SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | ɛ
+Subprogs → Subprogs Subprog | Subprog
+Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+
+SParams → FParams | ɛ
+FParams → FParams coma FParam | FParam
+FParam → TypeDesc ident | TypeDesc mul ident
+
 TypeDesc → TPrim | TArray | TTupla | ident
 
 TPrim → natural | integer | float | boolean | character
@@ -38,15 +46,7 @@ InstCall → call ident lpar SRParams rpar
 
 SRParams → RParams | ɛ
 RParams → RParams coma RParam | RParam
-RParam → ident igual Expr
-
-SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | ɛ
-Subprogs → Subprogs Subprog | Subprog
-Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-
-SFParams → FParams | ɛ
-FParams → FParams coma FParam | FParam
-FParam → TypeDesc ident | TypeDesc mul ident
+RParam → ident asig Expr
 
 Desig → ident | Desig icorchete Expr fcorchete | Desig barrabaja litnat
 
