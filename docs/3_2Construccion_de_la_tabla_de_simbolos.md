@@ -116,12 +116,12 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     Consts → Consts pyc Const
         Consts0.tsh = Consts1.tsh
-        Consts0.dirh = Consts1.dirh
+        Consts1.dirh = Consts0.dirh
+        Const.dirh = Consts0.dirh
         Const.ts = Consts1.ts
         Const.dir = Consts1.dir
         Consts0.ts = Consts1.ts
-        Consts0.dir = Consts1.dir
-        Consts0.dir = Consts1.dir + desplazamiento(Consts1.ts, Consts1.tipo, Consts1.id)
+        Consts0.dir = Consts1.dir + desplazamiento(Const.ts, Const.tipo, Const.id)
         Consts0.ts = añade(Consts1.ts, Const.id, Const.clase, Const.nivel, Conts0.dir, Const.tipo)
 
     Consts → Const
@@ -161,7 +161,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Type.dir = Types1.dir
         Types0.ts = Types1.ts
         Types0.dir = Types1.dir
-        Types0.dir = Types1.dir + desplazamiento(Types1.ts, Types1.tipo, Types1.id)
+        Types0.dir = Types1.dir + desplazamiento(Type.ts, Type.tipo, Type.id)
         Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, Types0.dir, Type.tipo)
 
     Types → Type
@@ -201,7 +201,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Var.dir = Vars1.dir
         Vars0.ts = Vars1.ts
         Vars0.dir = Vars1.dir
-        Vars0.dir = Vars1.dir + desplazamiento(Vars1.tipo, Vars1.id)
+        Vars0.dir = Vars1.dir + desplazamiento(Var.tipo, Var.id)
         Vars0.ts = añade(Vars1.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
 
     Vars → Var
@@ -226,23 +226,72 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     SSubprogs → subprograms illave Subprogs fllave 
         Subprogs.tsh = SSubprogs.tsh
-        SSubprogs.ts = Subprogs.ts 
+
 
     SSubprogs → subprograms illave fllave 
 
     SSubprogs → ɛ
 
-    Subprogs → Subprogs Subprog | Subprog      
-    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+    Subprogs → Subprogs Subprog | Subprog
+        Subprogs1.tsh =  Subprogs0.tsh
+        Subprog.tsh = Subprogs0.tsh   
 
-    SParams → FParams | ɛ
-    FParams → FParams coma FParam | FParam
-    FParam → TypeDesc ident | TypeDesc mul ident
+    Subprogs → Subprog
+        Subprog.tsh = Subprogs.tsh
+
+    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+        SParams.dirh = 0
+        Subprog.tsh = añade(ident, subprog, global, ? , TODO)
+        SParams.tsh = CreaTS(Subprog.tsh)
+        SVars.tsh = SParams.ts
+        SInsts.tsh = SVars.ts
+        SVars.dirh = SParams.dir
+
+    SParams → FParams 
+        FParams.tsh = SParams.tsh
+        SParams.ts = FParams.ts
+        FParams.dirh = SParams.dirh
+        SParams.dir = FParams.dir
+
+    SParams → ɛ
+        SParams.ts = SParams.tsh
+        SParams.dir = SParams.dirh
+
+    FParams → FParams coma FParam 
+        FParams1.tsh = FParams0.tsh
+        FParams1.dirh = FParams0.dirh
+        FParam.dirh = FParams1.dir
+        FParams0.dir = FParams1.dir + desplazamiento(FParam.tipo, FParam.id) 
+        FParams0.ts = añade(FParams1.ts,  FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+
+    FParams → FParam
+        FParam.dirh = FParams.dirh
+        FParam.ts = añade(FParams.tsh, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+        FParams.ts = FParam.ts
+
+    FParam → TypeDesc ident 
+        FParam.ts = FParam.tsh
+        FParam.dir = FParam.dirh 
+        Fparam.id = ident.lex
+        FParam.clase = pvalor
+        FParam.nivel = local
+        FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+                   si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+
+    FParam → TypeDesc mul ident
+        FParam.ts = FParam.tsh
+        FParam.dir =  FParam.dirh 
+        Fparam.id = ident.lex
+        FParam.clase = pvariable
+        FParam.nivel = local
+        FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+                   si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+
 
 ### NOTA DE MARINA PARA QUE ELLA SE RECUERDE
-Hay que bajar la tabla de simbolos global y crear una tabla de símbolos global para pada Subprograma. Una vez creada y con toda la información relevante rellena, se la paso a la zona de instrucciones del subgrograma, que la usará para generar su código
+- Hay que bajar la tabla de simbolos global y crear una tabla de símbolos global para pada Subprograma. Una vez creada y con toda la información relevante rellena, se la paso a la zona de instrucciones del subgrograma, que la usará para generar su código
+- Hay que llevar un etq que cuente cuanto ocupa el subprograma en cuestión para calcular la dirección en el que va. Este eqt cuenta declaración de variables e instrucciones. Se inicializa en Subprog. Todo esto se hace en la generación de codigo. (Punto 5) Porque lo que cuenta son las instruccinoes que ocupa en memoria el programa
+- El prologo y el epilogo se generan en la generación de codigo. Y cuentan en lo del etq del punto e arriba
 
-### DUDAS
-- Cuando un subprograma genera su código. Dónde lo pone¿? Que direcciones de memoria usa.
-- Cuándo se la dirección donde se guarda un subprograma, para poder saltar a él guando haga la llamada?
-- ¿Donde genero el código del prólogo y el epílogo del subprograma?
+## Se me ha olvidado lo de la dirección de los subprogramas.
+- Hacerla relativa al comienzo del subprograma
