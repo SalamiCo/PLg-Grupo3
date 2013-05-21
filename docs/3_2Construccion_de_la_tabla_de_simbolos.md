@@ -13,7 +13,7 @@ campo?(ts:TS, campos:CCampo, id:String) : Boolean
 >Devuelve true cuando la lista de campos de Campo contenga campo id. 
 
 desplazamiento(tipo:CTipo, id:String) : Integer
->Devuelve el tamaño que ocupa en memoria el identificador id
+>Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un 
 
 
 existeID(ts:TS, id:String) : Boolean
@@ -289,9 +289,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
 
 ### NOTA DE MARINA PARA QUE ELLA SE RECUERDE
-- Hay que bajar la tabla de simbolos global y crear una tabla de símbolos global para pada Subprograma. Una vez creada y con toda la información relevante rellena, se la paso a la zona de instrucciones del subgrograma, que la usará para generar su código
 - Hay que llevar un etq que cuente cuanto ocupa el subprograma en cuestión para calcular la dirección en el que va. Este eqt cuenta declaración de variables e instrucciones. Se inicializa en Subprog. Todo esto se hace en la generación de codigo. (Punto 5) Porque lo que cuenta son las instruccinoes que ocupa en memoria el programa
 - El prologo y el epilogo se generan en la generación de codigo. Y cuentan en lo del etq del punto e arriba
 
-## Se me ha olvidado lo de la dirección de los subprogramas.
-- Hacerla relativa al comienzo del subprograma
+
