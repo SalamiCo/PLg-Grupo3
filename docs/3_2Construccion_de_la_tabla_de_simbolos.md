@@ -13,7 +13,7 @@ campo?(ts:TS, campos:CCampo, id:String) : Boolean
 >Devuelve true cuando la lista de campos de Campo contenga campo id. 
 
 desplazamiento(tipo:CTipo, id:String) : Integer
->Devuelve el tamaño que ocupa en memoria el identificador id
+>Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un 
 
 
 existeID(ts:TS, id:String) : Boolean
@@ -93,16 +93,15 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
         Program.tsh = creaTS()
         Program.dirh = 2
-        SConsts.tsh = Program.ts
-        SConsts.dirh = Program.dir
+        SConsts.tsh = Program.tsh
+        SConsts.dirh = Program.dirh
         STypes.tsh = SConsts.ts
         STypes.dirh = SConsts.dir
         SVars.tsh = STypes.ts
         SVars.dirh = STypes.dir
         SSubprogs.tsh = SVars.ts
         SSubprogs.dirh = SVars.dir
-        Program.ts = SVars.ts
-        SInsts.tsh = Program.ts
+        SInsts.tsh = SVars.ts
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
@@ -115,20 +114,17 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SConsts.dir = SConsts.dirh
 
     Consts → Consts pyc Const
-        Consts0.tsh = Consts1.tsh
-        Consts0.dirh = Consts1.dirh
-        Const.ts = Consts1.ts
-        Const.dir = Consts1.dir
-        Consts0.ts = Consts1.ts
-        Consts0.dir = Consts1.dir
-        Consts0.dir = Consts1.dir + desplazamiento(Consts1.ts, Consts1.tipo, Consts1.id)
-        Consts0.ts = añade(Consts1.ts, Const.id, Const.clase, Const.nivel, Conts0.dir, Const.tipo)
+        Consts1.tsh = Consts0.tsh
+        Consts1.dirh = Consts0.dirh
+        Const.tsh = Consts1.ts
+        Const.dirh = Consts1.dir
+        Consts0.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
+        Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Conts0.dir, Const.tipo)
 
     Consts → Const
-        Consts.tsh = Const.tsh
-        Consts.dirh = Const.dirh
-        Consts.ts = Const.ts
-        Consts.dir = Const.ts
+        Const.tsh = Consts.tsh
+        Const.dirh = Consts.dirh
+        Consts.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
         Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo)
 
 
@@ -146,29 +142,26 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
-        Types.tsh = STypes.tsh
+        Types.dirh = STypes.dirh
         STypes.ts = Types.ts 
         STypes.dir = Types.dir 
 
     STypes → ɛ
         STypes.ts = STypes.tsh
-        Types.dir = STypes.dirh
+        STypes.dir = STypes.dirh
 
     Types → Types pyc Type 
-        Types0.tsh = Types1.tsh
-        Types0.dirh = Types1.dirh
-        Type.ts = Types1.ts
-        Type.dir = Types1.dir
-        Types0.ts = Types1.ts
-        Types0.dir = Types1.dir
-        Types0.dir = Types1.dir + desplazamiento(Types1.ts, Types1.tipo, Types1.id)
+        Types1.tsh = Types0.tsh
+        Types1.dirh = Types0.dirh
+        Type.tsh = Types1.ts
+        Type.dirh = Types1.dir
+        Types0.dir = Type.dir + desplazamiento(Type.tipo, Types.id)
         Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, Types0.dir, Type.tipo)
 
     Types → Type
-        Types.tsh = Type.tsh
-        Types.dirh = Type.dirh
-        Types.ts = Type.ts
-        Types.dir = Type.ts
+        Type.tsh = Types.tsh
+        Type.dirh = Types.dirh
+        Types.dir = Type.dir + desplazamiento(Type.tipo, Type.id)
         Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, Type.dir, Type.tipo)
 
 
@@ -178,7 +171,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
-        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)>
+        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)> //TODO mirar como añadir el tamaño al tipo
 
     Type → ɛ
         Type.ts = Type.tsh
@@ -195,20 +188,17 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SVars.dir = SVars.dirh
 
     Vars → Vars pyc Var 
-        Vars0.tsh = Vars1.tsh
-        Vars0.dirh = Vars1.dirh
-        Var.ts = Vars1.ts
-        Var.dir = Vars1.dir
-        Vars0.ts = Vars1.ts
-        Vars0.dir = Vars1.dir
-        Vars0.dir = Vars1.dir + desplazamiento(Vars1.tipo, Vars1.id)
-        Vars0.ts = añade(Vars1.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
+        Vars1.tsh = Vars0.tsh
+        Vars1.dirh = Vars0.dirh
+        Var.tsh = Vars1.ts
+        Var.dirh = Vars1.dir
+        Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
+        Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
 
     Vars → Var
-        Vars.tsh = Var.tsh
-        Vars.dirh = Var.dirh
-        Vars.ts = Var.ts
-        Vars.dir = Var.ts
+        Var.tsh = Vars.tsh
+        Var.dirh = Vars.dirh
+        Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
         Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
 
     Var → var TypeDesc ident 
@@ -217,7 +207,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Var.id = ident.lex
         Var.clase = Var
         Var.nivel = global
-        Var.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+        Var.tipo = (si (TypeDesc.Type == TPrim) {<t:TypeDesc.type, tam:1>}
                    si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
 
     Var → ɛ
@@ -226,23 +216,70 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     SSubprogs → subprograms illave Subprogs fllave 
         Subprogs.tsh = SSubprogs.tsh
-        SSubprogs.ts = Subprogs.ts 
 
     SSubprogs → subprograms illave fllave 
 
     SSubprogs → ɛ
 
-    Subprogs → Subprogs Subprog | Subprog      
-    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+    Subprogs → Subprogs Subprog
+        Subprogs1.tsh =  Subprogs0.tsh
+        Subprog.tsh = Subprogs0.tsh   
 
-    SParams → FParams | ɛ
-    FParams → FParams coma FParam | FParam
-    FParam → TypeDesc ident | TypeDesc mul ident
+    Subprogs → Subprog
+        Subprog.tsh = Subprogs.tsh
+
+    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+        SParams.dirh = 0
+        SParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        SVars.tsh = SParams.ts
+        SVars.dirh = SParams.dir
+        SInsts.tsh = SVars.ts
+
+    SParams → FParams 
+        FParams.tsh = SParams.tsh
+        SParams.ts = FParams.ts
+        FParams.dirh = SParams.dirh
+        SParams.dir = FParams.dir
+
+    SParams → ɛ
+        SParams.ts = SParams.tsh
+        SParams.dir = SParams.dirh
+
+    FParams → FParams coma FParam 
+        FParams1.tsh = FParams0.tsh
+        FParams1.dirh = FParams0.dirh
+        FParam.tsh = FParams1.tsh
+        FParam.dirh = FParams1.dirh
+        FParams0.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id) 
+        FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+
+    FParams → FParam
+        FParam.dirh = FParams.dirh
+        FParam.tsh = FParams.tsh
+        FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+        FParams.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id)
+
+    FParam → TypeDesc ident 
+        FParam.ts = FParam.tsh
+        FParam.dir = FParam.dirh 
+        Fparam.id = ident.lex
+        FParam.clase = pvalor
+        FParam.nivel = local
+        FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+                   si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+
+    FParam → TypeDesc mul ident
+        FParam.ts = FParam.tsh
+        FParam.dir =  FParam.dirh 
+        Fparam.id = ident.lex
+        FParam.clase = pvariable
+        FParam.nivel = local
+        FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+                   si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+
 
 ### NOTA DE MARINA PARA QUE ELLA SE RECUERDE
-Hay que bajar la tabla de simbolos global y crear una tabla de símbolos global para pada Subprograma. Una vez creada y con toda la información relevante rellena, se la paso a la zona de instrucciones del subgrograma, que la usará para generar su código
+- Hay que llevar un etq que cuente cuanto ocupa el subprograma en cuestión para calcular la dirección en el que va. Este eqt cuenta declaración de variables e instrucciones. Se inicializa en Subprog. Todo esto se hace en la generación de codigo. (Punto 5) Porque lo que cuenta son las instruccinoes que ocupa en memoria el programa
+- El prologo y el epilogo se generan en la generación de codigo. Y cuentan en lo del etq del punto e arriba
 
-### DUDAS
-- Cuando un subprograma genera su código. Dónde lo pone¿? Que direcciones de memoria usa.
-- Cuándo se la dirección donde se guarda un subprograma, para poder saltar a él guando haga la llamada?
-- ¿Donde genero el código del prólogo y el epílogo del subprograma?
+

@@ -50,15 +50,18 @@ public enum Debugger {
         useStandardStreams();
     }
     
+    /** Establece como streams de salida y error la salida y error estándares del sistema */
     public void useStandardStreams () {
         useOutputStream(new PrintWriter(System.out));
         useErrorStream(new PrintWriter(System.err));
     }
     
+    /** @param output Flujo a usar como salida */
     public void useOutputStream (PrintWriter output) {
         this.out = Objects.requireNonNull(output, "output");
     }
     
+    /** @param error Flujo a usar como salida de error */
     public void useErrorStream (PrintWriter error) {
         this.err = Objects.requireNonNull(error, "error");
     }
@@ -73,6 +76,13 @@ public enum Debugger {
         this.debug = debug;
     }
     
+    /**
+     * Define la línea y columna que afectan siguiente mensaje.
+     * 
+     * @param line Línea en la que se dio el error
+     * @param column Columna en la que se dio el error
+     * @return <tt>this</tt>
+     */
     public Debugger at (int line, int column) {
         this.line = line;
         this.column = column;
@@ -81,6 +91,13 @@ public enum Debugger {
         return this;
     }
     
+    /**
+     * Define la posición de memoria y la instrucción que afectan al siguiente mensaje.
+     * 
+     * @param pos Posición de memoria en la que se dio el error
+     * @param instr Instrucción que dio el error
+     * @return <tt>this</tt>
+     */
     public Debugger in (int pos, Instruction instr) {
         this.pos = pos;
         this.instr = instr;
@@ -103,6 +120,12 @@ public enum Debugger {
         pw.flush();
     }
     
+    /**
+     * Escribe un mensaje informativo.
+     * 
+     * @param format Formato del mensaje
+     * @param params Parámetros del mensaje
+     */
     public void log (String format, Object... params) {
         if (logging) {
             message("LOG", String.format(format, params), out);
@@ -110,6 +133,12 @@ public enum Debugger {
         reset();
     }
     
+    /**
+     * Escribe un mensaje de depuración.
+     * 
+     * @param format Formato del mensaje
+     * @param params Parámetros del mensaje
+     */
     public void debug (String format, Object... params) {
         if (logging && debug) {
             message("DBG", String.format(format, params), out);
@@ -117,6 +146,12 @@ public enum Debugger {
         reset();
     }
     
+    /**
+     * Escribe un mensaje de error
+     * 
+     * @param format Formato del mensaje
+     * @param params Parámetros del mensaje
+     */
     public void error (String format, Object... params) {
         message("ERR", String.format(format, params), err);
         reset();
