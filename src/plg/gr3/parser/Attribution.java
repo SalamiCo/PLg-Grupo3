@@ -13,10 +13,11 @@ public final class Attribution extends Atribucion {
     
     // Program
     
-    public void program_R1 (
+    public TAtributos program_R1 (
         TAtributos sConsts, TAtributos sTypes, TAtributos sVars, TAtributos sSubprogs, TAtributos sInsts)
     {
         regla("Program -> PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE");
+        return null;
     }
     
     // SConsts
@@ -429,7 +430,7 @@ public final class Attribution extends Atribucion {
         return null;
     }
     
-    public TAtributos desig_R2 (TAtributos desig_1) {
+    public TAtributos desig_R2 (TAtributos desig_1, TAtributos expr) {
         regla("Desig -> Desig ICORCHETE Expr FCORCHETE");
         return null;
     }

@@ -60,7 +60,7 @@ SConsts ::= CONSTS ILLAVE Consts:consts FLLAVE{:
 	RESULT = attr.sConsts_R1(consts);
 :}
           | {:
-	RESULT = attr.sConsts_R2(consts);
+	RESULT = attr.sConsts_R2();
 :};
 
 Consts ::= Consts:consts_1 PYC Const:cons {:
@@ -88,12 +88,12 @@ STypes ::= TIPOS ILLAVE Types:types FLLAVE {:
 Types ::= Types:types_1 PYC Type:type {:
 	RESULT = attr.types_R1(types_1, type);
 :}
-        | Type {:
-	RESULT = attr.types_R2();
+        | Type:type {:
+	RESULT = attr.types_R2(type);
 :};
 
-Type ::= TIPO TypeDesc:typeDesc IDENT {:
-	RESULT = attr.type_R1(typeDesc);
+Type ::= TIPO TypeDesc:typeDesc IDENT:ident {:
+	RESULT = attr.type_R1(typeDesc, ident);
 :}
        | {:
 	RESULT = attr.type_R2();
@@ -111,11 +111,11 @@ Vars ::= Vars:vars_1 PYC Var:var {:
 	RESULT = attr.vars_R1(vars_1, var);
 :}
        | Var:var {:
-	RESULT = attr.vars_R1(var);
+	RESULT = attr.vars_R2(var);
 :};
 
 Var ::= VAR TypeDesc:typeDesc IDENT:ident {:
-	RESULT = attr.var_R1(typeDesc);
+	RESULT = attr.var_R1(typeDesc, ident);
 :}
       | {:
 	RESULT = attr.var_R2();
@@ -173,7 +173,7 @@ TArray ::= TypeDesc:typeDesc ICORCHETE IDENT:ident FCORCHETE {:
 :};
 
 
-TTupla ::= IPAR Tupla FPAR {:
+TTupla ::= IPAR Tupla:tupla FPAR {:
 	RESULT = attr.tTupla_R1(tupla);
 :}
          | IPAR FPAR {:
@@ -215,7 +215,7 @@ Inst ::= Desig:desig ASIG Expr:expr {:
 	RESULT = attr.inst_R5();
 :}
        | IF Expr:expr THEN Insts:insts ElseIf:elseIf {:
-	RESULT = attr.inst_R6(expr, insts, elseif);
+	RESULT = attr.inst_R6(expr, insts, elseIf);
 :}
        | WHILE Expr:expr DO Insts:insts ENDWHILE {:
 	RESULT = attr.inst_R7(expr, insts);
@@ -240,7 +240,7 @@ InstCall ::= CALL IDENT:ident IPAR SRParams:srParams FPAR {:
 :};
 
 
-SRParams ::= RParams {:
+SRParams ::= RParams:rParams {:
 	RESULT = attr.srParams_R1(rParams);
 :}
        | {:
@@ -281,7 +281,7 @@ Subprog ::= SUBPROGRAM IDENT:ident IPAR SFParams:sfParams FPAR ILLAVE SVars:sVar
 :};
 
 
-SFParams ::= FParams {:
+SFParams ::= FParams:fParams {:
 	RESULT = attr.sfParams_R1(fParams);
 :}
            | {:
@@ -331,12 +331,12 @@ Term ::= Term:term_1 Op1:op1 Fact:fact {:
 Fact ::= Fact:fact_1 Op2:op3 Shft:shft {:
 	RESULT = attr.fact_R1(fact_1, op3, shft);
 :}
-       | Shft {:
+       | Shft:shft {:
 	RESULT = attr.fact_R2(shft);
 :};
 
 Shft ::= Unary:unary Op3:op3 Shft:shft {:
-	RESULT = attr.shft_R1(unary, op4, shft);
+	RESULT = attr.shft_R1(unary, op3, shft);
 :}
        | Unary:unary {:
 	RESULT = attr.shft_R2(unary);
@@ -421,7 +421,7 @@ Op4 ::= NOT {:
 
 
 Lit ::= LitBool:litBool {:
-	RESULT = attr.lit_R1(litbool);
+	RESULT = attr.lit_R1(litBool);
 :}
       | LitNum:litNum {:
 	RESULT = attr.lit_R2(litNum);
