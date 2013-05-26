@@ -162,3 +162,234 @@
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+
+    TypeDesc → TPrim | TArray | TTupla | ident
+
+	TPrim → natural | integer | float | boolean | character
+	Cast → char | int | nat | float
+
+	TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
+
+	TTupla → ipar Tupla fpar | ipar fpar
+	Tupla → TypeDesc coma Tupla | TypeDesc
+
+	SInsts → instructions illave Insts fllave
+		Insts.tsh = SInsts.tsh
+		SInsts.err = Insts.err
+
+	Insts → Insts pyc Inst
+		Insts1.tsh = Insts0.tsh
+		Inst.tsh = Insts0.tsh
+		SInsts.err = Insts.err ∨ Inst.err
+
+	Insts → Inst
+		Inst.tsh = Insts.tsh
+		Insts.err = Inst.err
+
+	Inst → Desig asig Expr
+		Desig.tsh = Inst.tsh
+		Expr.tsh = Inst.tsh
+		Inst.err = (¬asignacionValida(Desig.type, Expr.type)) ∨ Expr.err ∨ Desig.err
+
+	Inst → in ipar Desig fpar
+		Desig.tsh = Inst.tsh
+		Inst.err = Desig.err
+
+	Inst → out ipar Expr fpar
+		Expr.tsh = Inst.tsh
+		Inst.err = Expr.err
+
+	Inst → swap1 ipar fpar
+		Inst.err = false
+
+	Inst → swap2 ipar fpar
+		Inst.err = false
+
+	Inst → if Expr then Insts ElseIf
+		Expr.tsh = Inst.tsh
+		Insts.tsh = Inst.tsh
+		ElseIf.tsh = Inst.tsh
+		Inst.err = Expr.err ∨ Insts.err ∨ ElseIf.err
+
+	Inst → while Expr do Insts endwhile
+		Expr.tsh = Inst.tsh
+		Insts.tsh = Inst.tsh
+		Inst.err = Expr.err ∨ Insts.err
+
+	Inst → InstCall
+		InstCall.tsh = Inst.tsh
+		Inst.err = InstCall.err
+
+	Inst → ɛ
+		Inst.err = false
+
+	ElseIf → else Insts endif
+		Insts.tsh = ElseIf.tsh
+		ElseIf.err = Insts.err
+
+	ElseIf → endif
+		ElseIf.err = false
+
+	InstCall → call ident lpar SRParams rpar
+		SRParams.tsh = InstCall.tsh
+		InstCall.err = SRParams.err
+
+	SRParams → RParams
+		RParams.tsh = SRParams.tsh
+		SRParams.err = RParams.err
+
+	SRParams → ɛ
+		SRParams.err = false
+
+	RParams → RParams coma RParam
+		RParam1.tsh = RParams0.tsh
+		RParam.tsh = RParams1.tsh
+		RParams0.err = RParams1.err ∨ Rparam.err
+
+	RParams → RParam
+		RParams.err = RParam.err
+
+	RParam → ident asig Expr
+		Expr.tsh = RParam.tsh
+		RParam.err = ¬asignaciónVálida(Expr.tsh[ident.lex].type, Expr.type) ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(ident)
+		RParam.err = Expr.err
+
+	Desig → ident
+		Desig.type = Desig.tsh[ident.lex].type
+		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(ident)
+
+	Desig → Desig icorchete Expr fcorchete
+		Desig0.type = Desig1.type
+		Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
+
+	Desig → Desig barrabaja litnat
+		Desig0.type = Desig1.type
+		Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
+
+	Expr → Term Op0 Term
+		Expr.type = tipoFunc(Term0.type, Op0.op, Term1.type)
+		Term0.tsh = Expr.tsh
+		Term1.tsh = Expr.tsh
+	
+	Expr → Term
+		Expr.type = Term.type
+		Term.tsh = Expr.tsh
+
+	Term → Term Op1 Fact 
+		Term0.type = tipoFunc(Term1.type, Op1.op, Fact.type)
+		Term1.tsh = Term0.tsh
+		Fact.tsh = Term0.tsh
+	
+	Term → Fact
+		Term.type = Fact.type
+		Fact.tsh = Term.tsh
+	
+	Fact → Fact Op2 Shft
+		Fact0.type = tipoFunc(Fact1.type, Op2.op, Shft.type) 
+		Fact1.tsh = Fact0.tsh
+		Shft.tsh = Fact0.tsh
+	
+	Fact → Shft
+		Fact.type = Shft.type
+		Shft.tsh = Fact.tsh
+	
+	Shft → Unary Op3 Shft
+		Shft0.type = tipoFunc(Unary.type, Op3.op, Shft.type) 
+		Shft1.tsh = Shft0.tsh
+		Unary.tsh = Shft0.tsh
+	
+	Shft → Unary
+		Shft.type = Unary.type
+		Unary.tsh = Shft.tsh
+	
+	Unary → Op4 Unary
+		Unary0.type = opUnario(Op4.op, Unary1.type)
+		Unary1.tsh = Unary0.tsh
+	
+	Unary → lpar Cast rpar Paren 
+		Unary.type = casting(Cast.type, Paren.type)
+		Paren.tsh = Unary.tsh
+	
+	Unary → Paren
+		Unary.type = Paren.type
+		Paren.tsh = Unary.tsh
+	
+	Paren → lpar Expr rpar 
+		Paren.type = Expr.type
+		Expr.tsh = Paren.tsh
+	
+	Paren → Lit 
+		Parent.type = Lit.type
+		Lit.tsh = Paren.tsh
+	
+	Paren → ident
+		Paren.type = tipoDe(ident.lex, Paren.tsh)
+
+	Op0 → igual
+		Op0.op = igual
+
+	Op0 → noigual 
+		Op0.op = noigual 
+	
+	Op0 → men 
+		Op0.op = men 
+	
+	Op0 → may 
+		Op0.op = may 
+	
+	Op0 → menoig 
+		Op0.op = menoig 
+	
+	Op0 → mayoig 
+		Op0.op = mayoig
+	
+	Op1 → or
+		Op1.op = or
+
+	Op1 → menos
+		Op1.op = menos
+
+	Op1 → mas
+		Op1.op = mas
+	
+	Op2 → and
+		Op2.op = and
+
+	Op2 → mod
+		Op2.op = mod
+
+	Op2 → div
+		Op2.op = div
+
+	Op2 → mul
+		Op2.op = mul
+	
+	Op3 → lsh
+		Op3.op = lsh
+
+	Op3 → rsh
+		Op3.op = rsh
+	
+	Op4 → not
+		Op4.op = not
+
+	Op4 → menos
+		Op4.op = menos
+
+	Lit → LitBool 
+		Lit.type = boolean 
+
+	Lit → LitNum 
+		Lit.type = LitNum.type
+
+	Lit → litchar 
+		Lit.type = char 
+
+	LitNum → litnat 
+		LitNum.type = natural 
+
+	LitNum → menos litnat 
+		LitNum.type = integer
+
+	LitNum → litfloat | menos litfloat 
+		LitNum.type = float
