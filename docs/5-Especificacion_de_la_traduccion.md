@@ -53,10 +53,14 @@ apila-dir(dirección)
 >Pila[CPila] ← Mem[dirección]<br/>
 >CProg ← CProg + 1<br/>
 
-apila-ind(dirección)
->CPila ← CPila + 1<br/>
->Pila[CPila] ← Mem[dirección]<br/>
->Pila[CPila] ← Mem[Pila[Cpila]]<br/>
+apila-ind
+>Pila[CPila] ← Mem[Pila[CPila]]<br/>
+>CProg ← CProg + 1<br/>
+
+mueve(nCeldas)
+>para i ← 0 hasta nCeldas-1 hacer<br/>
+>	Mem[Pila[CPila-1]+i] ← Mem[Pila[CPila]+i]<br/>
+>CPila ← Cpila - 2<br/>
 >CProg ← CProg + 1<br/>
 
 Nota: Si la dirección de memoria no ha sido cargada previamente con datos usando la siguiente instrucción (desapila-dir), esta instrucción dará un error de ejecución.
@@ -66,10 +70,10 @@ desapila-dir(dirección)
 >CPila ← CPila - 1<br/>
 >CProg ← CProg + 1<br/>
 
-desapila-ind(dirección)
+desapila-ind
 >Reg ← Mem[direccion]<br/>
->Mem[Reg] ← Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
+>Mem[Pila[CPila-2]] ← Pila[CPila]<br/>
+>CPila ← CPila - 2<br/>
 >CProg ← CProg + 1<br/>
 
 copia
@@ -247,180 +251,83 @@ No hacemos uso de ninguna función semántica.
 
 ## 5.4. Gramática de atributos
 
-Gramática de atributos que formaliza la traducción.
+Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+	Program.cod = SSubprogs || SInsts.cod || stop
 
-Program → program ident illave SDecs SInsts fllave fin
+SSubprogs → subprograms illave Subprogs fllave 
+	SSubprogs.cod = Subprogs.cod
 
-Program.cod = SInsts.cod || stop
+SSubprogs → subprograms illave fllave 
+	SSubprogs.cod = [] 
+
+SSubprogs → ɛ
+	SSubprogs.cod = []
+
+Subprogs → Subprogs Subprog 
+	Subprogs0.cod = Subprogs1.cod || Subprog.cod
+
+Subprogs → Subprog
+	Subprogs.cod = Subprog.cod
+
+Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+	Subprog.cod = prologo || SInsts.cod || epilogo
 
 SInsts → instructions illave Insts fllave
+	SInsts.cod = Insts.cod
 
-SInst.cod = Inst.cod
+Insts → Insts pyc Inst 
+	Insts0.cod = Insts1.cod || Inst.cod
 
 Insts → Inst
+	Insts.cod = Inst.cod
 
-Insts.cod = Inst.cod
+Inst → Desig asig Expr
+	TODO esto no sabemos hacerlo
+	Inst.cod = Desig.cod || Expr.cod
 
-Insts → Insts pyc Inst
+Inst → in ipar Desig fpar
 
-Insts0.cod = Insts1.cod || Inst.cod
+Inst → out ipar Expr fpar
+	Inst.cod = Expr.cod || out
 
-Inst → ident asig Expr
+Inst → swap1 ipar fpar
+	Inst.cod = swap1
 
-PInst.cod = Expr.cod || desapila-dir(Inst.tsh[ident.lex].dir)
+Inst → swap2 ipar fpar
+	Inst.cod = swap2
 
-Inst → in lpar ident rpar
+Inst → if Expr then Insts ElseIf
+	Inst.cod = Expr.cod || ir_f(Insts.dir) || Insts.cod || ir_a(Elseif.dir) || ElseIf.cod
 
-Inst.cod = in(Inst.tsh[ident.lex].type) || desapiladir(Inst.tsh[ident.lex].dir)
+Inst → while Expr do Insts endwhile
+	Expr.dirh = Inst.dirh
+	Inst.cod = Expr.cod || ir_f(Insts.dir) || Insts.cod || ir_a(Expr.dirh) 
 
-Inst →  out lpar Expr rpar
+Inst → InstCall
+	Inst.cod = 
+Inst → ɛ
+ElseIf → else Insts endif | endif
+InstCall → call ident lpar SRParams rpar
 
-Inst.cod = Expr.cod || out
+SRParams → RParams | ɛ
+RParams → RParams coma RParam | RParam
+RParam → ident asig Expr
 
-Inst → swap1 lpar rpar
+Desig → ident | Desig icorchete Expr fcorchete | Desig barrabaja litnat
 
-Inst.cod = swap1
+Expr → Term Op0 Term | Term
+Term → Term Op1 Fact | Fact
+Fact → Fact Op2 Shft | Shft
+Shft → Unary Op3 Shft | Unary
+Unary → Op4 Unary | lpar Cast rpar Paren | Paren
+Paren → lpar Expr rpar | Lit | Desig
 
-Inst →  swap2 lpar rpar
+Op0 → igual | noigual | men | may | menoig | mayoig
+Op1 → or | menos | mas
+Op2 → and | mod | div | mul
+Op3 → lsh | rsh
+Op4 → not | menos
 
-Inst.cod = swap2
-
-Expr → Term Op0 Term
-
-Expr.cod = Term1.cod || Term2.cod || Op0.op
-
-Expr → Term
-
-Expr.cod = Term.cod
-
-Term → Term Op1 Fact
-
-Term0.cod = Term1.cod || Fact.cod || Op1.op
-
-Term → Fact
-
-Term.cod = Fact.cod
-
-Fact → Fact Op2 Shft
-
-Fact0.cod = Fact1.cod || Shft.cod || Op2.op
-
-Fact → Shft
-
-Fact.cod → Shft.cod
-
-Shft → Unary Op3 Shft
-
-Shft0.cod = Unary.cod || Shft1.cod || Op3.op
-
-Shft → Unary
-
-Shft.cod = Unary.cod
-
-Unary → Op4 Unary
-
-Unary0.cod = Unary1.cod || Op4.op
-
-Unary → Lpar Cast rpar Paren
-
-Unary.cod = Paren.cod || Cast.type
-
-Unary → Paren
-
-Unary.cod = Paren.cod
-
-Paren → lpar Expr rpar
-
-Paren.cod = Expr.cod
-
-Paren → Lit
-
-Paren.cod = apilar( Lit.value )
-
-Paren → ident
-
-Paren.cod = apila-dir(Paren.tsh[ident.lex].dir)
-
-Cast → char
-
-Cast.type = char
-
-Cast → int
-
-Cast.type = int
-
-Cast → nat
-
-Cast.type = nat
-
-Cast → float
-
-Cast.type = float
-
-Op0 → igual
-
-Op0.op = igual
-
-Op0 → noigual
-
-Op0.op = noigual
-
-Op0 → men
-
-Op0.op = men
-
-Op0 → may
-
-Op0.op = may
-
-Op0 → menoig
-
-Op0.op =  menoig
-
-Op0 → mayoig
-
-Op0.op = mayoig
-
-Op1 → or
-
-Op1.op = or
-
-Op1 → menos
-
-Op1.op = menos
-
-Op1 → mas
-
-Op1.op = mas
-
-Op2 → and
-
-Op2.op = and
-
-Op2 → mod
-
-Op2.op = mod
-
-Op2 → div
-
-Op2.op = div
-
-Op2 → mul
-
-Op2.op = mul
-
-Op3 → lsh
-
-Op3.op = lsh
-
-Op3 → rsh
-
-Op3.op = rsh
-
-Op4 → not
-
-Op4.op = not
-
-Op4 → menos
-
-Op4.op = menos
+Lit → LitBool | LitNum | litchar
+LitBool → true | false
+LitNum → litnat | litfloat
