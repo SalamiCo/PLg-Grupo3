@@ -13,12 +13,19 @@ import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.Value;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.BranchInstruction;
 import plg.gr3.vm.instr.CastInstruction;
+import plg.gr3.vm.instr.DuplicateInstruction;
+import plg.gr3.vm.instr.IndirectLoadInstruction;
+import plg.gr3.vm.instr.IndirectStoreInstruction;
 import plg.gr3.vm.instr.InputInstruction;
 import plg.gr3.vm.instr.Instruction;
+import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.LoadInstruction;
+import plg.gr3.vm.instr.MoveInstruction;
 import plg.gr3.vm.instr.OutputInstruction;
 import plg.gr3.vm.instr.PushInstruction;
+import plg.gr3.vm.instr.ReturnInstruction;
 import plg.gr3.vm.instr.StopInstruction;
 import plg.gr3.vm.instr.StoreInstruction;
 import plg.gr3.vm.instr.Swap1Instruction;
@@ -49,7 +56,6 @@ public final class StreamCodeWriter extends CodeWriter {
     public void write (Instruction inst) {
         if (!inhibited) {
             try {
-                
                 // Escribimos la instrucción
                 if (inst instanceof BinaryOperatorInstruction) {
                     writeBinaryOp((BinaryOperatorInstruction) inst);
@@ -65,6 +71,12 @@ public final class StreamCodeWriter extends CodeWriter {
                     
                 } else if (inst instanceof StoreInstruction) {
                     writeStore((StoreInstruction) inst);
+                    
+                } else if (inst instanceof IndirectLoadInstruction) {
+                    writeIndirectLoad((IndirectLoadInstruction) inst);
+                    
+                } else if (inst instanceof IndirectStoreInstruction) {
+                    writeIndirectStore((IndirectStoreInstruction) inst);
                     
                 } else if (inst instanceof InputInstruction) {
                     writeInput((InputInstruction) inst);
@@ -83,6 +95,21 @@ public final class StreamCodeWriter extends CodeWriter {
                     
                 } else if (inst instanceof StopInstruction) {
                     writeStop((StopInstruction) inst);
+                    
+                } else if (inst instanceof MoveInstruction) {
+                    writeMove((MoveInstruction) inst);
+                    
+                } else if (inst instanceof DuplicateInstruction) {
+                    writeDuplicate((DuplicateInstruction) inst);
+                    
+                } else if (inst instanceof JumpInstruction) {
+                    writeJump((JumpInstruction) inst);
+                    
+                } else if (inst instanceof ReturnInstruction) {
+                    writeReturn((ReturnInstruction) inst);
+                    
+                } else if (inst instanceof BranchInstruction) {
+                    writeBranch((BranchInstruction) inst);
                     
                 } else {
                     throw new IllegalArgumentException("Unknown instruction: " + inst.getClass());
@@ -129,11 +156,13 @@ public final class StreamCodeWriter extends CodeWriter {
     
     private void writeStore (StoreInstruction inst) throws IOException {
         stream.writeByte(Instruction.OPCODE_STORE);
+        stream.writeByte(inst.getType().getCode());
         stream.writeInt(inst.getAddress());
     }
     
     private void writeLoad (LoadInstruction inst) throws IOException {
         stream.writeByte(Instruction.OPCODE_LOAD);
+        stream.writeByte(inst.getType().getCode());
         stream.writeInt(inst.getAddress());
     }
     

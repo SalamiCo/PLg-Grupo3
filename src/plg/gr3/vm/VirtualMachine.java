@@ -6,8 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Objects;
@@ -33,9 +31,9 @@ import plg.gr3.vm.instr.Instruction;
  */
 public final class VirtualMachine {
     
-    private volatile List<Value> memory;
+    private volatile Memory<Value> memory;
     
-    private volatile List<Instruction> program;
+    private volatile Memory<Instruction> program;
     
     private volatile Stack<Value> stack;
     
@@ -54,9 +52,9 @@ public final class VirtualMachine {
     private volatile RuntimeError error;
     
     public VirtualMachine (List<Instruction> program) {
-        this.program = Collections.unmodifiableList(program);
+        this.program = Memory.readable(program);
         
-        memory = Collections.synchronizedList(new ArrayList<Value>());
+        memory = Memory.writable(Value.class);
         stack = new Stack<>();
         reader = new BufferedReader(new InputStreamReader(System.in));
         writer = new OutputStreamWriter(System.out);
@@ -86,31 +84,23 @@ public final class VirtualMachine {
             }
         } catch (EmptyStackException e) {
             // Error de pila vacía
-            this.abort(new EmptyStackError(programCounter, inst));
+            abort(new EmptyStackError(programCounter, inst));
         }
     }
     
     public Instruction getInstruction (int address) {
-        if (address < 0 || address >= program.size()) {
+        Instruction instr = program.get(address);
+        if (instr == null) {
             abort(new InvalidInstructionAddressError(address));
-            return null;
         }
-        return program.get(address);
+        return instr;
     }
     
     public Value getMemoryValue (int address) {
-        if (address < 0 || address >= memory.size()) {
-            return null;
-        }
         return memory.get(address);
-        
     }
     
     public void setMemoryValue (int address, Value value) {
-        while (memory.size() <= address) {
-            memory.add(null);
-        }
-        
         memory.set(address, value);
     }
     
@@ -156,6 +146,10 @@ public final class VirtualMachine {
     
     public int getProgramCounter () {
         return programCounter;
+    }
+    
+    public void setProgramCounter (int addr) {
+        this.programCounter = addr;
     }
     
     public boolean isStopped () {
@@ -224,23 +218,4 @@ public final class VirtualMachine {
         }
     }
     
-    public ArrayList<String> getStackToArrayList () {
-        ArrayList<String> stackArrayList = new ArrayList<String>();
-        
-        for (Value value : stack) {
-            stackArrayList.add(value.toString());
-        }
-        
-        return stackArrayList;
-    }
-    
-    public ArrayList<String> getMemoryToArrayList () {
-        ArrayList<String> memoryArrayList = new ArrayList<String>();
-        
-        for (Value value : memory) {
-            memoryArrayList.add(value == null ? "--" : value.toString());
-        }
-        
-        return memoryArrayList;
-    }
 }

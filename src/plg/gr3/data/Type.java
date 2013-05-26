@@ -151,9 +151,14 @@ public final class Type {
         }
     }
     
-    /** @return <tt>true</tt> Si este tipo es numérico, <tt>false</tt> en otro caso */
+    /** @return <tt>true</tt> si este tipo es numérico, <tt>false</tt> en otro caso */
     public boolean isNumeric () {
         return equals(NATURAL) || equals(INTEGER) || equals(FLOAT);
+    }
+    
+    /** @return <tt>true</tt> si este tipo es primitivo */
+    public boolean isPrimitive () {
+        return equals(NATURAL) || equals(INTEGER) || equals(FLOAT) || equals(CHARACTER) || equals(BOOLEAN);
     }
     
     /**

@@ -54,11 +54,7 @@ public class NaturalValue extends NumericValue {
     
     @Override
     public NumericValue add (NumericValue other) {
-        if (other instanceof NaturalValue) {
-            int otherValue = other.toNaturalValue().getValue();
-            return NaturalValue.valueOf(value + otherValue);
-            
-        } else if (other instanceof IntegerValue) {
+        if (other instanceof NaturalValue || other instanceof IntegerValue) {
             return toIntegerValue().add(other);
             
         } else if (other instanceof FloatValue) {
@@ -70,11 +66,7 @@ public class NaturalValue extends NumericValue {
     
     @Override
     public NumericValue subtract (NumericValue other) {
-        if (other instanceof NaturalValue) {
-            int otherValue = other.toNaturalValue().getValue();
-            return NaturalValue.valueOf(value - otherValue);
-            
-        } else if (other instanceof IntegerValue) {
+        if (other instanceof NaturalValue || other instanceof IntegerValue) {
             return toIntegerValue().subtract(other);
             
         } else if (other instanceof FloatValue) {

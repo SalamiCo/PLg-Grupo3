@@ -28,4 +28,26 @@ public abstract class Value {
      *         <i>mayor</i> o <i>igual</i> que <tt>other</tt>.
      */
     public abstract int compare (Value other);
+    
+    /**
+     * @param type Tipo al que hacer el casting
+     * @return Valor convertido
+     */
+    public final Value castTo (Type type) {
+        if (type.equals(Type.CHARACTER)) {
+            return toCharacterValue();
+            
+        } else if (type.equals(Type.FLOAT)) {
+            return toFloatValue();
+            
+        } else if (type.equals(Type.INTEGER)) {
+            return toIntegerValue();
+            
+        } else if (type.equals(Type.NATURAL)) {
+            return toNaturalValue();
+            
+        } else {
+            throw new IllegalArgumentException("Cannot cast to type " + type);
+        }
+    }
 }

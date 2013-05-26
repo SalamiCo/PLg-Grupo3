@@ -16,12 +16,19 @@ import plg.gr3.data.NaturalValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.BranchInstruction;
 import plg.gr3.vm.instr.CastInstruction;
+import plg.gr3.vm.instr.DuplicateInstruction;
+import plg.gr3.vm.instr.IndirectLoadInstruction;
+import plg.gr3.vm.instr.IndirectStoreInstruction;
 import plg.gr3.vm.instr.InputInstruction;
 import plg.gr3.vm.instr.Instruction;
+import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.LoadInstruction;
+import plg.gr3.vm.instr.MoveInstruction;
 import plg.gr3.vm.instr.OutputInstruction;
 import plg.gr3.vm.instr.PushInstruction;
+import plg.gr3.vm.instr.ReturnInstruction;
 import plg.gr3.vm.instr.StopInstruction;
 import plg.gr3.vm.instr.StoreInstruction;
 import plg.gr3.vm.instr.Swap1Instruction;
@@ -51,7 +58,7 @@ public class StreamCodeReader extends CodeReader implements Closeable {
             byte byteRead = stream.readByte();
             
             if ((byteRead & Instruction.OPMASK_OPERATOR) == Instruction.OPCODE_OPERATOR) {
-                int code = byteRead & ~Instruction.OPCODE_OPERATOR;
+                int code = byteRead & ~Instruction.OPMASK_OPERATOR;
                 
                 // Probamos si es un operador binario
                 BinaryOperator binOp = BinaryOperator.forCode(code);
@@ -69,7 +76,7 @@ public class StreamCodeReader extends CodeReader implements Closeable {
                 throw new IOException("Formato de bytecode inválido");
                 
             } else if ((byteRead & Instruction.OPMASK_PUSH) == Instruction.OPCODE_PUSH) {
-                int code = byteRead & ~Instruction.OPCODE_PUSH;
+                int code = byteRead & ~Instruction.OPMASK_PUSH;
                 Type type = Type.forCode(code);
                 
                 if (type == Type.BOOLEAN) {
@@ -100,10 +107,20 @@ public class StreamCodeReader extends CodeReader implements Closeable {
                 return new CastInstruction(Type.forCode(code));
                 
             } else if (byteRead == Instruction.OPCODE_LOAD) {
-                return new LoadInstruction(stream.readInt());
+                int code = stream.readByte();
+                return new LoadInstruction(stream.readInt(), Type.forCode(code));
                 
             } else if (byteRead == Instruction.OPCODE_STORE) {
-                return new StoreInstruction(stream.readInt());
+                int code = stream.readByte();
+                return new StoreInstruction(stream.readInt(), Type.forCode(code));
+                
+            } else if (byteRead == Instruction.OPCODE_LOAD_IND) {
+                int code = stream.readByte();
+                return new IndirectLoadInstruction(Type.forCode(code));
+                
+            } else if (byteRead == Instruction.OPCODE_STORE_IND) {
+                int code = stream.readByte();
+                return new IndirectStoreInstruction(Type.forCode(code));
                 
             } else if (byteRead == Instruction.OPCODE_OUTPUT) {
                 return new OutputInstruction();
@@ -117,6 +134,25 @@ public class StreamCodeReader extends CodeReader implements Closeable {
             } else if (byteRead == Instruction.OPCODE_SWAP2) {
                 return new Swap2Instruction();
                 
+            } else if (byteRead == Instruction.OPCODE_DUPLICATE) {
+                return new DuplicateInstruction();
+                
+            } else if (byteRead == Instruction.OPCODE_MOVE) {
+                return new MoveInstruction(stream.readInt());
+                
+            } else if ((byteRead & Instruction.OPMASK_BRANCH) == Instruction.OPCODE_BRANCH) {
+                int code = byteRead & ~Instruction.OPMASK_BRANCH;
+                switch (code) {
+                    case 0:
+                        return new JumpInstruction(stream.readInt());
+                    case 1:
+                        return new BranchInstruction(stream.readInt(), BooleanValue.FALSE);
+                    case 2:
+                        return new BranchInstruction(stream.readInt(), BooleanValue.TRUE);
+                    case 3:
+                        return new ReturnInstruction();
+                }
+                
             } else {
                 // El código de operador no se reconoce
                 throw new IOException("Formato de bytecode inválido");
@@ -125,6 +161,8 @@ public class StreamCodeReader extends CodeReader implements Closeable {
             return null;
             
         }
+        
+        return null;
     }
     
     @Override

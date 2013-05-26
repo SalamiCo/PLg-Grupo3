@@ -30,24 +30,9 @@ public class CastInstruction extends Instruction {
     @Override
     public void execute (VirtualMachine vm) {
         Value val = vm.popValue();
-        Value casted = null;
         
         try {
-            if (castType.equals(Type.CHARACTER)) {
-                casted = val.toCharacterValue();
-                
-            } else if (castType.equals(Type.FLOAT)) {
-                casted = val.toFloatValue();
-                
-            } else if (castType.equals(Type.INTEGER)) {
-                casted = val.toIntegerValue();
-                
-            } else if (castType.equals(Type.NATURAL)) {
-                casted = val.toNaturalValue();
-                
-            }
-            
-            vm.pushValue(casted);
+            vm.pushValue(val.castTo(castType));
             
         } catch (IllegalArgumentException exc) {
             vm.abort(new CastingError(vm.getProgramCounter(), this, val, castType));

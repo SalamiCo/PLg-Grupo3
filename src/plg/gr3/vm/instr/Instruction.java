@@ -42,29 +42,45 @@ public abstract class Instruction {
     /** Opcode de la instrucción store */
     public static final int OPCODE_STORE = 0b0011_1001;
     
+    /** Opcode de la instrucción load */
+    public static final int OPCODE_LOAD_IND = 0b0011_1010;
+    
+    /** Opcode de la instrucción store */
+    public static final int OPCODE_STORE_IND = 0b0011_1011;
+    
     /** Opcode de la instrucción de output */
-    public static final int OPCODE_OUTPUT = 0b0011_1010;
+    public static final int OPCODE_OUTPUT = 0b0011_1100;
     
     /** Opcode de la instrucción stop */
-    public static final int OPCODE_STOP = 0b0011_1011;
+    public static final int OPCODE_STOP = 0b0011_1101;
     
     /** Opcode de la instrucción swap1 */
-    public static final int OPCODE_SWAP1 = 0b0011_1100;
+    public static final int OPCODE_SWAP1 = 0b0011_1110;
     
     /** Opcode de la instrucción swap2 */
-    public static final int OPCODE_SWAP2 = 0b0011_1101;
+    public static final int OPCODE_SWAP2 = 0b0011_1111;
+    
+    /** Opcode de la instrucción branch */
+    public static final int OPCODE_BRANCH = 0b0100_0000;
+    
+    /** Máscara de bits de lainstrucción branch */
+    public static final int OPMASK_BRANCH = 0b01111_1100;
+    
+    /** Opcode de la instrucción duplicate */
+    public static final int OPCODE_DUPLICATE = 0b0100_0100;
+    
+    /** Opcode de la instrucción move */
+    public static final int OPCODE_MOVE = 0b0100_0101;
     
     /**
      * Devuelve una instrucción de operación que usa el operador dado. Dependiendo del tipo del parámetro, el tipo
      * concreto del valor devuelto será el correspondiente, permitiéndonos crear una instrucción paracualquier operador,
      * sea del tipo que sea, de forma cómoda.
      * 
-     * @param operator
-     *            Operador a usar por la instrucción
+     * @param operator Operador a usar por la instrucción
      * @return Una instrucción {@link BinaryOperatorInstruction} o {@link UnaryOperatorInstruction} dependiendo del tipo
      *         del operador pasado
-     * @throws IllegalArgumentException
-     *             si <tt>operator</tt> no es de un tipo conocido
+     * @throws IllegalArgumentException si <tt>operator</tt> no es de un tipo conocido
      */
     public static Instruction forOperator (Operator operator) {
         if (operator instanceof BinaryOperator) {
@@ -81,8 +97,7 @@ public abstract class Instruction {
     /**
      * Ejecuta esta instrucción en la máquina virtual dada
      * 
-     * @param vm
-     *            Máquina virtualen la que ejecutar la instrucción
+     * @param vm Máquina virtualen la que ejecutar la instrucción
      */
     public abstract void execute (VirtualMachine vm);
     
