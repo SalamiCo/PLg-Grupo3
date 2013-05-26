@@ -1,45 +1,32 @@
 
     Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
         Program.tsh = creaTS()
-        Program.dirh = 2
         SConsts.tsh = Program.tsh
-        SConsts.dirh = Program.dirh
         STypes.tsh = SConsts.ts
-        STypes.dirh = SConsts.dir
         SVars.tsh = STypes.ts
-        SVars.dirh = STypes.dir
         SSubprogs.tsh = SVars.ts
-        SSubprogs.dirh = SVars.dir
         SInsts.tsh = SVars.ts
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
-        Consts.dirh = SConsts.dirh
         SConsts.ts = Consts.ts
-        SConsts.dir = Consts.dir
 
     SConsts → ɛ
         SConsts.ts = SConsts.tsh
-        SConsts.dir = SConsts.dirh
 
     Consts → Consts pyc Const
         Consts1.tsh = Consts0.tsh
-        Consts1.dirh = Consts0.dirh
         Const.tsh = Consts1.ts
-        Const.dirh = Consts1.dir
-        Consts0.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
         Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Conts0.dir, Const.tipo)
 
     Consts → Const
         Const.tsh = Consts.tsh
-        Const.dirh = Consts.dirh
         Consts.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
         Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo)
 
 
     Const → const TPrim ident asig Lit 
         Const.ts = Const.tsh
-        Const.dir = Const.dirh
         Const.id = ident.lex
         Const.clase = const
         Const.nivel = global
@@ -47,36 +34,26 @@
 
     Const → ɛ
         Const.ts = Const.tsh
-        Const.dir = Const.dirh
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
-        Types.dirh = STypes.dirh
         STypes.ts = Types.ts 
-        STypes.dir = Types.dir 
 
     STypes → ɛ
         STypes.ts = STypes.tsh
-        STypes.dir = STypes.dirh
 
     Types → Types pyc Type 
         Types1.tsh = Types0.tsh
-        Types1.dirh = Types0.dirh
         Type.tsh = Types1.ts
-        Type.dirh = Types1.dir
-        Types0.dir = Type.dir + desplazamiento(Type.tipo, Types.id)
         Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, Types0.dir, Type.tipo)
 
     Types → Type
         Type.tsh = Types.tsh
-        Type.dirh = Types.dirh
-        Types.dir = Type.dir + desplazamiento(Type.tipo, Type.id)
         Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, Type.dir, Type.tipo)
 
 
     Type → tipo TypeDesc ident 
         Type.ts = Type.tsh
-        Type.dir = Type.dirh
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
@@ -84,35 +61,25 @@
 
     Type → ɛ
         Type.ts = Type.tsh
-        Type.dir = Type.dirh
 
     SVars → vars illave Vars fllave 
         Vars.tsh = SVars.tsh
-        Vars.dirh = SVars.dirh
         SVars.ts = Vars.ts
-        SVars.dir = Vars.dir
 
     SVars → ɛ
         SVars.ts = SVars.tsh
-        SVars.dir = SVars.dirh
 
     Vars → Vars pyc Var 
         Vars1.tsh = Vars0.tsh
-        Vars1.dirh = Vars0.dirh
         Var.tsh = Vars1.ts
-        Var.dirh = Vars1.dir
-        Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
         Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
 
     Vars → Var
         Var.tsh = Vars.tsh
-        Var.dirh = Vars.dirh
-        Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
         Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
 
     Var → var TypeDesc ident 
         Var.ts = Var.tsh
-        Var.dir = Var.dirh
         Var.id = ident.lex
         Var.clase = Var
         Var.nivel = global
@@ -121,7 +88,6 @@
 
     Var → ɛ
         Var.ts = Var.tsh
-        Var.dir = Var.dirh
 
     SSubprogs → subprograms illave Subprogs fllave 
         Subprogs.tsh = SSubprogs.tsh
@@ -138,39 +104,29 @@
         Subprog.tsh = Subprogs.tsh
 
     Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-        SParams.dirh = 0
         SParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
         SVars.tsh = SParams.ts
-        SVars.dirh = SParams.dir
         SInsts.tsh = SVars.ts
 
     SParams → FParams 
         FParams.tsh = SParams.tsh
         SParams.ts = FParams.ts
-        FParams.dirh = SParams.dirh
         SParams.dir = FParams.dir
 
     SParams → ɛ
         SParams.ts = SParams.tsh
-        SParams.dir = SParams.dirh
 
     FParams → FParams coma FParam 
         FParams1.tsh = FParams0.tsh
-        FParams1.dirh = FParams0.dirh
         FParam.tsh = FParams1.tsh
-        FParam.dirh = FParams1.dirh
-        FParams0.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id) 
         FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
 
     FParams → FParam
-        FParam.dirh = FParams.dirh
         FParam.tsh = FParams.tsh
         FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
-        FParams.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id)
 
     FParam → TypeDesc ident 
         FParam.ts = FParam.tsh
-        FParam.dir = FParam.dirh 
         Fparam.id = ident.lex
         FParam.clase = pvalor
         FParam.nivel = local
@@ -179,7 +135,6 @@
 
     FParam → TypeDesc mul ident
         FParam.ts = FParam.tsh
-        FParam.dir =  FParam.dirh 
         Fparam.id = ident.lex
         FParam.clase = pvariable
         FParam.nivel = local
