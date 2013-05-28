@@ -320,14 +320,39 @@ Term → Term Op1 Fact | Fact
 Fact → Fact Op2 Shft | Shft
 Shft → Unary Op3 Shft | Unary
 Unary → Op4 Unary | lpar Cast rpar Paren | Paren
-Paren → lpar Expr rpar | Lit | Desig
 
-Op0 → igual | noigual | men | may | menoig | mayoig
-Op1 → or | menos | mas
-Op2 → and | mod | div | mul
-Op3 → lsh | rsh
-Op4 → not | menos
+Paren → lpar Expr rpar
+Paren → Lit
+Paren → Desig
 
-Lit → LitBool | LitNum | litchar
-LitBool → true | false
-LitNum → litnat | litfloat
+Op0 → igual
+	Op0.op = igual
+Op0 → noigual
+	Op0.op = noigual
+Op0 → men
+	Op0.op = men
+Op0 → may
+	Op0.op = may
+Op0 → menoig
+	Op0.op = menoig
+Op0 → mayoig
+	Op0.op = mayoig
+Op1 → menos
+	Op1.op = menos
+Op1 → mas
+	Op1.op = mas
+Op2 → mod
+	Op2.op = mod
+Op2 → div
+	Op2.op = div
+Op2 → mul
+	Op2.op = mul
+
+Op3 → lsh
+	Op3.op = lsh
+Op3 → rsh
+	Op3.op = rsh
+Op4 → not
+	Op4.op = not
+Op4 → menos
+	Op4.op = menos
