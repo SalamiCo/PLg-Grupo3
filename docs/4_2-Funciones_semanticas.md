@@ -96,4 +96,4 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que los dos t
 Nota: En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.
 
     esVariable(TS ts, String id) : Boolean
-        Indica si el ident dado, representado por su id, es una variable
+        Indica si el ident dado, representado por su id, es una variable o una constante. Si devuelve true quiere decir que el ident es una variable, si devuelve false quiere decir que el identificador es una constante.
