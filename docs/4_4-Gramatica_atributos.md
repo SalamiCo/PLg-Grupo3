@@ -252,11 +252,11 @@
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
 		RParam.err = Expr.err ∨ ¬asignaciónVálida(Expr.tsh[ident.lex].type, Expr.type) ∨ ¬existe(Exp.tsh, ident.lex) ∨ 
-                        Expr.tsh[ident.lex].const == true
+                        ¬esVariable(Expr.tsh, ident.lex)
 
 	Desig → ident
 		Desig.type = Desig.tsh[ident.lex].type
-		Desig.err = ¬existe(Desig.tsh, ident) ∨ Expr.tsh[ident.lex].const == true
+		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(Expr.tsh, ident.lex)
 
 	Desig → Desig icorchete Expr fcorchete
 		Desig0.type = Desig1.type
@@ -279,6 +279,11 @@
 		Term0.type = tipoFunc(Term1.type, Op1.op, Fact.type)
 		Term1.tsh = Term0.tsh
 		Fact.tsh = Term0.tsh
+
+	Term → Term or Fact
+		Term0.type = tipoFunc(Term1.type, or, Fact.type)
+		Term1.tsh = Term0.tsh
+		Fact.tsh = Term0.tsh
 	
 	Term → Fact
 		Term.type = Fact.type
@@ -286,6 +291,11 @@
 	
 	Fact → Fact Op2 Shft
 		Fact0.type = tipoFunc(Fact1.type, Op2.op, Shft.type) 
+		Fact1.tsh = Fact0.tsh
+		Shft.tsh = Fact0.tsh
+
+	Fact → Fact and Shft
+		Fact0.type = tipoFunc(Fact1.type, and, Shft.type)
 		Fact1.tsh = Fact0.tsh
 		Shft.tsh = Fact0.tsh
 	
@@ -342,18 +352,12 @@
 	
 	Op0 → mayoig 
 		Op0.op = mayoig
-	
-	Op1 → or
-		Op1.op = or
 
 	Op1 → menos
 		Op1.op = menos
 
 	Op1 → mas
 		Op1.op = mas
-	
-	Op2 → and
-		Op2.op = and
 
 	Op2 → mod
 		Op2.op = mod
@@ -396,8 +400,5 @@
 
 ### Notas Marina
 
-- En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
-- Las constantes solo pueden ser de tipo primitivo
-- Las funciones esVariable() y tamaño() no están explicadas en ningún sitio. del 4.2
-- No está hecho lo del los tipos compatibles. Básicamente resivar la función AsignaciónVálida porque se queda corta para la nueva proactica
-- En las tablas de compatibilidad del 4.2 no están reflejadas las tuplas y los arrays. 
+- En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas.
+- Explicar función tamaño().

@@ -70,6 +70,7 @@ desapila-dir(dirección)
 >CPila ← CPila - 1<br/>
 >CProg ← CProg + 1<br/>
 
+//REVISARRRRR
 desapila-ind
 >Reg ← Mem[direccion]<br/>
 >Mem[Pila[CPila-2]] ← Pila[CPila]<br/>
@@ -252,10 +253,14 @@ No hacemos uso de ninguna función semántica.
 ## 5.4. Gramática de atributos
 
 Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+<<<<<<< HEAD
 	Program.cod = SSubprogs || SInsts.cod || stop
 	SSubprogs.etqh = 1 
 	SInsts.etqh = SSubprogs.etq
 
+=======
+	Program.cod = ir_a(?) || stack_pointer || SSubprogs || SInsts.cod || stop
+>>>>>>> d4f1c41d03d481bfc25f52a78da96069cf446703
 
 SSubprogs → subprograms illave Subprogs fllave 
 	SSubprogs.cod = Subprogs.cod
@@ -285,6 +290,7 @@ Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 	SInsts.etqh = Subprog.etqh + num inst prologo //TODO porque el prologo y el epilogo no está hecho
 	Subprog.etq = SInsts.etq + num inst epiligo
 
+
 SInsts → instructions illave Insts fllave
 	SInsts.cod = Insts.cod
 	Insts.etqh = SInsts.etqh
@@ -302,13 +308,13 @@ Insts → Inst
 	Insts.etq = Inst.etq
  
 Inst → Desig asig Expr
-	TODO esto no sabemos hacerlo
-	Inst.cod = Desig.cod || Expr.cod
+	Inst.cod = apila(Desig.dir) || Expr.cod || desapila-ind
 	Desig.etqh = Inst.etqh 
 	Expr.etqh = Desig.etq
 	Inst.etq = Expr.etq //TODO no sé si hay que sumar instrucciones, la generación de codigo no está acabada
 
 Inst → in ipar Desig fpar
+	Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
 	Desig.etqh = Inst.etq
 	Inst.etq = Desig.etq 
 

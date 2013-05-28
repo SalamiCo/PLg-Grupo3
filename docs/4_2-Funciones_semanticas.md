@@ -7,7 +7,7 @@ A continuación, describimos las funciones semánticas adicionales utilizadas en
         Dados dos tipos diferentes comprobamos si podemos hacer el casting: [ (tipoCast) tipoOrg ] Si podemos, devolvemos el tipoCast resultante de hacer el casting, y si no podemos, devolvemos terr. Describimos el comportamiento de la función en la siguiente tabla.
 
 |    TipoCast     |         TipoOrg           | Tipo devuelto |
-|:---------------:|:-------------------------:|:-------------:|￼
+|:---------------:|:-------------------------:|:-------------:|
 |  natural        | natural                   | natural       |
 |  natural        | character                 | natural       |
 |  natural        | cualquier otro tipo       | terr          |
@@ -19,11 +19,11 @@ A continuación, describimos las funciones semánticas adicionales utilizadas en
 |  integer        | tipo númerico o character | integer       |
 |   float         | boolean                   | terr          |
 |   float         | tipo númerico o character | terr          |
-| tipo construido | -                         | terr          |
+
+        Nota: cualquier casting en el que esté involucrado un tipo construido da como tipo devuelto 'terr'.
 
     unario(Type OpUnario, Type tipoUnario) : Type
         Dado un operador unario y el tipo al que es aplicado comprobamos si se puede aplicar. Por ejemplo, no podemos aplicar a un booleano el operador “-”. Tampoco podemos aplicar a un entero el operador “not”. En esos casos devuelve terr. Si aplicamos el operador “-” a un tipo nat devolvemos el tipo integer.
-￼￼￼￼
 
 |  OpUnario  |  tipoUnario          | Tipo devuelto |
 |:----------:|:--------------------:|:-------------:|
@@ -33,6 +33,8 @@ A continuación, describimos las funciones semánticas adicionales utilizadas en
 |     "-"    |  cualquier otro tipo |     terr      |
 |     not    |  boolean             |   boolean     |
 |     not    |  cualquier otro tipo |     terr      |
+
+        Nota: no se puede aplicar ningún operador unario a ningún tipo construido.
 
     tipoFunc(Type tipo1, Operator op, Type tipo2) : Type
         Dados dos tipos diferentes y un operador comprobamos que los tipos puedan aplicar el operador. Devolvemos el tipo correspondiente al aplicar el operador. Si el operador no puede ser aplicado entonces devolvemos terr.
@@ -46,19 +48,19 @@ También para que se vea mejor, dentro de las tablas, separaremos los tipos de o
 | tipo numérico       | cualquier op. de comparación | tipo numérico           | boolean       |
 | boolean             | cualquier op. de comparación | boolean                 | boolean       |
 | character           | cualquier op. de comparación | character               | boolean       |
-| tipo construido     | cualquier op. de comparación | -                       | terr          |
 | boolean             | cualquier op. aritmética     | -                       | terr          |
 | character           | cualquier op. aritmética     | -                       | terr          |
 | float               | cualquier op. aritmética     | cualquier tipo numérico | float         |
 | integer             | cualquier op. aritmética     | integer o natural       | integer       |
 | natural             | cualquier op. aritmética     | natural                 | natural       |
-| tipo construido     | cualquier op. aritmética     | -                       | terr          |
 | boolean             | cualquier op. lógica         | boolean                 | boolean       |
 | cualquier otro tipo | cualquier op. lógica         | -                       | terr          |
 | natural             | "<<"                         | natural                 | natural       |
 | natural             | ">>"                         | natural                 | natural       |
 | tipo no natural     | "<<"                         | -                       | terr          |
 | -                   | "<<"                         | tipo no natural         | terr          |
+
+        Nota: el tipo devuelto de aplicar cualquier tipo de operador a un tipo construido es 'terr'.
 
 
 Operadores no conmutativos:
@@ -88,15 +90,12 @@ Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de t
 | character | character           | true          |
 | character | cualquier otro tipo | false         |
 
-Nota: En el caso de los tipos construidos, devolverá true siempre que el tipo de la expresión sea el mismo tipo construido, y las componentes de ambos del mismo tipo. En cualquier otro caso, devolverá false.
+Nota: En el caso de los tipos construidos, devolverá true siempre que los dos tipos sean compatibles, y false en c.o.c. Dos tipos se consideran compatibles cuando el tipo de sus componentes es el mismo y, en el caso de los arrays, su tamaño es el mismo.
 
 
 Nota: En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.
 
+    esVariable(TS ts, String id) : Boolean
+        Indica si el ident dado, representado por su id, es una variable
 
-    tamañoCorrecto() : Boolean
-
-// TODO 
-	tamañoCorrecto() -> Revisa como hacer esto en condiciones, porque creo que es mas jodido de lo que parece. Cómo miras el tamaño del array o la tupla?
-	Revisar por encima lo que has dejado a medias cuando te has ido por si acaso me he colado en algo.
-	Revisar los Designadores porque no me cuadran del todo.    
+    tamañoCorrecto() : Boolean  
