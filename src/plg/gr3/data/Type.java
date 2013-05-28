@@ -1,5 +1,6 @@
 package plg.gr3.data;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,31 +11,84 @@ import java.util.Objects;
  * 
  * @author PLg Grupo 03 2012/2013
  */
-public final class Type {
+public abstract class Type {
     
     /** Mapa de nombres a sus tipos */
     private static final Map<String, Type> TYPES = Collections.synchronizedMap(new HashMap<String, Type>());
     
-    /** Mapa de códigos a sus tipos */
-    private static final Map<Integer, Type> TYPECODES = Collections.synchronizedMap(new HashMap<Integer, Type>());
-    
     /** Tipo predefinido para naturales */
-    public static final Type NATURAL = defineType("natural", 0);
+    public static final Type NATURAL = new PrimitiveType("natural", 0, true) {
+        
+        @Override
+        public boolean compatible (Type type) {
+            return NATURAL.equals(type);
+        }
+    };
     
     /** Tipo predefinido para enteros */
-    public static final Type INTEGER = defineType("integer", 1);
+    public static final Type INTEGER = new PrimitiveType("integer", 1, true) {
+        
+        @Override
+        public boolean compatible (Type type) {
+            return NATURAL.equals(type) || INTEGER.equals(type);
+        }
+    };
     
     /** Tipo predefinido para punto flotante */
-    public static final Type FLOAT = defineType("float", 2);
+    public static final Type FLOAT = new PrimitiveType("float", 2, true) {
+        
+        @Override
+        public boolean compatible (Type type) {
+            return NATURAL.equals(type) || INTEGER.equals(type) || FLOAT.equals(type);
+        }
+    };
     
     /** Tipo predefinido para booleanos */
-    public static final Type BOOLEAN = defineType("boolean", 3);
+    public static final Type BOOLEAN = new PrimitiveType("boolean", 3, false) {
+        
+        @Override
+        public boolean compatible (Type type) {
+            return BOOLEAN.equals(type);
+        }
+    };
     
     /** Tipo predefinido para caracteres */
-    public static final Type CHARACTER = defineType("character", 4);
+    public static final Type CHARACTER = new PrimitiveType("character", 4, false) {
+        
+        @Override
+        public boolean compatible (Type type) {
+            return CHARACTER.equals(type);
+        }
+    };
     
     /** Tipo predefinido para errores en la gramática */
-    public static final Type ERROR = forName("");
+    public static final Type ERROR = new Type("") {
+        
+        @Override
+        public boolean isNumeric () {
+            return false;
+        }
+        
+        @Override
+        public boolean isPrimitive () {
+            return false;
+        }
+        
+        @Override
+        public boolean compatible (Type type) {
+            return false;
+        }
+    };
+    
+    /** Mapa de códigos a sus tipos */
+    private static final Map<Integer, Type> TYPECODES;
+    static {
+        Map<Integer, Type> codes = new HashMap<Integer, Type>();
+        for (Type type : Arrays.asList(NATURAL, INTEGER, FLOAT, BOOLEAN, CHARACTER)) {
+            codes.put(Integer.valueOf(type.getCode()), type);
+        }
+        TYPECODES = Collections.unmodifiableMap(codes);
+    }
     
     /** Nombre del tipo */
     private final String name;
@@ -53,6 +107,10 @@ public final class Type {
         if (code != 0xFFFFFFFF) {
             TYPECODES.put(Integer.valueOf(code), this);
         }
+    }
+    
+    protected Type (String name) {
+        this(name, 0xFFFFFFFF);
     }
     
     /** @return Nombre del tipo */
@@ -84,6 +142,8 @@ public final class Type {
     public String toString () {
         return name;
     }
+    
+    public abstract boolean compatible (Type type);
     
     /**
      * Devuelve el tipo asociado al código pasado
@@ -152,14 +212,10 @@ public final class Type {
     }
     
     /** @return <tt>true</tt> si este tipo es numérico, <tt>false</tt> en otro caso */
-    public boolean isNumeric () {
-        return equals(NATURAL) || equals(INTEGER) || equals(FLOAT);
-    }
+    public abstract boolean isNumeric ();
     
     /** @return <tt>true</tt> si este tipo es primitivo */
-    public boolean isPrimitive () {
-        return equals(NATURAL) || equals(INTEGER) || equals(FLOAT) || equals(CHARACTER) || equals(BOOLEAN);
-    }
+    public abstract boolean isPrimitive ();
     
     /**
      * @param t1 Primer tipo acomprobar
@@ -205,28 +261,30 @@ public final class Type {
      * @return Tipo correspondiente al nombre dado
      */
     public static Type forName (String name) {
-        // Necesitamos sincronizar para evitar problemas al llamar aeste método desde múltiples hilos (en la GUI)
-        synchronized (TYPES) {
-            if (TYPES.containsKey(name)) {
-                return TYPES.get(name);
-            } else {
-                return defineType(name, 0xFFFFFFFF);
-            }
+        if (TYPES.containsKey(name)) {
+            return TYPES.get(name);
+        } else {
+            throw new IllegalArgumentException(name + " is not a type");
         }
     }
     
-    private static Type defineType (String name, int code) {
-        synchronized (TYPES) {
-            if (TYPES.containsKey(name)) {
-                throw new IllegalStateException(name + " already exists");
-            }
-            
-            Type type = new Type(name, code);
-            TYPES.put(name, type);
-            if (code != 0xFFFFFFFF) {
-                TYPECODES.put(code, type);
-            }
-            return type;
+    private static abstract class PrimitiveType extends Type {
+        
+        private final boolean numeric;
+        
+        protected PrimitiveType (String name, int code, boolean numeric) {
+            super(name, code);
+            this.numeric = numeric;
+        }
+        
+        @Override
+        public final boolean isPrimitive () {
+            return true;
+        }
+        
+        @Override
+        public final boolean isNumeric () {
+            return numeric;
         }
     }
 }
