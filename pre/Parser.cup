@@ -321,18 +321,25 @@ Expr ::= Term:term_1 Op0:op0 Term:term_2 {:
 	RESULT = attr.expr_R2(term);
 :};
 
+
 Term ::= Term:term_1 Op1:op1 Fact:fact {:
 	RESULT = attr.term_R1(term_1, op1, fact);
 :}
+	   | Term:term_1 OR Fact:fact {:
+	RESULT = attr.term_R2(term_1, fact);
+:}
        | Fact:fact {:
-	RESULT = attr.term_R2(fact);
+	RESULT = attr.term_R3(fact);
 :};
 
 Fact ::= Fact:fact_1 Op2:op3 Shft:shft {:
 	RESULT = attr.fact_R1(fact_1, op3, shft);
 :}
+	   | Fact:fact_1 AND Shft:shft {:
+	RESULT = attr.fact_R2(fact_1, shft);
+:}
        | Shft:shft {:
-	RESULT = attr.fact_R2(shft);
+	RESULT = attr.fact_R3(shft);
 :};
 
 Shft ::= Unary:unary Op3:op3 Shft:shft {:
@@ -382,27 +389,21 @@ Op0 ::= IGUAL {:
 	RESULT = attr.op0_R6();
 :};
 
-Op1 ::= OR {:
+Op1 ::= MENOS {:
 	RESULT = attr.op1_R1();
 :}
-      | MENOS {:
-	RESULT = attr.op1_R2();
-:}
       | MAS {:
-	RESULT = attr.op1_R3();
+	RESULT = attr.op1_R2();
 :};
 
-Op2 ::= AND {:
+Op2 ::= MOD {:
 	RESULT = attr.op2_R1();
 :}
-      | MOD {:
+      | DIV {:
 	RESULT = attr.op2_R2();
 :}
-      | DIV {:
-	RESULT = attr.op2_R3();
-:}
       | MUL {:
-	RESULT = attr.op2_R4();
+	RESULT = attr.op2_R3();
 :};
 
 Op3 ::= LSH {:
