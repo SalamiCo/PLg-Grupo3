@@ -72,7 +72,7 @@ Operadores no conmutativos:
 | ni integer ni natural | "%" | -               | terr          |
 
     asignaciónVálida(Type tipoVar, Type tipoExp) : Boolean
-        Dado un tipo de una variable y un tipo de una expresión, comprueba si a la variable se le asigna un tipo permitido. Por ejemplo, no podemos asignar a una variable de tipo char una expresión booleana. Si la asignación es incorrecta devolvemos false, si no devolvemos true.
+        Dado un tipo de un designador y un tipo de una expresión, comprueba si ambos son tipos compatibles. Por ejemplo, no podemos asignar a un designador de tipo char una expresión booleana. Si la asignación es incorrecta devolvemos false, si no devolvemos true.
 
 Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de tipoVar.
 
