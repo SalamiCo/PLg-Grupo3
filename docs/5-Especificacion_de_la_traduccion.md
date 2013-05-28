@@ -253,51 +253,86 @@ No hacemos uso de ninguna función semántica.
 
 Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 	Program.cod = SSubprogs || SInsts.cod || stop
+	SSubprogs.etqh = 1 
+	SInsts.etqh = SSubprogs.etq
+
 
 SSubprogs → subprograms illave Subprogs fllave 
 	SSubprogs.cod = Subprogs.cod
+	Subprogs.etqh = SSubprogs.etqh
+	SSubprogs.etq = Subprogs.etq
 
 SSubprogs → subprograms illave fllave 
 	SSubprogs.cod = [] 
+	SSubprogs.etq = SSubprogs.etqh
 
 SSubprogs → ɛ
 	SSubprogs.cod = []
+	SSubprogs.etq = SSubprogs.etqh
 
 Subprogs → Subprogs Subprog 
 	Subprogs0.cod = Subprogs1.cod || Subprog.cod
+	Subprogs1.etqh = Subprogs0.etqh
+	Subprog.etqh = Subprogs1.etq 
 
 Subprogs → Subprog
 	Subprogs.cod = Subprog.cod
+	Subprog.etqh = Subprogs.etqh
+	Subprogs.etq = Subprog.etq
 
 Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 	Subprog.cod = prologo || SInsts.cod || epilogo
+	SInsts.etqh = Subprog.etqh + num inst prologo //TODO porque el prologo y el epilogo no está hecho
+	Subprog.etq = SInsts.etq + num inst epiligo
 
 SInsts → instructions illave Insts fllave
 	SInsts.cod = Insts.cod
+	Insts.etqh = SInsts.etqh
+	SInsts.etq = Insts.etq
 
 Insts → Insts pyc Inst 
 	Insts0.cod = Insts1.cod || Inst.cod
+	Insts1.etqh = Insts0.etqh
+	Inst.etqh = Insts1.etq
+	Insts0.etq = Inst.etq
 
 Insts → Inst
 	Insts.cod = Inst.cod
-
+	Inst.etqh = Insts.etqh
+	Insts.etq = Inst.etq
+ 
 Inst → Desig asig Expr
 	TODO esto no sabemos hacerlo
 	Inst.cod = Desig.cod || Expr.cod
+	Desig.etqh = Inst.etqh 
+	Expr.etqh = Desig.etq
+	Inst.etq = Expr.etq //TODO no sé si hay que sumar instrucciones, la generación de codigo no está acabada
 
 Inst → in ipar Desig fpar
+	Desig.etqh = Inst.etq
+	Inst.etq = Desig.etq 
+
 
 Inst → out ipar Expr fpar
 	Inst.cod = Expr.cod || out
+	Expr.etqh = Inst.etqh
+	Inst.etq = Expr.etqh + 1 
 
 Inst → swap1 ipar fpar
 	Inst.cod = swap1
+	Inst.etq = Inst.etqh + 1 
 
 Inst → swap2 ipar fpar
 	Inst.cod = swap2
+	Inst.etq = Inst.etqh +1 
 
 Inst → if Expr then Insts ElseIf
-	Inst.cod = Expr.cod || ir_f(Insts.dir) || Insts.cod || ir_a(Elseif.dir) || ElseIf.cod
+	Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.dir) || ElseIf.cod
+	Expr.etqh = Inst.etqh
+	Insts.etqh = Expr.etq + 1
+	ElseIf.etqh = Insts.etq + 1
+	Inst.etq = ElseIf.etq
+
 
 Inst → while Expr do Insts endwhile
 	Expr.dirh = Inst.dirh
