@@ -70,6 +70,7 @@ desapila-dir(dirección)
 >CPila ← CPila - 1<br/>
 >CProg ← CProg + 1<br/>
 
+//REVISARRRRR
 desapila-ind
 >Reg ← Mem[direccion]<br/>
 >Mem[Pila[CPila-2]] ← Pila[CPila]<br/>
@@ -252,7 +253,7 @@ No hacemos uso de ninguna función semántica.
 ## 5.4. Gramática de atributos
 
 Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-	Program.cod = SSubprogs || SInsts.cod || stop
+	Program.cod = ir_a(?) || stack_pointer || SSubprogs || SInsts.cod || stop
 
 SSubprogs → subprograms illave Subprogs fllave 
 	SSubprogs.cod = Subprogs.cod
@@ -270,7 +271,7 @@ Subprogs → Subprog
 	Subprogs.cod = Subprog.cod
 
 Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-	Subprog.cod = prologo || SInsts.cod || epilogo
+	Subprog.cod = gen_prologo || SInsts.cod || gen_epilogo
 
 SInsts → instructions illave Insts fllave
 	SInsts.cod = Insts.cod
@@ -282,10 +283,10 @@ Insts → Inst
 	Insts.cod = Inst.cod
 
 Inst → Desig asig Expr
-	TODO esto no sabemos hacerlo
-	Inst.cod = Desig.cod || Expr.cod
+	Inst.cod = apila(Desig.dir) || Expr.cod || desapila-ind
 
 Inst → in ipar Desig fpar
+	Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
 
 Inst → out ipar Expr fpar
 	Inst.cod = Expr.cod || out
