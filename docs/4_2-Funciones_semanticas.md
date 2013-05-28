@@ -71,12 +71,12 @@ Operadores no conmutativos:
 | -                     | "%" | tipo no natural | terr          |
 | ni integer ni natural | "%" | -               | terr          |
 
-    asignaciónVálida(Type tipoVar, Type tipoExp) : Boolean
-        Dado un tipo de una variable y un tipo de una expresión, comprueba si a la variable se le asigna un tipo permitido. Por ejemplo, no podemos asignar a una variable de tipo char una expresión booleana. Si la asignación es incorrecta devolvemos false, si no devolvemos true.
+    asignaciónVálida(Type tipoDesig, Type tipoExp) : Boolean
+        Dado un tipo de un designador y un tipo de una expresión, comprueba si ambos son tipos compatibles. Por ejemplo, no podemos asignar a un designador de tipo char una expresión booleana. Si la asignación es incorrecta devolvemos false, si no devolvemos true.
 
-Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de tipoVar.
+Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de tipoDesig.
 
-| TipoVar   | TipoExp             | Tipo devuelto |
+| TipoDesig | TipoExp             | Tipo devuelto |
 |:---------:|:-------------------:|:-------------:|
 | natural   | natural             | true          |
 | natural   | cualquier otro tipo | false         |
@@ -96,6 +96,4 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que los dos t
 Nota: En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.
 
     esVariable(TS ts, String id) : Boolean
-        Indica si el ident dado, representado por su id, es una variable
-
-    tamañoCorrecto() : Boolean  
+        Indica si el ident dado, representado por su id, es una variable o una constante. Si devuelve true quiere decir que el ident es una variable, si devuelve false quiere decir que el identificador es una constante.
