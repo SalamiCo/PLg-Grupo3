@@ -252,11 +252,11 @@
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
 		RParam.err = Expr.err ∨ ¬asignaciónVálida(Expr.tsh[ident.lex].type, Expr.type) ∨ ¬existe(Exp.tsh, ident.lex) ∨ 
-                        Expr.tsh[ident.lex].const == true
+                        ¬esVariable(Expr.tsh, ident.lex)
 
 	Desig → ident
 		Desig.type = Desig.tsh[ident.lex].type
-		Desig.err = ¬existe(Desig.tsh, ident) ∨ Expr.tsh[ident.lex].const == true
+		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(Expr.tsh, ident.lex)
 
 	Desig → Desig icorchete Expr fcorchete
 		Desig0.type = Desig1.type
@@ -400,5 +400,5 @@
 
 ### Notas Marina
 
-- En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
+- En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas.
 - Explicar función tamaño().
