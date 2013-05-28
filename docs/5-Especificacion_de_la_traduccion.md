@@ -253,7 +253,7 @@ No hacemos uso de ninguna función semántica.
 ## 5.4. Gramática de atributos
 
 Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-	Program.cod = ir_a(?) || stack_pointer || SSubprogs || SInsts.cod || stop
+	Program.cod = ir_a(?) || SSubprogs || SInsts.cod || stop
 	SSubprogs.etqh = 1 
 	SInsts.etqh = SSubprogs.etq
 
@@ -307,7 +307,7 @@ Inst → Desig asig Expr
 	Inst.cod = apila(Desig.dir) || Expr.cod || desapila-ind
 	Desig.etqh = Inst.etqh 
 	Expr.etqh = Desig.etq
-	Inst.etq = Expr.etq //TODO no sé si hay que sumar instrucciones, la generación de codigo no está acabada
+	Inst.etq = Expr.etq  //TODO no sé si hay que sumar instrucciones, la generación de codigo no está acabada
 
 Inst → in ipar Desig fpar
 	Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
@@ -329,7 +329,7 @@ Inst → swap2 ipar fpar
 	Inst.etq = Inst.etqh +1 
 
 Inst → if Expr then Insts ElseIf
-	Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.dir) || ElseIf.cod
+	Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
 	Expr.etqh = Inst.etqh
 	Insts.etqh = Expr.etq + 1
 	ElseIf.etqh = Insts.etq + 1
@@ -356,7 +356,13 @@ SRParams → RParams | ɛ
 RParams → RParams coma RParam | RParam
 RParam → ident asig Expr
 
-Desig → ident | Desig icorchete Expr fcorchete | Desig barrabaja litnat
+Desig → ident 
+	Desig.dir = Desig.tsh[ident.lex].dir
+
+Desig → Desig icorchete Expr fcorchete
+	Desig0.dir = Desig1.dir
+
+Desig → Desig barrabaja litnat
 
 Expr → Term Op0 Term | Term
 Term → Term Op1 Fact | Fact
