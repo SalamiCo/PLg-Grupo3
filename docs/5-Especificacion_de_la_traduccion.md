@@ -253,14 +253,10 @@ No hacemos uso de ninguna función semántica.
 ## 5.4. Gramática de atributos
 
 Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-<<<<<<< HEAD
-	Program.cod = SSubprogs || SInsts.cod || stop
+	Program.cod = ir_a(?) || stack_pointer || SSubprogs || SInsts.cod || stop
 	SSubprogs.etqh = 1 
 	SInsts.etqh = SSubprogs.etq
 
-=======
-	Program.cod = ir_a(?) || stack_pointer || SSubprogs || SInsts.cod || stop
->>>>>>> d4f1c41d03d481bfc25f52a78da96069cf446703
 
 SSubprogs → subprograms illave Subprogs fllave 
 	SSubprogs.cod = Subprogs.cod
