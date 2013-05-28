@@ -279,6 +279,11 @@
 		Term0.type = tipoFunc(Term1.type, Op1.op, Fact.type)
 		Term1.tsh = Term0.tsh
 		Fact.tsh = Term0.tsh
+
+	Term → Term or Fact
+		Term0.type = tipoFunc(Term1.type, or, Fact.type)
+		Term1.tsh = Term0.tsh
+		Fact.tsh = Term0.tsh
 	
 	Term → Fact
 		Term.type = Fact.type
@@ -286,6 +291,11 @@
 	
 	Fact → Fact Op2 Shft
 		Fact0.type = tipoFunc(Fact1.type, Op2.op, Shft.type) 
+		Fact1.tsh = Fact0.tsh
+		Shft.tsh = Fact0.tsh
+
+	Fact → Fact and Shft
+		Fact0.type = tipoFunc(Fact1.type, and, Shft.type)
 		Fact1.tsh = Fact0.tsh
 		Shft.tsh = Fact0.tsh
 	
@@ -342,18 +352,12 @@
 	
 	Op0 → mayoig 
 		Op0.op = mayoig
-	
-	Op1 → or
-		Op1.op = or
 
 	Op1 → menos
 		Op1.op = menos
 
 	Op1 → mas
 		Op1.op = mas
-	
-	Op2 → and
-		Op2.op = and
 
 	Op2 → mod
 		Op2.op = mod
