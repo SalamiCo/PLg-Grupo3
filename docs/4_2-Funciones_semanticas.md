@@ -97,5 +97,3 @@ Nota: En todas las funciones, si alguno de los tipos de entrada es el tipo terr,
 
     esVariable(TS ts, String id) : Boolean
         Indica si el ident dado, representado por su id, es una variable
-
-    tamañoCorrecto() : Boolean  
