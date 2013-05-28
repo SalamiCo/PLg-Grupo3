@@ -94,9 +94,9 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que el tipo d
 Nota: En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.
 
 
+    tamañoCorrecto() : Boolean
 
 // TODO 
-	esVariable()
 	tamañoCorrecto() -> Revisa como hacer esto en condiciones, porque creo que es mas jodido de lo que parece. Cómo miras el tamaño del array o la tupla?
 	Revisar por encima lo que has dejado a medias cuando te has ido por si acaso me he colado en algo.
 	Revisar los Designadores porque no me cuadran del todo.    

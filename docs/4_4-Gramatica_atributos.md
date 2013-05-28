@@ -251,12 +251,12 @@
 
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
-		RParam.err = ¬asignaciónVálida(Expr.tsh[ident.lex].type, Expr.type) ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(ident)
-		RParam.err = Expr.err
+		RParam.err = Expr.err ∨ ¬asignaciónVálida(Expr.tsh[ident.lex].type, Expr.type) ∨ ¬existe(Exp.tsh, ident.lex) ∨ 
+                        Expr.tsh[ident.lex].const == false
 
 	Desig → ident
 		Desig.type = Desig.tsh[ident.lex].type
-		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(ident)
+		Desig.err = ¬existe(Desig.tsh, ident) ∨ Expr.tsh[ident.lex].const == false
 
 	Desig → Desig icorchete Expr fcorchete
 		Desig0.type = Desig1.type
@@ -295,8 +295,8 @@
 	
 	Shft → Unary Op3 Shft
 		Shft0.type = tipoFunc(Unary.type, Op3.op, Shft.type) 
+        Unary.tsh = Shft0.tsh
 		Shft1.tsh = Shft0.tsh
-		Unary.tsh = Shft0.tsh
 	
 	Shft → Unary
 		Shft.type = Unary.type
@@ -323,7 +323,7 @@
 		Lit.tsh = Paren.tsh
 	
 	Paren → ident
-		Paren.type = tipoDe(ident.lex, Paren.tsh)
+		Paren.type = tipoDe(Paren.tsh, ident.lex)
 
 	Op0 → igual
 		Op0.op = igual
