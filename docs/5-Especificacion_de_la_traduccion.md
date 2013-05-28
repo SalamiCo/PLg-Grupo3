@@ -333,14 +333,20 @@ Inst → if Expr then Insts ElseIf
 	ElseIf.etqh = Insts.etq + 1
 	Inst.etq = ElseIf.etq
 
-
 Inst → while Expr do Insts endwhile
-	Expr.dirh = Inst.dirh
-	Inst.cod = Expr.cod || ir_f(Insts.dir) || Insts.cod || ir_a(Expr.dirh) 
+	Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Inst.etqh)
+	Expr.etqh = Inst.etqh 
+	Insts.etqh = Expr.etq + 1
+	Inst.etq = Insts + 1 
 
 Inst → InstCall
 	Inst.cod = 
+	InstCall.etqh = Inst.etqh
+	Inst.etq = InstCall.etq
+
 Inst → ɛ
+	Inst.etq = Inst.etqh
+
 ElseIf → else Insts endif | endif
 InstCall → call ident lpar SRParams rpar
 
