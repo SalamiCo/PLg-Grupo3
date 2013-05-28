@@ -459,7 +459,12 @@ public final class Attribution extends Atribucion {
         return null;
     }
     
-    public TAtributos term_R2 (TAtributos fact) {
+    public TAtributos term_R2 (TAtributos term_1, TAtributos fact) {
+        regla("Term -> Term OR Fact");
+        return null;
+    }
+    
+    public TAtributos term_R3 (TAtributos fact) {
         regla("Term -> Fact");
         return null;
     }
@@ -471,7 +476,12 @@ public final class Attribution extends Atribucion {
         return null;
     }
     
-    public TAtributos fact_R2 (TAtributos shft) {
+    public TAtributos fact_R2 (TAtributos fact_1, TAtributos shft) {
+        regla("Fact -> Fact AND Shft");
+        return null;
+    }
+    
+    public TAtributos fact_R3 (TAtributos shft) {
         regla("Fact -> Shft");
         return null;
     }
@@ -557,16 +567,11 @@ public final class Attribution extends Atribucion {
     // Op1
     
     public TAtributos op1_R1 () {
-        regla("Op1 -> OR");
-        return null;
-    }
-    
-    public TAtributos op1_R2 () {
         regla("Op1 -> MENOS");
         return null;
     }
     
-    public TAtributos op1_R3 () {
+    public TAtributos op1_R2 () {
         regla("Op1 -> MAS");
         return null;
     }
@@ -574,21 +579,16 @@ public final class Attribution extends Atribucion {
     // Op2
     
     public TAtributos op2_R1 () {
-        regla("Op2 -> AND");
-        return null;
-    }
-    
-    public TAtributos op2_R2 () {
         regla("Op2 -> MOD");
         return null;
     }
     
-    public TAtributos op2_R3 () {
+    public TAtributos op2_R2 () {
         regla("Op2 -> DIV");
         return null;
     }
     
-    public TAtributos op2_R4 () {
+    public TAtributos op2_R3 () {
         regla("Op2 -> MUL");
         return null;
     }
