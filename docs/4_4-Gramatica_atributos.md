@@ -252,11 +252,11 @@
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
 		RParam.err = Expr.err ∨ ¬asignaciónVálida(Expr.tsh[ident.lex].type, Expr.type) ∨ ¬existe(Exp.tsh, ident.lex) ∨ 
-                        Expr.tsh[ident.lex].const == false
+                        Expr.tsh[ident.lex].const == true
 
 	Desig → ident
 		Desig.type = Desig.tsh[ident.lex].type
-		Desig.err = ¬existe(Desig.tsh, ident) ∨ Expr.tsh[ident.lex].const == false
+		Desig.err = ¬existe(Desig.tsh, ident) ∨ Expr.tsh[ident.lex].const == true
 
 	Desig → Desig icorchete Expr fcorchete
 		Desig0.type = Desig1.type
