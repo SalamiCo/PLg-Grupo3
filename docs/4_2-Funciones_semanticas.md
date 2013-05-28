@@ -88,13 +88,16 @@ Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de t
 | character | character           | true          |
 | character | cualquier otro tipo | false         |
 
-Nota: En el caso de los tipos construidos, devolverá true siempre que el tipo de la expresión sea el mismo tipo construido, y las componentes de ambos del mismo tipo. En cualquier otro caso, devolverá false.
+Nota: En el caso de los tipos construidos, devolverá true siempre que los dos tipos sean compatibles, y false en c.o.c. Dos tipos se consideran compatibles cuando el tipo de sus componentes es el mismo y, en el caso de los arrays, su tamaño es el mismo.
 
 
 Nota: En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.
 
+    esVariable(TS ts, String id) : Boolean
+        Indica si el ident dado, representado por su id, es una variable
 
     tamañoCorrecto() : Boolean
+
 
 // TODO 
 	tamañoCorrecto() -> Revisa como hacer esto en condiciones, porque creo que es mas jodido de lo que parece. Cómo miras el tamaño del array o la tupla?
