@@ -393,3 +393,11 @@
 
 	LitNum → litfloat | menos litfloat 
 		LitNum.type = float
+
+### Notas Marina
+
+- En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
+- Las constantes solo pueden ser de tipo primitivo
+- Las funciones esVariable() y tamaño() no están explicadas en ningún sitio. del 4.2
+- No está hecho lo del los tipos compatibles. Básicamente resivar la función AsignaciónVálida porque se queda corta para la nueva proactica
+- En las tablas de compatibilidad del 4.2 no están reflejadas las tuplas y los arrays. 
