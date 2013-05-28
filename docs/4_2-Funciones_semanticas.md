@@ -71,12 +71,12 @@ Operadores no conmutativos:
 | -                     | "%" | tipo no natural | terr          |
 | ni integer ni natural | "%" | -               | terr          |
 
-    asignaciónVálida(Type tipoVar, Type tipoExp) : Boolean
+    asignaciónVálida(Type tipoDesig, Type tipoExp) : Boolean
         Dado un tipo de un designador y un tipo de una expresión, comprueba si ambos son tipos compatibles. Por ejemplo, no podemos asignar a un designador de tipo char una expresión booleana. Si la asignación es incorrecta devolvemos false, si no devolvemos true.
 
-Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de tipoVar.
+Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de tipoDesig.
 
-| TipoVar   | TipoExp             | Tipo devuelto |
+| TipoDesig | TipoExp             | Tipo devuelto |
 |:---------:|:-------------------:|:-------------:|
 | natural   | natural             | true          |
 | natural   | cualquier otro tipo | false         |
