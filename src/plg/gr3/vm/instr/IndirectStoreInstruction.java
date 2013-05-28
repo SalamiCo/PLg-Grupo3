@@ -27,7 +27,7 @@ public final class IndirectStoreInstruction extends Instruction {
         this.type = type;
     }
     
-    /** @return Tipo del valor enla memoria */
+    /** @return Tipo del valor en la memoria */
     public Type getType () {
         return type;
     }

@@ -305,14 +305,14 @@ Insts → Inst
  
 Inst → Desig asig Expr
 	Inst.cod = apila(Desig.dir) || Expr.cod || desapila-ind
-	Desig.etqh = Inst.etqh 
-	Expr.etqh = Desig.etq
-	Inst.etq = Expr.etq  //TODO no sé si hay que sumar instrucciones, la generación de codigo no está acabada
+	Desig.etqh = Inst.etqh + 1
+	Expr.etqh = Desig.etq 
+	Inst.etq = Expr.etq + 1 
 
 Inst → in ipar Desig fpar
 	Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
-	Desig.etqh = Inst.etq
-	Inst.etq = Desig.etq 
+	Desig.etqh = Inst.etq + 1 
+	Inst.etq = Desig.etq + 1
 
 
 Inst → out ipar Expr fpar
@@ -349,8 +349,16 @@ Inst → InstCall
 Inst → ɛ
 	Inst.etq = Inst.etqh
 
-ElseIf → else Insts endif | endif
+ElseIf → else Insts endif 
+	Insts.etqh = ElseIf.etqh
+	ElseIf.etq = Insts.etq
+
+ElseIf → endif
+	ElseIf.etq = ElseIf.etqh
+
 InstCall → call ident lpar SRParams rpar
+	SRParams.etqh = InstCall.etqh
+	InstCall.etq = SRParams.etq
 
 SRParams → RParams | ɛ
 RParams → RParams coma RParam | RParam
@@ -365,8 +373,8 @@ Desig → Desig icorchete Expr fcorchete
 Desig → Desig barrabaja litnat
 
 Expr → Term Op0 Term | Term
-Term → Term Op1 Fact | Fact
-Fact → Fact Op2 Shft | Shft
+Term → Term Op1 Fact | Term or Fact | Fact
+Fact → Fact Op2 Shft | Fact and Shft | Shft
 Shft → Unary Op3 Shft | Unary
 Unary → Op4 Unary | lpar Cast rpar Paren | Paren
 
