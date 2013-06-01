@@ -1,5 +1,10 @@
 package plg.gr3.parser;
 
+import java.util.Arrays;
+import java.util.List;
+
+import plg.gr3.vm.instr.Instruction;
+import plg.gr3.vm.instr.JumpInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
 import es.ucm.fdi.plg.evlib.Atributo;
 import es.ucm.fdi.plg.evlib.SemFun;
@@ -23,7 +28,6 @@ public final class Attribution extends Atribucion {
             }
             return args[0];
         }
-        
     };
     
     // Program
@@ -33,12 +37,21 @@ public final class Attribution extends Atribucion {
     {
         regla("Program -> PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE");
         
-        TAtributos attr = atributosPara("Program", "tsh", "etqh", "err");
+        TAtributos attr = atributosPara("Program", "tsh", "etqh", "err", "codh", "cod");
         calculo(attr.a("tsh"), new SemFun() {
             @Override
             public Atributo eval (Atributo... args) {
-                return new SymbolTable();
+                return null;// new SymbolTable();
             }
+        });
+        
+        calculo(attr.a("codh"), new SemFun() {
+            
+            @Override
+            public List<? extends Instruction> eval (Atributo... args) {
+                return Arrays.asList(new JumpInstruction(0));
+            }
+            
         });
         
         return attr;
