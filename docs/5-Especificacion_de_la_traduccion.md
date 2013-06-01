@@ -252,164 +252,180 @@ No hacemos uso de ninguna función semántica.
 
 ## 5.4. Gramática de atributos
 
-Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-	Program.cod = ir_a(?) || SSubprogs || SInsts.cod || stop
-	SSubprogs.etqh = 1 
-	SInsts.etqh = SSubprogs.etq
+	Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+		Program.cod = ir_a(?) || SSubprogs || SInsts.cod || stop
+		SSubprogs.etqh = 1 
+		SInsts.etqh = SSubprogs.etq
 
 
-SSubprogs → subprograms illave Subprogs fllave 
-	SSubprogs.cod = Subprogs.cod
-	Subprogs.etqh = SSubprogs.etqh
-	SSubprogs.etq = Subprogs.etq
+	SSubprogs → subprograms illave Subprogs fllave 
+		SSubprogs.cod = Subprogs.cod
+		Subprogs.etqh = SSubprogs.etqh
+		SSubprogs.etq = Subprogs.etq
 
-SSubprogs → subprograms illave fllave 
-	SSubprogs.cod = [] 
-	SSubprogs.etq = SSubprogs.etqh
+	SSubprogs → subprograms illave fllave 
+		SSubprogs.cod = [] 
+		SSubprogs.etq = SSubprogs.etqh
 
-SSubprogs → ɛ
-	SSubprogs.cod = []
-	SSubprogs.etq = SSubprogs.etqh
+	SSubprogs → ɛ
+		SSubprogs.cod = []
+		SSubprogs.etq = SSubprogs.etqh
 
-Subprogs → Subprogs Subprog 
-	Subprogs0.cod = Subprogs1.cod || Subprog.cod
-	Subprogs1.etqh = Subprogs0.etqh
-	Subprog.etqh = Subprogs1.etq 
+	Subprogs → Subprogs Subprog 
+		Subprogs0.cod = Subprogs1.cod || Subprog.cod
+		Subprogs1.etqh = Subprogs0.etqh
+		Subprog.etqh = Subprogs1.etq 
 
-Subprogs → Subprog
-	Subprogs.cod = Subprog.cod
-	Subprog.etqh = Subprogs.etqh
-	Subprogs.etq = Subprog.etq
+	Subprogs → Subprog
+		Subprogs.cod = Subprog.cod
+		Subprog.etqh = Subprogs.etqh
+		Subprogs.etq = Subprog.etq
 
-Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-	Subprog.cod = prologo || SInsts.cod || epilogo
-	SInsts.etqh = Subprog.etqh + num inst prologo //TODO porque el prologo y el epilogo no está hecho
-	Subprog.etq = SInsts.etq + num inst epiligo
-
-
-SInsts → instructions illave Insts fllave
-	SInsts.cod = Insts.cod
-	Insts.etqh = SInsts.etqh
-	SInsts.etq = Insts.etq
-
-Insts → Insts pyc Inst 
-	Insts0.cod = Insts1.cod || Inst.cod
-	Insts1.etqh = Insts0.etqh
-	Inst.etqh = Insts1.etq
-	Insts0.etq = Inst.etq
-
-Insts → Inst
-	Insts.cod = Inst.cod
-	Inst.etqh = Insts.etqh
-	Insts.etq = Inst.etq
- 
-Inst → Desig asig Expr
-	Inst.cod = apila(Desig.dir) || Expr.cod || desapila-ind
-	Desig.etqh = Inst.etqh + 1
-	Expr.etqh = Desig.etq 
-	Inst.etq = Expr.etq + 1 
-
-Inst → in ipar Desig fpar
-	Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
-	Desig.etqh = Inst.etq + 1 
-	Inst.etq = Desig.etq + 1
+	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+		Subprog.cod = prologo || SInsts.cod || epilogo
+		SInsts.etqh = Subprog.etqh + num inst prologo //TODO porque el prologo y el epilogo no está hecho
+		Subprog.etq = SInsts.etq + num inst epiligo
 
 
-Inst → out ipar Expr fpar
-	Inst.cod = Expr.cod || out
-	Expr.etqh = Inst.etqh
-	Inst.etq = Expr.etqh + 1 
+	SInsts → instructions illave Insts fllave
+		SInsts.cod = Insts.cod
+		Insts.etqh = SInsts.etqh
+		SInsts.etq = Insts.etq
 
-Inst → swap1 ipar fpar
-	Inst.cod = swap1
-	Inst.etq = Inst.etqh + 1 
+	Insts → Insts pyc Inst 
+		Insts0.cod = Insts1.cod || Inst.cod
+		Insts1.etqh = Insts0.etqh
+		Inst.etqh = Insts1.etq
+		Insts0.etq = Inst.etq
 
-Inst → swap2 ipar fpar
-	Inst.cod = swap2
-	Inst.etq = Inst.etqh +1 
+	Insts → Inst
+		Insts.cod = Inst.cod
+		Inst.etqh = Insts.etqh
+		Insts.etq = Inst.etq
+	 
+	Inst → Desig asig Expr
+		Inst.cod = apila(Desig.dir) || Expr.cod || desapila-ind
+		Desig.etqh = Inst.etqh + 1
+		Expr.etqh = Desig.etq 
+		Inst.etq = Expr.etq + 1 
 
-Inst → if Expr then Insts ElseIf
-	Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
-	Expr.etqh = Inst.etqh
-	Insts.etqh = Expr.etq + 1
-	ElseIf.etqh = Insts.etq + 1
-	Inst.etq = ElseIf.etq
+	Inst → in ipar Desig fpar
+		Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
+		Desig.etqh = Inst.etq + 1 
+		Inst.etq = Desig.etq + 1
 
-Inst → while Expr do Insts endwhile
-	Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Inst.etqh)
-	Expr.etqh = Inst.etqh 
-	Insts.etqh = Expr.etq + 1
-	Inst.etq = Insts + 1 
+	Inst → out ipar Expr fpar
+		Inst.cod = Expr.cod || out
+		Expr.etqh = Inst.etqh
+		Inst.etq = Expr.etqh + 1 
 
-Inst → InstCall
-	Inst.cod = 
-	InstCall.etqh = Inst.etqh
-	Inst.etq = InstCall.etq
+	Inst → swap1 ipar fpar
+		Inst.cod = swap1
+		Inst.etq = Inst.etqh + 1 
 
-Inst → ɛ
-	Inst.etq = Inst.etqh
+	Inst → swap2 ipar fpar
+		Inst.cod = swap2
+		Inst.etq = Inst.etqh +1 
 
-ElseIf → else Insts endif 
-	Insts.etqh = ElseIf.etqh
-	ElseIf.etq = Insts.etq
+	Inst → if Expr then Insts ElseIf
+		Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
+		Expr.etqh = Inst.etqh
+		Insts.etqh = Expr.etq + 1
+		ElseIf.etqh = Insts.etq + 1
+		Inst.etq = ElseIf.etq
 
-ElseIf → endif
-	ElseIf.etq = ElseIf.etqh
+	Inst → while Expr do Insts endwhile
+		Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Inst.etqh)
+		Expr.etqh = Inst.etqh 
+		Insts.etqh = Expr.etq + 1
+		Inst.etq = Insts + 1 
 
-InstCall → call ident lpar SRParams rpar
-	SRParams.etqh = InstCall.etqh
-	InstCall.etq = SRParams.etq
+	Inst → InstCall
+		Inst.cod = 
+		InstCall.etqh = Inst.etqh
+		Inst.etq = InstCall.etq
 
-SRParams → RParams | ɛ
-RParams → RParams coma RParam | RParam
-RParam → ident asig Expr
+	Inst → ɛ
+		Inst.etq = Inst.etqh
 
-Desig → ident 
-	Desig.dir = Desig.tsh[ident.lex].dir
+	ElseIf → else Insts endif 
+		Insts.etqh = ElseIf.etqh
+		ElseIf.etq = Insts.etq
 
-Desig → Desig icorchete Expr fcorchete
-	Desig0.dir = Desig1.dir
+	ElseIf → endif
+		ElseIf.etq = ElseIf.etqh
 
-Desig → Desig barrabaja litnat
+	InstCall → call ident lpar SRParams rpar
+		SRParams.etqh = InstCall.etqh
+		InstCall.etq = SRParams.etq
 
-Expr → Term Op0 Term | Term
-Term → Term Op1 Fact | Term or Fact | Fact
-Fact → Fact Op2 Shft | Fact and Shft | Shft
-Shft → Unary Op3 Shft | Unary
-Unary → Op4 Unary | lpar Cast rpar Paren | Paren
+	SRParams → RParams | ɛ
+	RParams → RParams coma RParam | RParam
+	RParam → ident asig Expr
 
-Paren → lpar Expr rpar
-Paren → Lit
-Paren → Desig
+	Desig → ident 
+		Desig.dir = Desig.tsh[ident.lex].dir
 
-Op0 → igual
-	Op0.op = igual
-Op0 → noigual
-	Op0.op = noigual
-Op0 → men
-	Op0.op = men
-Op0 → may
-	Op0.op = may
-Op0 → menoig
-	Op0.op = menoig
-Op0 → mayoig
-	Op0.op = mayoig
-Op1 → menos
-	Op1.op = menos
-Op1 → mas
-	Op1.op = mas
-Op2 → mod
-	Op2.op = mod
-Op2 → div
-	Op2.op = div
-Op2 → mul
-	Op2.op = mul
+	Desig → Desig icorchete Expr fcorchete
+		Desig0.dir = Desig1.dir
 
-Op3 → lsh
-	Op3.op = lsh
-Op3 → rsh
-	Op3.op = rsh
-Op4 → not
-	Op4.op = not
-Op4 → menos
-	Op4.op = menos
+	Desig → Desig barrabaja litnat
+
+	Expr → Term Op0 Term | Term
+	Term → Term Op1 Fact | Fact
+
+	Term → Term or Fact
+		Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
+		Term1.etqh = Term0.etqh 
+		Fact.etqh = TErm1.etq + 3 
+		Term0.etq = Fact.etq  
+
+	Term → Fact 
+
+	Fact → Fact Op2 Shft 
+
+	Fact → Fact and Shft
+		Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+		Fact1.etqh = = Fact0.etqh
+		Shft.etqh = Fact1.etq + 3
+		Fact0.etq = Shft.etq 
+
+	Fact →  Shft
+
+	Shft → Unary Op3 Shft | Unary
+	Unary → Op4 Unary | lpar Cast rpar Paren | Paren
+
+	Paren → lpar Expr rpar
+	Paren → Lit
+	Paren → Desig
+
+	Op0 → igual
+		Op0.op = igual
+	Op0 → noigual
+		Op0.op = noigual
+	Op0 → men
+		Op0.op = men
+	Op0 → may
+		Op0.op = may
+	Op0 → menoig
+		Op0.op = menoig
+	Op0 → mayoig
+		Op0.op = mayoig
+	Op1 → menos
+		Op1.op = menos
+	Op1 → mas
+		Op1.op = mas
+	Op2 → mod
+		Op2.op = mod
+	Op2 → div
+		Op2.op = div
+	Op2 → mul
+		Op2.op = mul
+	Op3 → lsh
+		Op3.op = lsh
+	Op3 → rsh
+		Op3.op = rsh
+	Op4 → not
+		Op4.op = not
+	Op4 → menos
+		Op4.op = menos
