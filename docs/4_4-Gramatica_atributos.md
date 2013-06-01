@@ -264,7 +264,7 @@
 
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
-		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex) ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh)
+		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex) ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ es compatible lo que le paso y el tipo guardado en la ts ∨ Expr es Designador si se pasamos el atb por variable // TODO
 
 	Desig → ident
 		Desig.type = Desig.tsh[ident.lex].type
@@ -413,3 +413,5 @@
 ### Notas Marina
 
 - En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
+- los valores de los parámetros formales por variable deben ser designadores. Poner un atb que sea esDesignador. Que comienze como si y que se ponga a no cuando haya una operación. 
+- los tipos de parámetros formales y reales deben ser compatibles. Es decir que hay que mirar que el tipo metido en la ts del parámetro es compatible con el que le metemos. 
