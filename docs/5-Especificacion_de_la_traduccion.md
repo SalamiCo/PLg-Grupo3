@@ -255,7 +255,7 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 ## 5.4. Gramática de atributos
 
 	Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-		Program.cod = parchea(,,) || ir_a(?) || SSubprogs || SInsts.cod || stop //TODO
+		Program.cod =  ir_a(?) || SSubprogs || SInsts.cod || stop 
 		SSubprogs.etqh = 1 
 		SInsts.etqh = SSubprogs.etq
 
@@ -386,33 +386,52 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 					si (Desig.tsh[ident.lex].nivel == global) entonces apilar-dir(0) ||
 					apila(Desig.tsh[ident.lex].dir) ||
 					mas
+		Desig.etq = Desig.etqh + 3
 
 	Desig → Desig icorchete Expr fcorchete
 		Desig0.cod = Desig1.cod || Expr.cod || apila(tamTipo(Desig1.type)) || mul || mas
+		Desig1.etqh = Desig0.etqh 
+		Expr.etqh = Desig1.etq
+		Desig0.etq = Expr.etq + 3  
 
 	Desig → Desig barrabaja litnat		
 		Desig0.cod = Desig1.cod || apila(desplTupla(litnat.lex, Desig1.type)) || mas
+		Desig1.etqh = Desig0.etqh
+		Desig0.etq = Desgi1.etq + 2 
 
 	Expr → Term Op0 Term
 		Expr0.cod = Term1.cod || Term2.cod || Op0.op
+		Term1.etqh = Expr.etqh 
+		Term2.etqh = Term1.etq
+		Expr.eth = Term2.etq + 1  
 
 	Expr → Term
 		Expr.cod = Term.cod
+		Term.etqh = Expr.etqh
+		Expr.etq = Term.etq
 
 	Term → Term Op1 Fact
 		Term0.cod = Term1.cod || Fact.cod || Op1.op
+		Term1.etqh = Fact.etqh 
+		Fact.etqh = Term1.etq
+		Term.eth = Expr.etq + 1 
 
 	Term → Term or Fact
 		Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
 		Term1.etqh = Term0.etqh 
-		Fact.etqh = TErm1.etq + 3 
+		Fact.etqh = Term1.etq + 3 
 		Term0.etq = Fact.etq  
 
 	Term → Fact
 		Term.cod = Fact.cod
+		Fact.etqh = Term.etqh
+		Term.etq = Fact.etq
 
 	Fact → Fact Op2 Shft
 		Fact0.cod = Fact1.cod || Shft.cod || Op2.op
+		Fact1.etqh = Fact0.etqh 
+		Shft.etqh = Fact1.etq 
+		Term0.etq = Fact.etq + 1 
 
 	Fact → Fact and Shft
 		Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
@@ -422,30 +441,48 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 
 	Fact → Shft
 		Fact.cod = Shft.cod
+		Shft.eqth = Fact.etqh
+		Fact.etq = Shft.etq
 
 	Shft → Unary Op3 Shft
 		Shft.cod = Unary.cod || Shft.cod || Op3.op
+		Unary.etqh = Shft.etqh 
+		Shft.etqh = Unary.etq 
+		Shft0.etq = Shft1.etq + 1 
 
 	Shft → Unary
 		Shft.cod = Unary.cod
+		Unary.etqh = Shft.eqth
+		Shft.etq = Unary.etq
 
 	Unary → Op4 Unary
 		Unary0.cod = Unary1.cod || Op4.op
+		Unary1.etqh = Unary0.eqth
+		Unary0.eqt = Unary1.etq + 1 
 
 	Unary → lpar Cast rpar Paren
 		Unary.cod = Paren.cod || Cast.type
+		Paren.etqh = Unary.eqth 
+		Unary.etq = Paren.eqt + 1 
 
 	Unary → Paren
 		Unary.cod = Paren.cod
+		Paren.eqth = Unary.etqh
+		Unary.etq = Paren.etq
 
 	Paren → lpar Expr rpar
 		Paren.cod = Expr.cod
+		Expr.etqh = Paren.eqth
+		Paren.etq = Expr.etq
 
 	Paren → Lit
 		Paren.cod = apila(Lit.value)
+		Paren.etq = Paren.etqh + 1
 
 	Paren → Desig
 		Paren.cod = Desig.cod || apila-ind
+		Desig.etqh = Paren.etqh 
+		Paren.etq = Desig.etq + 1 
 
 	Cast → char
 		Cast.type = char
