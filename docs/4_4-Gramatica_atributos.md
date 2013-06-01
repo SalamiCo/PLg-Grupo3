@@ -83,12 +83,12 @@
         Vars1.tsh = Vars0.tsh
         Var.tsh = Vars1.ts
         Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
-        Vars0.err = existe(Var.ts, Var.id)
+        Vars0.err = existe(Var.ts, Var.id, Var.nivel)
 
     Vars → Var
         Var.tsh = Vars.tsh
         Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
-        Vars.err = existe(Var.ts, Var.id)
+        Vars.err = existe(Var.ts, Var.id, Var.nivel)
 
     Var → var TypeDesc ident 
         Var.ts = Var.tsh
