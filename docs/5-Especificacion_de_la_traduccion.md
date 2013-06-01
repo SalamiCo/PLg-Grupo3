@@ -305,9 +305,9 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 	 
 	Inst → Desig asig Expr
 		Inst.cod = Expr.cod || apila(Desig.dir)|| desapila-ind
-		Desig.etqh = Inst.etqh + 1
+		Desig.etqh = Inst.etqh 
 		Expr.etqh = Desig.etq 
-		Inst.etq = Expr.etq + 1 
+		Inst.etq = Expr.etq + 2 
 
 	Inst → in ipar Desig fpar
 		Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
