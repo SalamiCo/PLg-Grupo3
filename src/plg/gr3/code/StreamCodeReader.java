@@ -143,13 +143,13 @@ public class StreamCodeReader extends CodeReader implements Closeable {
             } else if ((byteRead & Instruction.OPMASK_BRANCH) == Instruction.OPCODE_BRANCH) {
                 int code = byteRead & ~Instruction.OPMASK_BRANCH;
                 switch (code) {
-                    case 0:
+                    case 0b00:
                         return new JumpInstruction(stream.readInt());
-                    case 1:
+                    case 0b01:
                         return new BranchInstruction(stream.readInt(), BooleanValue.FALSE);
-                    case 2:
+                    case 0b10:
                         return new BranchInstruction(stream.readInt(), BooleanValue.TRUE);
-                    case 3:
+                    case 0b11:
                         return new ReturnInstruction();
                 }
                 

@@ -121,6 +121,37 @@ public final class StreamCodeWriter extends CodeWriter {
         }
     }
     
+    private void writeBranch (BranchInstruction inst) throws IOException {
+        BooleanValue cond = inst.getConditionValue();
+        int val = cond.getValue() ? 0b10 : 0b01;
+        stream.writeByte(Instruction.OPCODE_BRANCH | val);
+    }
+    
+    private void writeReturn (ReturnInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_BRANCH | 0b11);
+    }
+    
+    private void writeJump (JumpInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_BRANCH | 0b00);
+    }
+    
+    private void writeDuplicate (DuplicateInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_DUPLICATE);
+    }
+    
+    private void writeMove (MoveInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_MOVE);
+        stream.writeInt(inst.getSize());
+    }
+    
+    private void writeIndirectStore (IndirectStoreInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_STORE_IND);
+    }
+    
+    private void writeIndirectLoad (IndirectLoadInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_LOAD_IND);
+    }
+    
     @Override
     public void inhibit () {
         inhibited = true;

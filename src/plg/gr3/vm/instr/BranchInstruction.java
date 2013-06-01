@@ -22,4 +22,8 @@ public final class BranchInstruction extends Instruction {
             vm.setProgramCounter(address);
         }
     }
+    
+    public BooleanValue getConditionValue () {
+        return value;
+    }
 }
