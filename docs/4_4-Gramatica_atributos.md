@@ -1,3 +1,4 @@
+### 4.4 Gramática de atributos
 
     Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
         Program.tsh = creaTS()
