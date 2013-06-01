@@ -26,4 +26,8 @@ public final class MoveInstruction extends Instruction {
             vm.setMemoryValue(to, vm.getMemoryValue(from));
         }
     }
+    
+    public int getSize () {
+        return size;
+    }
 }

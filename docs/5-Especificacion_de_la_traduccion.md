@@ -83,18 +83,18 @@ copia
 
  * Saltos
 
- ir-a(direccion)
- >CProg ← direccion<br/>
+ir-a(direccion)
+>CProg ← direccion<br/>
 
- ir-v(direccion)
- >si Pila[CPila]: CProg ← direccion<br/>
- >si no: CProg ← CProg + 1<br/>
- >CPila ← CPila-1<br/>
+ir-v(direccion)
+>si Pila[CPila]: CProg ← direccion<br/>
+>si no: CProg ← CProg + 1<br/>
+>CPila ← CPila-1<br/>
 
- ir-f(direccion)
- >si Pila[CPila]: CProg ← CProg + 1<br/>
- >si no: CProg ← direccion<br/>
- >CPila ← CPila-1<br/>
+ir-f(direccion)
+>si Pila[CPila]: CProg ← CProg + 1<br/>
+>si no: CProg ← direccion<br/>
+>CPila ← CPila-1<br/>
 
  * Operaciones aritméticas
 
@@ -249,6 +249,8 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 
  * cod: Atributo sintetizado de generación de código.
  * op: Enumerado que nos dice cuál es el operador utilizado.
+ * etq: Contador de instrucciones. Cuenta instucciones de la máquina a pila generadas. 
+ * etqh: Contador de instrucciones heredado.  
 
 ## 5.4. Gramática de atributos
 
@@ -281,8 +283,8 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 		Subprogs.etq = Subprog.etq
 
 	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-		Subprog.cod = prologo || SInsts.cod || epilogo
-		SInsts.etqh = Subprog.etqh + num inst prologo //TODO porque el prologo y el epilogo no está hecho
+		Subprog.cod = prologo SInsts.cod || epilogo
+		SInsts.etqh = Subprog.etqh + num inst prologo 
 		Subprog.etq = SInsts.etq + num inst epiligo
 
 	SInsts → instructions illave Insts fllave
@@ -353,24 +355,31 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 	ElseIf → endif
 		ElseIf.etq = ElseIf.etqh
 
-	InstCall → call ident lpar SRParams rpar
+	InstCall → call ident lpar SRParams rpar//TODO
 		SRParams.etqh = InstCall.etqh
 		InstCall.etq = SRParams.etq
 
-	SRParams → RParams
-		//TODO 
+	SRParams → RParams //TODO
+		RParams.etqh = SRParams.etqh
+		SRParams.etq = RParams.etq 
 
-	SRParams → ɛ
-		//TODO
+	SRPasrams → ɛ//TODO
+		SRParms.etq = SRParams.etqh
 
-	RParams → RParams coma RParam
-		//TODO
 
-	RParams → RParam
-		//TODO
+	RParams → RParams coma RParam //TODO
+		RParams1.etqh = RParams.etqh
+		RParam.etqh = RParams.etq
+		RParams.etqh = RParam.eqt 
+
+	RParams → RParam //TODO
+		RParam.etqh = RParams.etqh
+		RParams.etq = RParam.etq
+
 
 	RParam → ident asig Expr
-		//TODO
+		RParam.etq = RParam.etqh + 1 //TODO, el codigo no es ta hecho pero calculo que hay que sumar 1 
+
 
 	Desig → ident
 		Desig.cod = si (Desig.tsh[ident.lex].nivel == local)  entonces apila-dir(Mem[1])
@@ -394,7 +403,10 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 		Term0.cod = Term1.cod || Fact.cod || Op1.op
 
 	Term → Term or Fact
-		Term0.cod = Term1.cod || Fact.cod || or
+		Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
+		Term1.etqh = Term0.etqh 
+		Fact.etqh = TErm1.etq + 3 
+		Term0.etq = Fact.etq  
 
 	Term → Fact
 		Term.cod = Fact.cod
@@ -403,7 +415,10 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 		Fact0.cod = Fact1.cod || Shft.cod || Op2.op
 
 	Fact → Fact and Shft
-		Fact0.cod = Fact1.cod || Shft.cod || and
+		Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+		Fact1.etqh = = Fact0.etqh
+		Shft.etqh = Fact1.etq + 3
+		Fact0.etq = Shft.etq 
 
 	Fact → Shft
 		Fact.cod = Shft.cod
@@ -471,3 +486,9 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 		Op4.op = not
 	Op4 → menos
 		Op4.op = menos
+
+
+## Notas:
+
+- Averiguar cuando se parchea el ir-a(?) de la producción program. Es quizás Subprogs.etq + 1 ???  
+- Hacer los prologos y los epilogos 
