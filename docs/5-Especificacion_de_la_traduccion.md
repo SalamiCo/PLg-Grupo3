@@ -277,6 +277,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Subprogs0.cod  = Subprogs1.cod || Subprog.cod
 		Subprogs1.etqh = Subprogs0.etqh
 		Subprog.etqh   = Subprogs1.etq 
+		Subprogs0.etq  = Subprog.etq
 
 	Subprogs → Subprog
 		Subprogs.cod = Subprog.cod
@@ -284,9 +285,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Subprogs.etq = Subprog.etq
 
 	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-		Subprog.cod =  SInsts.cod 
-		SInsts.etqh = Subprog.etqh 
-		Subprog.etq = SInsts.etq 
+		Subprog.cod = prologo SInsts.cod || epilogo
+		SInsts.etqh = Subprog.etqh + num inst prologo 
+		Subprog.etq = SInsts.etq + num inst epilogo
 
 	SInsts → instructions illave Insts fllave
 		SInsts.cod = Insts.cod
