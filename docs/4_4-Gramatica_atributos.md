@@ -264,7 +264,8 @@
 
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
-		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex) ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ es compatible lo que le paso y el tipo guardado en la ts ∨ Expr es Designador si se pasamos el atb por variable // TODO
+		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
+		∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.type,Expr.type) ∨ ¬Expr.desig 
 
 	Desig → ident
 		Desig.type = Desig.tsh[ident.lex].type
@@ -279,74 +280,95 @@
 		Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
 
 	Expr → Term Op0 Term
+		Expr.desig = false
 		Expr.type = tipoFunc(Term0.type, Op0.op, Term1.type)
 		Term0.tsh = Expr.tsh
 		Term1.tsh = Expr.tsh
+		Expr.desig = Term0.desig /\ Term1.desig
 	
 	Expr → Term
 		Expr.type = Term.type
 		Term.tsh = Expr.tsh
+		Expr.desig = false
+		Expr.desig = Term.desig
 
 	Term → Term Op1 Fact 
 		Term0.type = tipoFunc(Term1.type, Op1.op, Fact.type)
 		Term1.tsh = Term0.tsh
 		Fact.tsh = Term0.tsh
+		Term0.desig = Term1.desig /\ Fact.desig
 
 	Term → Term or Fact
 		Term0.type = tipoFunc(Term1.type, or, Fact.type)
 		Term1.tsh = Term0.tsh
 		Fact.tsh = Term0.tsh
+		Term0.desig = Term1.desig /\ Fact.desig
 	
 	Term → Fact
 		Term.type = Fact.type
 		Fact.tsh = Term.tsh
+		Term.desig = Fact.desig
 	
 	Fact → Fact Op2 Shft
 		Fact0.type = tipoFunc(Fact1.type, Op2.op, Shft.type) 
 		Fact1.tsh = Fact0.tsh
 		Shft.tsh = Fact0.tsh
+		Fact0.desig = Fact1.desig /\ Shft.desig
 
 	Fact → Fact and Shft
 		Fact0.type = tipoFunc(Fact1.type, and, Shft.type)
 		Fact1.tsh = Fact0.tsh
 		Shft.tsh = Fact0.tsh
+		Fact0.desig = Fact1.desig /\ Shft.desig
 	
 	Fact → Shft
 		Fact.type = Shft.type
 		Shft.tsh = Fact.tsh
+		Fact.desig = Shft.desig 
 	
 	Shft → Unary Op3 Shft
 		Shft0.type = tipoFunc(Unary.type, Op3.op, Shft.type) 
         Unary.tsh = Shft0.tsh
 		Shft1.tsh = Shft0.tsh
+		Shft0.desig = Unary.desig /\ Shft1.desig
 	
 	Shft → Unary
 		Shft.type = Unary.type
 		Unary.tsh = Shft.tsh
+		Shft.desig = Unary.desig
 	
 	Unary → Op4 Unary
 		Unary0.type = opUnario(Op4.op, Unary1.type)
 		Unary1.tsh = Unary0.tsh
-	
+		Unary0.desig = Unary1.desig
+		
 	Unary → lpar Cast rpar Paren 
 		Unary.type = casting(Cast.type, Paren.type)
 		Paren.tsh = Unary.tsh
-	
+		Unary.desig = Paren.desig
+		
 	Unary → Paren
 		Unary.type = Paren.type
 		Paren.tsh = Unary.tsh
-	
+		Unary.desig = Paren.desig
+		
 	Paren → lpar Expr rpar 
 		Paren.type = Expr.type
 		Expr.tsh = Paren.tsh
-	
+		Paren.desig = Expr.desig
+		
 	Paren → Lit 
 		Parent.type = Lit.type
 		Lit.tsh = Paren.tsh
-	
+		Paren.desig = false
+		
 	Paren → ident
 		Paren.type = tipoDe(Paren.tsh, ident.lex)
-
+		Paren.desig = false
+		
+	Paren → Desig
+		Paren.desig = true
+		
 	Op0 → igual
 		Op0.op = igual
 
