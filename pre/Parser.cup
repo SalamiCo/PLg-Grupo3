@@ -30,8 +30,8 @@ terminal TRUE, FALSE, PROGRAM,
  AND, OR, NOT, LSH, RSH, ICORCHETE, FCORCHETE;
 
 // Definición de los no terminales del lenguaje
-non terminal Program;
 non terminal TAtributos
+	Program,
 	SConsts, Consts, Const,
 	STypes, Types, Type,
 	SVars, Vars, Var,

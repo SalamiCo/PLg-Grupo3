@@ -1,6 +1,6 @@
 **id:** Si es un tipo construido es el nombre del tipo. Si es una variables o una constante es el identificador. 
 
-**clase:** Indica si es la declaración de un tipo construido, un variable o una constante. 
+**clase:** Indica si es la declaración de un tipo construido, una variable, una constante, un subprograma, un parámetro por valor o un parámetro por referencia.
 
 **nivel:** Indica si la variable es de nivel `global`, en el programa principal o bien de nivel `local` si la variable es de un subprograma
 

@@ -15,7 +15,6 @@ campo?(ts:TS, campos:CCampo, id:String) : Boolean
 desplazamiento(tipo:CTipo, id:String) : Integer
 >Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un 
 
-
 existeID(ts:TS, id:String) : Boolean
 >Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, ha sido previamente declarado.
 
@@ -29,17 +28,17 @@ CTipo es el conjunto de propiedades con la información necesaria del tipo. CTip
 ### CTipo en tipos construidos
 Cuando la tabla de símbolos guarda un tipo construido, el campo tipo guarda la siguiente información.
 
-    <t:reg, tipo:Ctipo, tam:int>
+    <id:String, t:reg, tipo:Ctipo, tam:int>
 
 ### CTipo en arrays
 Cuando la tabla de símbolos guarda un array, el campo tipo guarda la siguiente información. 
 
-    <t:array, nelems:int, tbase:Ctipo, tam:int>
+    <id:String, t:array, nelems:int, tbase:Ctipo, tam:int>
 
 ### Ctipo en tuplas
 Cuando la tabla de símbolos guarda un array el campotipo guarda la siguiente información.  
 
-    <t:tupla, nelems:int, campos:CCampos, tam:int>
+    <id:String, t:tupla, nelems:int, campos:CCampos, tam:int>
 
 Donde `campos` es una lista de elementos de la forma:
 
@@ -48,7 +47,7 @@ Donde `campos` es una lista de elementos de la forma:
 ### Ctipo en variables cuando guardan una referencia a otro tipo
 Cuando la tabla de símbolos guarda una variable, con una referencia a otro tipo, el campo tipo guarda la siguiente información. 
 
-    <t:ref, id:String, tam:int>
+    <id:String, t:ref, id:String, tam:int>
 
 ### Ctipo en constantes y variables que guardan un tipo primitivo
 Cuando la tabla de símbolos guarda una constante o, una variable con tipos primitivos, el campo tipo guarda la siguiente información. 
@@ -62,7 +61,7 @@ Cuando la tabla de símbolos guarda una constante o, una variable con tipos prim
 ### Ctipo en subprogramas
 Cuando la tabla de símbolos guarda la cabecera de un subprograma, el campo tipo guarda la siguiente información.
 
-    <t:subprog, params[...]>
+    <id:String, t:subprog, params[...]>
 
 La lista `params` guarda los parámetros de entrada que recibe el subprograma. Se distinguen entre los parámetros que son por valor o los que son por referencia. El campo idparam es el string que identifica el parámetro al hacer la llamada al subprograma.  
 
@@ -76,7 +75,7 @@ La lista `params` guarda los parámetros de entrada que recibe el subprograma. S
 
 **id:** nombre del identificador
 
-**clase:** Indica si es la declaración de un tipo construido, un variable o una constante 
+**clase:** Indica si es la declaración de un tipo construido, una variable, una constante, un subprograma, un parámetro por valor o un parámetro por referencia.
 
 **nivel** Indica si el identificador es de ámbito global o local
 
@@ -281,8 +280,5 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
 
 
-### NOTA DE MARINA PARA QUE ELLA SE RECUERDE
-- Hay que llevar un etq que cuente cuanto ocupa el subprograma en cuestión para calcular la dirección en el que va. Este eqt cuenta declaración de variables e instrucciones. Se inicializa en Subprog. Todo esto se hace en la generación de codigo. (Punto 5) Porque lo que cuenta son las instruccinoes que ocupa en memoria el programa
-- El prologo y el epilogo se generan en la generación de codigo. Y cuentan en lo del etq del punto e arriba
 
 
