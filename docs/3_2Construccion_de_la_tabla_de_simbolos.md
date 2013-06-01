@@ -76,7 +76,7 @@ La lista `params` guarda los parámetros de entrada que recibe el subprograma. S
 
 **id:** nombre del identificador
 
-**clase:** Indica si es la declaración de un tipo construido, un variable o una constante 
+**clase:** Indica si es la declaración de un tipo construido, una variable, una constante, un subprograma, un parámetro por valor o un parámetro por referencia.
 
 **nivel** Indica si el identificador es de ámbito global o local
 
