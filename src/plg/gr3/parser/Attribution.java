@@ -48,36 +48,54 @@ public final class Attribution extends Atribucion {
     
     public TAtributos sConsts_R1 (TAtributos consts) {
         regla("SConst -> CONSTS ILLAVE Consts FLLAVE");
-        return null;
+        
+        TAtributos attr = atributosPara("SConst", "tsh", "ts", "err");
+        
+        return attr;
     }
     
     public TAtributos sConsts_R2 () {
         regla("SConst -> $");
-        return null;
+        
+        TAtributos attr = atributosPara("SConst", "ts", "err");
+        
+        return attr;
     }
     
     // Consts
     
     public TAtributos consts_R1 (TAtributos consts_1, TAtributos cons) {
-        regla("Const -> Consts PYC Const");
-        return null;
+        regla("Consts -> Consts PYC Const");
+        
+        TAtributos attr = atributosPara("Consts", "tsh", "ts", "err");
+        
+        return attr;
     }
     
     public TAtributos consts_R2 (TAtributos cons) {
         regla("Consts -> Const");
-        return null;
+        
+        TAtributos attr = atributosPara("Consts");
+        
+        return attr;
     }
     
     // Const
     
     public TAtributos const_R1 (TAtributos tPrim, String ident, TAtributos lit) {
         regla("Const -> CONST TPrim IDENT ASIG Lit");
-        return null;
+        
+        TAtributos attr = atributosPara("Const");
+        
+        return attr;
     }
     
     public TAtributos const_R2 () {
         regla("Const -> $");
-        return null;
+        
+        TAtributos attr = atributosPara("Const");
+        
+        return attr;
     }
     
     // STypes
@@ -86,6 +104,7 @@ public final class Attribution extends Atribucion {
         regla("STypes -> TIPOS ILLAVE Types FLLAVE");
         
         TAtributos attr = atributosPara("STypes");
+        
         return attr;
     }
     
@@ -93,6 +112,7 @@ public final class Attribution extends Atribucion {
         regla("STypes -> $");
         
         TAtributos attr = atributosPara("STypes");
+        
         return attr;
     }
     
@@ -102,6 +122,7 @@ public final class Attribution extends Atribucion {
         regla("Types -> Types PYC Type");
         
         TAtributos attr = atributosPara("Types");
+        
         return attr;
     }
     
@@ -109,6 +130,7 @@ public final class Attribution extends Atribucion {
         regla("Types -> Type");
         
         TAtributos attr = atributosPara("Types");
+        
         return attr;
     }
     
@@ -118,6 +140,7 @@ public final class Attribution extends Atribucion {
         regla("Type -> TIPO TypeDesc IDENT");
         
         TAtributos attr = atributosPara("Type");
+        
         return attr;
     }
     
@@ -125,6 +148,7 @@ public final class Attribution extends Atribucion {
         regla("Type -> $");
         
         TAtributos attr = atributosPara("Type");
+        
         return attr;
     }
     
@@ -134,6 +158,7 @@ public final class Attribution extends Atribucion {
         regla("SVars -> VARS ILLAVE Vars FLLAVE");
         
         TAtributos attr = atributosPara("SVars");
+        
         return attr;
     }
     
@@ -141,6 +166,7 @@ public final class Attribution extends Atribucion {
         regla("SVars -> $");
         
         TAtributos attr = atributosPara("SVars");
+        
         return attr;
     }
     
@@ -150,6 +176,7 @@ public final class Attribution extends Atribucion {
         regla("Vars -> Vars PYC Var");
         
         TAtributos attr = atributosPara("Vars");
+        
         return attr;
     }
     
@@ -157,6 +184,7 @@ public final class Attribution extends Atribucion {
         regla("Vars -> Var");
         
         TAtributos attr = atributosPara("Vars");
+        
         return attr;
     }
     
@@ -166,6 +194,7 @@ public final class Attribution extends Atribucion {
         regla("Var -> VAR TypeDesc IDENT");
         
         TAtributos attr = atributosPara("Var");
+        
         return attr;
     }
     
@@ -173,6 +202,7 @@ public final class Attribution extends Atribucion {
         regla("Var -> $");
         
         TAtributos attr = atributosPara("Var");
+        
         return attr;
     }
     
@@ -182,6 +212,7 @@ public final class Attribution extends Atribucion {
         regla("TypeDesc -> TPrim");
         
         TAtributos attr = atributosPara("TypeDesc");
+        
         return attr;
     }
     
@@ -189,6 +220,7 @@ public final class Attribution extends Atribucion {
         regla("TypeDesc -> TArray");
         
         TAtributos attr = atributosPara("TypeDesc");
+        
         return attr;
     }
     
@@ -196,6 +228,7 @@ public final class Attribution extends Atribucion {
         regla("TypeDesc -> TTupla");
         
         TAtributos attr = atributosPara("TypeDesc");
+        
         return attr;
     }
     
@@ -203,6 +236,7 @@ public final class Attribution extends Atribucion {
         regla("TypeDesc -> IDENT");
         
         TAtributos attr = atributosPara("TypeDesc");
+        
         return attr;
     }
     
@@ -212,6 +246,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> NATURAL");
         
         TAtributos attr = atributosPara("TPrim");
+        
         return attr;
     }
     
@@ -219,6 +254,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> INTEGER");
         
         TAtributos attr = atributosPara("TPrim");
+        
         return attr;
     }
     
@@ -226,6 +262,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> FLOAT");
         
         TAtributos attr = atributosPara("TPrim");
+        
         return attr;
     }
     
@@ -233,6 +270,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> BOOLEAN");
         
         TAtributos attr = atributosPara("TPrim");
+        
         return attr;
     }
     
@@ -240,6 +278,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> CHARACTER");
         
         TAtributos attr = atributosPara("TPrim");
+        
         return attr;
     }
     
@@ -249,6 +288,7 @@ public final class Attribution extends Atribucion {
         regla("Cast -> CHAR");
         
         TAtributos attr = atributosPara("Cast");
+        
         return attr;
     }
     
@@ -256,6 +296,7 @@ public final class Attribution extends Atribucion {
         regla("Cast -> INT");
         
         TAtributos attr = atributosPara("Cast");
+        
         return attr;
     }
     
@@ -263,6 +304,7 @@ public final class Attribution extends Atribucion {
         regla("Cast -> NAT");
         
         TAtributos attr = atributosPara("Cast");
+        
         return attr;
     }
     
@@ -270,6 +312,7 @@ public final class Attribution extends Atribucion {
         regla("Cast -> FLOAT");
         
         TAtributos attr = atributosPara("Cast");
+        
         return attr;
     }
     
@@ -279,6 +322,7 @@ public final class Attribution extends Atribucion {
         regla("TArray -> TypeDesc ICORCHETE IDENT FCORCHETE");
         
         TAtributos attr = atributosPara("TArray");
+        
         return attr;
     }
     
@@ -286,6 +330,7 @@ public final class Attribution extends Atribucion {
         regla("TArray -> TypeDesc ICORCHETE LITNAT FCORCHETE");
         
         TAtributos attr = atributosPara("TArray");
+        
         return attr;
     }
     
@@ -295,6 +340,7 @@ public final class Attribution extends Atribucion {
         regla("TTupla -> IPAR Tupla FPAR");
         
         TAtributos attr = atributosPara("TTupla");
+        
         return attr;
     }
     
@@ -302,6 +348,7 @@ public final class Attribution extends Atribucion {
         regla("TTupla -> IPAR FPAR");
         
         TAtributos attr = atributosPara("TTupla");
+        
         return attr;
     }
     
@@ -311,6 +358,7 @@ public final class Attribution extends Atribucion {
         regla("Tupla -> TypeDesc COMA Tupla");
         
         TAtributos attr = atributosPara("Tupla");
+        
         return attr;
     }
     
@@ -318,6 +366,7 @@ public final class Attribution extends Atribucion {
         regla("Tupla -> TypeDesc");
         
         TAtributos attr = atributosPara("Tupla");
+        
         return attr;
     }
     
@@ -327,6 +376,7 @@ public final class Attribution extends Atribucion {
         regla("SInsts -> INSTRUCTIONS ILLAVE Insts FLLAVE");
         
         TAtributos attr = atributosPara("SInsts");
+        
         return attr;
     }
     
@@ -336,6 +386,7 @@ public final class Attribution extends Atribucion {
         regla("Insts -> Insts PYC Inst");
         
         TAtributos attr = atributosPara("Insts");
+        
         return attr;
     }
     
@@ -343,6 +394,7 @@ public final class Attribution extends Atribucion {
         regla("Insts -> Inst");
         
         TAtributos attr = atributosPara("Insts");
+        
         return attr;
     }
     
@@ -352,6 +404,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> Desig ASIG Expr");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -359,6 +412,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> IN IPAR Desig FPAR");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -366,6 +420,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> OUT IPAR Expr FPAR");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -373,6 +428,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> SWAP1 IPAR FPAR");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -380,6 +436,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> SWAP2 IPAR FPAR");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -387,6 +444,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> IF Expr THEN Insts ElseIf");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -394,6 +452,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> WHILE Expr DO Insts ENDWHILE");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -401,6 +460,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> InstCall");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -408,6 +468,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> $");
         
         TAtributos attr = atributosPara("Inst");
+        
         return attr;
     }
     
@@ -417,6 +478,7 @@ public final class Attribution extends Atribucion {
         regla("ElseIf -> ELSE Insts ENDIF");
         
         TAtributos attr = atributosPara("ElseIf");
+        
         return attr;
     }
     
@@ -424,6 +486,7 @@ public final class Attribution extends Atribucion {
         regla("ElseIf -> ENDIF");
         
         TAtributos attr = atributosPara("ElseIf");
+        
         return attr;
     }
     
@@ -433,6 +496,7 @@ public final class Attribution extends Atribucion {
         regla("InstCall -> CALL IDENT IPAR SRParams FPAR");
         
         TAtributos attr = atributosPara("InstCall");
+        
         return attr;
     }
     
@@ -442,6 +506,7 @@ public final class Attribution extends Atribucion {
         regla("SRParams -> RParams");
         
         TAtributos attr = atributosPara("SRParams");
+        
         return attr;
     }
     
@@ -449,6 +514,7 @@ public final class Attribution extends Atribucion {
         regla("SRParams -> $");
         
         TAtributos attr = atributosPara("SRParams");
+        
         return attr;
     }
     
@@ -458,6 +524,7 @@ public final class Attribution extends Atribucion {
         regla("RParams -> RParams COMA RParam");
         
         TAtributos attr = atributosPara("RParams");
+        
         return attr;
     }
     
@@ -465,6 +532,7 @@ public final class Attribution extends Atribucion {
         regla("RParams -> RParam");
         
         TAtributos attr = atributosPara("RParams");
+        
         return attr;
     }
     
@@ -474,6 +542,7 @@ public final class Attribution extends Atribucion {
         regla("RParam -> IDENT ASIG Expr");
         
         TAtributos attr = atributosPara("RParam");
+        
         return attr;
     }
     
@@ -483,6 +552,7 @@ public final class Attribution extends Atribucion {
         regla("SSubprogs -> SUBPROGRAMS ILLAVE Subprogs FLLAVE");
         
         TAtributos attr = atributosPara("SSubprogs");
+        
         return attr;
     }
     
@@ -490,6 +560,7 @@ public final class Attribution extends Atribucion {
         regla("SSubprogs -> SUBPROGRAMS ILLAVE FLLAVE");
         
         TAtributos attr = atributosPara("SSubprogs");
+        
         return attr;
     }
     
@@ -497,6 +568,7 @@ public final class Attribution extends Atribucion {
         regla("SSubprogs -> $");
         
         TAtributos attr = atributosPara("SSubprogs");
+        
         return attr;
     }
     
@@ -506,6 +578,7 @@ public final class Attribution extends Atribucion {
         regla("Subprogs -> Subprogs Subprog");
         
         TAtributos attr = atributosPara("Subprogs");
+        
         return attr;
     }
     
@@ -513,6 +586,7 @@ public final class Attribution extends Atribucion {
         regla("Subprogs -> Subprog");
         
         TAtributos attr = atributosPara("Subprogs");
+        
         return attr;
     }
     
@@ -522,6 +596,7 @@ public final class Attribution extends Atribucion {
         regla("Subprog -> SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE");
         
         TAtributos attr = atributosPara("Subprog");
+        
         return attr;
     }
     
@@ -531,6 +606,7 @@ public final class Attribution extends Atribucion {
         regla("SFParams -> FParams");
         
         TAtributos attr = atributosPara("SFParams");
+        
         return attr;
     }
     
@@ -538,6 +614,7 @@ public final class Attribution extends Atribucion {
         regla("SFParams -> $");
         
         TAtributos attr = atributosPara("SFParams");
+        
         return attr;
     }
     
@@ -547,6 +624,7 @@ public final class Attribution extends Atribucion {
         regla("FParams -> FParams COMA FParam");
         
         TAtributos attr = atributosPara("FParams");
+        
         return attr;
     }
     
@@ -554,6 +632,7 @@ public final class Attribution extends Atribucion {
         regla("FParams -> FParam");
         
         TAtributos attr = atributosPara("FParams");
+        
         return attr;
     }
     
@@ -563,13 +642,16 @@ public final class Attribution extends Atribucion {
         regla("FParam -> TypeDesc IDENT");
         
         TAtributos attr = atributosPara("FParam");
+        
         return attr;
     }
     
     public TAtributos fParam_R2 (TAtributos typeDesc, String ident) {
+        
         regla("FParam -> TypeDesc MUL IDENT");
         
         TAtributos attr = atributosPara("FParams");
+        
         return attr;
     }
     
@@ -579,6 +661,7 @@ public final class Attribution extends Atribucion {
         regla("Desig -> IDENT");
         
         TAtributos attr = atributosPara("Desig");
+        
         return attr;
     }
     
@@ -586,6 +669,7 @@ public final class Attribution extends Atribucion {
         regla("Desig -> Desig ICORCHETE Expr FCORCHETE");
         
         TAtributos attr = atributosPara("Desig");
+        
         return attr;
     }
     
@@ -593,6 +677,7 @@ public final class Attribution extends Atribucion {
         regla("Desig -> Desig BARRABAJA LITNAT");
         
         TAtributos attr = atributosPara("Desig");
+        
         return attr;
     }
     
@@ -602,6 +687,7 @@ public final class Attribution extends Atribucion {
         regla("Expr -> Term Op0 Term");
         
         TAtributos attr = atributosPara("Expr");
+        
         return attr;
     }
     
@@ -609,6 +695,7 @@ public final class Attribution extends Atribucion {
         regla("Expr -> Term");
         
         TAtributos attr = atributosPara("Expr");
+        
         return attr;
     }
     
@@ -618,6 +705,7 @@ public final class Attribution extends Atribucion {
         regla("Term -> Term Op1 Fact");
         
         TAtributos attr = atributosPara("Term");
+        
         return attr;
     }
     
@@ -625,6 +713,7 @@ public final class Attribution extends Atribucion {
         regla("Term -> Term OR Fact");
         
         TAtributos attr = atributosPara("Term");
+        
         return attr;
     }
     
@@ -632,6 +721,7 @@ public final class Attribution extends Atribucion {
         regla("Term -> Fact");
         
         TAtributos attr = atributosPara("Term");
+        
         return attr;
     }
     
@@ -641,18 +731,23 @@ public final class Attribution extends Atribucion {
         regla("Fact -> Fact Op2 Shft");
         
         TAtributos attr = atributosPara("Fact");
+        
         return attr;
     }
     
     public TAtributos fact_R2 (TAtributos fact_1, TAtributos shft) {
         regla("Fact -> Fact AND Shft");
-        return null;
+        
+        TAtributos attr = atributosPara("Fact");
+        
+        return attr;
     }
     
     public TAtributos fact_R3 (TAtributos shft) {
         regla("Fact -> Shft");
         
         TAtributos attr = atributosPara("Fact");
+        
         return attr;
     }
     
@@ -662,6 +757,7 @@ public final class Attribution extends Atribucion {
         regla("Shft -> Unary Op3 Shft");
         
         TAtributos attr = atributosPara("Shft");
+        
         return attr;
     }
     
@@ -669,6 +765,7 @@ public final class Attribution extends Atribucion {
         regla("Shft -> Unary");
         
         TAtributos attr = atributosPara("Shft");
+        
         return attr;
     }
     
@@ -678,6 +775,7 @@ public final class Attribution extends Atribucion {
         regla("Unary -> Op4 Unary");
         
         TAtributos attr = atributosPara("Unary");
+        
         return attr;
     }
     
@@ -685,6 +783,7 @@ public final class Attribution extends Atribucion {
         regla("Unary -> IPAR Cast FPAR Paren");
         
         TAtributos attr = atributosPara("Unary");
+        
         return attr;
     }
     
@@ -692,6 +791,7 @@ public final class Attribution extends Atribucion {
         regla("Unary -> Paren");
         
         TAtributos attr = atributosPara("Unary");
+        
         return attr;
     }
     
@@ -701,6 +801,7 @@ public final class Attribution extends Atribucion {
         regla("Paren -> IPAR Expr FPAR");
         
         TAtributos attr = atributosPara("Paren");
+        
         return attr;
     }
     
@@ -708,6 +809,7 @@ public final class Attribution extends Atribucion {
         regla("Paren -> Lit");
         
         TAtributos attr = atributosPara("Paren");
+        
         return attr;
     }
     
@@ -715,6 +817,7 @@ public final class Attribution extends Atribucion {
         regla("Paren -> Desig");
         
         TAtributos attr = atributosPara("Paren");
+        
         return attr;
     }
     
@@ -724,6 +827,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> IGUAL");
         
         TAtributos attr = atributosPara("Op0");
+        
         return attr;
     }
     
@@ -731,6 +835,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> NOIGUAL");
         
         TAtributos attr = atributosPara("Op0");
+        
         return attr;
     }
     
@@ -738,6 +843,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MAY");
         
         TAtributos attr = atributosPara("Op0");
+        
         return attr;
     }
     
@@ -745,6 +851,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MEN");
         
         TAtributos attr = atributosPara("Op0");
+        
         return attr;
     }
     
@@ -752,6 +859,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MENOIG");
         
         TAtributos attr = atributosPara("Op0");
+        
         return attr;
     }
     
@@ -759,6 +867,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MAYOIG");
         
         TAtributos attr = atributosPara("Op0");
+        
         return attr;
     }
     
@@ -768,6 +877,7 @@ public final class Attribution extends Atribucion {
         regla("Op1 -> MENOS");
         
         TAtributos attr = atributosPara("Op1");
+        
         return attr;
     }
     
@@ -775,6 +885,7 @@ public final class Attribution extends Atribucion {
         regla("Op1 -> MAS");
         
         TAtributos attr = atributosPara("Op1");
+        
         return attr;
     }
     
@@ -784,6 +895,7 @@ public final class Attribution extends Atribucion {
         regla("Op2 -> MOD");
         
         TAtributos attr = atributosPara("Op2");
+        
         return attr;
     }
     
@@ -791,6 +903,7 @@ public final class Attribution extends Atribucion {
         regla("Op2 -> DIV");
         
         TAtributos attr = atributosPara("Op2");
+        
         return attr;
     }
     
@@ -798,6 +911,7 @@ public final class Attribution extends Atribucion {
         regla("Op2 -> MUL");
         
         TAtributos attr = atributosPara("Op2");
+        
         return attr;
     }
     
@@ -807,6 +921,7 @@ public final class Attribution extends Atribucion {
         regla("Op3 -> LSH");
         
         TAtributos attr = atributosPara("Op3");
+        
         return attr;
     }
     
@@ -814,6 +929,7 @@ public final class Attribution extends Atribucion {
         regla("Op3 -> RSH");
         
         TAtributos attr = atributosPara("Op3");
+        
         return attr;
     }
     
@@ -823,6 +939,7 @@ public final class Attribution extends Atribucion {
         regla("Op4 -> NOT");
         
         TAtributos attr = atributosPara("Op4");
+        
         return attr;
     }
     
@@ -830,6 +947,7 @@ public final class Attribution extends Atribucion {
         regla("Op4 -> MENOS");
         
         TAtributos attr = atributosPara("Op4");
+        
         return attr;
     }
     
@@ -839,6 +957,7 @@ public final class Attribution extends Atribucion {
         regla("Lit -> LitBool");
         
         TAtributos attr = atributosPara("Lit");
+        
         return attr;
     }
     
@@ -846,6 +965,7 @@ public final class Attribution extends Atribucion {
         regla("Lit -> LitNum");
         
         TAtributos attr = atributosPara("Lit");
+        
         return attr;
     }
     
@@ -853,6 +973,7 @@ public final class Attribution extends Atribucion {
         regla("Lit -> LITCHAR");
         
         TAtributos attr = atributosPara("Lit");
+        
         return attr;
     }
     
@@ -862,6 +983,7 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> TRUE");
         
         TAtributos attr = atributosPara("LitBool");
+        
         return attr;
     }
     
@@ -869,6 +991,7 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> FALSE");
         
         TAtributos attr = atributosPara("LitBool");
+        
         return attr;
     }
     
