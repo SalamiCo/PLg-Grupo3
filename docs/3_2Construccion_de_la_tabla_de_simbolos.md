@@ -281,8 +281,5 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
 
 
-### NOTA DE MARINA PARA QUE ELLA SE RECUERDE
-- Hay que llevar un etq que cuente cuanto ocupa el subprograma en cuestión para calcular la dirección en el que va. Este eqt cuenta declaración de variables e instrucciones. Se inicializa en Subprog. Todo esto se hace en la generación de codigo. (Punto 5) Porque lo que cuenta son las instruccinoes que ocupa en memoria el programa
-- El prologo y el epilogo se generan en la generación de codigo. Y cuentan en lo del etq del punto e arriba
 
 

@@ -78,6 +78,11 @@ public abstract class Type {
         public boolean compatible (Type type) {
             return false;
         }
+        
+        @Override
+        public int getSize () {
+            return 0;
+        }
     };
     
     /** Mapa de códigos a sus tipos */
@@ -142,6 +147,8 @@ public abstract class Type {
     public String toString () {
         return name;
     }
+    
+    public abstract int getSize ();
     
     public abstract boolean compatible (Type type);
     
@@ -285,6 +292,11 @@ public abstract class Type {
         @Override
         public final boolean isNumeric () {
             return numeric;
+        }
+        
+        @Override
+        public int getSize () {
+            return 1;
         }
     }
 }
