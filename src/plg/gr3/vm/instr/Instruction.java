@@ -1,5 +1,9 @@
 package plg.gr3.vm.instr;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import plg.gr3.data.BinaryOperator;
 import plg.gr3.data.Operator;
 import plg.gr3.data.UnaryOperator;
@@ -91,6 +95,36 @@ public abstract class Instruction {
             
         } else {
             throw new IllegalArgumentException();
+        }
+    }
+    
+    /**
+     * @param code Código a parchear
+     * @param position Posición a parchear
+     * @param address Dirección de parcheo
+     * @return Código parcheado
+     */
+    public static List<Instruction> patch (List<? extends Instruction> code, int position, int address) {
+        List<Instruction> newCode = new ArrayList<>(code);
+        newCode.set(position, patch(code.get(position), address));
+        return Collections.unmodifiableList(newCode);
+    }
+    
+    /**
+     * @param instr Instrucción a parchear
+     * @param address Dirección a parchear
+     * @return Instrucción parcheada
+     */
+    @SuppressWarnings("unchecked")
+    public static <I extends Instruction> I patch (I instr, int address) {
+        if (instr instanceof JumpInstruction) {
+            return (I) new JumpInstruction(address);
+            
+        } else if (instr instanceof BranchInstruction) {
+            return (I) new BranchInstruction(address, ((BranchInstruction) instr).getConditionValue());
+            
+        } else {
+            return instr;
         }
     }
     

@@ -5,6 +5,7 @@
 	<property name="dir.bin" value="bin" />
 	<property name="dir.gen" value="gen" />
 	<property name="dir.pre" value="pre" />
+	<property name="dir.dst" value="dst" />
 
 	<!-- JARs del proyecto -->
 	<property name="jar.cup" value="${dir.lib}/cup.jar" />
@@ -26,21 +27,37 @@
 	<property name="class.parser" value="Parser" />
 	<property name="class.main" value="plg.gr3.Main" />
 
+	<!-- Fichero JAR final -->
+	<property name="file.dst.jar" value="${dir.dst}/PLg-Grupo3-2013.jar" />
+
 	<path id="project.class.path">
 		<pathelement location="${dir.lib}" />
 		<pathelement path="${jar.cup}" />
 		<pathelement path="${jar.jflex}" />
 	</path>
 
-	<target name="all" depends="gen,compile" />
+	<target name="all" depends="gen,compile, jar" />
 
 	<!-- Generadores del proyecto -->
 	<target name="gen" depends="clean,-gen-scanner,-gen-parser" />
 
+	<target name="jar" depends="compile,-clean-jar">
+		<jar destfile="${file.dst.jar}" basedir="${dir.bin}">
+			<zipfileset src="${jar.cup}" excludes="META-INF/**" />
+			<zipfileset src="${jar.jflex}" excludes="META-INF/**" />
+			<manifest>
+				<attribute name="Main-Class" value="${class.main}" />
+				<attribute name="Class-Path" value="${project.class.path}" />
+			</manifest>
+		</jar>
+		<chmod file="${file.dst.jar}" perm="+x" />
+	</target>
+
 	<!-- Compilación -->
 	<target name="compile" depends="gen">
-	    <mkdir dir="${dir.bin}" />
-		<javac srcdir="${dir.src}" destdir="${dir.bin}" fork="true" includeantruntime="true">
+		<mkdir dir="${dir.bin}" />
+		<javac srcdir="${dir.src}" destdir="${dir.bin}" fork="true"
+			includeantruntime="true">
 			<classpath refid="project.class.path" />
 			<src path="${dir.src}" />
 			<src path="${dir.gen}" />
@@ -48,11 +65,13 @@
 	</target>
 
 	<!-- Limpia el directorio de ficheros generados -->
-	<target name="clean">
+	<target name="clean" depends="-clean-jar">
 		<delete dir="${dir.gen}" />
 		<delete dir="${dir.bin}" />
 	</target>
 
+	<target name="-clean-jar">
+		<delete file="${file.dst.jar}" /></target>
 
 	<!-- Genera el Lexer -->
 	<target name="-gen-scanner" depends="clean">

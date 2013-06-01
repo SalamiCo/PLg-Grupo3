@@ -13,17 +13,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 
 import java_cup.runtime.DefaultSymbolFactory;
-import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
 import plg.gr3.code.StreamCodeReader;
+import plg.gr3.code.StreamCodeWriter;
 import plg.gr3.debug.Debugger;
 import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.parser.Lexer;
 import plg.gr3.parser.Parser;
 import plg.gr3.vm.VirtualMachine;
 import plg.gr3.vm.instr.Instruction;
+import es.ucm.fdi.plg.evlib.Atributo;
+import es.ucm.fdi.plg.evlib.TAtributos;
 
 /**
  * Aplicación principal en consola
@@ -108,10 +111,18 @@ public final class Main {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
             
-            Symbol symbol = parser.parse();
-            Debugger.INSTANCE.log("%s", symbol);
+            Atributo.fijaDebug(false);
+            TAtributos attr = (TAtributos) parser.parse().value;
+            
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
-                // TODO Output results
+                StreamCodeWriter writer = new StreamCodeWriter(output);
+                
+                @SuppressWarnings("unchecked")
+                List<Instruction> code = (List<Instruction>) attr.a("cod").valor();
+                
+                Debugger.INSTANCE.debug("Código: %s", code);
+                
+                writer.write(code);
             }
         }
     }
