@@ -244,6 +244,7 @@ En la operación castNat, hemos creado la operación en la máquina virtual (nat
 
 tamTipo(CTipo): dado un registro de tipo, devuelve el tamaño del tipo
 desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el offset hasta el indice (incluido)
+numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 ## 5.3. Atributos semánticos
 
@@ -346,6 +347,7 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 		Inst.etq = InstCall.etq
 
 	Inst → ɛ
+		Inst.cod = []
 		Inst.etq = Inst.etqh
 
 	ElseIf → else Insts endif 
@@ -359,27 +361,29 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 		SRParams.etqh = InstCall.etqh
 		InstCall.etq = SRParams.etq
 
-	SRParams → RParams //TODO
+	SRParams → RParams 
+		SRParams.cod = RParams.cod
 		RParams.etqh = SRParams.etqh
 		SRParams.etq = RParams.etq 
 
-	SRPasrams → ɛ//TODO
+	SRParams → ɛ
+		SRParams.cod = []
 		SRParms.etq = SRParams.etqh
 
-
-	RParams → RParams coma RParam //TODO
+	RParams → RParams coma RParam 
+		RParams.cod = RParams.cod || RParam.cod
 		RParams1.etqh = RParams.etqh
 		RParam.etqh = RParams.etq
 		RParams.etqh = RParam.eqt 
 
-	RParams → RParam //TODO
+	RParams → RParam 
+		RParams.cod = RParam.cod
 		RParam.etqh = RParams.etqh
 		RParams.etq = RParam.etq
 
-
 	RParam → ident asig Expr
-		RParam.etq = RParam.etqh + 1 //TODO, el codigo no es ta hecho pero calculo que hay que sumar 1 
-
+		RParam.cod = apila(RParam.tsh[ident.lex].dir)||Expr.cod||mueve(numCeldas(Expr.type))
+		RParam.etq = RParam.etqh + 1 
 
 	Desig → ident
 		Desig.cod = si (Desig.tsh[ident.lex].nivel == local)  entonces apila-dir(Mem[1])
@@ -405,7 +409,7 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 	Term → Term or Fact
 		Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
 		Term1.etqh = Term0.etqh 
-		Fact.etqh = TErm1.etq + 3 
+		Fact.etqh = Term1.etq + 3 
 		Term0.etq = Fact.etq  
 
 	Term → Fact
