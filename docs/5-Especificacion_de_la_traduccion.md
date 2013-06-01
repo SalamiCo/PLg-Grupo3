@@ -314,7 +314,6 @@ No hacemos uso de ninguna función semántica.
 		Desig.etqh = Inst.etq + 1 
 		Inst.etq = Desig.etq + 1
 
-
 	Inst → out ipar Expr fpar
 		Inst.cod = Expr.cod || out
 		Expr.etqh = Inst.etqh
@@ -373,8 +372,26 @@ No hacemos uso de ninguna función semántica.
 	Desig → Desig barrabaja litnat
 
 	Expr → Term Op0 Term | Term
-	Term → Term Op1 Fact | Term or Fact | Fact
-	Fact → Fact Op2 Shft | Fact and Shft | Shft
+	Term → Term Op1 Fact | Fact
+
+	Term → Term or Fact
+		Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
+		Term1.etqh = Term0.etqh 
+		Fact.etqh = TErm1.etq + 3 
+		Term0.etq = Fact.etq  
+
+	Term → Fact 
+
+	Fact → Fact Op2 Shft 
+
+	Fact → Fact and Shft
+		Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+		Fact1.etqh = = Fact0.etqh
+		Shft.etqh = Fact1.etq + 3
+		Fact0.etq = Shft.etq 
+
+	Fact →  Shft
+
 	Shft → Unary Op3 Shft | Unary
 	Unary → Op4 Unary | lpar Cast rpar Paren | Paren
 
@@ -404,7 +421,6 @@ No hacemos uso de ninguna función semántica.
 		Op2.op = div
 	Op2 → mul
 		Op2.op = mul
-
 	Op3 → lsh
 		Op3.op = lsh
 	Op3 → rsh
