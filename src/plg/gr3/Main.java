@@ -5,6 +5,7 @@ import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,6 +23,7 @@ import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.parser.Lexer;
 import plg.gr3.parser.Parser;
 import plg.gr3.vm.VirtualMachine;
+import plg.gr3.vm.instr.Instruction;
 
 /**
  * Aplicación principal en consola
@@ -36,11 +38,15 @@ public final class Main {
     /** Comando utilizado para ejecutar un programa */
     private static final String CMD_RUN = "run";
     
+    /** Comando utilizado para ejecutar un programa */
+    private static final String CMD_DEBUG = "debug";
+    
     /** Escribe por pantalla cómo se usa la aplicación */
     private static void printUsage () {
         final String CMD = "java " + Main.class.getName();
         System.out.println("usage: " + CMD + " " + CMD_COMPILE + " <input> <output>");
         System.out.println("   or: " + CMD + " " + CMD_RUN + " <file>");
+        System.out.println("   or: " + CMD + " " + CMD_DEBUG + " <file>");
         System.out.println();
     }
     
@@ -65,6 +71,10 @@ public final class Main {
                         run(Arrays.copyOfRange(args, 1, args.length));
                     break;
                     
+                    case "debug":
+                        debug(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                    
                     default:
                         printUsage();
                 }
@@ -75,7 +85,7 @@ public final class Main {
     }
     
     /**
-     * Comando de compilación
+     * Comando de compilación.
      * 
      * @param args Argumentos de línea de comandos
      * @throws IOException Si hay unproblema de E/S
@@ -97,8 +107,9 @@ public final class Main {
         try (InputStream input = Files.newInputStream(pathInput, READ)) {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
-            Symbol symbol = parser.parse();
             
+            Symbol symbol = parser.parse();
+            Debugger.INSTANCE.log("%s", symbol);
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 // TODO Output results
             }
@@ -106,7 +117,7 @@ public final class Main {
     }
     
     /**
-     * Comando de ejecución
+     * Comando de ejecución.
      * 
      * @param args Argumentos de línea de comandos
      */
@@ -117,7 +128,7 @@ public final class Main {
         Path pathInput = Paths.get(args[0]);
         
         Debugger.INSTANCE.setLoggingEnabled(true);
-        Debugger.INSTANCE.setDebugEnabled(true);
+        Debugger.INSTANCE.setDebugEnabled(false);
         
         try (StreamCodeReader reader = new StreamCodeReader(Files.newInputStream(pathInput))) {
             VirtualMachine vm = new VirtualMachine(reader.readAll());
@@ -130,6 +141,52 @@ public final class Main {
             
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Comando de depuración.
+     * 
+     * @param args Argumentos de línea de comandos
+     */
+    public static void debug (String[] args) {
+        if (args.length != 1) {
+            printUsage();
+        }
+        Path pathInput = Paths.get(args[0]);
+        
+        Debugger.INSTANCE.setLoggingEnabled(true);
+        Debugger.INSTANCE.setDebugEnabled(true);
+        
+        Console console = System.console();
+        if (console == null) {
+            Debugger.INSTANCE.error("¡No puedes ejecutar en modo traza sin una terminal!");
+        } else {
+            
+            try (StreamCodeReader reader = new StreamCodeReader(Files.newInputStream(pathInput))) {
+                VirtualMachine vm = new VirtualMachine(reader.readAll());
+                
+                while (!vm.isStopped()) {
+                    int pc = vm.getProgramCounter();
+                    Instruction instr = vm.getInstruction(pc);
+                    
+                    Debugger.INSTANCE.in(pc, instr).log("Pulsa ENTER para ejecutar");
+                    String line = console.readLine();
+                    if (line == null) {
+                        vm.stop();
+                    } else {
+                        vm.step();
+                    }
+                }
+                
+                RuntimeError error = vm.getError();
+                if (error != null) {
+                    error.print();
+                }
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
