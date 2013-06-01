@@ -282,10 +282,10 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 		Subprog.etqh = Subprogs.etqh
 		Subprogs.etq = Subprog.etq
 
-	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave //TODO
-		Subprog.cod = prologo SInsts.cod || epilogo 
-		SInsts.etqh = Subprog.etqh + num inst prologo 
-		Subprog.etq = SInsts.etq + num inst epiligo
+	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+		Subprog.cod =  SInsts.cod 
+		SInsts.etqh = Subprog.etqh 
+		Subprog.etq = SInsts.etq 
 
 	SInsts → instructions illave Insts fllave
 		SInsts.cod = Insts.cod

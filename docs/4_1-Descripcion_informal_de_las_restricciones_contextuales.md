@@ -42,3 +42,9 @@ No se puede comparar naturales con caracteres, ni enteros con caracteres, ni rea
 * (int) puede ser aplicado a cualquier tipo excepto al tipo booleano y a los tipos construidos.
 * (nat) puede ser aplicado al tipo natural y al tipo carácter. No admite operandos reales, enteros, booleanos o de tipos construidos.
 * (char) puede ser aplicado al tipo carácter y al tipo natural. No admite operandos reales, enteros, booleanos o de tipos construidos.
+
+#### 4.1.6 Sobre los subprogramas
+
+* No se puede invocar a un subprograma que no esté previamente declarado
+* Hay que comprobar que los parámetros con los que se invoca al subprograma son correctos. 
+ 
