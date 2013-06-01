@@ -1,3 +1,4 @@
+### 4.4 Gramática de atributos
 
     Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
         Program.tsh = creaTS()
@@ -83,12 +84,12 @@
         Vars1.tsh = Vars0.tsh
         Var.tsh = Vars1.ts
         Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
-        Vars0.err = existe(Var.ts, Var.id)
+        Vars0.err = existe(Var.ts, Var.id, Var.nivel)
 
     Vars → Var
         Var.tsh = Vars.tsh
         Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
-        Vars.err = existe(Var.ts, Var.id)
+        Vars.err = existe(Var.ts, Var.id, Var.nivel)
 
     Var → var TypeDesc ident 
         Var.ts = Var.tsh
@@ -140,12 +141,12 @@
         FParams1.tsh = FParams0.tsh
         FParam.tsh = FParams1.tsh
         FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
-        FParams0.err = existe(FParam.ts, FParam.id)
+        FParams0.err = existe(FParam.ts, FParam.id, FParam.nivel)
 
     FParams → FParam
         FParam.tsh = FParams.tsh
         FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
-        FParams.err = existe(FParam.ts, FParam.id)
+        FParams.err = existe(FParam.ts, FParam.id, FParam.nivel)
 
     FParam → TypeDesc ident 
         FParam.ts = FParam.tsh
@@ -232,27 +233,38 @@
 
 	InstCall → call ident lpar SRParams rpar
 		SRParams.tsh = InstCall.tsh
-		InstCall.err = SRParams.err
+		SRParams.nparams = 0
+		SRParams.nombresubprogh = ident.lex
+		InstCall.err = SRParams.err ∨ ¬existe(SRParams.tsh, ident.lex) ∨ SRParams.nparams != numParametros(SRParams.tsh, ident.lex)
 
 	SRParams → RParams
 		RParams.tsh = SRParams.tsh
+		RParams.nparamsh = SRParams.nparamsh
+		SRParams.nparams = RParams.nparams
+		RParams.nombresubprogh = SRParams.nombresubprogh
 		SRParams.err = RParams.err
 
 	SRParams → ɛ
 		SRParams.err = false
+		SRParams.nparams = SRParams.etq
 
 	RParams → RParams coma RParam
 		RParam1.tsh = RParams0.tsh
 		RParam.tsh = RParams1.tsh
 		RParams0.err = RParams1.err ∨ Rparam.err
+		RParams1.nparamsh = RParams0.nparamsh 
+		RParams1.nombresubprogh = RParams0.nombresubprogh
+		RParam.nombresubprogh = RParams0.nombresubprogh
+		RParams0.nparams = RParams1.nparams + 1  
 
 	RParams → RParam
+		RParams.nparams = RParams.nparamsh + 1
+		RParam.nombresubprogh = RParams.nombresubprogh
 		RParams.err = RParam.err
 
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
-		RParam.err = Expr.err ∨ ¬asignaciónVálida(Expr.tsh[ident.lex].type, Expr.type) ∨ ¬existe(Exp.tsh, ident.lex) ∨ 
-                        ¬esVariable(Expr.tsh, ident.lex)
+		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex) ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ es compatible lo que le paso y el tipo guardado en la ts ∨ Expr es Designador si se pasamos el atb por variable // TODO
 
 	Desig → ident
 		Desig.type = Desig.tsh[ident.lex].type
@@ -401,3 +413,5 @@
 ### Notas Marina
 
 - En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
+- los valores de los parámetros formales por variable deben ser designadores. Poner un atb que sea esDesignador. Que comienze como si y que se ponga a no cuando haya una operación. 
+- los tipos de parámetros formales y reales deben ser compatibles. Es decir que hay que mirar que el tipo metido en la ts del parámetro es compatible con el que le metemos. 

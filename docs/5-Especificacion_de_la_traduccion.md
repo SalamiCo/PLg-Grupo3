@@ -18,6 +18,7 @@
 
  * S2: Flag de swap2. Si tiene valor 1 intercambia multiplicación por división y viceversa.
 
+ * Reg: Registro auxiliar para apila-ind y desapila-ind
 
 ### 5.1.2.  Comportamiento interno
 
@@ -70,10 +71,8 @@ desapila-dir(dirección)
 >CPila ← CPila - 1<br/>
 >CProg ← CProg + 1<br/>
 
-//REVISARRRRR
 desapila-ind
->Reg ← Mem[direccion]<br/>
->Mem[Pila[CPila-2]] ← Pila[CPila]<br/>
+>Mem[Pila[CPila]] ← Pila[CPila-1]<br/>
 >CPila ← CPila - 2<br/>
 >CProg ← CProg + 1<br/>
 
@@ -84,18 +83,18 @@ copia
 
  * Saltos
 
- ir-a(direccion)
- >CProg ← direccion<br/>
+ir-a(direccion)
+>CProg ← direccion<br/>
 
- ir-v(direccion)
- >si Pila[CPila]: CProg ← direccion<br/>
- >si no: CProg ← CProg + 1<br/>
- >CPila ← CPila-1<br/>
+ir-v(direccion)
+>si Pila[CPila]: CProg ← direccion<br/>
+>si no: CProg ← CProg + 1<br/>
+>CPila ← CPila-1<br/>
 
- ir-f(direccion)
- >si Pila[CPila]: CProg ← CProg + 1<br/>
- >si no: CProg ← direccion<br/>
- >CPila ← CPila-1<br/>
+ir-f(direccion)
+>si Pila[CPila]: CProg ← CProg + 1<br/>
+>si no: CProg ← direccion<br/>
+>CPila ← CPila-1<br/>
 
  * Operaciones aritméticas
 
@@ -243,20 +242,23 @@ En la operación castNat, hemos creado la operación en la máquina virtual (nat
 
 ## 5.2. Funciones semánticas
 
-No hacemos uso de ninguna función semántica. 
+tamTipo(CTipo): dado un registro de tipo, devuelve el tamaño del tipo
+desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el offset hasta el indice (incluido)
+numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 ## 5.3. Atributos semánticos
 
  * cod: Atributo sintetizado de generación de código.
  * op: Enumerado que nos dice cuál es el operador utilizado.
+ * etq: Contador de instrucciones. Cuenta instucciones de la máquina a pila generadas. 
+ * etqh: Contador de instrucciones heredado.  
 
 ## 5.4. Gramática de atributos
 
 	Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-		Program.cod = ir_a(?) || SSubprogs || SInsts.cod || stop
+		Program.cod =  ir_a(?) || SSubprogs || SInsts.cod || stop 
 		SSubprogs.etqh = 1 
 		SInsts.etqh = SSubprogs.etq
-
 
 	SSubprogs → subprograms illave Subprogs fllave 
 		SSubprogs.cod = Subprogs.cod
@@ -272,9 +274,9 @@ No hacemos uso de ninguna función semántica.
 		SSubprogs.etq = SSubprogs.etqh
 
 	Subprogs → Subprogs Subprog 
-		Subprogs0.cod = Subprogs1.cod || Subprog.cod
+		Subprogs0.cod  = Subprogs1.cod || Subprog.cod
 		Subprogs1.etqh = Subprogs0.etqh
-		Subprog.etqh = Subprogs1.etq 
+		Subprog.etqh   = Subprogs1.etq 
 
 	Subprogs → Subprog
 		Subprogs.cod = Subprog.cod
@@ -282,10 +284,9 @@ No hacemos uso de ninguna función semántica.
 		Subprogs.etq = Subprog.etq
 
 	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-		Subprog.cod = prologo || SInsts.cod || epilogo
-		SInsts.etqh = Subprog.etqh + num inst prologo //TODO porque el prologo y el epilogo no está hecho
-		Subprog.etq = SInsts.etq + num inst epiligo
-
+		Subprog.cod =  SInsts.cod 
+		SInsts.etqh = Subprog.etqh 
+		Subprog.etq = SInsts.etq 
 
 	SInsts → instructions illave Insts fllave
 		SInsts.cod = Insts.cod
@@ -304,10 +305,10 @@ No hacemos uso de ninguna función semántica.
 		Insts.etq = Inst.etq
 	 
 	Inst → Desig asig Expr
-		Inst.cod = apila(Desig.dir) || Expr.cod || desapila-ind
-		Desig.etqh = Inst.etqh + 1
+		Inst.cod = Expr.cod || apila(Desig.dir)|| desapila-ind
+		Desig.etqh = Inst.etqh 
 		Expr.etqh = Desig.etq 
-		Inst.etq = Expr.etq + 1 
+		Inst.etq = Expr.etq + 2 
 
 	Inst → in ipar Desig fpar
 		Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
@@ -341,11 +342,12 @@ No hacemos uso de ninguna función semántica.
 		Inst.etq = Insts + 1 
 
 	Inst → InstCall
-		Inst.cod = 
+		Inst.cod = //TODO
 		InstCall.etqh = Inst.etqh
 		Inst.etq = InstCall.etq
 
 	Inst → ɛ
+		Inst.cod = []
 		Inst.etq = Inst.etqh
 
 	ElseIf → else Insts endif 
@@ -355,34 +357,85 @@ No hacemos uso de ninguna función semántica.
 	ElseIf → endif
 		ElseIf.etq = ElseIf.etqh
 
-	InstCall → call ident lpar SRParams rpar
+	InstCall → call ident lpar SRParams rpar//TODO
 		SRParams.etqh = InstCall.etqh
 		InstCall.etq = SRParams.etq
 
-	SRParams → RParams | ɛ
-	RParams → RParams coma RParam | RParam
-	RParam → ident asig Expr
+	SRParams → RParams 
+		SRParams.cod = RParams.cod
+		RParams.etqh = SRParams.etqh
+		SRParams.etq = RParams.etq 
 
-	Desig → ident 
-		Desig.dir = Desig.tsh[ident.lex].dir
+	SRParams → ɛ
+		SRParams.cod = []
+		SRParms.etq = SRParams.etqh
+
+	RParams → RParams coma RParam 
+		RParams.cod = RParams.cod || RParam.cod
+		RParams1.etqh = RParams.etqh
+		RParam.etqh = RParams.etq
+		RParams.etqh = RParam.eqt 
+
+	RParams → RParam 
+		RParams.cod = RParam.cod
+		RParam.etqh = RParams.etqh
+		RParams.etq = RParam.etq
+
+	RParam → ident asig Expr
+		RParam.cod = apila(RParam.tsh[ident.lex].dir)||Expr.cod||mueve(numCeldas(Expr.type))
+		RParam.etq = RParam.etqh + 1 
+
+	Desig → ident
+		Desig.cod = si (Desig.tsh[ident.lex].nivel == local)  entonces apila-dir(Mem[1])
+					si (Desig.tsh[ident.lex].nivel == global) entonces apilar-dir(0) ||
+					apila(Desig.tsh[ident.lex].dir) ||
+					mas
+		Desig.etq = Desig.etqh + 3
 
 	Desig → Desig icorchete Expr fcorchete
-		Desig0.dir = Desig1.dir
+		Desig0.cod = Desig1.cod || Expr.cod || apila(tamTipo(Desig1.type)) || mul || mas
+		Desig1.etqh = Desig0.etqh 
+		Expr.etqh = Desig1.etq
+		Desig0.etq = Expr.etq + 3  
 
-	Desig → Desig barrabaja litnat
+	Desig → Desig barrabaja litnat		
+		Desig0.cod = Desig1.cod || apila(desplTupla(litnat.lex, Desig1.type)) || mas
+		Desig1.etqh = Desig0.etqh
+		Desig0.etq = Desgi1.etq + 2 
 
-	Expr → Term Op0 Term | Term
-	Term → Term Op1 Fact | Fact
+	Expr → Term Op0 Term
+		Expr0.cod = Term1.cod || Term2.cod || Op0.op
+		Term1.etqh = Expr.etqh 
+		Term2.etqh = Term1.etq
+		Expr.eth = Term2.etq + 1  
+
+	Expr → Term
+		Expr.cod = Term.cod
+		Term.etqh = Expr.etqh
+		Expr.etq = Term.etq
+
+	Term → Term Op1 Fact
+		Term0.cod = Term1.cod || Fact.cod || Op1.op
+		Term1.etqh = Fact.etqh 
+		Fact.etqh = Term1.etq
+		Term.eth = Expr.etq + 1 
 
 	Term → Term or Fact
 		Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
 		Term1.etqh = Term0.etqh 
-		Fact.etqh = TErm1.etq + 3 
+		Fact.etqh = Term1.etq + 3 
 		Term0.etq = Fact.etq  
 
-	Term → Fact 
+	Term → Fact
+		Term.cod = Fact.cod
+		Fact.etqh = Term.etqh
+		Term.etq = Fact.etq
 
-	Fact → Fact Op2 Shft 
+	Fact → Fact Op2 Shft
+		Fact0.cod = Fact1.cod || Shft.cod || Op2.op
+		Fact1.etqh = Fact0.etqh 
+		Shft.etqh = Fact1.etq 
+		Term0.etq = Fact.etq + 1 
 
 	Fact → Fact and Shft
 		Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
@@ -390,14 +443,59 @@ No hacemos uso de ninguna función semántica.
 		Shft.etqh = Fact1.etq + 3
 		Fact0.etq = Shft.etq 
 
-	Fact →  Shft
+	Fact → Shft
+		Fact.cod = Shft.cod
+		Shft.eqth = Fact.etqh
+		Fact.etq = Shft.etq
 
-	Shft → Unary Op3 Shft | Unary
-	Unary → Op4 Unary | lpar Cast rpar Paren | Paren
+	Shft → Unary Op3 Shft
+		Shft.cod = Unary.cod || Shft.cod || Op3.op
+		Unary.etqh = Shft.etqh 
+		Shft.etqh = Unary.etq 
+		Shft0.etq = Shft1.etq + 1 
+
+	Shft → Unary
+		Shft.cod = Unary.cod
+		Unary.etqh = Shft.eqth
+		Shft.etq = Unary.etq
+
+	Unary → Op4 Unary
+		Unary0.cod = Unary1.cod || Op4.op
+		Unary1.etqh = Unary0.eqth
+		Unary0.eqt = Unary1.etq + 1 
+
+	Unary → lpar Cast rpar Paren
+		Unary.cod = Paren.cod || Cast.type
+		Paren.etqh = Unary.eqth 
+		Unary.etq = Paren.eqt + 1 
+
+	Unary → Paren
+		Unary.cod = Paren.cod
+		Paren.eqth = Unary.etqh
+		Unary.etq = Paren.etq
 
 	Paren → lpar Expr rpar
+		Paren.cod = Expr.cod
+		Expr.etqh = Paren.eqth
+		Paren.etq = Expr.etq
+
 	Paren → Lit
+		Paren.cod = apila(Lit.value)
+		Paren.etq = Paren.etqh + 1
+
 	Paren → Desig
+		Paren.cod = Desig.cod || apila-ind
+		Desig.etqh = Paren.etqh 
+		Paren.etq = Desig.etq + 1 
+
+	Cast → char
+		Cast.type = char
+	Cast → int
+		Cast.type = int
+	Cast → nat
+		Cast.type = nat
+	Cast → float
+		Cast.type = float
 
 	Op0 → igual
 		Op0.op = igual
@@ -429,3 +527,9 @@ No hacemos uso de ninguna función semántica.
 		Op4.op = not
 	Op4 → menos
 		Op4.op = menos
+
+
+## Notas:
+
+- Averiguar cuando se parchea el ir-a(?) de la producción program. Es quizás Subprogs.etq + 1 ???  
+- Hacer los prologos y los epilogos 

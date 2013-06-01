@@ -3,6 +3,8 @@
 
 A continuación, describimos las funciones semánticas adicionales utilizadas en la descripción.
 
+#### casting
+
     casting (Type tipoCast, Type tipoOrg) : Type
         Dados dos tipos diferentes comprobamos si podemos hacer el casting: [ (tipoCast) tipoOrg ] Si podemos, devolvemos el tipoCast resultante de hacer el casting, y si no podemos, devolvemos terr. Describimos el comportamiento de la función en la siguiente tabla.
 
@@ -20,7 +22,9 @@ A continuación, describimos las funciones semánticas adicionales utilizadas en
 |   float         | boolean                   | terr          |
 |   float         | tipo númerico o character | terr          |
 
-        Nota: cualquier casting en el que esté involucrado un tipo construido da como tipo devuelto 'terr'.
+Nota: cualquier casting en el que esté involucrado un tipo construido da como tipo devuelto 'terr'.
+
+#### unario
 
     unario(Type OpUnario, Type tipoUnario) : Type
         Dado un operador unario y el tipo al que es aplicado comprobamos si se puede aplicar. Por ejemplo, no podemos aplicar a un booleano el operador “-”. Tampoco podemos aplicar a un entero el operador “not”. En esos casos devuelve terr. Si aplicamos el operador “-” a un tipo nat devolvemos el tipo integer.
@@ -34,7 +38,9 @@ A continuación, describimos las funciones semánticas adicionales utilizadas en
 |     not    |  boolean             |   boolean     |
 |     not    |  cualquier otro tipo |     terr      |
 
-        Nota: no se puede aplicar ningún operador unario a ningún tipo construido.
+Nota: no se puede aplicar ningún operador unario a ningún tipo construido.
+
+#### tipoFunc
 
     tipoFunc(Type tipo1, Operator op, Type tipo2) : Type
         Dados dos tipos diferentes y un operador comprobamos que los tipos puedan aplicar el operador. Devolvemos el tipo correspondiente al aplicar el operador. Si el operador no puede ser aplicado entonces devolvemos terr.
@@ -60,7 +66,7 @@ También para que se vea mejor, dentro de las tablas, separaremos los tipos de o
 | tipo no natural     | "<<"                         | -                       | terr          |
 | -                   | "<<"                         | tipo no natural         | terr          |
 
-        Nota: el tipo devuelto de aplicar cualquier tipo de operador a un tipo construido es 'terr'.
+Nota: el tipo devuelto de aplicar cualquier tipo de operador a un tipo construido es 'terr'.
 
 
 Operadores no conmutativos:
@@ -70,6 +76,8 @@ Operadores no conmutativos:
 | integer o natural     | "%" | natural         | natural       |
 | -                     | "%" | tipo no natural | terr          |
 | ni integer ni natural | "%" | -               | terr          |
+
+#### asignaciónVálida
 
     asignaciónVálida(Type tipoDesig, Type tipoExp) : Boolean
         Dado un tipo de un designador y un tipo de una expresión, comprueba si ambos son tipos compatibles. Por ejemplo, no podemos asignar a un designador de tipo char una expresión booleana. Si la asignación es incorrecta devolvemos false, si no devolvemos true.
@@ -92,8 +100,27 @@ Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de t
 
 Nota: En el caso de los tipos construidos, devolverá true siempre que los dos tipos sean compatibles, y false en c.o.c. Dos tipos se consideran compatibles cuando el tipo de sus componentes es el mismo y, en el caso de los arrays, su tamaño es el mismo.
 
-
-Nota: En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.
+#### esVariable
 
     esVariable(TS ts, String id) : Boolean
         Indica si el ident dado, representado por su id, es una variable o una constante. Si devuelve true quiere decir que el ident es una variable, si devuelve false quiere decir que el identificador es una constante.
+
+#### existe
+
+    existe(TS ts, String id) : Boolean
+        Indica si el identificador existe en la tabla de símbolos
+
+    existe(TS ts, String is, nivel) : Boolean
+        Indica si el identificador existe en la tabla de símbolos en el nivel inidicado. 
+
+### numParametros
+
+    numParametros(TS ts, String id) : Integer
+        Devuelve el número de parámetros que tiene el subprograma con el identificador id. Si el subprograma no está en la tabla del símbolos devuelve terr.
+
+### estaDeclarado
+    estaDeclarado(TS ts, String idparam, String idsubprog) : Boolean
+        Comprueba si el parámetro idparam está declarado en el subprograma idsubprog. Si no está declarado el identificador, o el subprograma no existe devuelve terr
+
+#### Nota: 
+En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.
