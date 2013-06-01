@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 import java_cup.runtime.DefaultSymbolFactory;
-import java_cup.runtime.Symbol;
 import java_cup.runtime.SymbolFactory;
 import plg.gr3.code.StreamCodeReader;
 import plg.gr3.debug.Debugger;
@@ -24,6 +23,7 @@ import plg.gr3.parser.Lexer;
 import plg.gr3.parser.Parser;
 import plg.gr3.vm.VirtualMachine;
 import plg.gr3.vm.instr.Instruction;
+import es.ucm.fdi.plg.evlib.TAtributos;
 
 /**
  * Aplicación principal en consola
@@ -108,8 +108,8 @@ public final class Main {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
             
-            Symbol symbol = parser.parse();
-            Debugger.INSTANCE.log("%s", symbol);
+            TAtributos attr = (TAtributos) parser.parse().value;
+            Debugger.INSTANCE.log("Parsing result: [%s]", attr);
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 // TODO Output results
             }
