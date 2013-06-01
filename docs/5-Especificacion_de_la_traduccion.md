@@ -276,6 +276,7 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 		Subprogs0.cod  = Subprogs1.cod || Subprog.cod
 		Subprogs1.etqh = Subprogs0.etqh
 		Subprog.etqh   = Subprogs1.etq 
+		Subprogs0.etq  = Subprog.etq
 
 	Subprogs → Subprog
 		Subprogs.cod = Subprog.cod
@@ -285,7 +286,7 @@ desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el off
 	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 		Subprog.cod = prologo SInsts.cod || epilogo
 		SInsts.etqh = Subprog.etqh + num inst prologo 
-		Subprog.etq = SInsts.etq + num inst epiligo
+		Subprog.etq = SInsts.etq + num inst epilogo
 
 	SInsts → instructions illave Insts fllave
 		SInsts.cod = Insts.cod
