@@ -4,19 +4,19 @@ import plg.gr3.vm.instr.ConstructedType;
 
 public final class ArrayType extends ConstructedType {
     
-    private final Type elementType;
+    private final int length;
     
-    private final int size;
+    private final Type baseType;
     
-    public ArrayType (Type elementType, int size) {
-        super(elementType.getName() + "[" + size + "]");
+    public ArrayType (Type elementType, int length) {
+        super(elementType.getName() + "[" + length + "]");
         
-        if (size < 0) {
-            throw new IllegalArgumentException("size: " + size + " < 0");
+        if (length < 0) {
+            throw new IllegalArgumentException("size: " + length + " < 0");
         }
         
-        this.elementType = elementType;
-        this.size = size;
+        this.baseType = elementType;
+        this.length = length;
     }
     
     @Override
@@ -26,6 +26,19 @@ public final class ArrayType extends ConstructedType {
         }
         ArrayType arrt = (ArrayType) type;
         
-        return size == arrt.size && elementType.compatible(arrt.elementType);
+        return length == arrt.length && baseType.compatible(arrt.baseType);
+    }
+    
+    public int getLength () {
+        return length;
+    }
+    
+    public Type getBaseType () {
+        return baseType;
+    }
+    
+    @Override
+    public int getSize () {
+        return baseType.getSize() * length;
     }
 }
