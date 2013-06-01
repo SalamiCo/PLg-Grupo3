@@ -1,6 +1,8 @@
 package plg.gr3.parser;
 
 import es.ucm.fdi.plg.evlib.Atribucion;
+import es.ucm.fdi.plg.evlib.Atributo;
+import es.ucm.fdi.plg.evlib.SemFun;
 import es.ucm.fdi.plg.evlib.TAtributos;
 
 /**
@@ -11,13 +13,35 @@ import es.ucm.fdi.plg.evlib.TAtributos;
 @SuppressWarnings("javadoc")
 public final class Attribution extends Atribucion {
     
+    /** Función semántica para asignar valores */
+    private static final SemFun SEMFUN_ASIGNATION = new SemFun() {
+        
+        @Override
+        public Atributo eval (Atributo... args) {
+            if (args.length != 1) {
+                throw new IllegalArgumentException();
+            }
+            return args[0];
+        }
+        
+    };
+    
     // Program
     
     public TAtributos program_R1 (
         TAtributos sConsts, TAtributos sTypes, TAtributos sVars, TAtributos sSubprogs, TAtributos sInsts)
     {
         regla("Program -> PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE");
-        return null;
+        
+        TAtributos attr = atributosPara("Program", "tsh", "etqh", "err");
+        calculo(attr.a("tsh"), new SemFun() {
+            @Override
+            public Atributo eval (Atributo... args) {
+                return new SymbolTable();
+            }
+        });
+        
+        return attr;
     }
     
     // SConsts
@@ -650,11 +674,17 @@ public final class Attribution extends Atribucion {
     
     public TAtributos litNum_R1 (String litnat) {
         regla("LitNum -> LITNAT");
-        return null;
+        
+        TAtributos attr = atributosPara("LitNum");
+        return attr;
     }
     
     public TAtributos litNum_R2 (String litfloat) {
         regla("LitNum -> LITFLOAT");
-        return null;
+        
+        Atributo litfloatLex = atributoLexicoPara("LITFLOAT", "lex", litfloat);
+        
+        TAtributos attr = atributosPara("LitNum");
+        return attr;
     }
 }
