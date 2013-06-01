@@ -1,6 +1,7 @@
 package plg.gr3.data;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,5 +38,36 @@ public final class TupleType extends ConstructedType {
             }
         }
         return true;
+    }
+    
+    public List<Type> getSubtypes () {
+        return subtypes;
+    }
+    
+    @Override
+    public int getSize () {
+        Iterator<Type> it = subtypes.iterator();
+        int length = 0;
+        while (it.hasNext()) {
+            length += it.next().getSize();
+        }
+        return length;
+    }
+    
+    public int getOffset (int numElement) {
+        if (numElement < 0 || numElement > getSize()) {
+            throw new IllegalArgumentException("numElement: " + numElement);
+        } else if (numElement == 0) {
+            return 0;
+        } else {
+            Iterator<Type> it = subtypes.iterator();
+            int offset = 0;
+            int count = 0;
+            while (count < numElement && it.hasNext()) {
+                offset += it.next().getSize();
+                count++;
+            }
+            return offset;
+        }
     }
 }
