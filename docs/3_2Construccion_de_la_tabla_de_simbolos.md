@@ -6,8 +6,8 @@ creaTS() : TS
 creaTS(ts:TS) : TS
 > Dada una tabla de símbolos crea otra tabla de símbolos que contiene toda la información de la tabla recibida por parámetro. Esta constructora se usa para las tablas de símbolos de los subprogramas
 
-añade(ts:TS, id:String, clase:String, nivel:String, dir:Int, tipo:CTipo) : TS
->Añade a la tabla de símbolos el nuevo tipo construido, una variable o una constante. CTipo es el conjunto de propiedades con la información necesaria del tipo. Está explicado más adelante
+añade(ts:TS, id:String, clase:String, nivel:String, dir:Int, tipo:CTipo, valor:?) : TS
+>Añade a la tabla de símbolos el nuevo tipo construido, una variable o una constante. CTipo es el conjunto de propiedades con la información necesaria del tipo. Está explicado más adelante.
 
 campo?(ts:TS, campos:CCampo, id:String) : Boolean
 >Devuelve true cuando la lista de campos de Campo contenga campo id. 
@@ -27,7 +27,7 @@ obtieneCtipo(typeDesc:TypeDesc) : CTipo
 CTipo es el conjunto de propiedades con la información necesaria del tipo. CTipo guarda información diferente dependiendo de si es un tipo construido, un array, una tupla, una variable de todo lo anterior dicho o bien una variable o constante de tipo básico. 
 
 ### CTipo en tipos construidos
-Cuando la tabla de símbolos guarda un tipo construido, el campo tipo guarda la siguiente información
+Cuando la tabla de símbolos guarda un tipo construido, el campo tipo guarda la siguiente información.
 
     <t:reg, tipo:Ctipo, tam:int>
 
@@ -41,7 +41,7 @@ Cuando la tabla de símbolos guarda un array el campotipo guarda la siguiente in
 
     <t:tupla, nelems:int, campos:CCampos, tam:int>
 
-Donde `campos` es una lista de elementos de la forma
+Donde `campos` es una lista de elementos de la forma:
 
     <id:int, tipo:CTipo>
 
@@ -76,13 +76,15 @@ La lista `params` guarda los parámetros de entrada que recibe el subprograma. S
 
 **id:** nombre del identificador
 
-**dir:** Dirección de memoria. Dónde se guarda la variable o la constante
+**clase:** Indica si es la declaración de un tipo construido, un variable o una constante 
 
 **nivel** Indica si el identificador es de ámbito global o local
 
+**dir:** Dirección de memoria. Dónde se guarda la variable o la constante
+
 **tipo** Almacena los conjuntos de propiedades con la información necesaria del tipo
 
-**clase:** Indica si es la declaración de un tipo construido, un variable o una constante 
+**valor:** Si es una constante, almacena su valor. Si no, es indefinido.
 
 ## 3.2.3 Gramáticas de atributos
 
@@ -119,13 +121,13 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Const.tsh = Consts1.ts
         Const.dirh = Consts1.dir
         Consts0.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
-        Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Conts0.dir, Const.tipo)
+        Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Conts0.dir, Const.tipo, Const.valor)
 
     Consts → Const
         Const.tsh = Consts.tsh
         Const.dirh = Consts.dirh
         Consts.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
-        Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo)
+        Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo, Const.valor)
 
 
     Const → const TPrim ident asig Lit 
@@ -135,6 +137,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Const.clase = const
         Const.nivel = global
         Const.tipo = <t:TPrim.type, tam:1>
+        Const.valor = Lit.valor
 
     Const → ɛ
         Const.ts = Const.tsh
