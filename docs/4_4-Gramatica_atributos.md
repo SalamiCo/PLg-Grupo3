@@ -140,12 +140,12 @@
         FParams1.tsh = FParams0.tsh
         FParam.tsh = FParams1.tsh
         FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
-        FParams0.err = existe(FParam.ts, FParam.id)
+        FParams0.err = existe(FParam.ts, FParam.id, FParam.nivel)
 
     FParams → FParam
         FParam.tsh = FParams.tsh
         FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
-        FParams.err = existe(FParam.ts, FParam.id)
+        FParams.err = existe(FParam.ts, FParam.id, FParam.nivel)
 
     FParam → TypeDesc ident 
         FParam.ts = FParam.tsh
@@ -232,27 +232,38 @@
 
 	InstCall → call ident lpar SRParams rpar
 		SRParams.tsh = InstCall.tsh
-		InstCall.err = SRParams.err
+		SRParams.nparams = 0
+		SRParams.nombresubprogh = ident.lex
+		InstCall.err = SRParams.err ∨ ¬existe(SRParams.tsh, ident.lex) ∨ SRParams.nparams != numParametros(SRParams.tsh, ident.lex)
 
 	SRParams → RParams
 		RParams.tsh = SRParams.tsh
+		RParams.nparamsh = SRParams.nparamsh
+		SRParams.nparams = RParams.nparams
+		RParams.nombresubprogh = SRParams.nombresubprogh
 		SRParams.err = RParams.err
 
 	SRParams → ɛ
 		SRParams.err = false
+		SRParams.nparams = SRParams.etq
 
 	RParams → RParams coma RParam
 		RParam1.tsh = RParams0.tsh
 		RParam.tsh = RParams1.tsh
 		RParams0.err = RParams1.err ∨ Rparam.err
+		RParams1.nparamsh = RParams0.nparamsh 
+		RParams1.nombresubprogh = RParams0.nombresubprogh
+		RParam.nombresubprogh = RParams0.nombresubprogh
+		RParams0.nparams = RParams1.nparams + 1  
 
 	RParams → RParam
+		RParams.nparams = RParams.nparamsh + 1
+		RParam.nombresubprogh = RParams.nombresubprogh
 		RParams.err = RParam.err
 
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
-		RParam.err = Expr.err ∨ ¬asignaciónVálida(Expr.tsh[ident.lex].type, Expr.type) ∨ ¬existe(Exp.tsh, ident.lex) ∨ 
-                        ¬esVariable(Expr.tsh, ident.lex)
+		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex) ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh)
 
 	Desig → ident
 		Desig.type = Desig.tsh[ident.lex].type

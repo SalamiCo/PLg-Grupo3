@@ -113,5 +113,14 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que los dos t
     existe(TS ts, String is, nivel) : Boolean
         Indica si el identificador existe en la tabla de símbolos en el nivel inidicado. 
 
+### numParametros
+
+    numParametros(TS ts, String id) : Integer
+        Devuelve el número de parámetros que tiene el subprograma con el identificador id. Si el subprograma no está en la tabla del símbolos devuelve terr.
+
+### estaDeclarado
+    estaDeclarado(TS ts, String idparam, String idsubprog) : Boolean
+        Comprueba si el parámetro idparam está declarado en el subprograma idsubprog. Si no está declarado el identificador, o el subprograma no existe devuelve terr
+
 #### Nota: 
 En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.
