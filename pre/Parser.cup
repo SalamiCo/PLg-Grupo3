@@ -13,13 +13,13 @@ action code {:
 parser code {:
 	@Override
 	public void syntax_error (Symbol symbol) {
-		Error error = new SyntaxError(symbol);
+		SyntaxError error = new SyntaxError(symbol);
 		error.print();
 	}
 :}
 
 // Definición de los terminales del lenguaje 
-terminal String IDENT, LITNAT, LITFLOAT, LITCHAR;
+terminal Symbol IDENT, LITNAT, LITFLOAT, LITCHAR;
 
 terminal TRUE, FALSE, PROGRAM,
  SUBPROGRAM, VARS, TIPOS, CONSTS, SUBPROGRAMS, INSTRUCTIONS, VAR, CONST, TIPO,
@@ -32,7 +32,7 @@ terminal TRUE, FALSE, PROGRAM,
 // Definición de los no terminales del lenguaje
 non terminal TAtributos
 	Program,
-	SConsts, Consts, Const,
+	SConsts, Consts, Const, ConstLit,
 	STypes, Types, Type,
 	SVars, Vars, Var,
 	SSubprogs, Subprogs, Subprog,
@@ -70,11 +70,18 @@ Consts ::= Consts:consts_1 PYC Const:cons {:
 	RESULT = attr.consts_R2(cons);
 :};
 
-Const ::= CONST TPrim:tPrim IDENT:ident ASIG Lit:lit {:
+Const ::= CONST TPrim:tPrim IDENT:ident ASIG ConstLit:lit {:
 	RESULT = attr.const_R1(tPrim, ident, lit);
 :}
         | {:
 	RESULT = attr.const_R2();
+:};
+
+ConstLit ::= Lit:lit {:
+	RESULT = attr.constLit_R1(lit);
+:}
+		| MENOS Lit:lit {:
+	RESULT = attr.constLit_R2(lit);
 :};
 
 

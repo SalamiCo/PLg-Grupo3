@@ -29,16 +29,23 @@
         Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo)
         Consts.err = existe(Const.ts, Const.id)
 
-    Const → const TPrim ident asig Lit 
+    Const → const TPrim ident asig ConstLit 
         Const.ts = Const.tsh
         Const.id = ident.lex
         Const.clase = const
         Const.nivel = global
-        Const.tipo = <t:TPrim.type, tam:1>
+        Const.tipo = <t:TPrim.tipo, tam:1>
+        Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
 
     Const → ɛ
         Const.ts = Const.tsh
         Const.err = false
+
+    ConstLit → Lit
+    	ConstLit.tipo = Lit.tipo
+
+    ConstLit → menos Lit
+    	ConstLit.tipo = Lit.tipo
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
@@ -65,7 +72,7 @@
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
-        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)> //TODO mirar como añadir el tamaño al tipo
+        Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)> //TODO mirar como añadir el tamaño al tipo
 
     Type → ɛ
         Type.ts = Type.tsh
@@ -96,7 +103,7 @@
         Var.id = ident.lex
         Var.clase = Var
         Var.nivel = global
-        Var.tipo = (si (TypeDesc.Type == TPrim) {<t:TypeDesc.type, tam:1>}
+        Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
 
     Var → ɛ
@@ -127,15 +134,15 @@
         SInsts.tsh = SVars.ts
         Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err
 
-    SParams → FParams 
-        FParams.tsh = SParams.tsh
-        SParams.ts = FParams.ts
-        SParams.dir = FParams.dir
-        Sparams.err = FParams.err
+    SFParams → FParams 
+        FParams.tsh = SFParams.tsh
+        SFParams.ts = FParams.ts
+        SFParams.dir = FParams.dir
+        SFParams.err = FParams.err
 
-    SParams → ɛ
-        SParams.ts = SParams.tsh
-        SParams.err = false
+    SFParams → ɛ
+        SFParams.ts = SFParams.tsh
+        SFParams.err = false
 
     FParams → FParams coma FParam 
         FParams1.tsh = FParams0.tsh
@@ -153,7 +160,7 @@
         Fparam.id = ident.lex
         FParam.clase = pvalor
         FParam.nivel = local
-        FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+        FParam.tipo = (si (TypeDesc.tipo== TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
 
     FParam → TypeDesc mul ident
@@ -161,7 +168,7 @@
         Fparam.id = ident.lex
         FParam.clase = pvariable
         FParam.nivel = local
-        FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+        FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
 
     TypeDesc → TPrim | TArray | TTupla | ident
@@ -190,7 +197,7 @@
 	Inst → Desig asig Expr
 		Desig.tsh = Inst.tsh
 		Expr.tsh = Inst.tsh
-		Inst.err = (¬asignacionValida(Desig.type, Expr.type)) ∨ Expr.err ∨ Desig.err
+		Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
 
 	Inst → in ipar Desig fpar
 		Desig.tsh = Inst.tsh
@@ -268,105 +275,105 @@
 		Expr.tsh = RParam.tsh
 		RParam.nparams = RParams.nparamsh + 1  
 		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
-		∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.type,Expr.type) ∨ ¬Expr.desig 
+		∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig 
 
 	Desig → ident
-		Desig.type = Desig.tsh[ident.lex].type
+		Desig.tipo = Desig.tsh[ident.lex].tipo
 		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(Expr.tsh, ident.lex)
 
 	Desig → Desig icorchete Expr fcorchete
-		Desig0.type = Desig1.type
+		Desig0.tipo = Desig1.tipo
 		Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
 
 	Desig → Desig barrabaja litnat
-		Desig0.type = Desig1.type
+		Desig0.tipo = Desig1.tipo
 		Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
 
 	Expr → Term Op0 Term
 		Expr.desig = false
-		Expr.type = tipoFunc(Term0.type, Op0.op, Term1.type)
+		Expr.tipo = tipoFunc(Term0.tipo, Op0.op, Term1.tipo)
 		Term0.tsh = Expr.tsh
 		Term1.tsh = Expr.tsh
 		Expr.desig = Term0.desig ˄ Term1.desig
 	
 	Expr → Term
-		Expr.type = Term.type
+		Expr.tipo = Term.tipo
 		Term.tsh = Expr.tsh
 		Expr.desig = false
 		Expr.desig = Term.desig
 
 	Term → Term Op1 Fact 
-		Term0.type = tipoFunc(Term1.type, Op1.op, Fact.type)
+		Term0.tipo = tipoFunc(Term1.tipo, Op1.op, Fact.tipo)
 		Term1.tsh = Term0.tsh
 		Fact.tsh = Term0.tsh
 		Term0.desig = Term1.desig ˄ Fact.desig
 
 	Term → Term or Fact
-		Term0.type = tipoFunc(Term1.type, or, Fact.type)
+		Term0.tipo = tipoFunc(Term1.tipo, or, Fact.tipo)
 		Term1.tsh = Term0.tsh
 		Fact.tsh = Term0.tsh
 		Term0.desig = Term1.desig ˄ Fact.desig
 	
 	Term → Fact
-		Term.type = Fact.type
+		Term.tipo = Fact.tipo
 		Fact.tsh = Term.tsh
 		Term.desig = Fact.desig
 	
 	Fact → Fact Op2 Shft
-		Fact0.type = tipoFunc(Fact1.type, Op2.op, Shft.type) 
+		Fact0.tipo = tipoFunc(Fact1.tipo, Op2.op, Shft.tipo) 
 		Fact1.tsh = Fact0.tsh
 		Shft.tsh = Fact0.tsh
 		Fact0.desig = Fact1.desig ˄ Shft.desig
 
 	Fact → Fact and Shft
-		Fact0.type = tipoFunc(Fact1.type, and, Shft.type)
+		Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
 		Fact1.tsh = Fact0.tsh
 		Shft.tsh = Fact0.tsh
 		Fact0.desig = Fact1.desig ˄ Shft.desig
 	
 	Fact → Shft
-		Fact.type = Shft.type
+		Fact.tipo = Shft.tipo
 		Shft.tsh = Fact.tsh
 		Fact.desig = Shft.desig 
 	
 	Shft → Unary Op3 Shft
-		Shft0.type = tipoFunc(Unary.type, Op3.op, Shft.type) 
+		Shft0.tipo = tipoFunc(Unary.tipo, Op3.op, Shft.tipo) 
         Unary.tsh = Shft0.tsh
 		Shft1.tsh = Shft0.tsh
 		Shft0.desig = Unary.desig ˄ Shft1.desig
 	
 	Shft → Unary
-		Shft.type = Unary.type
+		Shft.tipo = Unary.tipo
 		Unary.tsh = Shft.tsh
 		Shft.desig = Unary.desig
 	
 	Unary → Op4 Unary
-		Unary0.type = opUnario(Op4.op, Unary1.type)
+		Unary0.tipo = opUnario(Op4.op, Unary1.tipo)
 		Unary1.tsh = Unary0.tsh
 		Unary0.desig = Unary1.desig
 		
 	Unary → lpar Cast rpar Paren 
-		Unary.type = casting(Cast.type, Paren.type)
+		Unary.tipo = casting(Cast.tipo, Paren.tipo)
 		Paren.tsh = Unary.tsh
 		Unary.desig = Paren.desig
 		
 	Unary → Paren
-		Unary.type = Paren.type
+		Unary.tipo = Paren.tipo
 		Paren.tsh = Unary.tsh
 		Unary.desig = Paren.desig
 		
 	Paren → lpar Expr rpar 
-		Paren.type = Expr.type
+		Paren.tipo = Expr.tipo
 		Expr.tsh = Paren.tsh
 		Paren.desig = Expr.desig
 		
 	Paren → Lit 
-		Parent.type = Lit.type
+		Parent.tipo = Lit.tipo
 		Lit.tsh = Paren.tsh
 		Paren.desig = false
 		
 	Paren → ident
-		Paren.type = tipoDe(Paren.tsh, ident.lex)
+		Paren.tipo = tipoDe(Paren.tsh, ident.lex)
 		Paren.desig = false
 		
 	Paren → Desig
@@ -418,22 +425,22 @@
 		Op4.op = menos
 
 	Lit → LitBool 
-		Lit.type = boolean 
+		Lit.tipo = boolean 
 
 	Lit → LitNum 
-		Lit.type = LitNum.type
+		Lit.tipo = LitNum.tipo
 
 	Lit → litchar 
-		Lit.type = char 
+		Lit.tipo = char 
 
 	LitNum → litnat 
-		LitNum.type = natural 
+		LitNum.tipo = natural 
 
 	LitNum → menos litnat 
-		LitNum.type = integer
+		LitNum.tipo = integer
 
 	LitNum → litfloat | menos litfloat 
-		LitNum.type = float
+		LitNum.tipo = float
 
 ### Notas Marina
 

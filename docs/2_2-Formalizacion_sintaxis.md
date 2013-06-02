@@ -2,7 +2,9 @@ Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fi
 
 SConsts → consts illave Consts fllave | ɛ
 Consts → Consts pyc Const | Const
-Const → const TPrim ident asig Lit | ɛ
+Const → const TPrim ident asig ConstLit | ɛ
+
+ConstLit → Lit | menos Lit
 
 STypes → tipos illave Types fllave | ɛ
 Types → Types pyc Type | Type
@@ -16,7 +18,7 @@ SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | �
 Subprogs → Subprogs Subprog | Subprog
 Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 
-SParams → FParams | ɛ
+SFParams → FParams | ɛ
 FParams → FParams coma FParam | FParam
 FParam → TypeDesc ident | TypeDesc mul ident
 
