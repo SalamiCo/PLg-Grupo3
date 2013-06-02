@@ -1773,17 +1773,56 @@ public final class Attribution extends Atribucion {
 
     public TAtributos shft_R1 (TAtributos unary, TAtributos op3, TAtributos shft_1) {
         regla("Shft -> Unary Op3 Shft");
-        TAtributos attr = atributosPara("Shft", "tsh", "desig", "cod", "etqh", "etq");
+        TAtributos attr = atributosPara("Shft", "tsh", "desig", "tipo", "cod", "etqh", "etq");
 
-        dependencias(attr.a("tipo"), desig_1.a("tipo"));
+        dependencias(attr.a("tipo"), attr.a("tipo")); // TODO el tipo Func
         calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(unary.a("tsh"), attr.a("tsh"));
+        calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("tsh"), shft_1.a("tsh"));
+        calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
+        
+        dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig") );
+        calculo(attr.a("desig"), SEMFUN_AND!); //TODO marina
+        
+        dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+        
+        dependencias(unary.a("etqh"), attr.a("etqh"));
+        calculo(unary.a("etqh"), SEMFUN_ASIGNATION);
+        
+        dependencias(shft_1.a("etqh"), unary.a("etq"));
+        calculo(shft_1.a("etqh"), SEMFUN_ASIGNATION);
+        
+        dependencias(attr.a("etq"), shft_1.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
 
     public TAtributos shft_R2 (TAtributos unary) {
         regla("Shft -> Unary");
-        TAtributos attr = atributosPara("Shft");
+        TAtributos attr = atributosPara("Shft", "tsh", "tipo", "desig", "cod", "etqh", "etq");
+
+        dependencias(unary.a("tsh"), attr.a("tsh"));
+        calculo(unary.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("tipo"), unary.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), unary.a("desig"));
+        calculo(attr.a("desig"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), unary.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(unary.a("etqh"), attr.a("etqh"));
+        calculo(unary.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), unary.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
