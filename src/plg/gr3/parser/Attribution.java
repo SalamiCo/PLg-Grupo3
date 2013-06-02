@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import plg.gr3.data.Type;
 import plg.gr3.errors.compile.CompileError;
+import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
 import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.StopInstruction;
@@ -213,14 +215,25 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sTypes_R1 (TAtributos types) {
         regla("STypes -> TIPOS ILLAVE Types FLLAVE");
-        TAtributos attr = atributosPara("STypes");
+        TAtributos attr = atributosPara("STypes", "tsh", "ts", "err");
+        dependencias(attr.a("tsh"), types.a("tsh"));
+        dependencias(attr.a("ts"), types.a("ts"));
+        dependencias(attr.a("err"), types.a("err"));
+
+        calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        calculo(attr.a("err"), SEMFUN_ASIGNATION);
 
         return attr;
     }
 
     public TAtributos sTypes_R2 () {
         regla("STypes -> $");
-        TAtributos attr = atributosPara("STypes");
+        TAtributos attr = atributosPara("STypes", "tsh", "ts", "err");
+        dependencias(attr.a("ts"), attr.a("tsh"));
+
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
@@ -229,14 +242,48 @@ public final class Attribution extends Atribucion {
 
     public TAtributos types_R1 (TAtributos types_1, TAtributos type) {
         regla("Types -> Types PYC Type");
-        TAtributos attr = atributosPara("Types");
+        TAtributos attr = atributosPara("Types", "tsh", "ts", "err");
+        dependencias(types_1.a("tsh"), attr.a("tsh"));
+        dependencias(type.a("tsh"), attr.a("ts"));
+        dependencias(attr.a("ts"), types_1.a("ts"), type.a("id"), type.a("tipo"));
+        dependencias(attr.a("err"), types_1.a("ts"), type.a("id"));
+
+        calculo(types_1.a("tsh"), SEMFUN_ASIGNATION);
+        calculo(type.a("tsh"), SEMFUN_ASIGNATION);
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                ts.putType((String) args[1].valor(), (Type) args[2].valor());
+
+                return ts;
+            }
+        });
+        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos types_R2 (TAtributos type) {
         regla("Types -> Type");
-        TAtributos attr = atributosPara("Types");
+        TAtributos attr = atributosPara("Types", "tsh", "ts", "err");
+        dependencias(type.a("tsh"), attr.a("tsh"));
+        dependencias(attr.a("ts"), type.a("ts"), type.a("id"), type.a("tipo"));
+        dependencias(type.a("err"), type.a("ts"), type.a("id"));
+        
+        calculo(type.a("tsh"), SEMFUN_ASIGNATION);
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                ts.putType((String) args[1].valor(), (Type) args[2].valor());
+
+                return ts;
+            }
+        });
+        calculo(type.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
@@ -245,14 +292,31 @@ public final class Attribution extends Atribucion {
 
     public TAtributos type_R1 (TAtributos typeDesc, String ident) {
         regla("Type -> TIPO TypeDesc IDENT");
-        TAtributos attr = atributosPara("Type");
+        TAtributos attr = atributosPara("Type", "ts", "id", "clase", "nivel", "tipo");
+        Attributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        dependencias(attr.a("id"), lexIdent);
+        // TODO ¿son dependencias si no se usa?
+        // dependencias(attr.a("clase"), a("type"));
+        // dependencias(attr.a("nivel"), whatever);
+
+        // TODO para Dani
+        // Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)>
+
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        calculo(attr.a("id"), SEMFUN_ASIGNATION);
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
 
         return attr;
     }
 
     public TAtributos type_R2 () {
         regla("Type -> $");
-        TAtributos attr = atributosPara("Type");
+        TAtributos attr = atributosPara("Type", "ts", "tsh", "err");
+        dependencias(type.a("type"), type.a("type"));
+
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
@@ -261,7 +325,14 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sVars_R1 (TAtributos vars) {
         regla("SVars -> VARS ILLAVE Vars FLLAVE");
-        TAtributos attr = atributosPara("SVars");
+        TAtributos attr = atributosPara("SVars", "tsh", "ts", "err");
+        dependencias(vars.a("tsh"), attr.a("tsh"));
+        dependencias(attr.a("ts"), vars.a("ts"));
+        dependencias(attr.a("err"), vars.a("err"));
+
+        calculo(vars.a("tsh"), SEMFUN_ASIGNATION);
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        calculo(attr.a("err"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -269,10 +340,10 @@ public final class Attribution extends Atribucion {
     public TAtributos sVars_R2 () {
         regla("SVars -> $");
         TAtributos attr = atributosPara("SVars", "ts", "tsh");
-
-        // SVars.ts
         dependencias(attr.a("ts"), attr.a("tsh"));
+
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
@@ -281,7 +352,11 @@ public final class Attribution extends Atribucion {
 
     public TAtributos vars_R1 (TAtributos vars_1, TAtributos var) {
         regla("Vars -> Vars PYC Var");
-        TAtributos attr = atributosPara("Vars");
+        TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir");
+        dependencias(vars_1.a("tsh"), attr.a("tsh"));
+        dependencias(var.a("tsh"), vars_1.a("ts"));
+        dependencias(attr.a("ts"), var.a("ts"), var.a("id"), attr.a("dir"), var.a("tipo"));
+
 
         return attr;
     }
@@ -1035,4 +1110,5 @@ public final class Attribution extends Atribucion {
 
         return attr;
     }
+
 }
