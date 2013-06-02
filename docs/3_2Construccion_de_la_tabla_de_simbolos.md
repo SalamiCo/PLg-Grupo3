@@ -172,7 +172,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Types1.dirh = Types0.dirh
         Type.tsh = Types1.ts
         Type.dirh = Types1.dir
-        Types0.dir = Type.dir + desplazamiento(Type.tipo, Types.id)
+        Types0.dir = Type.dir + desplazamiento(Type.tipo, Types0.id)
         Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, Types0.dir, Type.tipo)
 
     Types → Type
