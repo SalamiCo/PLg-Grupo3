@@ -1750,11 +1750,8 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
         // revisar el and:
         // Fact0.desig = Fact1.desig ˄ Shft.desig
-<<<<<<< HEAD
-        calculo(attr.a("desig"), SEMFUN_AND);
-=======
+
         calculo(attr.a("desig"), AndFun.INSTANCE);
->>>>>>> 3675a43288b2f501f9448befa65905a125226dbb
 
         return attr;
     }
@@ -1789,7 +1786,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig"));
-        calculo(attr.a("desig"), SEMFUN_ANDFUN); // TODO marina
+        calculo(attr.a("desig"), AndFun.INSTANCE);
 
         dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
         calculo(attr.a("cod"), SEMFUN_CONCAT);
