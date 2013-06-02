@@ -1243,10 +1243,10 @@ public final class Attribution extends Atribucion {
         calculo(expr.a("etqh"), new IncrementFun(6));
 
         dependencias(attr.a("etq"), expr.a("etq"));
-        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+        calculo(attr.a("etq"), new IncrementFun(1));
 
-        dependencias(attr.a("nparams"), attr.a("nparams")); // TODO lo de sumar las cosas
-        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
+        dependencias(attr.a("nparams"), attr.a("nparams"));
+        calculo(attr.a("nparams"), new IncrementFun(1));
 
         return attr;
     }
