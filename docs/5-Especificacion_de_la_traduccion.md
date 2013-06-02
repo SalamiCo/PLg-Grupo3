@@ -578,8 +578,3 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 	Op4 → menos
 		Op4.op = menos
 
-
-## Notas:
-
-- Averiguar cuando se parchea el ir-a(?) de la producción program. Es quizás Subprogs.etq + 1 ???  
-- Hacer los prologos y los epilogos 
