@@ -1757,14 +1757,43 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fact_R2 (TAtributos fact_1, TAtributos shft) {
         regla("Fact -> Fact AND Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etq");
+
+        // TODO
+        // Fact → Fact and Shft
+        // Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
+        // Fact1.tsh = Fact0.tsh
+        // Shft.tsh = Fact0.tsh
+        // Fact0.desig = Fact1.desig ˄ Shft.desig
+        // Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+        // Fact1.etqh = = Fact0.etqh
+        // Shft.etqh = Fact1.etq + 3
+        // Fact0.etq = Shft.etq
 
         return attr;
     }
 
     public TAtributos fact_R3 (TAtributos shft) {
         regla("Fact -> Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), shft.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("tsh"), attr.a("tsh"));
+        calculo(shft.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), shft.a("desig"));
+        calculo(attr.a("desig"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), shft.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("etqh"), attr.a("etqh"));
+        calculo(shft.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), shft.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
