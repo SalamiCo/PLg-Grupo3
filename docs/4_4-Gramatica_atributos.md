@@ -282,10 +282,12 @@
 		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(Expr.tsh, ident.lex)
 
 	Desig → Desig icorchete Expr fcorchete
+		Desig1.tsh = Desig0.tsh
 		Desig0.tipo = Desig1.tipo
 		Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
 
 	Desig → Desig barrabaja litnat
+		Desig1.tsh = Desig0.tsh
 		Desig0.tipo = Desig1.tipo
 		Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
 
