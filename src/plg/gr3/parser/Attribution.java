@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import java_cup.runtime.Symbol;
+import plg.gr3.data.BinaryOperator;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
@@ -954,12 +955,12 @@ public final class Attribution extends Atribucion {
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
 
-
         // TODO for Daniel Escoz Solana. Producción:
-        //     Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
+        // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
 
         // TODO for Daniel Escoz Solana.
-        // dependencias(attr.a("cod"), expr.a("cod"), desig.a("dir"), a(new IndirectStoreInstruction()), a(new LoadInstruction(desig.a("dir").valor())));
+        // dependencias(attr.a("cod"), expr.a("cod"), desig.a("dir"), a(new IndirectStoreInstruction()), a(new
+// LoadInstruction(desig.a("dir").valor())));
         // calculo(attr.a("cod"), );
 
         dependencias(desig.a("etqh"), attr.a("etqh"));
@@ -969,9 +970,9 @@ public final class Attribution extends Atribucion {
         calculo(expr.a("etqh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), expr.a("etq"));
-        
-        //TODO pal pecho de Dani
-        calculo(attr.a("etq"), new SemFunWhatever!);
+
+        // TODO pal pecho de Dani
+//        calculo(attr.a("etq"), new SemFunWhatever!);
 
         return attr;
     }
@@ -1258,22 +1259,38 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParam_R1 (Symbol ident, TAtributos expr) {
         regla("RParam -> IDENT ASIG Expr");
-        TAtributos attr = atributosPara("RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh");
+        TAtributos attr =
+            atributosPara(
+                "RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog", "tipo", "desig");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("err"), expr.a("err"));
-        calculo(attr.a("err"), SEMFUN_ERRORS); // TODO ver como se hacen el atb error
+        // calculo(attr.a("err"), SEMFUN_ERRORS); // TODO ver como se hacen el atb error
+
+        dependencias(
+            attr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprog"), expr.a("tipo"),
+            expr.a("desig"));
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                // TODO
+
+                return false;
+            }
+        });
 
         dependencias(expr.a("etqh"), attr.a("etqh"));
         calculo(expr.a("etqh"), new IncrementFun(6));
 
         dependencias(attr.a("etq"), expr.a("etq"));
-        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+        calculo(attr.a("etq"), new IncrementFun(1));
 
-        dependencias(attr.a("nparams"), attr.a("nparams")); // TODO lo de sumar las cosas
-        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
+        dependencias(attr.a("nparams"), attr.a("nparams"));
+        calculo(attr.a("nparams"), new IncrementFun(1));
 
         return attr;
     }
@@ -1566,6 +1583,8 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("err"), identLex, attr.a("tsh"));
         // DANI calculo(attr.a("err"), );
 
+        // DANI dependencias y calculo de cod
+
         return attr;
     }
 
@@ -1662,7 +1681,30 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fact_R1 (TAtributos fact_1, TAtributos op2, TAtributos shft) {
         regla("Fact -> Fact Op2 Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig");
+
+        dependencias(attr.a("tipo"), fact_1.a("tipo"), op2.a("op"), shft.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type1 = (Type) args[0].valor();
+                BinaryOperator op = (BinaryOperator) args[1].valor();
+                Type type2 = (Type) args[2].valor();
+
+                return op.getApplyType(type1, type2);
+            }
+        });
+
+        dependencias(fact_1.a("tsh"), attr.a("tsh"));
+        calculo(fact_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("tsh"), attr.a("tsh"));
+        calculo(shft.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
+        // revisar el and:
+        //       Fact0.desig = Fact1.desig ˄ Shft.desig
+        calculo(attr.a("desig"), SEMFUN_AND);
 
         return attr;
     }
@@ -1685,7 +1727,10 @@ public final class Attribution extends Atribucion {
 
     public TAtributos shft_R1 (TAtributos unary, TAtributos op3, TAtributos shft_1) {
         regla("Shft -> Unary Op3 Shft");
-        TAtributos attr = atributosPara("Shft");
+        TAtributos attr = atributosPara("Shft", "tsh", "desig", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), desig_1.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
 
         return attr;
     }
