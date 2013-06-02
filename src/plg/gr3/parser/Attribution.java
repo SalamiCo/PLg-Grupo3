@@ -5,11 +5,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import java_cup.runtime.Symbol;
+import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
+import plg.gr3.data.Value;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
+import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.StopInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
@@ -427,7 +431,7 @@ public final class Attribution extends Atribucion {
     public TAtributos type_R1 (TAtributos typeDesc, Symbol ident) {
         regla("Type -> TIPO TypeDesc IDENT");
         TAtributos attr = atributosPara("Type", "ts", "id", "clase", "nivel", "tipo");
-        Attributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
+        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
         dependencias(attr.a("ts"), attr.a("tsh"));
         dependencias(attr.a("id"), lexIdent);
         // TODO ¿son dependencias si no se usa?
@@ -448,7 +452,7 @@ public final class Attribution extends Atribucion {
     public TAtributos type_R2 () {
         regla("Type -> $");
         TAtributos attr = atributosPara("Type", "ts", "tsh", "err");
-        dependencias(type.a("type"), type.a("type"));
+        dependencias(attr.a("ts"), attr.a("tsh"));
 
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
         calculo(attr.a("err"), SEMFUN_ERRORS);
@@ -490,14 +494,53 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir");
         dependencias(vars_1.a("tsh"), attr.a("tsh"));
         dependencias(var.a("tsh"), vars_1.a("ts"));
-        dependencias(attr.a("ts"), var.a("ts"), var.a("id"), attr.a("dir"), var.a("tipo"));
+        dependencias(attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), attr.a("dir"), var.a("tipo"));
+
+        calculo(vars_1.a("tsh"), SEMFUN_ASIGNATION);
+        calculo(var.a("tsh"), SEMFUN_ASIGNATION);
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                String ident = (String) args[1].valor();
+                Scope scope = (Scope) args[2].valor();
+                int address = (int) args[3].valor();
+                Type type = (Type) args[4].valor();
+                ts.putVariable(ident, scope, address, type);
+
+                return ts;
+            }
+        });
+
+        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos vars_R2 (TAtributos var) {
         regla("Vars -> Var");
-        TAtributos attr = atributosPara("Vars");
+        TAtributos attr = atributosPara("Vars", "tsh", "ts", "err");
+        dependencias(var.a("tsh"), attr.a("tsh"));
+        dependencias(attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), var.a("dir"), var.a("tipo"));
+        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"));
+
+        calculo(var.a("tsh"), SEMFUN_ASIGNATION);
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                String ident = (String) args[1].valor();
+                Scope scope = (Scope) args[2].valor();
+                int address = (int) args[3].valor();
+                Type type = (Type) args[4].valor();
+                ts.putVariable(ident, scope, address, type);
+
+                return ts;
+            }
+        });
+        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
@@ -506,14 +549,30 @@ public final class Attribution extends Atribucion {
 
     public TAtributos var_R1 (TAtributos typeDesc, Symbol ident) {
         regla("Var -> VAR TypeDesc IDENT");
-        TAtributos attr = atributosPara("Var");
+        TAtributos attr = atributosPara("Var", "tsh", "id", "nivel", "tipo");
+        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        dependencias(attr.a("id"), lexIdent);
+        dependencias(attr.a("nivel"), a(Scope.GLOBAL));
+        dependencias(attr.a("tipo"), typeDesc.a("tipo"), attr.a("id"));
+
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        calculo(attr.a("id"), SEMFUN_ASIGNATION);
+        calculo(attr.a("nivel"), SEMFUN_ASIGNATION);
+        // TODO para Dani. Oh dear god of PLg, please do me (wink, wink).
+        // Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
+        // si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
 
         return attr;
     }
 
     public TAtributos var_R2 () {
         regla("Var -> $");
-        TAtributos attr = atributosPara("Var");
+        TAtributos attr = atributosPara("Var", "ts", "tsh", "err");
+        dependencias(attr.a("ts"), attr.a("tsh"));
+
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
