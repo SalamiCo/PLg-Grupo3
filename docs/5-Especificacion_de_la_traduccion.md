@@ -294,9 +294,16 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Subprogs.etq = Subprog.etq
 
 	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-		Subprog.cod = prologo SInsts.cod || epilogo
-		SInsts.etqh = Subprog.etqh + num inst prologo 
-		Subprog.etq = SInsts.etq + num inst epilogo
+		Subprog.cod = prologo SInsts.cod 
+					//Restaurar la cima de la pila 
+						|| apila_dir(1) || apila(3) ||  menos || desapila_dir(0)
+					//Restaurar la base
+						|| apila_dir(1) || apila_ind || desapila(1) || desapila
+					// cargar la direccion de retorno 
+						apila_dir(0) || apila(1) || mas || apila_ind || ir_ind 
+
+		SInsts.etqh = Subprog.etqh 
+		Subprog.etq = SInsts.etq + 3
 
 	SInsts → instructions illave Insts fllave
 		SInsts.cod = Insts.cod
@@ -369,7 +376,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 	InstCall → call ident lpar SRParams rpar
 		//Salvar el contador del programa actual
-			apila_dir(0) || apila(1) || mas || desapila-ret
+			apila_dir(0) || apila(1) || mas || desapila-ret //TODO mirar si hay que sumar 1 o dos
 		// Salvar el registro base
 			apila_dir(0) || apila(2) || mas || apila_dir(0) || desapila_ind
 		// Modifica la cima de la pila
