@@ -502,8 +502,16 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // DANI for Daniel Escoz Solana
-        // Types.dir = Type.dir + desplazamiento(Type.tipo, Type.id)
+        dependencias(attr.a("dir"), type.a("dir"), type.a("tipo"));
+        calculo(attr.a("dir"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                int varDir = (Integer) args[0].valor();
+                Type type = (Type) args[1].valor();
+
+                return varDir + type.getSize();
+            }
+        });
 
         dependencias(type.a("err"), type.a("ts"), type.a("id"));
         calculo(type.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
