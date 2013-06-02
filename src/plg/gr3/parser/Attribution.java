@@ -271,7 +271,7 @@ public final class Attribution extends Atribucion {
         dependencias(type.a("tsh"), attr.a("tsh"));
         dependencias(attr.a("ts"), type.a("ts"), type.a("id"), type.a("tipo"));
         dependencias(type.a("err"), type.a("ts"), type.a("id"));
-        
+
         calculo(type.a("tsh"), SEMFUN_ASIGNATION);
         calculo(attr.a("ts"), new SemFun() {
 
@@ -301,7 +301,8 @@ public final class Attribution extends Atribucion {
         // dependencias(attr.a("nivel"), whatever);
 
         // TODO para Dani
-        // Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)>
+        // Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc),
+// Type.id)>
 
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
         calculo(attr.a("id"), SEMFUN_ASIGNATION);
@@ -356,7 +357,6 @@ public final class Attribution extends Atribucion {
         dependencias(vars_1.a("tsh"), attr.a("tsh"));
         dependencias(var.a("tsh"), vars_1.a("ts"));
         dependencias(attr.a("ts"), var.a("ts"), var.a("id"), attr.a("dir"), var.a("tipo"));
-
 
         return attr;
     }
@@ -762,7 +762,6 @@ public final class Attribution extends Atribucion {
     }
 
     // FParams
-
     public TAtributos fParams_R1 (TAtributos fParams_1, TAtributos fParam) {
         regla("FParams -> FParams COMA FParam");
         TAtributos attr = atributosPara("FParams");
@@ -772,7 +771,30 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParams_R2 (TAtributos fParam) {
         regla("FParams -> FParam");
-        TAtributos attr = atributosPara("FParams");
+        TAtributos attr = atributosPara("FParams", "tsh", "ts", "id", "dir", "tipo", "clase", "err");
+
+        dependencias(fParam.a("tsh"), attr.a("tsh"));
+        calculo(fParam.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                String ident = (String) args[1].valor();
+                ClassDec cd = (ClassDec) args[2].valor();
+                int address = (int) args[3].valor();
+                Type type = (Type) args[4].valor();
+
+                ts.putParam(ident, address, type, cd == ClassDec.PARAM_REF);
+
+                return ts;
+            }
+        });
+
+        dependencias(attr.a("err"), fParam.a("ts"), fParam.a("id"), a(Scope.LOCAL));
+        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
