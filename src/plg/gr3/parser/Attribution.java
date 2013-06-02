@@ -1,19 +1,14 @@
 package plg.gr3.parser;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import java_cup.runtime.Symbol;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
-import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
-import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.StopInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
@@ -997,10 +992,11 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 SymbolTable ts = (SymbolTable) args[0].valor();
                 String ident = (String) args[1].valor();
-                Scope scope = (Scope) args[2].valor();
+                ClassDec cd = (ClassDec) args[2].valor();
                 int address = (int) args[3].valor();
                 Type type = (Type) args[4].valor();
-                ts.putVariable(ident, scope, address, type);
+                
+                ts.putParam(ident, address, type, cd == ClassDec.PARAM_REF);
 
                 return ts;
             }
@@ -1023,14 +1019,26 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParam_R1 (TAtributos typeDesc, Symbol ident) {
         regla("FParam -> TypeDesc IDENT");
-        TAtributos attr = atributosPara("FParam");
+        TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
+        
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        
+        dependencias(attr.a("id"), identLex);
+        calculo(attr.a("id"), SEMFUN_ASIGNATION);
+        
+        dependencias(attr.a("clase"), a(ClassDec.PARAM_VALUE));
+        calculo(attr.a("clase"), SEMFUN_ASIGNATION);
+        
+        //dependencias(attr.a("tipo"), /*TODO*/);
 
         return attr;
     }
 
     public TAtributos fParam_R2 (TAtributos typeDesc, Symbol ident) {
         regla("FParam -> TypeDesc MUL IDENT");
-        TAtributos attr = atributosPara("FParams");
+        TAtributos attr = atributosPara("FParam");
 
         return attr;
     }
