@@ -87,6 +87,11 @@ public final class Attribution extends Atribucion {
             return Collections.unmodifiableList(code);
         }
     };
+    
+    /** Función semántica para añadir en la tabla de símbolos */
+    private static final SemFun SEMFUN_ADD = new SemFun() {
+        
+    }
 
     /**
      * @param obj
@@ -526,7 +531,7 @@ public final class Attribution extends Atribucion {
         });
 
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
-
+        
         return attr;
     }
 
@@ -990,14 +995,33 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sfParams_R1 (TAtributos fParams) {
         regla("SFParams -> FParams");
-        TAtributos attr = atributosPara("SFParams");
+        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "err");
+
+        // FParams
+        dependencias(fParams.a("tsh"), attr.a("tsh"));
+        calculo(fParams.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), fParams.a("ts"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("dir"), fParams.a("dir"));
+        calculo(attr.a("dir"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), fParams.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
 
     public TAtributos sfParams_R2 () {
         regla("SFParams -> $");
-        TAtributos attr = atributosPara("SFParams");
+        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "err");
+
+        // sfParams
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
@@ -1006,7 +1030,32 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParams_R1 (TAtributos fParams_1, TAtributos fParam) {
         regla("FParams -> FParams COMA FParam");
-        TAtributos attr = atributosPara("FParams");
+        TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "id", "clase", "tipo");
+
+        dependencias(fParams_1.a("tsh"), attr.a("tsh"));
+        calculo(fParams_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(fParam.a("tsh"), fParams_1.a("tsh"));
+        calculo(fParam.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                String ident = (String) args[1].valor();
+                Scope scope = (Scope) args[2].valor();
+                int address = (int) args[3].valor();
+                Type type = (Type) args[4].valor();
+                ts.putVariable(ident, scope, address, type);
+
+                return ts;
+            }
+        });
+
+        dependencias(attr.a("err"), fParam.a("ts"), fParam.a("id"), a(Scope.LOCAL));
+        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
