@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import java_cup.runtime.Symbol;
+import plg.gr3.data.BinaryOperator;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
@@ -1725,7 +1726,30 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fact_R1 (TAtributos fact_1, TAtributos op2, TAtributos shft) {
         regla("Fact -> Fact Op2 Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig");
+
+        dependencias(attr.a("tipo"), fact_1.a("tipo"), op2.a("op"), shft.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type1 = (Type) args[0].valor();
+                BinaryOperator op = (BinaryOperator) args[1].valor();
+                Type type2 = (Type) args[2].valor();
+
+                return op.getApplyType(type1, type2);
+            }
+        });
+
+        dependencias(fact_1.a("tsh"), attr.a("tsh"));
+        calculo(fact_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("tsh"), attr.a("tsh"));
+        calculo(shft.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
+        // revisar el and:
+        // Fact0.desig = Fact1.desig ˄ Shft.desig
+        calculo(attr.a("desig"), SEMFUN_AND);
 
         return attr;
     }
