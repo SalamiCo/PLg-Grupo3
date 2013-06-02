@@ -991,6 +991,20 @@ public final class Attribution extends Atribucion {
         calculo(fParam.a("tsh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                String ident = (String) args[1].valor();
+                Scope scope = (Scope) args[2].valor();
+                int address = (int) args[3].valor();
+                Type type = (Type) args[4].valor();
+                ts.putVariable(ident, scope, address, type);
+
+                return ts;
+            }
+        });
 
         dependencias(attr.a("err"), fParam.a("ts"), fParam.a("id"), a(Scope.LOCAL));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
