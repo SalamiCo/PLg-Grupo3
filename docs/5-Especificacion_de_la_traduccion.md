@@ -42,7 +42,7 @@ La dirección -1 en CPila indica que la pila está vacía.
 
 ### 5.1.3.  Repertorio de instrucciones
 
- * Operaciones con la Pila:
+#### Operaciones con la Pila:
 
 apila(valor)
 >CPila ← CPila + 1<br/>
@@ -81,7 +81,7 @@ copia
 >Pila[CPila] ← Pila[CPila-1]<br/>
 >CProg ← CProg + 1<br/>
 
- * Saltos
+#### Saltos
 
 ir-a(direccion)
 >CProg ← direccion<br/>
@@ -96,7 +96,7 @@ ir-f(direccion)
 >si no: CProg ← direccion<br/>
 >CPila ← CPila-1<br/>
 
- * Operaciones aritméticas
+#### Operaciones aritméticas
 
 mas
 >si S1 = 0: Pila[CPila - 1] ← Pila[CPila - 1] + Pila[CPila]<br/>
@@ -131,7 +131,7 @@ menos (unario)
 >Pila[CPila] ← - Pila[CPila]<br/>
 >CProg ← CProg + 1<br/>
 
- * Operaciones de desplazamiento
+#### Operaciones de desplazamiento
 
 lsh
 >Pila[CPila - 1] ← Pila[CPila - 1] << Pila[CPila]<br/>
@@ -143,7 +143,7 @@ rsh
 >CPila ← CPila - 1<br/>
 >CProg ← CProg + 1<br/>
 
- * Operaciones de comparación
+#### Operaciones de comparación
 
 igual
 >Pila[CPila - 1] ← Pila[CPila - 1] == Pila[CPila]<br/>
@@ -175,7 +175,7 @@ menoig
 >CPila ← CPila - 1<br/>
 >CProg ← CProg + 1<br/>
 
- * Operaciones lógicas
+#### Operaciones lógicas
 
 and
 >Pila[CPila - 1] ← Pila[CPila - 1] && Pila[CPila]<br/>
@@ -191,7 +191,7 @@ not
 >Pila[CPila] ← ! Pila[CPila]<br/>
 >CProg ← CProg + 1<br/>
 
- * Operaciones de conversión
+#### Operaciones de conversión
 
 castFloat
 >Pila[CPila] ← (float) Pila[CPila]<br/>
@@ -209,7 +209,7 @@ castChar
 >Pila[CPila] ← (char) Pila[CPila]<br/>
 >CProg ← CProg + 1<br/>
 
- * Operaciones de Entrada-Salida
+#### Operaciones de Entrada-Salida
 
 in(type)
 >CPila ← CPila + 1<br/>
@@ -221,7 +221,7 @@ out
 >CPila ← CPila - 1<br/>
 >CProg ← CProg + 1<br/>
 
- * Operaciones de intercambio
+#### Operaciones de intercambio
 
 swap1
 >si S1 = 0: S1 ← 1<br/>
@@ -231,7 +231,7 @@ swap2
 >si S2 = 0: S2 ← 1<br/>
 >si S2 = 1: S2 ← 0<br/>
 
- * Otras operaciones
+#### Otras operaciones
 
 stop
 >P ← 1<br/>
@@ -387,11 +387,18 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		RParam.etq = RParam.etqh + 1 
 
 	Desig → ident
-		Desig.cod = si (Desig.tsh[ident.lex].nivel == local)  entonces apila-dir(Mem[1])
-					si (Desig.tsh[ident.lex].nivel == global) entonces apilar-dir(0) ||
-					apila(Desig.tsh[ident.lex].dir) ||
-					mas
-		Desig.etq = Desig.etqh + 3
+		Desig.cod = si (Desig.tsh[ident.lex].nivel == global) entonces 
+						apila(Desig.tsh[ident.lex].dir)
+						Desig.etq = Desig.etq + 1 
+
+					si no // el nivel el local
+						si (Desig.tsh[ident.lex].clase == var) entonces 
+							apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas
+							Desig.etq = Desig.etq + 3 
+
+						si no si (Desig.tsh[ident.lex].clase == pvariable ) 
+							apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas || apila_ind 
+							Desig.etq = Desig.etq + 4 
 
 	Desig → Desig icorchete Expr fcorchete
 		Desig0.cod = Desig1.cod || Expr.cod || apila(tamTipo(Desig1.type)) || mul || mas

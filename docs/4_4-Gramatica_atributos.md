@@ -284,7 +284,7 @@
 		Expr.type = tipoFunc(Term0.type, Op0.op, Term1.type)
 		Term0.tsh = Expr.tsh
 		Term1.tsh = Expr.tsh
-		Expr.desig = Term0.desig /\ Term1.desig
+		Expr.desig = Term0.desig ˄ Term1.desig
 	
 	Expr → Term
 		Expr.type = Term.type
@@ -296,13 +296,13 @@
 		Term0.type = tipoFunc(Term1.type, Op1.op, Fact.type)
 		Term1.tsh = Term0.tsh
 		Fact.tsh = Term0.tsh
-		Term0.desig = Term1.desig /\ Fact.desig
+		Term0.desig = Term1.desig ˄ Fact.desig
 
 	Term → Term or Fact
 		Term0.type = tipoFunc(Term1.type, or, Fact.type)
 		Term1.tsh = Term0.tsh
 		Fact.tsh = Term0.tsh
-		Term0.desig = Term1.desig /\ Fact.desig
+		Term0.desig = Term1.desig ˄ Fact.desig
 	
 	Term → Fact
 		Term.type = Fact.type
@@ -313,13 +313,13 @@
 		Fact0.type = tipoFunc(Fact1.type, Op2.op, Shft.type) 
 		Fact1.tsh = Fact0.tsh
 		Shft.tsh = Fact0.tsh
-		Fact0.desig = Fact1.desig /\ Shft.desig
+		Fact0.desig = Fact1.desig ˄ Shft.desig
 
 	Fact → Fact and Shft
 		Fact0.type = tipoFunc(Fact1.type, and, Shft.type)
 		Fact1.tsh = Fact0.tsh
 		Shft.tsh = Fact0.tsh
-		Fact0.desig = Fact1.desig /\ Shft.desig
+		Fact0.desig = Fact1.desig ˄ Shft.desig
 	
 	Fact → Shft
 		Fact.type = Shft.type
@@ -330,7 +330,7 @@
 		Shft0.type = tipoFunc(Unary.type, Op3.op, Shft.type) 
         Unary.tsh = Shft0.tsh
 		Shft1.tsh = Shft0.tsh
-		Shft0.desig = Unary.desig /\ Shft1.desig
+		Shft0.desig = Unary.desig ˄ Shft1.desig
 	
 	Shft → Unary
 		Shft.type = Unary.type
