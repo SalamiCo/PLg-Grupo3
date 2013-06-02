@@ -15,10 +15,13 @@ import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
 import plg.gr3.parser.semfun.IncrementFun;
+import plg.gr3.vm.instr.IndirectStoreInstruction;
+import plg.gr3.vm.instr.InputInstruction;
 import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.OutputInstruction;
 import plg.gr3.vm.instr.StopInstruction;
+import plg.gr3.vm.instr.StoreInstruction;
 import plg.gr3.vm.instr.Swap1Instruction;
 import plg.gr3.vm.instr.Swap2Instruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
@@ -989,13 +992,16 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // TODO for Daniel Escoz Solana.
-        dependencias(attr.a("cod"), expr.a("cod"), desig.a("dir"), desig.a("dir"));
+        dependencias(attr.a("cod"), expr.a("cod"), desig.a("cod"), desig.a("tipo"));
         calculo(attr.a("cod"), new SemFun() {
+            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
-                // TODO DANI
-                return null;
+                List<Instruction> codeExpr = (List<Instruction>) args[0].valor();
+                List<Instruction> codeDesig = (List<Instruction>) args[1].valor();
+                Type type = (Type) args[2].valor();
+
+                return SEMFUN_CONCAT.eval(a(codeExpr), a(codeDesig), a(new IndirectStoreInstruction(type)));
             }
         });
 
@@ -1022,14 +1028,21 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("err"), SEMFUN_ERRORS);
 
         dependencias(attr.a("cod"), desig.a("tipo"), desig.a("dir"));
-        // TODO
-        calculo(attr.a("cod"), SEMFUN_CONCAT);
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
+                Integer addr = (Integer) args[1].valor();
+
+                return SEMFUN_CONCAT.eval(a(new InputInstruction(type)), a(new StoreInstruction(addr, type)));
+            }
+        });
 
         dependencias(desig.a("etqh"), attr.a("etq"));
-        // TODO calculo
+        calculo(desig.a("etqh"), new IncrementFun(1));
 
         dependencias(attr.a("etq"), desig.a("etq"));
-        // TODO
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
@@ -1051,7 +1064,7 @@ public final class Attribution extends Atribucion {
         calculo(expr.a("etqh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), expr.a("etqh"));
-        // TODO sumar
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
@@ -1066,7 +1079,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), attr.a("etqh"));
-        // TODO sumar
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
@@ -1081,7 +1094,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), attr.a("etqh"));
-        // TODO suma
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
