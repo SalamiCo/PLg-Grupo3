@@ -1644,6 +1644,26 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("desig"), a(false));
         calculo(attr.a("desig"), SEMFUN_ASIGNATION);
 
+        dependencias(attr.a("tipo"), term_1.a("tipo"), op0.a("op"), term_2.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type1 = (Type) args[0].valor();
+                BinaryOperator op = (BinaryOperator) args[1].valor();
+                Type type2 = (Type) args[2].valor();
+
+                return op.getApplyType(type1, type2);
+            }
+        });
+
+        dependencias(term_1.a("tsh"), attr.a("tsh"));
+        calculo(term_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(term_2.a("tsh"), attr.a("tsh"));
+        calculo(term_2.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), term_1.a("desig"), term_2.a("desig"));
+
         return attr;
     }
 
@@ -1703,7 +1723,7 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
         // revisar el and:
-        //       Fact0.desig = Fact1.desig ˄ Shft.desig
+        // Fact0.desig = Fact1.desig ˄ Shft.desig
         calculo(attr.a("desig"), SEMFUN_AND);
 
         return attr;
