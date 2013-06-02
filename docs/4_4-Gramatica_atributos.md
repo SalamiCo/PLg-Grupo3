@@ -35,6 +35,9 @@
         Const.clase = const
         Const.nivel = global
         Const.tipo = <t:TPrim.tipo, tam:1>
+
+        // TODO
+        // añadir valor aquí
         Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
 
     Const → ɛ
@@ -117,7 +120,7 @@
     SSubprogs → subprograms illave fllave 
 
     SSubprogs → ɛ
-        SSubprogs = false
+        SSubprogs.err = false
 
     Subprogs → Subprogs Subprog
         Subprogs1.tsh = Subprogs0.tsh
@@ -188,7 +191,7 @@
 	Insts → Insts pyc Inst
 		Insts1.tsh = Insts0.tsh
 		Inst.tsh = Insts0.tsh
-		SInsts.err = Insts.err ∨ Inst.err
+		Insts0.err = Insts1.err ∨ Inst.err
 
 	Insts → Inst
 		Inst.tsh = Insts.tsh
