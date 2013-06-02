@@ -1545,13 +1545,29 @@ public final class Attribution extends Atribucion {
         calculo(expr.a("etqh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), expr.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(3));
 
         return attr;
     }
 
     public TAtributos desig_R3 (TAtributos desig_1, Symbol litnat) {
         regla("Desig -> Desig BARRABAJA LITNAT");
-        TAtributos attr = atributosPara("Desig");
+        TAtributos attr = atributosPara("Desig", "tipo", "err", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), desig_1.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), desig_1.a("err")); // TODO Falta comprobar poner lo de
+                                                       // tamañoCorrecto()
+        calculo(attr.a("err"), SEMFUN_ERRORS);
+
+        // TODO Falta hacer todo lo del código
+
+        dependencias(desig_1.a("etqh"), attr.a("etqh"));
+        calculo(desig_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), desig_1.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(2));
 
         return attr;
     }
