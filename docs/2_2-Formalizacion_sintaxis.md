@@ -2,7 +2,9 @@ Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fi
 
 SConsts → consts illave Consts fllave | ɛ
 Consts → Consts pyc Const | Const
-Const → const TPrim ident asig Lit | ɛ
+Const → const TPrim ident asig ConstLit | ɛ
+
+ConstLit → Lit | menos Lit
 
 STypes → tipos illave Types fllave | ɛ
 Types → Types pyc Type | Type

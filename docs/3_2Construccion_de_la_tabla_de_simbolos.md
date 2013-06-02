@@ -21,6 +21,15 @@ existeID(ts:TS, id:String) : Boolean
 obtieneCtipo(typeDesc:TypeDesc) : CTipo
 >Dado un descriptor de tipos devuelve el CTipo asociado
 
+stringToNat(v:String) : Natural 
+>Convierte el atributo pasado como string a un valor natural.
+
+stringToFloat(v:String) : Float 
+>Convierte el atributo pasado como string a un valor decimal.
+
+stringToChar(v:String) : Character 
+>Convierte el atributo pasado como string a un carácter
+
 
 ## CTipo
 CTipo es el conjunto de propiedades con la información necesaria del tipo. CTipo guarda información diferente dependiendo de si es un tipo construido, un array, una tupla, una variable de todo lo anterior dicho o bien una variable o constante de tipo básico. 
@@ -129,18 +138,24 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo, Const.valor)
 
 
-    Const → const TPrim ident asig Lit 
+    Const → const TPrim ident asig ConstLit 
         Const.ts = Const.tsh
         Const.dir = Const.dirh
         Const.id = ident.lex
         Const.clase = const
         Const.nivel = global
-        Const.tipo = <t:TPrim.type, tam:1>
-        Const.valor = Lit.valor
+        Const.tipo = <t:TPrim.tipo, tam:1>
+        Const.valor = ConstLit.valor
 
     Const → ɛ
         Const.ts = Const.tsh
         Const.dir = Const.dirh
+
+    ConstLit → Lit
+        ConstLit.valor = Lit.valor
+
+    ConstLit → menos Lit
+        ConstList.valor = -(Lit.valor)
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
@@ -209,7 +224,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Var.id = ident.lex
         Var.clase = Var
         Var.nivel = global
-        Var.tipo = (si (TypeDesc.Type == TPrim) {<t:TypeDesc.type, tam:1>}
+        Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
 
     Var → ɛ
@@ -267,7 +282,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Fparam.id = ident.lex
         FParam.clase = pvalor
         FParam.nivel = local
-        FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+        FParam.tipo = (si (TypeDesc.tipo== TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
 
     FParam → TypeDesc mul ident
@@ -276,9 +291,26 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Fparam.id = ident.lex
         FParam.clase = pvariable
         FParam.nivel = local
-        FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
+        FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: 1>} )
 
+    Lit → LitBool 
+        Lit.valor = LitBool.valor
 
+    Lit → LitNum
+        Lit.valor = LitNum.valor
 
+    Lit → litchar
+        Lit.valor = stringToChar(litchar)
 
+    LitBool → true 
+        LitBool.valor = true
+
+    LitBool → false
+        LitBool.valor = false
+
+    LitNum → litnat
+        LitNum.valor = stringToNat(litnat)
+
+    LitNum → litfloat
+        LitNum.valor = stringToFloat(litfloat)
