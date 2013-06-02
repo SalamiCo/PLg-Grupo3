@@ -294,7 +294,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Subprogs.etq = Subprog.etq
 
 	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-		Subprog.cod = prologo SInsts.cod 
+		Subprog.cod = SInsts.cod 
 					//Restaurar la cima de la pila 
 						|| apila_dir(1) || apila(3) ||  menos || desapila_dir(0)
 					//Restaurar la base
@@ -368,15 +368,16 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Inst.etq = Inst.etqh
 
 	ElseIf → else Insts endif 
+		ElseIf.cod = Inst.cod
 		Insts.etqh = ElseIf.etqh
 		ElseIf.etq = Insts.etq
 
 	ElseIf → endif
+		ElseIf.cod = []
 		ElseIf.etq = ElseIf.etqh
 
 	InstCall → call ident lpar SRParams rpar
-		//Salvar el contador del programa actual
-			apila_dir(0) || apila(1) || mas || desapila-ret //TODO mirar si hay que sumar 1 o dos
+		InstCall.cod = 
 		// Salvar el registro base
 			apila_dir(0) || apila(2) || mas || apila_dir(0) || desapila_ind
 		// Modifica la cima de la pila
@@ -384,6 +385,8 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 			|| SRParams || desapila
 		// Modificar la base
 			apila_dir(0) || apila(3) || mas || desapila_dir(1)
+		//Salvar el contador del programa actual
+			apila_dir(1) || apila(2) || menos || desapila-ret //TODO mirar si hay que sumar 1 o dos
 			|| ir_a(SRParams.tsh[ident.lex].dir)
 
 		SRParams.nparams = 0
@@ -400,21 +403,22 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 	SRParams → ɛ
 		SRParams.cod = []
 		SRParms.etq = SRParams.etqh
-		SRParams.nparams = SRParams.etq
+		SRParams.nparams = SRParams.nparamsh
 
 	RParams → RParams coma RParam 
 		RParams0.cod = RParams1.cod || RParam.cod
 		RParams1.etqh = RParams0.etqh
 		RParam.etqh = RParams1.etq
-		RParams0.etq = RParam.eqt 
-		RParams1.nparamsh = RParams0.nparamsh 
-		RParams0.nparams = RParams1.nparams + 1 
+		RParams.etq = RParam.etq  
+		RParams1.paramsh = RParams0.paramsh
+		RParam.paramsh = RParams1.params
+		RParams.params = RParam.params  
 
 	RParams → RParam 
 		RParams.cod = RParam.cod
 		RParam.etqh = RParams.etqh
 		RParams.etq = RParam.etq
-		Rparams.nparams = RParam.nparams
+		RParam.nparamsh = RParams.nparamsh
 		RParams.nparams = RParam.nparams
 
 	RParam → ident asig Expr

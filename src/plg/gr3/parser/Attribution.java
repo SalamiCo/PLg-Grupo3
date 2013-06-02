@@ -2,8 +2,6 @@ package plg.gr3.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
@@ -12,7 +10,6 @@ import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
-import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.StopInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
@@ -423,6 +420,10 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Types", "tsh", "ts", "err");
 
         dependencias(type.a("tsh"), attr.a("tsh"));
+
+        dependencias(attr.a("ts"), type.a("ts"), type.a("id"), type.a("tipo"));
+        dependencias(type.a("err"), type.a("ts"), type.a("id"));
+
         calculo(type.a("tsh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("ts"), type.a("ts"), type.a("id"), type.a("tipo"));
@@ -908,14 +909,36 @@ public final class Attribution extends Atribucion {
 
     public TAtributos elseIf_R1 (TAtributos insts) {
         regla("ElseIf -> ELSE Insts ENDIF");
-        TAtributos attr = atributosPara("ElseIf");
+        TAtributos attr = atributosPara("ElseIf", "tsh", "err", "cod", "etq", "etqh");
+
+        dependencias(insts.a("tsh"), attr.a("tsh"));
+        calculo(insts.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), insts.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS);
+
+        dependencias(attr.a("cod"), insts.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(insts.a("etqh"), attr.a("etqh"));
+        calculo(insts.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), insts.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
 
     public TAtributos elseIf_R2 () {
         regla("ElseIf -> ENDIF");
-        TAtributos attr = atributosPara("ElseIf");
+        TAtributos attr = atributosPara("ElseIf", "err", "cod", "etq", "etqh");
+
+        calculo(attr.a("err"), SEMFUN_ERRORS);
+
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etqh"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -933,14 +956,46 @@ public final class Attribution extends Atribucion {
 
     public TAtributos srParams_R1 (TAtributos rParams) {
         regla("SRParams -> RParams");
-        TAtributos attr = atributosPara("SRParams");
+        TAtributos attr =
+            atributosPara("SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh");
+
+        dependencias(rParams.a("tsh"), attr.a("tsh"));
+        calculo(rParams.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), rParams.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS);
+
+        dependencias(attr.a("cod"), rParams.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(rParams.a("etqh"), attr.a("etqh"));
+        calculo(rParams.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), rParams.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+
+        dependencias(rParams.a("nparamsh"), attr.a("nparamsh"));
+        calculo(rParams.a("nparamsh"), SEMFUN_ASIGNATION);
+
+        dependencias(rParams.a("nombresubprogh"), attr.a("nombresubprogh"));
+        calculo(rParams.a("nombresubprogh"), SEMFUN_ASIGNATION);
 
         return attr;
     }
 
     public TAtributos srParams_R2 () {
         regla("SRParams -> $");
-        TAtributos attr = atributosPara("SRParams");
+        TAtributos attr = atributosPara("SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams");
+
+        calculo(attr.a("err"), SEMFUN_ERRORS);
+
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("nparams"), attr.a("nparamsh"));
+        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -949,7 +1004,46 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParams_R1 (TAtributos rParams_1, TAtributos rParams) {
         regla("RParams -> RParams COMA RParam");
-        TAtributos attr = atributosPara("RParams");
+        TAtributos attr =
+            atributosPara("RParams", "tsh", "err", "cod", "nparamsh", "nparams", "nombresubprogh", "etqh", "etq");
+
+        dependencias(rParams_1.a("tsh"), attr.a("tsh"));
+        calculo(rParams_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(rParams.a("tsh"), rParams_1.a("ts"));
+        calculo(rParams.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), rParams.a("ts"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), rParams_1.a("err"), rParams.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS);
+
+        calculo(attr.a("cod"), SEMFUN_CONCAT); // TODO Preguntar como se hacian las cod para concatenar
+
+        dependencias(rParams_1.a("nparamsh"), attr.a("nparamsh"));
+        calculo(rParams_1.a("nparamsh"), SEMFUN_ASIGNATION);
+
+        dependencias(rParams.a("nparamsh"), rParams_1.a("nparams"));
+        calculo(rParams.a("nparams"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("nparams"), rParams.a("nparams"));
+        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
+
+        dependencias(rParams_1.a("etqh"), attr.a("etqh"));
+        calculo(rParams_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(rParams.a("etqh"), rParams_1.a("etq"));
+        calculo(rParams.a("etq"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), rParams.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+
+        dependencias(rParams_1.a("nombresubprogh"), attr.a("nombresubprogh"));
+        calculo(rParams_1.a("nombresubprogh"), SEMFUN_ASIGNATION);
+
+        dependencias(rParams.a("nombresubprogh"), attr.a("nombresubprogh"));
+        calculo(rParams.a("nombresubprogh"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -1066,7 +1160,6 @@ public final class Attribution extends Atribucion {
     }
 
     // FParams
-
     public TAtributos fParams_R1 (TAtributos fParams_1, TAtributos fParam) {
         regla("FParams -> FParams COMA FParam");
         TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "id", "clase", "tipo");
@@ -1084,10 +1177,11 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 SymbolTable ts = (SymbolTable) args[0].valor();
                 String ident = (String) args[1].valor();
-                Scope scope = (Scope) args[2].valor();
+                ClassDec cd = (ClassDec) args[2].valor();
                 int address = (int) args[3].valor();
                 Type type = (Type) args[4].valor();
-                ts.putVariable(ident, scope, address, type);
+
+                ts.putParam(ident, address, type, cd == ClassDec.PARAM_REF);
 
                 return ts;
             }
@@ -1101,7 +1195,30 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParams_R2 (TAtributos fParam) {
         regla("FParams -> FParam");
-        TAtributos attr = atributosPara("FParams");
+        TAtributos attr = atributosPara("FParams", "tsh", "ts", "id", "dir", "tipo", "clase", "err");
+
+        dependencias(fParam.a("tsh"), attr.a("tsh"));
+        calculo(fParam.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                String ident = (String) args[1].valor();
+                ClassDec cd = (ClassDec) args[2].valor();
+                int address = (int) args[3].valor();
+                Type type = (Type) args[4].valor();
+
+                ts.putParam(ident, address, type, cd == ClassDec.PARAM_REF);
+
+                return ts;
+            }
+        });
+
+        dependencias(attr.a("err"), fParam.a("ts"), fParam.a("id"), a(Scope.LOCAL));
+        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
@@ -1110,14 +1227,38 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParam_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("FParam -> TypeDesc IDENT");
-        TAtributos attr = atributosPara("FParam");
+        TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
+
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("id"), identLex);
+        calculo(attr.a("id"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("clase"), a(ClassDec.PARAM_VALUE));
+        calculo(attr.a("clase"), SEMFUN_ASIGNATION);
+
+        // dependencias(attr.a("tipo"), /*TODO*/);
 
         return attr;
     }
 
     public TAtributos fParam_R2 (TAtributos typeDesc, Lexeme ident) {
         regla("FParam -> TypeDesc MUL IDENT");
-        TAtributos attr = atributosPara("FParams");
+        TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
+
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("id"), identLex);
+        calculo(attr.a("id"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("clase"), a(ClassDec.VARIABLE));
+        calculo(attr.a("clase"), SEMFUN_ASIGNATION);
+
+        // dependencias(attr.a("tipo"), /*TODO*/);
 
         return attr;
     }
