@@ -1003,7 +1003,32 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParams_R2 (TAtributos rParam) {
         regla("RParams -> RParam");
-        TAtributos attr = atributosPara("RParams");
+        TAtributos attr =
+            atributosPara("RParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh");
+
+        dependencias(rParam.a("tsh"), attr.a("tsh"));
+        calculo(rParam.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), rParam.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(attr.a("err"), rParam.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS);
+
+        dependencias(rParam.a("etqh"), attr.a("etqh"));
+        calculo(rParam.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), rParam.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+
+        dependencias(rParam.a("nparamsh"), attr.a("nparamsh"));
+        calculo(rParam.a("nparamsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("nparams"), rParam.a("nparams"));
+        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
+
+        dependencias(rParam.a("nombresubprogh"), attr.a("nombresubprogh"));
+        calculo(rParam.a("nombresubprogh"), SEMFUN_ASIGNATION);
 
         return attr;
     }
