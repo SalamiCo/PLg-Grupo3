@@ -372,10 +372,10 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		SRParms.etq = SRParams.etqh
 
 	RParams → RParams coma RParam 
-		RParams.cod = RParams.cod || RParam.cod
-		RParams1.etqh = RParams.etqh
-		RParam.etqh = RParams.etq
-		RParams.etqh = RParam.eqt 
+		RParams0.cod = RParams1.cod || RParam.cod
+		RParams1.etqh = RParams0.etqh
+		RParam.etqh = RParams1.etq
+		RParams0.etq = RParam.eqt 
 
 	RParams → RParam 
 		RParams.cod = RParam.cod
@@ -383,7 +383,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		RParams.etq = RParam.etq
 
 	RParam → ident asig Expr
-		RParam.cod = apila(RParam.tsh[ident.lex].dir)||Expr.cod||mueve(numCeldas(Expr.type))
+		RParam.cod = apila(RParam.tsh[ident.lex].dir) || Expr.cod || mueve(numCeldas(Expr.type))
 		RParam.etq = RParam.etqh + 1 
 
 	Desig → ident
@@ -408,7 +408,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Expr0.cod = Term1.cod || Term2.cod || Op0.op
 		Term1.etqh = Expr.etqh 
 		Term2.etqh = Term1.etq
-		Expr.eth = Term2.etq + 1  
+		Expr.etq = Term2.etq + 1  
 
 	Expr → Term
 		Expr.cod = Term.cod
@@ -417,9 +417,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 	Term → Term Op1 Fact
 		Term0.cod = Term1.cod || Fact.cod || Op1.op
-		Term1.etqh = Fact.etqh 
+		Term1.etqh = Term0.etqh 
 		Fact.etqh = Term1.etq
-		Term.eth = Expr.etq + 1 
+		Term0.etq = Fact.etq + 1 
 
 	Term → Term or Fact
 		Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
@@ -436,7 +436,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Fact0.cod = Fact1.cod || Shft.cod || Op2.op
 		Fact1.etqh = Fact0.etqh 
 		Shft.etqh = Fact1.etq 
-		Term0.etq = Fact.etq + 1 
+		Term0.etq = Shft.etq + 1 
 
 	Fact → Fact and Shft
 		Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
@@ -450,9 +450,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Fact.etq = Shft.etq
 
 	Shft → Unary Op3 Shft
-		Shft.cod = Unary.cod || Shft.cod || Op3.op
-		Unary.etqh = Shft.etqh 
-		Shft.etqh = Unary.etq 
+		Shft0.cod = Unary.cod || Shft1.cod || Op3.op
+		Unary.etqh = Shft0.etqh 
+		Shft1.etqh = Unary.etq 
 		Shft0.etq = Shft1.etq + 1 
 
 	Shft → Unary
