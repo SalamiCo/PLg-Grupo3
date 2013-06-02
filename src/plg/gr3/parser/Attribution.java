@@ -1231,13 +1231,29 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParam_R1 (Symbol ident, TAtributos expr) {
         regla("RParam -> IDENT ASIG Expr");
-        TAtributos attr = atributosPara("RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh");
+        TAtributos attr =
+            atributosPara(
+                "RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog", "tipo", "desig");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("err"), expr.a("err"));
-        calculo(attr.a("err"), SEMFUN_ERRORS); // TODO ver como se hacen el atb error
+        // calculo(attr.a("err"), SEMFUN_ERRORS); // TODO ver como se hacen el atb error
+
+        dependencias(
+            attr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprog"), expr.a("tipo"),
+            expr.a("desig"));
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                // TODO
+
+                return false;
+            }
+        });
 
         dependencias(expr.a("etqh"), attr.a("etqh"));
         calculo(expr.a("etqh"), new IncrementFun(6));
@@ -1612,7 +1628,10 @@ public final class Attribution extends Atribucion {
 
     public TAtributos shft_R1 (TAtributos unary, TAtributos op3, TAtributos shft_1) {
         regla("Shft -> Unary Op3 Shft");
-        TAtributos attr = atributosPara("Shft");
+        TAtributos attr = atributosPara("Shft", "tsh", "desig", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), desig_1.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
 
         return attr;
     }
