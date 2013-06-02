@@ -5,11 +5,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
+import plg.gr3.data.Value;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
+import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.StopInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
@@ -211,11 +214,11 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable st = (SymbolTable) args[0].valor();
-                Symbol ident = (Symbol) args[1].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
                 Value value = (Value) args[2].valor();
                 Type type = (Type) args[3].valor();
 
-                st.putConstant((String) ident.value, type, value);
+                st.putConstant(ident.getLexeme(), type, value);
 
                 return st;
             }
@@ -226,12 +229,10 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable st = (SymbolTable) args[0].valor();
-                Symbol ident = (Symbol) args[1].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
 
-                String str = (String) ident.value;
-
-                if (st.hasIdentifier(str)) {
-                    return new DuplicateIdentifierError(str, -1, -1);
+                if (st.hasIdentifier(ident.getLexeme())) {
+                    return new DuplicateIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn());
                 } else {
                     return null;
                 }
@@ -253,11 +254,11 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable st = (SymbolTable) args[0].valor();
-                Symbol ident = (Symbol) args[1].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
                 Value value = (Value) args[2].valor();
                 Type type = (Type) args[3].valor();
 
-                st.putConstant((String) ident.value, type, value);
+                st.putConstant(ident.getLexeme(), type, value);
 
                 return st;
             }
@@ -271,7 +272,7 @@ public final class Attribution extends Atribucion {
 
     // Const
 
-    public TAtributos const_R1 (TAtributos tPrim, Symbol ident, TAtributos lit) {
+    public TAtributos const_R1 (TAtributos tPrim, Lexeme ident, TAtributos lit) {
         regla("Const -> CONST TPrim IDENT ASIG ConstLit");
         TAtributos attr = atributosPara("Const", "tsh", "ts", "id", "tipo", "err", "valor");
         LAtributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
@@ -424,10 +425,10 @@ public final class Attribution extends Atribucion {
 
     // Type
 
-    public TAtributos type_R1 (TAtributos typeDesc, Symbol ident) {
+    public TAtributos type_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("Type -> TIPO TypeDesc IDENT");
         TAtributos attr = atributosPara("Type", "ts", "id", "clase", "nivel", "tipo");
-        Attributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
+        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
         dependencias(attr.a("ts"), attr.a("tsh"));
         dependencias(attr.a("id"), lexIdent);
         // TODO ¿son dependencias si no se usa?
@@ -504,7 +505,7 @@ public final class Attribution extends Atribucion {
 
     // Var
 
-    public TAtributos var_R1 (TAtributos typeDesc, Symbol ident) {
+    public TAtributos var_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("Var -> VAR TypeDesc IDENT");
         TAtributos attr = atributosPara("Var");
 
@@ -541,7 +542,7 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos typeDesc_R4 (Symbol ident) {
+    public TAtributos typeDesc_R4 (Lexeme ident) {
         regla("TypeDesc -> IDENT");
         TAtributos attr = atributosPara("TypeDesc");
 
@@ -617,14 +618,14 @@ public final class Attribution extends Atribucion {
 
     // TArray
 
-    public TAtributos tArray_R1 (TAtributos typeDesc, Symbol ident) {
+    public TAtributos tArray_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("TArray -> TypeDesc ICORCHETE IDENT FCORCHETE");
         TAtributos attr = atributosPara("TArray");
 
         return attr;
     }
 
-    public TAtributos tArray_R2 (TAtributos typeDesc, Symbol litnat) {
+    public TAtributos tArray_R2 (TAtributos typeDesc, Lexeme litnat) {
         regla("TArray -> TypeDesc ICORCHETE LITNAT FCORCHETE");
         TAtributos attr = atributosPara("TArray");
 
@@ -771,7 +772,7 @@ public final class Attribution extends Atribucion {
 
     // InstCall
 
-    public TAtributos instCall_R1 (Symbol ident, TAtributos srParams) {
+    public TAtributos instCall_R1 (Lexeme ident, TAtributos srParams) {
         regla("InstCall -> CALL IDENT IPAR SRParams FPAR");
         TAtributos attr = atributosPara("InstCall");
 
@@ -812,7 +813,7 @@ public final class Attribution extends Atribucion {
 
     // RParam
 
-    public TAtributos rParam_R1 (Symbol ident, TAtributos expr) {
+    public TAtributos rParam_R1 (Lexeme ident, TAtributos expr) {
         regla("RParam -> IDENT ASIG Expr");
         TAtributos attr = atributosPara("RParam");
 
@@ -872,7 +873,7 @@ public final class Attribution extends Atribucion {
 
     // Subprog
 
-    public TAtributos subprog_R1 (Symbol ident, TAtributos sfParams, TAtributos sVars, TAtributos sInsts) {
+    public TAtributos subprog_R1 (Lexeme ident, TAtributos sfParams, TAtributos sVars, TAtributos sInsts) {
         regla("Subprog -> SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE");
         TAtributos attr = atributosPara("Subprog");
 
@@ -913,14 +914,14 @@ public final class Attribution extends Atribucion {
 
     // FParam
 
-    public TAtributos fParam_R1 (TAtributos typeDesc, Symbol ident) {
+    public TAtributos fParam_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("FParam -> TypeDesc IDENT");
         TAtributos attr = atributosPara("FParam");
 
         return attr;
     }
 
-    public TAtributos fParam_R2 (TAtributos typeDesc, Symbol ident) {
+    public TAtributos fParam_R2 (TAtributos typeDesc, Lexeme ident) {
         regla("FParam -> TypeDesc MUL IDENT");
         TAtributos attr = atributosPara("FParams");
 
@@ -929,7 +930,7 @@ public final class Attribution extends Atribucion {
 
     // Desig
 
-    public TAtributos desig_R1 (Symbol ident) {
+    public TAtributos desig_R1 (Lexeme ident) {
         regla("Desig -> IDENT");
         TAtributos attr = atributosPara("Desig");
 
@@ -943,7 +944,7 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos desig_R3 (TAtributos desig_1, Symbol litnat) {
+    public TAtributos desig_R3 (TAtributos desig_1, Lexeme litnat) {
         regla("Desig -> Desig BARRABAJA LITNAT");
         TAtributos attr = atributosPara("Desig");
 
@@ -1205,7 +1206,7 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos lit_R3 (Symbol litchar) {
+    public TAtributos lit_R3 (Lexeme litchar) {
         regla("Lit -> LITCHAR");
         TAtributos attr = atributosPara("Lit");
 
@@ -1230,14 +1231,14 @@ public final class Attribution extends Atribucion {
 
     // LitNum
 
-    public TAtributos litNum_R1 (Symbol litnat) {
+    public TAtributos litNum_R1 (Lexeme litnat) {
         regla("LitNum -> LITNAT");
         TAtributos attr = atributosPara("LitNum");
 
         return attr;
     }
 
-    public TAtributos litNum_R2 (Symbol litfloat) {
+    public TAtributos litNum_R2 (Lexeme litfloat) {
         regla("LitNum -> LITFLOAT");
         Atributo litfloatLex = atributoLexicoPara("LITFLOAT", "lex", litfloat);
         TAtributos attr = atributosPara("LitNum");

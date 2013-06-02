@@ -71,7 +71,7 @@ Consts ::= Consts:consts_1 PYC Const:cons {:
 :};
 
 Const ::= CONST TPrim:tPrim IDENT:ident ASIG ConstLit:lit {:
-	RESULT = attr.const_R1(tPrim, ident, lit);
+	RESULT = attr.const_R1(tPrim, (new Lexeme(ident, identleft, identright)), lit);
 :}
         | {:
 	RESULT = attr.const_R2();
@@ -100,7 +100,7 @@ Types ::= Types:types_1 PYC Type:type {:
 :};
 
 Type ::= TIPO TypeDesc:typeDesc IDENT:ident {:
-	RESULT = attr.type_R1(typeDesc, ident);
+	RESULT = attr.type_R1(typeDesc, new Lexeme(ident, identleft, identright));
 :}
        | {:
 	RESULT = attr.type_R2();
@@ -122,7 +122,7 @@ Vars ::= Vars:vars_1 PYC Var:var {:
 :};
 
 Var ::= VAR TypeDesc:typeDesc IDENT:ident {:
-	RESULT = attr.var_R1(typeDesc, ident);
+	RESULT = attr.var_R1(typeDesc, (new Lexeme(ident, identleft, identright)));
 :}
       | {:
 	RESULT = attr.var_R2();
@@ -138,7 +138,7 @@ TypeDesc ::= TPrim:tPrim {:
 	RESULT = attr.typeDesc_R3(tTupla);
 :}
            | IDENT:ident {:
-	RESULT = attr.typeDesc_R4(ident);
+	RESULT = attr.typeDesc_R4((new Lexeme(ident, identleft, identright)));
 :};
 
 
@@ -173,7 +173,7 @@ Cast ::= CHAR {:
 
 
 TArray ::= TypeDesc:typeDesc ICORCHETE IDENT:ident FCORCHETE {:
-	RESULT = attr.tArray_R1(typeDesc, ident);
+	RESULT = attr.tArray_R1(typeDesc, (new Lexeme(ident, identleft, identright)));
 :}
          | TypeDesc:typeDesc ICORCHETE LITNAT:litnat FCORCHETE {:
 	RESULT = attr.tArray_R2(typeDesc, litnat);
@@ -243,7 +243,7 @@ ElseIf ::= ELSE Insts:insts ENDIF {:
 :};
 
 InstCall ::= CALL IDENT:ident IPAR SRParams:srParams FPAR {:
-	RESULT = attr.instCall_R1(ident, srParams);
+	RESULT = attr.instCall_R1((new Lexeme(ident, identleft, identright)), srParams);
 :};
 
 
@@ -262,7 +262,7 @@ RParams ::= RParams:rParams_1 COMA RParam:rParam {:
 :};
 
 RParam ::= IDENT:ident ASIG Expr:expr {:
-	RESULT = attr.rParam_R1(ident, expr);
+	RESULT = attr.rParam_R1((new Lexeme(ident, identleft, identright)), expr);
 :};
 
 
@@ -284,7 +284,7 @@ Subprogs ::= Subprogs:subprogs_1 Subprog:subprog {:
 :};
 
 Subprog ::= SUBPROGRAM IDENT:ident IPAR SFParams:sfParams FPAR ILLAVE SVars:sVars SInsts:sInsts FLLAVE {:
-	RESULT = attr.subprog_R1(ident, sfParams, sVars, sInsts);
+	RESULT = attr.subprog_R1((new Lexeme(ident, identleft, identright)), sfParams, sVars, sInsts);
 :};
 
 
@@ -303,15 +303,15 @@ FParams ::= FParams:fParams_1 COMA FParam:fParam {:
 :};
 
 FParam ::= TypeDesc:typedesc IDENT:ident {:
-	RESULT = attr.fParam_R1(typedesc, ident);
+	RESULT = attr.fParam_R1(typedesc, (new Lexeme(ident, identleft, identright)));
 :}
          | TypeDesc:typedesc MUL IDENT:ident {:
-	RESULT = attr.fParam_R2(typedesc, ident);
+	RESULT = attr.fParam_R2(typedesc, (new Lexeme(ident, identleft, identright)));
 :};
 
 
 Desig ::= IDENT:ident {:
-	RESULT = attr.desig_R1(ident);
+	RESULT = attr.desig_R1((new Lexeme(ident, identleft, identright)));
 :}
         | Desig:desig_1 ICORCHETE Expr:expr FCORCHETE {:
 	RESULT = attr.desig_R2(desig_1, expr);
@@ -450,6 +450,6 @@ LitNum ::= LITNAT:litnat {:
 :}
 //| MENOS LITNAT {::}
          | LITFLOAT:litfloat {:
-	RESULT = attr.litNum_R2(litfloat);
+	RESULT = attr.litNum_R2(new Lexeme(litfloat,litfloatleft, litfloatright));
 :};
 //| MENOS LITFLOAT {::};
