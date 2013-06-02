@@ -277,7 +277,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.clase = pvariable
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.Type== TPrim) {<t:TypeDesc.type, tam:1>}
-                   si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+                   si no {<t:ref, id:FParam.id, tam: 1>} )
 
 
 
