@@ -279,7 +279,7 @@
 
 	Desig → ident
 		Desig.tipo = Desig.tsh[ident.lex].tipo
-		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(Expr.tsh, ident.lex)
+		Desig.err = ¬existe(Desig.tsh, ident.lex) ∨ ¬esVariable(Desig.tsh, ident.lex)
 
 	Desig → Desig icorchete Expr fcorchete
 		Desig0.tipo = Desig1.tipo

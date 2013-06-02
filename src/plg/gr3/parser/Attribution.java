@@ -1127,7 +1127,16 @@ public final class Attribution extends Atribucion {
 
     public TAtributos desig_R1 (Lexeme ident) {
         regla("Desig -> IDENT");
-        TAtributos attr = atributosPara("Desig");
+        TAtributos attr = atributosPara("Desig", "tipo", "err", "tsh", "etq", "cod");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
+
+        dependencias(attr.a("tipo"), attr.a("tsh"), identLex);
+        calculo(attr.a("tipo"), // TODO
+        );
+
+        dependencias(attr.a("err"), identLex, attr.a("tsh"));
+        calculo(attr.a("err"), // TODO
+        );
 
         return attr;
     }
