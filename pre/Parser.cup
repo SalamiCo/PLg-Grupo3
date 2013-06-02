@@ -19,12 +19,12 @@ parser code {:
 :}
 
 // Definición de los terminales del lenguaje 
-terminal String IDENT, LITNAT, LITFLOAT, LITCHAR;
+terminal String IDENT, LITNAT, LITFLOAT, LITCHAR,ASIG;
 
 terminal TRUE, FALSE, PROGRAM,
  SUBPROGRAM, VARS, TIPOS, CONSTS, SUBPROGRAMS, INSTRUCTIONS, VAR, CONST, TIPO,
  IN, OUT, CALL, SWAP1, SWAP2, FLOAT, INTEGER, NATURAL, CHARACTER, BOOLEAN, 
- INT, NAT, CHAR, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDWHILE, ASIG, 
+ INT, NAT, CHAR, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDWHILE, 
  IPAR, FPAR, ILLAVE, FLLAVE, PYC, COMA, BARRABAJA, MEN, 
  MAY, MENOIG, MAYOIG, IGUAL, NOIGUAL, MAS, MENOS, MUL, DIV, MOD, 
  AND, OR, NOT, LSH, RSH, ICORCHETE, FCORCHETE;
@@ -207,7 +207,7 @@ Insts ::= Insts:insts_1 PYC Inst:inst {:
 :};
 
 Inst ::= Desig:desig ASIG:asig Expr:expr {:
-	RESULT = attr.inst_R1(desig, expr, asig);
+	RESULT = attr.inst_R1(desig, expr, new Lexeme(asig, asigleft, asigright));
 :}
        | IN IPAR Desig:desig FPAR {:
 	RESULT = attr.inst_R2(desig);
