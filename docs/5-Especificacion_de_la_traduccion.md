@@ -499,7 +499,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 	Fact → Shft
 		Fact.cod = Shft.cod
-		Shft.eqth = Fact.etqh
+		Shft.etqh = Fact.etqh
 		Fact.etq = Shft.etq
 
 	Shft → Unary Op3 Shft
