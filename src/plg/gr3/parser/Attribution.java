@@ -1638,21 +1638,88 @@ public final class Attribution extends Atribucion {
 
     public TAtributos term_R1 (TAtributos term_1, TAtributos op1, TAtributos fact) {
         regla("Term -> Term Op1 Fact");
-        TAtributos attr = atributosPara("Term");
+        TAtributos attr = atributosPara("Term", "tipo", "tsh", "desig", "op", "etq", "etqh", "cod");
+
+        dependencias(attr.a("tipo"), term_1.a("tipo"), op1.a("op"), fact.a("tipo"));
+        // TODO calculo(attr.a("tipo"),);
+
+        dependencias(term_1.a("tsh"), attr.a("tsh"));
+        calculo(term_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("tsh"), attr.a("tsh"));
+        calculo(fact.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), term_1.a("desig"), fact.a("desig"));
+        // TODO calculo(attr.a("desig"),);
+
+        dependencias(attr.a("cod"), term_1.a("cod"), fact.a("cod"), op1.a("op"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(term_1.a("etqh"), attr.a("etqh"));
+        calculo(term_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("etqh"), term_1.a("etq"));
+        calculo(term_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), term_1.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
 
     public TAtributos term_R2 (TAtributos term_1, TAtributos fact) {
         regla("Term -> Term OR Fact");
-        TAtributos attr = atributosPara("Term");
+        TAtributos attr = atributosPara("Term", "tipo", "op", "tsh", "desig", "cod", "etq", "etqh");
+
+        dependencias(attr.a("tipo"), term_1.a("tipo"), fact.a("tipo"));
+        // TODO la tipoFUnc con or calculo(attr.a("tipo"), );
+
+        dependencias(term_1.a("tsh"), attr.a("tsh"));
+        calculo(term_1.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("tsh"), attr.a("tsh"));
+        calculo(fact.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), term_1.a("desig"), fact.a("desig"));
+        // TODO calculo(attr.a("desig"),);
+
+        // TODO generacion de codigo
+        // dependencias(attr.a("cod"),term_1.a("cod"),);
+        // calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(term_1.a("etqh"), attr.a("etqh"));
+        calculo(term_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("etqh"), term_1.a("etq"));
+        calculo(term_1.a("etqh"), new IncrementFun(3));
+
+        dependencias(attr.a("etq"), term_1.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
 
     public TAtributos term_R3 (TAtributos fact) {
         regla("Term -> Fact");
-        TAtributos attr = atributosPara("Term");
+        TAtributos attr = atributosPara("Term", "tipo", "tsh", "desig", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), fact.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("tsh"), attr.a("tsh"));
+        calculo(fact.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), fact.a("desig"));
+        calculo(attr.a("desig"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), fact.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("etqh"), attr.a("etqh"));
+        calculo(fact.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), fact.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
