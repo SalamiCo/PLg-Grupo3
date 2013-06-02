@@ -328,4 +328,24 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
     public Iterator<Map.Entry<String, Row>> iterator () {
         return table.entrySet().iterator();
     }
+
+    @Override
+    public String toString () {
+        StringBuilder sb = new StringBuilder();
+
+        int strsize = 0;
+        for (String str : table.keySet()) {
+            strsize = Math.max(strsize, str.length());
+        }
+
+        for (Map.Entry<String, Row> entry : this) {
+            String id = entry.getKey();
+            for (int i = 0; i < strsize - id.length(); i++) {
+                sb.append(' ');
+            }
+            sb.append(id).append(" = (").append(entry.getValue()).append(")\n");
+        }
+
+        return sb.toString();
+    }
 }

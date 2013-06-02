@@ -20,9 +20,11 @@ import java_cup.runtime.SymbolFactory;
 import plg.gr3.code.StreamCodeReader;
 import plg.gr3.code.StreamCodeWriter;
 import plg.gr3.debug.Debugger;
+import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.runtime.RuntimeError;
 import plg.gr3.parser.Lexer;
 import plg.gr3.parser.Parser;
+import plg.gr3.parser.SymbolTable;
 import plg.gr3.vm.VirtualMachine;
 import plg.gr3.vm.instr.Instruction;
 import es.ucm.fdi.plg.evlib.Atributo;
@@ -34,16 +36,16 @@ import es.ucm.fdi.plg.evlib.TAtributos;
  * @author PLg Grupo 03 2012/2013
  */
 public final class Main {
-    
+
     /** Comando utilizado para compilar un fichero */
     private static final String CMD_COMPILE = "compile";
-    
+
     /** Comando utilizado para ejecutar un programa */
     private static final String CMD_RUN = "run";
-    
+
     /** Comando utilizado para ejecutar un programa */
     private static final String CMD_DEBUG = "debug";
-    
+
     /** Escribe por pantalla cómo se usa la aplicación */
     private static void printUsage () {
         final String CMD = "java " + Main.class.getName();
@@ -52,7 +54,7 @@ public final class Main {
         System.out.println("   or: " + CMD + " " + CMD_DEBUG + " <file>");
         System.out.println();
     }
-    
+
     /**
      * Punto de entrada de la aplicación
      * 
@@ -62,22 +64,22 @@ public final class Main {
         if (args.length < 1) {
             printUsage();
         } else {
-            
+
             try {
                 String command = args[0];
                 switch (command) {
                     case "compile":
                         compile(Arrays.copyOfRange(args, 1, args.length));
                     break;
-                    
+
                     case "run":
                         run(Arrays.copyOfRange(args, 1, args.length));
                     break;
-                    
+
                     case "debug":
                         debug(Arrays.copyOfRange(args, 1, args.length));
                     break;
-                    
+
                     default:
                         printUsage();
                 }
@@ -86,7 +88,7 @@ public final class Main {
             }
         }
     }
-    
+
     /**
      * Comando de compilación.
      * 
@@ -100,33 +102,38 @@ public final class Main {
         }
         Path pathInput = Paths.get(args[0]);
         Path pathOutput = Paths.get(args[1]);
-        
+
         Debugger.INSTANCE.setLoggingEnabled(true);
         Debugger.INSTANCE.setDebugEnabled(true);
-        
+
         @SuppressWarnings("deprecation")
         SymbolFactory symbolFactory = new DefaultSymbolFactory();
-        
+
         try (InputStream input = Files.newInputStream(pathInput, READ)) {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
-            
+
             Atributo.fijaDebug(false);
-            TAtributos attr = (TAtributos) parser.parse().value;
-            
+            TAtributos result = (TAtributos) parser.parse().value;
+
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 StreamCodeWriter writer = new StreamCodeWriter(output);
-                
-                @SuppressWarnings("unchecked")
-                List<Instruction> code = (List<Instruction>) attr.a("cod").valor();
-                
+
+                List<Instruction> code = (List<Instruction>) result.a("cod").valor();
+                List<CompileError> errors = (List<CompileError>) result.a("err").valor();
+                SymbolTable table = (SymbolTable) result.a("ts").valor();
+
                 Debugger.INSTANCE.debug("Código: %s", code);
-                
-                writer.write(code);
+                Debugger.INSTANCE.debug("Errores: %s", errors);
+                Debugger.INSTANCE.debug("Tabla de símbolos:%n%s", table);
+
+                if (errors.isEmpty()) {
+                    writer.write(code);
+                }
             }
         }
     }
-    
+
     /**
      * Comando de ejecución.
      * 
@@ -137,24 +144,24 @@ public final class Main {
             printUsage();
         }
         Path pathInput = Paths.get(args[0]);
-        
+
         Debugger.INSTANCE.setLoggingEnabled(true);
         Debugger.INSTANCE.setDebugEnabled(false);
-        
+
         try (StreamCodeReader reader = new StreamCodeReader(Files.newInputStream(pathInput))) {
             VirtualMachine vm = new VirtualMachine(reader.readAll());
             vm.execute();
-            
+
             RuntimeError error = vm.getError();
             if (error != null) {
                 error.print();
             }
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Comando de depuración.
      * 
@@ -165,22 +172,22 @@ public final class Main {
             printUsage();
         }
         Path pathInput = Paths.get(args[0]);
-        
+
         Debugger.INSTANCE.setLoggingEnabled(true);
         Debugger.INSTANCE.setDebugEnabled(true);
-        
+
         Console console = System.console();
         if (console == null) {
             Debugger.INSTANCE.error("¡No puedes ejecutar en modo traza sin una terminal!");
         } else {
-            
+
             try (StreamCodeReader reader = new StreamCodeReader(Files.newInputStream(pathInput))) {
                 VirtualMachine vm = new VirtualMachine(reader.readAll());
-                
+
                 while (!vm.isStopped()) {
                     int pc = vm.getProgramCounter();
                     Instruction instr = vm.getInstruction(pc);
-                    
+
                     Debugger.INSTANCE.in(pc, instr).log("Pulsa ENTER para ejecutar");
                     String line = console.readLine();
                     if (line == null) {
@@ -189,21 +196,21 @@ public final class Main {
                         vm.step();
                     }
                 }
-                
+
                 RuntimeError error = vm.getError();
                 if (error != null) {
                     error.print();
                 }
-                
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     /** Deshabilita la posibilidad de construir objetos de esta clase */
     private Main () {
         throw new AssertionError();
     }
-    
+
 }

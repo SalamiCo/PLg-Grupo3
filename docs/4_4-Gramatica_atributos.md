@@ -35,6 +35,9 @@
         Const.clase = const
         Const.nivel = global
         Const.tipo = <t:TPrim.tipo, tam:1>
+
+        // TODO
+        // añadir valor aquí
         Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
 
     Const → ɛ
@@ -117,7 +120,7 @@
     SSubprogs → subprograms illave fllave 
 
     SSubprogs → ɛ
-        SSubprogs = false
+        SSubprogs.err = false
 
     Subprogs → Subprogs Subprog
         Subprogs1.tsh = Subprogs0.tsh
@@ -188,7 +191,7 @@
 	Insts → Insts pyc Inst
 		Insts1.tsh = Insts0.tsh
 		Inst.tsh = Insts0.tsh
-		SInsts.err = Insts.err ∨ Inst.err
+		Insts0.err = Insts1.err ∨ Inst.err
 
 	Insts → Inst
 		Inst.tsh = Insts.tsh
@@ -253,20 +256,21 @@
 
 	SRParams → ɛ
 		SRParams.err = false
-		SRParams.nparams = SRParams.etq
+		SRParams.nparams = SRParams.nparamsh
 
 	RParams → RParams coma RParam
-		RParam1.tsh = RParams0.tsh
-		RParam.tsh = RParams1.tsh
+		RParams1.tsh = RParams0.tsh
+		RParam.tsh = RParams1.ts
+		RParams.ts = RParam.ts 
 		RParams0.err = RParams1.err ∨ Rparam.err
-		RParams1.nparamsh = RParams0.nparamsh 
+		RParams1.nparamsh = RParams0.nparamsh
+		RParam.nparamsh = RParams1.nparams
+		RParams.nparams = RParam.nparams   
 		RParams1.nombresubprogh = RParams0.nombresubprogh
-		RParam.nombresubprogh = RParams0.nombresubprogh
-		RParams0.nparams = RParams1.nparams + 1  
+		RParam.nombresubprogh = RParams0.nombresubprogh	
 
 	RParams → RParam
 		RParam.nparamsh = RParams.nparamsh
-		Rparams.nparams = RParam.nparams
 		RParams.nparams = RParam.nparams
 		RParam.nombresubprogh = RParams.nombresubprogh
 		RParams.err = RParam.err
@@ -279,7 +283,7 @@
 
 	Desig → ident
 		Desig.tipo = Desig.tsh[ident.lex].tipo
-		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(Expr.tsh, ident.lex)
+		Desig.err = ¬existe(Desig.tsh, ident.lex) ∨ ¬esVariable(Desig.tsh, ident.lex)
 
 	Desig → Desig icorchete Expr fcorchete
 		Desig1.tsh = Desig0.tsh
