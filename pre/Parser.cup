@@ -19,7 +19,7 @@ parser code {:
 :}
 
 // Definición de los terminales del lenguaje 
-terminal Symbol IDENT, LITNAT, LITFLOAT, LITCHAR;
+terminal String IDENT, LITNAT, LITFLOAT, LITCHAR;
 
 terminal TRUE, FALSE, PROGRAM,
  SUBPROGRAM, VARS, TIPOS, CONSTS, SUBPROGRAMS, INSTRUCTIONS, VAR, CONST, TIPO,
@@ -176,7 +176,7 @@ TArray ::= TypeDesc:typeDesc ICORCHETE IDENT:ident FCORCHETE {:
 	RESULT = attr.tArray_R1(typeDesc, (new Lexeme(ident, identleft, identright)));
 :}
          | TypeDesc:typeDesc ICORCHETE LITNAT:litnat FCORCHETE {:
-	RESULT = attr.tArray_R2(typeDesc, litnat);
+	RESULT = attr.tArray_R2(typeDesc, new Lexeme(litnat, litnatleft, litnatright));
 :};
 
 
@@ -317,7 +317,7 @@ Desig ::= IDENT:ident {:
 	RESULT = attr.desig_R2(desig_1, expr);
 :}
         | Desig:desig_1 BARRABAJA LITNAT:litnat {:
-	RESULT = attr.desig_R3(desig_1, litnat);
+	RESULT = attr.desig_R3(desig_1, new Lexeme(litnat, litnatleft, litnatright));
 :};
 
 
@@ -435,7 +435,7 @@ Lit ::= LitBool:litBool {:
 	RESULT = attr.lit_R2(litNum);
 :}
       | LITCHAR:litchar {:
-	RESULT = attr.lit_R3(litchar);
+	RESULT = attr.lit_R3(new Lexeme(litchar, litcharleft, litcharright));
 :};
 
 LitBool ::= TRUE {:
@@ -446,7 +446,7 @@ LitBool ::= TRUE {:
 :};
 
 LitNum ::= LITNAT:litnat {:
-	RESULT = attr.litNum_R1(litnat);
+	RESULT = attr.litNum_R1(new Lexeme(litnat, litnatleft, litnatright));
 :}
 //| MENOS LITNAT {::}
          | LITFLOAT:litfloat {:

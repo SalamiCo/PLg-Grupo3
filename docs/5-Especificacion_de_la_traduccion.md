@@ -66,6 +66,10 @@ mueve(nCeldas)
 
 Nota: Si la dirección de memoria no ha sido cargada previamente con datos usando la siguiente instrucción (desapila-dir), esta instrucción dará un error de ejecución.
 
+ir_ind
+>CprogPila[CPila]<br/>
+>Cpila←Cpila-1<br/>
+
 desapila-dir(dirección)
 >Mem[dirección] ← Pila[CPila]<br/>
 >CPila ← CPila - 1<br/>
@@ -75,6 +79,11 @@ desapila-ind
 >Mem[Pila[CPila]] ← Pila[CPila-1]<br/>
 >CPila ← CPila - 2<br/>
 >CProg ← CProg + 1<br/>
+
+desapila-ret
+>Mem[Pila[Cpila]] ← CProg <br/>
+>Cpila ← CPila -1 <br/>
+>CProg ← Cprog + 1 <br/>
 
 copia
 >CPila ← CPila + 1<br/>
@@ -256,7 +265,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 ## 5.4. Gramática de atributos
 
 	Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-		Program.cod =  ir_a(?) || SSubprogs || SInsts.cod || stop 
+		Program.cod =  ir_a(parchea(?,SSubprogs.etq)) || SSubprogs || SInsts.cod || stop 
 		SSubprogs.etqh = 1 
 		SInsts.etqh = SSubprogs.etq
 
@@ -285,9 +294,16 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Subprogs.etq = Subprog.etq
 
 	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-		Subprog.cod = prologo SInsts.cod || epilogo
-		SInsts.etqh = Subprog.etqh + num inst prologo 
-		Subprog.etq = SInsts.etq + num inst epilogo
+		Subprog.cod = prologo SInsts.cod 
+					//Restaurar la cima de la pila 
+						|| apila_dir(1) || apila(3) ||  menos || desapila_dir(0)
+					//Restaurar la base
+						|| apila_dir(1) || apila_ind || desapila(1) || desapila
+					// cargar la direccion de retorno 
+						apila_dir(0) || apila(1) || mas || apila_ind || ir_ind 
+
+		SInsts.etqh = Subprog.etqh 
+		Subprog.etq = SInsts.etq + 3
 
 	SInsts → instructions illave Insts fllave
 		SInsts.cod = Insts.cod
@@ -343,7 +359,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Inst.etq = Insts + 1 
 
 	Inst → InstCall
-		Inst.cod = //TODO
+		Inst.cod = 
 		InstCall.etqh = Inst.etqh
 		Inst.etq = InstCall.etq
 
@@ -358,33 +374,59 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 	ElseIf → endif
 		ElseIf.etq = ElseIf.etqh
 
-	InstCall → call ident lpar SRParams rpar//TODO
-		SRParams.etqh = InstCall.etqh
-		InstCall.etq = SRParams.etq
+	InstCall → call ident lpar SRParams rpar
+		//Salvar el contador del programa actual
+			apila_dir(0) || apila(1) || mas || desapila-ret //TODO mirar si hay que sumar 1 o dos
+		// Salvar el registro base
+			apila_dir(0) || apila(2) || mas || apila_dir(0) || desapila_ind
+		// Modifica la cima de la pila
+			apila_dir(0) || apila(2) || mas || desapila_dir(0)
+			|| SRParams || desapila
+		// Modificar la base
+			apila_dir(0) || apila(3) || mas || desapila_dir(1)
+			|| ir_a(SRParams.tsh[ident.lex].dir)
+
+		SRParams.nparams = 0
+		SRParams.etqh = InstCall.etqh + 13 
+		InstCall.etq = SRParams.etq + 6
 
 	SRParams → RParams 
 		SRParams.cod = RParams.cod
 		RParams.etqh = SRParams.etqh
 		SRParams.etq = RParams.etq 
+		RParams.nparamsh = SRParams.nparamsh
+		SRParams.nparams = RParams.nparams
 
 	SRParams → ɛ
 		SRParams.cod = []
 		SRParms.etq = SRParams.etqh
+		SRParams.nparams = SRParams.etq
 
 	RParams → RParams coma RParam 
 		RParams0.cod = RParams1.cod || RParam.cod
 		RParams1.etqh = RParams0.etqh
 		RParam.etqh = RParams1.etq
 		RParams0.etq = RParam.eqt 
+		RParams1.nparamsh = RParams0.nparamsh 
+		RParams0.nparams = RParams1.nparams + 1 
 
 	RParams → RParam 
 		RParams.cod = RParam.cod
 		RParam.etqh = RParams.etqh
 		RParams.etq = RParam.etq
+		Rparams.nparams = RParam.nparams
+		RParams.nparams = RParam.nparams
 
 	RParam → ident asig Expr
-		RParam.cod = apila(RParam.tsh[ident.lex].dir) || Expr.cod || mueve(numCeldas(Expr.type))
-		RParam.etq = RParam.etqh + 1 
+		RParam.cod = apila_dir(0) || apila(1) || mas  || copia || apila(RParams.nparamsh) || suma || Expr.cod 
+					si (RParam.tsh[ident.lex].clase == pvalor) 
+						 || mueve(numCeldas(Expr.type.tamaño))
+					si no si (RParam.tsh[ident.lex].clase == pvariable) 
+						|| desapila_ind
+
+		RParam.nparams = RParams.nparamsh + 1 
+		Expr.etqh = RParam.etqh + 6 
+		RParam.etq = Expr.etq + 1 
 
 	Desig → ident
 		Desig.cod = si (Desig.tsh[ident.lex].nivel == global) entonces 
