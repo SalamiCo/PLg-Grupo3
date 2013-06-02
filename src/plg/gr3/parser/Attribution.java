@@ -2,6 +2,8 @@ package plg.gr3.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
@@ -10,6 +12,7 @@ import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
+import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.StopInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
@@ -505,7 +508,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sVars_R2 () {
         regla("SVars -> $");
-        TAtributos attr = atributosPara("SVars", "ts", "tsh", "dir", "dirh");
+        TAtributos attr = atributosPara("SVars", "ts", "tsh", "dir", "dirh", "err");
 
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
@@ -844,63 +847,63 @@ public final class Attribution extends Atribucion {
 
     public TAtributos inst_R1 (TAtributos desig, TAtributos expr) {
         regla("Inst -> Desig ASIG Expr");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
 
     public TAtributos inst_R2 (TAtributos desig) {
         regla("Inst -> IN IPAR Desig FPAR");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
 
     public TAtributos inst_R3 (TAtributos expr) {
         regla("Inst -> OUT IPAR Expr FPAR");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
 
     public TAtributos inst_R4 () {
         regla("Inst -> SWAP1 IPAR FPAR");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
 
     public TAtributos inst_R5 () {
         regla("Inst -> SWAP2 IPAR FPAR");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
 
     public TAtributos inst_R6 (TAtributos expr, TAtributos insts, TAtributos elseIf) {
         regla("Inst -> IF Expr THEN Insts ElseIf");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
 
     public TAtributos inst_R7 (TAtributos expr, TAtributos insts) {
         regla("Inst -> WHILE Expr DO Insts ENDWHILE");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
 
     public TAtributos inst_R8 (TAtributos instCall) {
         regla("Inst -> InstCall");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
 
     public TAtributos inst_R9 () {
         regla("Inst -> $");
-        TAtributos attr = atributosPara("Inst");
+        TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh");
 
         return attr;
     }
@@ -1050,7 +1053,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParams_R2 (TAtributos rParam) {
         regla("RParams -> RParam");
-        TAtributos attr = atributosPara("RParams");
+        TAtributos attr = atributosPara("RParams", "etqh", "etq", "tsh");
 
         return attr;
     }
@@ -1059,7 +1062,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParam_R1 (Lexeme ident, TAtributos expr) {
         regla("RParam -> IDENT ASIG Expr");
-        TAtributos attr = atributosPara("RParam");
+        TAtributos attr = atributosPara("RParam", "etqh", "etq", "tsh");
 
         return attr;
     }
@@ -1068,7 +1071,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sSubprogs_R1 (TAtributos subprogs) {
         regla("SSubprogs -> SUBPROGRAMS ILLAVE Subprogs FLLAVE");
-        TAtributos attr = atributosPara("SSubprogs", "etqh", "etq");
+        TAtributos attr = atributosPara("SSubprogs", "etqh", "etq", "tsh");
 
         // SSubprogs.etq
         dependencias(attr.a("etq"), attr.a("etqh"));
@@ -1079,7 +1082,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sSubprogs_R2 () {
         regla("SSubprogs -> SUBPROGRAMS ILLAVE FLLAVE");
-        TAtributos attr = atributosPara("SSubprogs", "etqh", "etq");
+        TAtributos attr = atributosPara("SSubprogs", "etqh", "etq", "tsh");
 
         // SSubprogs.etq
         dependencias(attr.a("etq"), attr.a("etqh"));
@@ -1090,7 +1093,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sSubprogs_R3 () {
         regla("SSubprogs -> $");
-        TAtributos attr = atributosPara("SSubprogs", "etqh", "etq");
+        TAtributos attr = atributosPara("SSubprogs", "etqh", "etq", "tsh");
 
         // SSubprogs.etq
         dependencias(attr.a("etq"), attr.a("etqh"));
