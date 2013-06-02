@@ -270,6 +270,7 @@
 		RParam.nombresubprogh = RParams0.nombresubprogh	
 
 	RParams → RParam
+		RParam.tsh = RParams.tsh
 		RParam.nparamsh = RParams.nparamsh
 		RParams.nparams = RParam.nparams
 		RParam.nombresubprogh = RParams.nombresubprogh
@@ -286,10 +287,12 @@
 		Desig.err = ¬existe(Desig.tsh, ident.lex) ∨ ¬esVariable(Desig.tsh, ident.lex)
 
 	Desig → Desig icorchete Expr fcorchete
+		Desig1.tsh = Desig0.tsh
 		Desig0.tipo = Desig1.tipo
 		Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
 
 	Desig → Desig barrabaja litnat
+		Desig1.tsh = Desig0.tsh
 		Desig0.tipo = Desig1.tipo
 		Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
 

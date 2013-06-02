@@ -13,6 +13,7 @@ import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
+import plg.gr3.parser.semfun.IncrementFun;
 import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.OutputInstruction;
@@ -1196,7 +1197,32 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParams_R2 (TAtributos rParam) {
         regla("RParams -> RParam");
-        TAtributos attr = atributosPara("RParams", "etqh", "etq", "tsh");
+        TAtributos attr =
+            atributosPara("RParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh");
+
+        dependencias(rParam.a("tsh"), attr.a("tsh"));
+        calculo(rParam.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), rParam.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(attr.a("err"), rParam.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS);
+
+        dependencias(rParam.a("etqh"), attr.a("etqh"));
+        calculo(rParam.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), rParam.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+
+        dependencias(rParam.a("nparamsh"), attr.a("nparamsh"));
+        calculo(rParam.a("nparamsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("nparams"), rParam.a("nparams"));
+        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
+
+        dependencias(rParam.a("nombresubprogh"), attr.a("nombresubprogh"));
+        calculo(rParam.a("nombresubprogh"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -1205,7 +1231,22 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParam_R1 (Symbol ident, TAtributos expr) {
         regla("RParam -> IDENT ASIG Expr");
-        TAtributos attr = atributosPara("RParam", "etqh", "etq", "tsh");
+        TAtributos attr = atributosPara("RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh");
+
+        dependencias(expr.a("tsh"), attr.a("tsh"));
+        calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), expr.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS); // TODO ver como se hacen el atb error
+
+        dependencias(expr.a("etqh"), attr.a("etqh"));
+        calculo(expr.a("etqh"), new IncrementFun(6));
+
+        dependencias(attr.a("etq"), expr.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("nparams"), attr.a("nparams")); // TODO lo de sumar las cosas
+        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -1486,7 +1527,14 @@ public final class Attribution extends Atribucion {
 
     public TAtributos desig_R2 (TAtributos desig_1, TAtributos expr) {
         regla("Desig -> Desig ICORCHETE Expr FCORCHETE");
-        TAtributos attr = atributosPara("Desig");
+        TAtributos attr = atributosPara("Desig", "tipo", "err");
+
+        dependencias(attr.a("tipo"), desig_1.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), desig_1.a("err"), expr.a("err")); // TODO Falta comprobar poner lo de
+                                                                      // tamañoCorrecto()
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }

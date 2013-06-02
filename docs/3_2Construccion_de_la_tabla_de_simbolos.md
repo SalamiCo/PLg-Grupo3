@@ -13,7 +13,7 @@ campo?(ts:TS, campos:CCampo, id:String) : Boolean
 >Devuelve true cuando la lista de campos de Campo contenga campo id. 
 
 desplazamiento(tipo:CTipo, id:String) : Integer
->Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un 
+>Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un identificador con ese nombre devuelve terr
 
 existeID(ts:TS, id:String) : Boolean
 >Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, ha sido previamente declarado.
