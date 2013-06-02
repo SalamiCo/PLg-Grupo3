@@ -134,15 +134,15 @@
         SInsts.tsh = SVars.ts
         Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err
 
-    SParams → FParams 
-        FParams.tsh = SParams.tsh
-        SParams.ts = FParams.ts
-        SParams.dir = FParams.dir
-        Sparams.err = FParams.err
+    SFParams → FParams 
+        FParams.tsh = SFParams.tsh
+        SFParams.ts = FParams.ts
+        SFParams.dir = FParams.dir
+        SFParams.err = FParams.err
 
-    SParams → ɛ
-        SParams.ts = SParams.tsh
-        SParams.err = false
+    SFParams → ɛ
+        SFParams.ts = SFParams.tsh
+        SFParams.err = false
 
     FParams → FParams coma FParam 
         FParams1.tsh = FParams0.tsh
