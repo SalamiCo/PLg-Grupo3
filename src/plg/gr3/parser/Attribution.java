@@ -87,6 +87,11 @@ public final class Attribution extends Atribucion {
             return Collections.unmodifiableList(code);
         }
     };
+    
+    /** Función semántica para añadir en la tabla de símbolos */
+    private static final SemFun SEMFUN_ADD = new SemFun() {
+        
+    }
 
     /**
      * @param obj
