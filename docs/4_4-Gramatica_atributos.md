@@ -265,12 +265,15 @@
 		RParams0.nparams = RParams1.nparams + 1  
 
 	RParams → RParam
-		RParams.nparams = RParams.nparamsh + 1
+		RParam.nparamsh = RParams.nparamsh
+		Rparams.nparams = RParam.nparams
+		RParams.nparams = RParam.nparams
 		RParam.nombresubprogh = RParams.nombresubprogh
 		RParams.err = RParam.err
 
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
+		RParam.nparams = RParams.nparamsh + 1  
 		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
 		∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig 
 
@@ -442,5 +445,4 @@
 ### Notas Marina
 
 - En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
-- los valores de los parámetros formales por variable deben ser designadores. Poner un atb que sea esDesignador. Que comienze como si y que se ponga a no cuando haya una operación. 
-- los tipos de parámetros formales y reales deben ser compatibles. Es decir que hay que mirar que el tipo metido en la ts del parámetro es compatible con el que le metemos. 
+- que al pasar los parametros de los procedures que no se repitan los parametros 2 veces en la cabecera de la declaración de la funcion
