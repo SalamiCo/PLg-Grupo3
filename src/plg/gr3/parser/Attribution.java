@@ -1740,21 +1740,88 @@ public final class Attribution extends Atribucion {
 
     public TAtributos term_R1 (TAtributos term_1, TAtributos op1, TAtributos fact) {
         regla("Term -> Term Op1 Fact");
-        TAtributos attr = atributosPara("Term");
+        TAtributos attr = atributosPara("Term", "tipo", "tsh", "desig", "op", "etq", "etqh", "cod");
+
+        dependencias(attr.a("tipo"), term_1.a("tipo"), op1.a("op"), fact.a("tipo"));
+        // TODO calculo(attr.a("tipo"),);
+
+        dependencias(term_1.a("tsh"), attr.a("tsh"));
+        calculo(term_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("tsh"), attr.a("tsh"));
+        calculo(fact.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), term_1.a("desig"), fact.a("desig"));
+        // TODO calculo(attr.a("desig"),);
+
+        dependencias(attr.a("cod"), term_1.a("cod"), fact.a("cod"), op1.a("op"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(term_1.a("etqh"), attr.a("etqh"));
+        calculo(term_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("etqh"), term_1.a("etq"));
+        calculo(term_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), term_1.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
 
     public TAtributos term_R2 (TAtributos term_1, TAtributos fact) {
         regla("Term -> Term OR Fact");
-        TAtributos attr = atributosPara("Term");
+        TAtributos attr = atributosPara("Term", "tipo", "op", "tsh", "desig", "cod", "etq", "etqh");
+
+        dependencias(attr.a("tipo"), term_1.a("tipo"), fact.a("tipo"));
+        // TODO la tipoFUnc con or calculo(attr.a("tipo"), );
+
+        dependencias(term_1.a("tsh"), attr.a("tsh"));
+        calculo(term_1.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("tsh"), attr.a("tsh"));
+        calculo(fact.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), term_1.a("desig"), fact.a("desig"));
+        // TODO calculo(attr.a("desig"),);
+
+        // TODO generacion de codigo
+        // dependencias(attr.a("cod"),term_1.a("cod"),);
+        // calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(term_1.a("etqh"), attr.a("etqh"));
+        calculo(term_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("etqh"), term_1.a("etq"));
+        calculo(term_1.a("etqh"), new IncrementFun(3));
+
+        dependencias(attr.a("etq"), term_1.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
 
     public TAtributos term_R3 (TAtributos fact) {
         regla("Term -> Fact");
-        TAtributos attr = atributosPara("Term");
+        TAtributos attr = atributosPara("Term", "tipo", "tsh", "desig", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), fact.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("tsh"), attr.a("tsh"));
+        calculo(fact.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), fact.a("desig"));
+        calculo(attr.a("desig"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), fact.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(fact.a("etqh"), attr.a("etqh"));
+        calculo(fact.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), fact.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -1786,6 +1853,7 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
         // revisar el and:
         // Fact0.desig = Fact1.desig ˄ Shft.desig
+
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
         return attr;
@@ -1793,14 +1861,43 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fact_R2 (TAtributos fact_1, TAtributos shft) {
         regla("Fact -> Fact AND Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etq");
+
+        // TODO
+        // Fact → Fact and Shft
+        // Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
+        // Fact1.tsh = Fact0.tsh
+        // Shft.tsh = Fact0.tsh
+        // Fact0.desig = Fact1.desig ˄ Shft.desig
+        // Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+        // Fact1.etqh = = Fact0.etqh
+        // Shft.etqh = Fact1.etq + 3
+        // Fact0.etq = Shft.etq
 
         return attr;
     }
 
     public TAtributos fact_R3 (TAtributos shft) {
         regla("Fact -> Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), shft.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("tsh"), attr.a("tsh"));
+        calculo(shft.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), shft.a("desig"));
+        calculo(attr.a("desig"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), shft.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("etqh"), attr.a("etqh"));
+        calculo(shft.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), shft.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -1819,19 +1916,19 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("tsh"), shft_1.a("tsh"));
         calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
-        
-        dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig") );
-        calculo(attr.a("desig"), SEMFUN_AND!); //TODO marina
-        
+
+        dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig"));
+        calculo(attr.a("desig"), AndFun.INSTANCE);
+
         dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
         calculo(attr.a("cod"), SEMFUN_CONCAT);
-        
+
         dependencias(unary.a("etqh"), attr.a("etqh"));
         calculo(unary.a("etqh"), SEMFUN_ASIGNATION);
-        
+
         dependencias(shft_1.a("etqh"), unary.a("etq"));
         calculo(shft_1.a("etqh"), SEMFUN_ASIGNATION);
-        
+
         dependencias(attr.a("etq"), shft_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
