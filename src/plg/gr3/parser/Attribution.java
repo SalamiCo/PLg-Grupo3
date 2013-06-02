@@ -1620,7 +1620,10 @@ public final class Attribution extends Atribucion {
 
     public TAtributos expr_R1 (TAtributos term_1, TAtributos op0, TAtributos term_2) {
         regla("Expr -> Term Op0 Term");
-        TAtributos attr = atributosPara("Expr");
+        TAtributos attr = atributosPara("Expr", "desig", "tipo", "tsh");
+
+        dependencias(attr.a("desig"), a(false));
+        calculo(attr.a("desig"), SEMFUN_ASIGNATION);
 
         return attr;
     }
