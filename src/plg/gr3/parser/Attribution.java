@@ -1522,6 +1522,8 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("err"), identLex, attr.a("tsh"));
         // DANI calculo(attr.a("err"), );
 
+        // DANI dependencias y calculo de cod
+
         return attr;
     }
 
