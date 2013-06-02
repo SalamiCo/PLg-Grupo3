@@ -942,14 +942,33 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sfParams_R1 (TAtributos fParams) {
         regla("SFParams -> FParams");
-        TAtributos attr = atributosPara("SFParams");
+        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "err");
+
+        // FParams
+        dependencias(fParams.a("tsh"), attr.a("tsh"));
+        calculo(fParams.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), fParams.a("ts"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("dir"), fParams.a("dir"));
+        calculo(attr.a("dir"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), fParams.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
 
     public TAtributos sfParams_R2 () {
         regla("SFParams -> $");
-        TAtributos attr = atributosPara("SFParams");
+        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "err");
+
+        // sfParams
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
@@ -958,7 +977,18 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParams_R1 (TAtributos fParams_1, TAtributos fParam) {
         regla("FParams -> FParams COMA FParam");
-        TAtributos attr = atributosPara("FParams");
+        TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "id", "clase", "tipo");
+
+        dependencias(fParams_1.a("tsh"), attr.a("tsh"));
+        calculo(fParams_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(fParam.a("tsh"), fParams_1.a("tsh"));
+        calculo(fParam.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
+
+        dependencias(attr.a("err"), fParam.a("ts"), fParam.a("id"), a(Scope.LOCAL));
+        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
