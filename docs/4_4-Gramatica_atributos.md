@@ -253,20 +253,21 @@
 
 	SRParams → ɛ
 		SRParams.err = false
-		SRParams.nparams = SRParams.etq
+		SRParams.nparams = SRParams.nparamsh
 
 	RParams → RParams coma RParam
-		RParam1.tsh = RParams0.tsh
-		RParam.tsh = RParams1.tsh
+		RParams1.tsh = RParams0.tsh
+		RParam.tsh = RParams1.ts
+		RParams.ts = RParam.ts 
 		RParams0.err = RParams1.err ∨ Rparam.err
-		RParams1.nparamsh = RParams0.nparamsh 
+		RParams1.nparamsh = RParams0.nparamsh
+		RParam.nparamsh = RParams1.nparams
+		RParams.nparams = RParam.nparams   
 		RParams1.nombresubprogh = RParams0.nombresubprogh
-		RParam.nombresubprogh = RParams0.nombresubprogh
-		RParams0.nparams = RParams1.nparams + 1  
+		RParam.nombresubprogh = RParams0.nombresubprogh	
 
 	RParams → RParam
 		RParam.nparamsh = RParams.nparamsh
-		Rparams.nparams = RParam.nparams
 		RParams.nparams = RParam.nparams
 		RParam.nombresubprogh = RParams.nombresubprogh
 		RParams.err = RParam.err
