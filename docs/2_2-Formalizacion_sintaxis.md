@@ -18,7 +18,7 @@ SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | �
 Subprogs → Subprogs Subprog | Subprog
 Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 
-SParams → FParams | ɛ
+SFParams → FParams | ɛ
 FParams → FParams coma FParam | FParam
 FParam → TypeDesc ident | TypeDesc mul ident
 

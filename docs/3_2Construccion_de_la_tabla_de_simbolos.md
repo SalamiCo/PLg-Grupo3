@@ -252,15 +252,15 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SVars.dirh = SParams.dir
         SInsts.tsh = SVars.ts
 
-    SParams → FParams 
-        FParams.tsh = SParams.tsh
-        SParams.ts = FParams.ts
-        FParams.dirh = SParams.dirh
-        SParams.dir = FParams.dir
+    SFParams → FParams 
+        FParams.tsh = SFParams.tsh
+        SFParams.ts = FParams.ts
+        FParams.dirh = SFParams.dirh
+        SFParams.dir = FParams.dir
 
-    SParams → ɛ
-        SParams.ts = SParams.tsh
-        SParams.dir = SParams.dirh
+    SFParams → ɛ
+        SFParams.ts = SFParams.tsh
+        SFParams.dir = SFParams.dirh
 
     FParams → FParams coma FParam 
         FParams1.tsh = FParams0.tsh
