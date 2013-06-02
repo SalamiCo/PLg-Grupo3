@@ -1750,6 +1750,7 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
         // revisar el and:
         // Fact0.desig = Fact1.desig ˄ Shft.desig
+
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
         return attr;
@@ -1812,19 +1813,19 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("tsh"), shft_1.a("tsh"));
         calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
-        
-        dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig") );
-        calculo(attr.a("desig"), SEMFUN_AND!); //TODO marina
-        
+
+        dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig"));
+        calculo(attr.a("desig"), AndFun.INSTANCE);
+
         dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
         calculo(attr.a("cod"), SEMFUN_CONCAT);
-        
+
         dependencias(unary.a("etqh"), attr.a("etqh"));
         calculo(unary.a("etqh"), SEMFUN_ASIGNATION);
-        
+
         dependencias(shft_1.a("etqh"), unary.a("etq"));
         calculo(shft_1.a("etqh"), SEMFUN_ASIGNATION);
-        
+
         dependencias(attr.a("etq"), shft_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
