@@ -1,10 +1,12 @@
 package plg.gr3.parser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
+import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
@@ -1038,7 +1040,7 @@ public final class Attribution extends Atribucion {
                 ClassDec cd = (ClassDec) args[2].valor();
                 int address = (int) args[3].valor();
                 Type type = (Type) args[4].valor();
-                
+
                 ts.putParam(ident, address, type, cd == ClassDec.PARAM_REF);
 
                 return ts;
@@ -1087,24 +1089,36 @@ public final class Attribution extends Atribucion {
         regla("FParam -> TypeDesc IDENT");
         TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
-        
+
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
-        
+
         dependencias(attr.a("id"), identLex);
         calculo(attr.a("id"), SEMFUN_ASIGNATION);
-        
+
         dependencias(attr.a("clase"), a(ClassDec.PARAM_VALUE));
         calculo(attr.a("clase"), SEMFUN_ASIGNATION);
-        
-        //dependencias(attr.a("tipo"), /*TODO*/);
+
+        // dependencias(attr.a("tipo"), /*TODO*/);
 
         return attr;
     }
 
     public TAtributos fParam_R2 (TAtributos typeDesc, Lexeme ident) {
         regla("FParam -> TypeDesc MUL IDENT");
-        TAtributos attr = atributosPara("FParam");
+        TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
+
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("id"), identLex);
+        calculo(attr.a("id"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("clase"), a(ClassDec.VARIABLE));
+        calculo(attr.a("clase"), SEMFUN_ASIGNATION);
+
+        // dependencias(attr.a("tipo"), /*TODO*/);
 
         return attr;
     }
