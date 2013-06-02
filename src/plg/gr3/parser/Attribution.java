@@ -9,6 +9,7 @@ import java_cup.runtime.Symbol;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
+import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
@@ -293,7 +294,7 @@ public final class Attribution extends Atribucion {
 
     // Const
 
-    public TAtributos const_R1 (TAtributos tPrim, Symbol ident, TAtributos lit) {
+    public TAtributos const_R1 (TAtributos tPrim, Lexeme ident, TAtributos constLit) {
         regla("Const -> CONST TPrim IDENT ASIG ConstLit");
         TAtributos attr = atributosPara("Const", "tsh", "ts", "id", "tipo", "err", "valor");
         LAtributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
@@ -312,6 +313,21 @@ public final class Attribution extends Atribucion {
 
         // TODO para dani, hacer el error
         // Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
+        dependencias(attr.a("err"), tPrim.a("tipo"), constLit.a("tipo"), lexIdent);
+        calculo(attr.a("err"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type left = (Type) args[0].valor();
+                Type right = (Type) args[1].valor();
+                Lexeme lex = (Lexeme) args[2].valor();
+
+                if (!left.compatible(right)) {
+                    return new AssignationTypeError(left, right, lex);
+                }
+
+                return null;
+            }
+        });
 
         return attr;
     }
@@ -927,12 +943,12 @@ public final class Attribution extends Atribucion {
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
 
-
         // TODO for Daniel Escoz Solana. Producción:
-        //     Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
+        // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
 
         // TODO for Daniel Escoz Solana.
-        // dependencias(attr.a("cod"), expr.a("cod"), desig.a("dir"), a(new IndirectStoreInstruction()), a(new LoadInstruction(desig.a("dir").valor())));
+        // dependencias(attr.a("cod"), expr.a("cod"), desig.a("dir"), a(new IndirectStoreInstruction()), a(new
+        // LoadInstruction(desig.a("dir").valor())));
         // calculo(attr.a("cod"), );
 
         dependencias(desig.a("etqh"), attr.a("etqh"));
@@ -942,9 +958,7 @@ public final class Attribution extends Atribucion {
         calculo(expr.a("etqh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), expr.a("etq"));
-        
-        //TODO pal pecho de Dani
-        calculo(attr.a("etq"), new SemFunWhatever!);
+        calculo(attr.a("etq"), new IncrementFun(2));
 
         return attr;
     }
