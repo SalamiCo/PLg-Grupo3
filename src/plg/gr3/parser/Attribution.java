@@ -14,6 +14,7 @@ import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
+import plg.gr3.parser.semfun.AndFun;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
 import plg.gr3.parser.semfun.IncrementFun;
 import plg.gr3.vm.instr.IndirectStoreInstruction;
@@ -1749,7 +1750,7 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
         // revisar el and:
         // Fact0.desig = Fact1.desig ˄ Shft.desig
-        calculo(attr.a("desig"), SEMFUN_AND);
+        calculo(attr.a("desig"), AndFun.INSTANCE);
 
         return attr;
     }
