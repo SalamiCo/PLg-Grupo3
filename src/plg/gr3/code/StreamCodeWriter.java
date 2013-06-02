@@ -125,6 +125,7 @@ public final class StreamCodeWriter extends CodeWriter {
         BooleanValue cond = inst.getConditionValue();
         int val = cond.getValue() ? 0b10 : 0b01;
         stream.writeByte(Instruction.OPCODE_BRANCH | val);
+        stream.writeInt(inst.getAddress());
     }
     
     private void writeReturn (ReturnInstruction inst) throws IOException {
@@ -133,6 +134,7 @@ public final class StreamCodeWriter extends CodeWriter {
     
     private void writeJump (JumpInstruction inst) throws IOException {
         stream.writeByte(Instruction.OPCODE_BRANCH | 0b00);
+        stream.writeInt(inst.getAddress());
     }
     
     private void writeDuplicate (DuplicateInstruction inst) throws IOException {

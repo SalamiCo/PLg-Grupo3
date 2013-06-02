@@ -26,4 +26,13 @@ public final class BranchInstruction extends Instruction {
     public BooleanValue getConditionValue () {
         return value;
     }
+    
+    @Override
+    public String toString () {
+        return "BRANCH-IF-" + (value.getValue() ? "TRUE" : "FALSE") + "(0x" + Integer.toHexString(address) + ")";
+    }
+    
+    public int getAddress () {
+        return address;
+    }
 }

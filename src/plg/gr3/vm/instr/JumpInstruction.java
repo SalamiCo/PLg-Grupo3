@@ -18,4 +18,12 @@ public final class JumpInstruction extends Instruction {
         vm.setProgramCounter(address);
     }
     
+    @Override
+    public String toString () {
+        return "JUMP(0x" + Integer.toHexString(address) + ")";
+    }
+    
+    public int getAddress () {
+        return address;
+    }
 }

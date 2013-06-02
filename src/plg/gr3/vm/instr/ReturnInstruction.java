@@ -8,4 +8,9 @@ public final class ReturnInstruction extends Instruction {
     public void execute (VirtualMachine vm) {
         vm.setProgramCounter(vm.popValue().toIntegerValue().getValue());
     }
+    
+    @Override
+    public String toString () {
+        return "RETURN";
+    }
 }
