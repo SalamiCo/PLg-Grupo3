@@ -1037,7 +1037,22 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParam_R1 (Lexeme ident, TAtributos expr) {
         regla("RParam -> IDENT ASIG Expr");
-        TAtributos attr = atributosPara("RParam");
+        TAtributos attr = atributosPara("RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh");
+
+        dependencias(expr.a("tsh"), attr.a("tsh"));
+        calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), expr.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS); // TODO ver como se hacen el atb error
+
+        dependencias(expr.a("etqh"), attr.a("etqh")); // TODO Como se suman cosas a los etq cuando añado codigo
+        calculo(expr.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), expr.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("nparams"), attr.a("nparams")); // TODO lo de sumar las cosas
+        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
 
         return attr;
     }
