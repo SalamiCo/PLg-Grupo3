@@ -311,7 +311,6 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("valor"), tPrim.a("valor"));
         calculo(attr.a("valor"), SEMFUN_ASIGNATION);
 
-        // TODO para dani, hacer el error
         // Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
         dependencias(attr.a("err"), tPrim.a("tipo"), constLit.a("tipo"), lexIdent);
         calculo(attr.a("err"), new SemFun() {
@@ -952,9 +951,10 @@ public final class Attribution extends Atribucion {
 
     // Inst
 
-    public TAtributos inst_R1 (TAtributos desig, TAtributos expr) {
+    public TAtributos inst_R1 (TAtributos desig, TAtributos expr, Lexeme asig) {
         regla("Inst -> Desig ASIG Expr");
         TAtributos attr = atributosPara("Inst", "cod", "etqh", "etq", "tsh", "err");
+        Atributo asigLex = atributoLexicoPara("ASIG", "lex", asig);
 
         dependencias(desig.a("tsh"), attr.a("tsh"));
         calculo(desig.a("tsh"), SEMFUN_ASIGNATION);
@@ -962,13 +962,34 @@ public final class Attribution extends Atribucion {
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
 
-        // TODO for Daniel Escoz Solana. Producción:
         // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
+        dependencias(attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), asigLex);
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                Type desigType = (Type) args[0].valor();
+                Type exprType = (Type) args[1].valor();
+                List<CompileError> exprErr = (List<CompileError>) args[2].valor();
+                List<CompileError> desigErr = (List<CompileError>) args[3].valor();
+                Lexeme lex = (Lexeme) args[4].valor();
+
+                CompileError err =
+                    (!desigType.compatible(exprType)) ? new AssignationTypeError(exprType, desigType, lex) : null;
+
+                return SEMFUN_ERRORS.eval(a(err), a(exprErr), a(desigErr));
+            }
+        });
 
         // TODO for Daniel Escoz Solana.
-        // dependencias(attr.a("cod"), expr.a("cod"), desig.a("dir"), a(new IndirectStoreInstruction()), a(new
-        // LoadInstruction(desig.a("dir").valor())));
-        // calculo(attr.a("cod"), );
+        dependencias(attr.a("cod"), expr.a("cod"), desig.a("dir"), desig.a("dir"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                // TODO DANI
+                return null;
+            }
+        });
 
         dependencias(desig.a("etqh"), attr.a("etqh"));
         calculo(desig.a("etqh"), SEMFUN_ASIGNATION);
