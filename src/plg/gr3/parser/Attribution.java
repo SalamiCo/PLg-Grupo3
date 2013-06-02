@@ -87,6 +87,11 @@ public final class Attribution extends Atribucion {
             return Collections.unmodifiableList(code);
         }
     };
+    
+    /** Función semántica para añadir en la tabla de símbolos */
+    private static final SemFun SEMFUN_ADD = new SemFun() {
+        
+    }
 
     /**
      * @param obj
@@ -354,12 +359,14 @@ public final class Attribution extends Atribucion {
     public TAtributos sTypes_R1 (TAtributos types) {
         regla("STypes -> TIPOS ILLAVE Types FLLAVE");
         TAtributos attr = atributosPara("STypes", "tsh", "ts", "err");
+        
         dependencias(attr.a("tsh"), types.a("tsh"));
-        dependencias(attr.a("ts"), types.a("ts"));
-        dependencias(attr.a("err"), types.a("err"));
-
         calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), types.a("ts"));
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), types.a("err"));
         calculo(attr.a("err"), SEMFUN_ASIGNATION);
 
         return attr;
@@ -381,13 +388,14 @@ public final class Attribution extends Atribucion {
     public TAtributos types_R1 (TAtributos types_1, TAtributos type) {
         regla("Types -> Types PYC Type");
         TAtributos attr = atributosPara("Types", "tsh", "ts", "err");
-        dependencias(types_1.a("tsh"), attr.a("tsh"));
-        dependencias(type.a("tsh"), attr.a("ts"));
-        dependencias(attr.a("ts"), types_1.a("ts"), type.a("id"), type.a("tipo"));
-        dependencias(attr.a("err"), types_1.a("ts"), type.a("id"));
 
+        dependencias(types_1.a("tsh"), attr.a("tsh"));
         calculo(types_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(type.a("tsh"), attr.a("ts"));
         calculo(type.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), types_1.a("ts"), type.a("id"), type.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
 
             @Override
@@ -398,6 +406,8 @@ public final class Attribution extends Atribucion {
                 return ts;
             }
         });
+
+        dependencias(attr.a("err"), types_1.a("ts"), type.a("id"));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -406,11 +416,11 @@ public final class Attribution extends Atribucion {
     public TAtributos types_R2 (TAtributos type) {
         regla("Types -> Type");
         TAtributos attr = atributosPara("Types", "tsh", "ts", "err");
-        dependencias(type.a("tsh"), attr.a("tsh"));
-        dependencias(attr.a("ts"), type.a("ts"), type.a("id"), type.a("tipo"));
-        dependencias(type.a("err"), type.a("ts"), type.a("id"));
 
+        dependencias(type.a("tsh"), attr.a("tsh"));
         calculo(type.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), type.a("ts"), type.a("id"), type.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
 
             @Override
@@ -421,6 +431,8 @@ public final class Attribution extends Atribucion {
                 return ts;
             }
         });
+
+        dependencias(type.a("err"), type.a("ts"), type.a("id"));
         calculo(type.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -431,19 +443,18 @@ public final class Attribution extends Atribucion {
     public TAtributos type_R1 (TAtributos typeDesc, Symbol ident) {
         regla("Type -> TIPO TypeDesc IDENT");
         TAtributos attr = atributosPara("Type", "ts", "id", "clase", "nivel", "tipo");
-        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
+        
         dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
         dependencias(attr.a("id"), lexIdent);
-        // TODO ¿son dependencias si no se usa?
-        // dependencias(attr.a("clase"), a("type"));
-        // dependencias(attr.a("nivel"), whatever);
+        calculo(attr.a("id"), SEMFUN_ASIGNATION);
 
         // TODO para Dani
         // Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc),
-// Type.id)>
+            // Type.id)>
 
-        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
-        calculo(attr.a("id"), SEMFUN_ASIGNATION);
         calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
 
         return attr;
@@ -452,9 +463,10 @@ public final class Attribution extends Atribucion {
     public TAtributos type_R2 () {
         regla("Type -> $");
         TAtributos attr = atributosPara("Type", "ts", "tsh", "err");
+        
         dependencias(attr.a("ts"), attr.a("tsh"));
-
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
         calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
@@ -465,12 +477,14 @@ public final class Attribution extends Atribucion {
     public TAtributos sVars_R1 (TAtributos vars) {
         regla("SVars -> VARS ILLAVE Vars FLLAVE");
         TAtributos attr = atributosPara("SVars", "tsh", "ts", "err");
-        dependencias(vars.a("tsh"), attr.a("tsh"));
-        dependencias(attr.a("ts"), vars.a("ts"));
-        dependencias(attr.a("err"), vars.a("err"));
 
+        dependencias(vars.a("tsh"), attr.a("tsh"));
         calculo(vars.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), vars.a("ts"));
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), vars.a("err"));
         calculo(attr.a("err"), SEMFUN_ASIGNATION);
 
         return attr;
@@ -479,9 +493,10 @@ public final class Attribution extends Atribucion {
     public TAtributos sVars_R2 () {
         regla("SVars -> $");
         TAtributos attr = atributosPara("SVars", "ts", "tsh");
+        
         dependencias(attr.a("ts"), attr.a("tsh"));
-
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+        
         calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
@@ -492,12 +507,14 @@ public final class Attribution extends Atribucion {
     public TAtributos vars_R1 (TAtributos vars_1, TAtributos var) {
         regla("Vars -> Vars PYC Var");
         TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir");
-        dependencias(vars_1.a("tsh"), attr.a("tsh"));
-        dependencias(var.a("tsh"), vars_1.a("ts"));
-        dependencias(attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), attr.a("dir"), var.a("tipo"));
 
+        dependencias(vars_1.a("tsh"), attr.a("tsh"));
         calculo(vars_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(var.a("tsh"), vars_1.a("ts"));
         calculo(var.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), attr.a("dir"), var.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
 
             @Override
@@ -514,18 +531,18 @@ public final class Attribution extends Atribucion {
         });
 
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
-
+        
         return attr;
     }
 
     public TAtributos vars_R2 (TAtributos var) {
         regla("Vars -> Var");
         TAtributos attr = atributosPara("Vars", "tsh", "ts", "err");
-        dependencias(var.a("tsh"), attr.a("tsh"));
-        dependencias(attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), var.a("dir"), var.a("tipo"));
-        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"));
 
+        dependencias(var.a("tsh"), attr.a("tsh"));
         calculo(var.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), var.a("dir"), var.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
 
             @Override
@@ -540,6 +557,8 @@ public final class Attribution extends Atribucion {
                 return ts;
             }
         });
+
+        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -550,15 +569,19 @@ public final class Attribution extends Atribucion {
     public TAtributos var_R1 (TAtributos typeDesc, Symbol ident) {
         regla("Var -> VAR TypeDesc IDENT");
         TAtributos attr = atributosPara("Var", "tsh", "id", "nivel", "tipo");
-        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
+        
         dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
         dependencias(attr.a("id"), lexIdent);
-        dependencias(attr.a("nivel"), a(Scope.GLOBAL));
+        calculo(attr.a("id"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("nivel"), a(Scope.GLOBAL)); 
+        calculo(attr.a("nivel"), SEMFUN_ASIGNATION);
+
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), attr.a("id"));
 
-        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
-        calculo(attr.a("id"), SEMFUN_ASIGNATION);
-        calculo(attr.a("nivel"), SEMFUN_ASIGNATION);
         // TODO para Dani. Oh dear god of PLg, please do me (wink, wink).
         // Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
         // si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
@@ -570,8 +593,8 @@ public final class Attribution extends Atribucion {
         regla("Var -> $");
         TAtributos attr = atributosPara("Var", "ts", "tsh", "err");
         dependencias(attr.a("ts"), attr.a("tsh"));
-
         calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
         calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
@@ -726,7 +749,16 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sInsts_R1 (TAtributos insts) {
         regla("SInsts -> INSTRUCTIONS ILLAVE Insts FLLAVE");
-        TAtributos attr = atributosPara("SInsts", "etqh");
+        TAtributos attr = atributosPara("SInsts", "cod", "etq", "etqh");
+
+        dependencias(attr.a("cod"), insts.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(insts.a("etqh"), attr.a("etqh"));
+        calculo(insts.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), insts.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -735,14 +767,35 @@ public final class Attribution extends Atribucion {
 
     public TAtributos insts_R1 (TAtributos insts_1, TAtributos inst) {
         regla("Insts -> Insts PYC Inst");
-        TAtributos attr = atributosPara("Insts");
+        TAtributos attr = atributosPara("Insts", "cod", "etqh", "etq");
+
+        dependencias(attr.a("cod"), insts_1.a("cod"), inst.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(insts_1.a("etqh"), attr.a("etqh"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(inst.a("etqh"), insts_1.a("etq"));
+        calculo(inst.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), inst.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
 
     public TAtributos insts_R2 (TAtributos inst) {
         regla("Insts -> Inst");
-        TAtributos attr = atributosPara("Insts");
+        TAtributos attr = atributosPara("Insts", "cod", "etqh", "etq");
+
+        dependencias(attr.a("cod"), inst.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(inst.a("etqh"), attr.a("etqh"));
+        calculo(inst.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), inst.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -942,14 +995,33 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sfParams_R1 (TAtributos fParams) {
         regla("SFParams -> FParams");
-        TAtributos attr = atributosPara("SFParams");
+        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "err");
+
+        // FParams
+        dependencias(fParams.a("tsh"), attr.a("tsh"));
+        calculo(fParams.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), fParams.a("ts"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("dir"), fParams.a("dir"));
+        calculo(attr.a("dir"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("err"), fParams.a("err"));
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
 
     public TAtributos sfParams_R2 () {
         regla("SFParams -> $");
-        TAtributos attr = atributosPara("SFParams");
+        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "err");
+
+        // sfParams
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), SEMFUN_ASIGNATION);
+
+        calculo(attr.a("err"), SEMFUN_ERRORS);
 
         return attr;
     }
@@ -958,7 +1030,32 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParams_R1 (TAtributos fParams_1, TAtributos fParam) {
         regla("FParams -> FParams COMA FParam");
-        TAtributos attr = atributosPara("FParams");
+        TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "id", "clase", "tipo");
+
+        dependencias(fParams_1.a("tsh"), attr.a("tsh"));
+        calculo(fParams_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(fParam.a("tsh"), fParams_1.a("tsh"));
+        calculo(fParam.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
+        calculo(attr.a("ts"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable ts = (SymbolTable) args[0].valor();
+                String ident = (String) args[1].valor();
+                Scope scope = (Scope) args[2].valor();
+                int address = (int) args[3].valor();
+                Type type = (Type) args[4].valor();
+                ts.putVariable(ident, scope, address, type);
+
+                return ts;
+            }
+        });
+
+        dependencias(attr.a("err"), fParam.a("ts"), fParam.a("id"), a(Scope.LOCAL));
+        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
     }
