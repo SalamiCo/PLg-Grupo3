@@ -322,7 +322,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Insts.etq = Inst.etq
 	 
 	Inst → Desig asig Expr
-		Inst.cod = Expr.cod || apila(Desig.dir)|| desapila-ind
+		Inst.cod = Expr.cod || Desig.cod || desapila-ind
 		Desig.etqh = Inst.etqh 
 		Expr.etqh = Desig.etq 
 		Inst.etq = Expr.etq + 2 
@@ -499,7 +499,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 	Fact → Shft
 		Fact.cod = Shft.cod
-		Shft.eqth = Fact.etqh
+		Shft.etqh = Fact.etqh
 		Fact.etq = Shft.etq
 
 	Shft → Unary Op3 Shft

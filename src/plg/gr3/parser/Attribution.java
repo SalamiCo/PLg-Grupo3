@@ -6,18 +6,24 @@ import java.util.Collections;
 import java.util.List;
 
 import java_cup.runtime.Symbol;
+import plg.gr3.data.BinaryOperator;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
+import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.OperatorError;
+import plg.gr3.parser.semfun.AndFun;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
 import plg.gr3.parser.semfun.IncrementFun;
+import plg.gr3.vm.instr.IndirectStoreInstruction;
+import plg.gr3.vm.instr.InputInstruction;
 import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
 import plg.gr3.vm.instr.OutputInstruction;
 import plg.gr3.vm.instr.StopInstruction;
+import plg.gr3.vm.instr.StoreInstruction;
 import plg.gr3.vm.instr.Swap1Instruction;
 import plg.gr3.vm.instr.Swap2Instruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
@@ -293,7 +299,7 @@ public final class Attribution extends Atribucion {
 
     // Const
 
-    public TAtributos const_R1 (TAtributos tPrim, Symbol ident, TAtributos lit) {
+    public TAtributos const_R1 (TAtributos tPrim, Lexeme ident, TAtributos constLit) {
         regla("Const -> CONST TPrim IDENT ASIG ConstLit");
         TAtributos attr = atributosPara("Const", "tsh", "ts", "id", "tipo", "err", "valor");
         LAtributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
@@ -310,8 +316,22 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("valor"), tPrim.a("valor"));
         calculo(attr.a("valor"), SEMFUN_ASIGNATION);
 
-        // TODO para dani, hacer el error
         // Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
+        dependencias(attr.a("err"), tPrim.a("tipo"), constLit.a("tipo"), lexIdent);
+        calculo(attr.a("err"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type left = (Type) args[0].valor();
+                Type right = (Type) args[1].valor();
+                Lexeme lex = (Lexeme) args[2].valor();
+
+                if (!left.compatible(right)) {
+                    return new AssignationTypeError(left, right, lex);
+                }
+
+                return null;
+            }
+        });
 
         return attr;
     }
@@ -944,9 +964,10 @@ public final class Attribution extends Atribucion {
 
     // Inst
 
-    public TAtributos inst_R1 (TAtributos desig, TAtributos expr) {
+    public TAtributos inst_R1 (TAtributos desig, TAtributos expr, Lexeme asig) {
         regla("Inst -> Desig ASIG Expr");
         TAtributos attr = atributosPara("Inst", "cod", "etqh", "etq", "tsh", "err");
+        Atributo asigLex = atributoLexicoPara("ASIG", "lex", asig);
 
         dependencias(desig.a("tsh"), attr.a("tsh"));
         calculo(desig.a("tsh"), SEMFUN_ASIGNATION);
@@ -954,13 +975,37 @@ public final class Attribution extends Atribucion {
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
 
+        // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
+        dependencias(attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), asigLex);
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                Type desigType = (Type) args[0].valor();
+                Type exprType = (Type) args[1].valor();
+                List<CompileError> exprErr = (List<CompileError>) args[2].valor();
+                List<CompileError> desigErr = (List<CompileError>) args[3].valor();
+                Lexeme lex = (Lexeme) args[4].valor();
 
-        // TODO for Daniel Escoz Solana. Producción:
-        //     Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
+                CompileError err =
+                    (!desigType.compatible(exprType)) ? new AssignationTypeError(exprType, desigType, lex) : null;
 
-        // TODO for Daniel Escoz Solana.
-        // dependencias(attr.a("cod"), expr.a("cod"), desig.a("dir"), a(new IndirectStoreInstruction()), a(new LoadInstruction(desig.a("dir").valor())));
-        // calculo(attr.a("cod"), );
+                return SEMFUN_ERRORS.eval(a(err), a(exprErr), a(desigErr));
+            }
+        });
+
+        dependencias(attr.a("cod"), expr.a("cod"), desig.a("cod"), desig.a("tipo"));
+        calculo(attr.a("cod"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                List<Instruction> codeExpr = (List<Instruction>) args[0].valor();
+                List<Instruction> codeDesig = (List<Instruction>) args[1].valor();
+                Type type = (Type) args[2].valor();
+
+                return SEMFUN_CONCAT.eval(a(codeExpr), a(codeDesig), a(new IndirectStoreInstruction(type)));
+            }
+        });
 
         dependencias(desig.a("etqh"), attr.a("etqh"));
         calculo(desig.a("etqh"), SEMFUN_ASIGNATION);
@@ -969,9 +1014,7 @@ public final class Attribution extends Atribucion {
         calculo(expr.a("etqh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), expr.a("etq"));
-        
-        //TODO pal pecho de Dani
-        calculo(attr.a("etq"), new SemFunWhatever!);
+        calculo(attr.a("etq"), new IncrementFun(2));
 
         return attr;
     }
@@ -987,14 +1030,21 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("err"), SEMFUN_ERRORS);
 
         dependencias(attr.a("cod"), desig.a("tipo"), desig.a("dir"));
-        // TODO
-        calculo(attr.a("cod"), SEMFUN_CONCAT);
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
+                Integer addr = (Integer) args[1].valor();
+
+                return SEMFUN_CONCAT.eval(a(new InputInstruction(type)), a(new StoreInstruction(addr, type)));
+            }
+        });
 
         dependencias(desig.a("etqh"), attr.a("etq"));
-        // TODO calculo
+        calculo(desig.a("etqh"), new IncrementFun(1));
 
         dependencias(attr.a("etq"), desig.a("etq"));
-        // TODO
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
@@ -1016,7 +1066,7 @@ public final class Attribution extends Atribucion {
         calculo(expr.a("etqh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), expr.a("etqh"));
-        // TODO sumar
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
@@ -1031,7 +1081,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), attr.a("etqh"));
-        // TODO sumar
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
@@ -1046,7 +1096,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("etq"), attr.a("etqh"));
-        // TODO suma
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
@@ -1258,22 +1308,38 @@ public final class Attribution extends Atribucion {
 
     public TAtributos rParam_R1 (Symbol ident, TAtributos expr) {
         regla("RParam -> IDENT ASIG Expr");
-        TAtributos attr = atributosPara("RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh");
+        TAtributos attr =
+            atributosPara(
+                "RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog", "tipo", "desig");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), SEMFUN_ASIGNATION);
 
         dependencias(attr.a("err"), expr.a("err"));
-        calculo(attr.a("err"), SEMFUN_ERRORS); // TODO ver como se hacen el atb error
+        // calculo(attr.a("err"), SEMFUN_ERRORS); // TODO ver como se hacen el atb error
+
+        dependencias(
+            attr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprog"), expr.a("tipo"),
+            expr.a("desig"));
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                // TODO
+
+                return false;
+            }
+        });
 
         dependencias(expr.a("etqh"), attr.a("etqh"));
         calculo(expr.a("etqh"), new IncrementFun(6));
 
         dependencias(attr.a("etq"), expr.a("etq"));
-        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
+        calculo(attr.a("etq"), new IncrementFun(1));
 
-        dependencias(attr.a("nparams"), attr.a("nparams")); // TODO lo de sumar las cosas
-        calculo(attr.a("nparams"), SEMFUN_ASIGNATION);
+        dependencias(attr.a("nparams"), attr.a("nparams"));
+        calculo(attr.a("nparams"), new IncrementFun(1));
 
         return attr;
     }
@@ -1728,21 +1794,74 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fact_R1 (TAtributos fact_1, TAtributos op2, TAtributos shft) {
         regla("Fact -> Fact Op2 Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig");
+
+        dependencias(attr.a("tipo"), fact_1.a("tipo"), op2.a("op"), shft.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type1 = (Type) args[0].valor();
+                BinaryOperator op = (BinaryOperator) args[1].valor();
+                Type type2 = (Type) args[2].valor();
+
+                return op.getApplyType(type1, type2);
+            }
+        });
+
+        dependencias(fact_1.a("tsh"), attr.a("tsh"));
+        calculo(fact_1.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("tsh"), attr.a("tsh"));
+        calculo(shft.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
+        // revisar el and:
+        // Fact0.desig = Fact1.desig ˄ Shft.desig
+
+        calculo(attr.a("desig"), AndFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos fact_R2 (TAtributos fact_1, TAtributos shft) {
         regla("Fact -> Fact AND Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etq");
+
+        // TODO
+        // Fact → Fact and Shft
+        // Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
+        // Fact1.tsh = Fact0.tsh
+        // Shft.tsh = Fact0.tsh
+        // Fact0.desig = Fact1.desig ˄ Shft.desig
+        // Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+        // Fact1.etqh = = Fact0.etqh
+        // Shft.etqh = Fact1.etq + 3
+        // Fact0.etq = Shft.etq
 
         return attr;
     }
 
     public TAtributos fact_R3 (TAtributos shft) {
         regla("Fact -> Shft");
-        TAtributos attr = atributosPara("Fact");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), shft.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("tsh"), attr.a("tsh"));
+        calculo(shft.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), shft.a("desig"));
+        calculo(attr.a("desig"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), shft.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(shft.a("etqh"), attr.a("etqh"));
+        calculo(shft.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), shft.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
@@ -1751,14 +1870,56 @@ public final class Attribution extends Atribucion {
 
     public TAtributos shft_R1 (TAtributos unary, TAtributos op3, TAtributos shft_1) {
         regla("Shft -> Unary Op3 Shft");
-        TAtributos attr = atributosPara("Shft");
+        TAtributos attr = atributosPara("Shft", "tsh", "desig", "tipo", "cod", "etqh", "etq");
+
+        dependencias(attr.a("tipo"), attr.a("tipo")); // TODO el tipo Func
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(unary.a("tsh"), attr.a("tsh"));
+        calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("tsh"), shft_1.a("tsh"));
+        calculo(attr.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig"));
+        calculo(attr.a("desig"), AndFun.INSTANCE);
+
+        dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
+        calculo(attr.a("cod"), SEMFUN_CONCAT);
+
+        dependencias(unary.a("etqh"), attr.a("etqh"));
+        calculo(unary.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(shft_1.a("etqh"), unary.a("etq"));
+        calculo(shft_1.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), shft_1.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
 
     public TAtributos shft_R2 (TAtributos unary) {
         regla("Shft -> Unary");
-        TAtributos attr = atributosPara("Shft");
+        TAtributos attr = atributosPara("Shft", "tsh", "tipo", "desig", "cod", "etqh", "etq");
+
+        dependencias(unary.a("tsh"), attr.a("tsh"));
+        calculo(unary.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("tipo"), unary.a("tipo"));
+        calculo(attr.a("tipo"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("desig"), unary.a("desig"));
+        calculo(attr.a("desig"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("cod"), unary.a("cod"));
+        calculo(attr.a("cod"), SEMFUN_ASIGNATION);
+
+        dependencias(unary.a("etqh"), attr.a("etqh"));
+        calculo(unary.a("etqh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("etq"), unary.a("etq"));
+        calculo(attr.a("etq"), SEMFUN_ASIGNATION);
 
         return attr;
     }
