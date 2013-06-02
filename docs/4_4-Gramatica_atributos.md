@@ -35,6 +35,9 @@
         Const.clase = const
         Const.nivel = global
         Const.tipo = <t:TPrim.tipo, tam:1>
+
+        // TODO
+        // añadir valor aquí
         Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
 
     Const → ɛ
@@ -117,7 +120,7 @@
     SSubprogs → subprograms illave fllave 
 
     SSubprogs → ɛ
-        SSubprogs = false
+        SSubprogs.err = false
 
     Subprogs → Subprogs Subprog
         Subprogs1.tsh = Subprogs0.tsh
@@ -188,7 +191,7 @@
 	Insts → Insts pyc Inst
 		Insts1.tsh = Insts0.tsh
 		Inst.tsh = Insts0.tsh
-		SInsts.err = Insts.err ∨ Inst.err
+		Insts0.err = Insts1.err ∨ Inst.err
 
 	Insts → Inst
 		Inst.tsh = Insts.tsh
@@ -281,13 +284,15 @@
 
 	Desig → ident
 		Desig.tipo = Desig.tsh[ident.lex].tipo
-		Desig.err = ¬existe(Desig.tsh, ident) ∨ ¬esVariable(Expr.tsh, ident.lex)
+		Desig.err = ¬existe(Desig.tsh, ident.lex) ∨ ¬esVariable(Desig.tsh, ident.lex)
 
 	Desig → Desig icorchete Expr fcorchete
+		Desig1.tsh = Desig0.tsh
 		Desig0.tipo = Desig1.tipo
 		Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
 
 	Desig → Desig barrabaja litnat
+		Desig1.tsh = Desig0.tsh
 		Desig0.tipo = Desig1.tipo
 		Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
 
