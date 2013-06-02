@@ -438,7 +438,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos types_R1 (TAtributos types_1, TAtributos type) {
         regla("Types -> Types PYC Type");
-        TAtributos attr = atributosPara("Types", "tsh", "ts", "dir", "dirh", "err");
+        TAtributos attr = atributosPara("Types", "tsh", "ts", "dir", "dirh", "tipo", "err");
 
         dependencias(types_1.a("tsh"), attr.a("tsh"));
         calculo(types_1.a("tsh"), SEMFUN_ASIGNATION);
@@ -452,8 +452,16 @@ public final class Attribution extends Atribucion {
         dependencias(type.a("dirh"), types_1.a("dir"));
         calculo(type.a("dirh"), SEMFUN_ASIGNATION);
 
-        // DANI for Daniel Escoz
-        // Types0.dir = Type.dir + desplazamiento(Type.tipo, Types.id)
+        dependencias(attr.a("dir"), type.a("dir"), type.a("tipo"));
+        calculo(attr.a("dir"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                int varDir = (Integer) args[0].valor();
+                Type type = (Type) args[1].valor();
+
+                return varDir + type.getSize();
+            }
+        });
 
         dependencias(attr.a("ts"), types_1.a("ts"), type.a("id"), type.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
@@ -475,7 +483,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos types_R2 (TAtributos type) {
         regla("Types -> Type");
-        TAtributos attr = atributosPara("Types", "tsh", "dirh", "ts", "dir", "err");
+        TAtributos attr = atributosPara("Types", "tsh", "dirh", "ts", "dir", "tipo", "err");
 
         dependencias(type.a("tsh"), attr.a("tsh"));
 
@@ -486,6 +494,17 @@ public final class Attribution extends Atribucion {
 
         dependencias(type.a("dirh"), attr.a("dirh"));
         calculo(type.a("dirh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("dir"), type.a("dir"), type.a("tipo"));
+        calculo(attr.a("dir"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                int varDir = (Integer) args[0].valor();
+                Type type = (Type) args[1].valor();
+
+                return varDir + type.getSize();
+            }
+        });
 
         dependencias(attr.a("ts"), type.a("ts"), type.a("id"), type.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
@@ -1422,13 +1441,30 @@ public final class Attribution extends Atribucion {
     // FParams
     public TAtributos fParams_R1 (TAtributos fParams_1, TAtributos fParam) {
         regla("FParams -> FParams COMA FParam");
-        TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "id", "clase", "tipo");
+        TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "dirh", "id", "clase", "tipo");
 
         dependencias(fParams_1.a("tsh"), attr.a("tsh"));
         calculo(fParams_1.a("tsh"), SEMFUN_ASIGNATION);
 
+        dependencias(fParams_1.a("dirh"), attr.a("dirh"));
+        calculo(fParams_1.a("dirh"), SEMFUN_ASIGNATION);
+
         dependencias(fParam.a("tsh"), fParams_1.a("tsh"));
         calculo(fParam.a("tsh"), SEMFUN_ASIGNATION);
+
+        dependencias(fParam.a("dirh"), fParams_1.a("dirh"));
+        calculo(fParam.a("dirh"), SEMFUN_ASIGNATION);
+
+        dependencias(attr.a("dir"), fParam.a("dir"), fParam.a("tipo"));
+        calculo(attr.a("dir"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                int varDir = (Integer) args[0].valor();
+                Type type = (Type) args[1].valor();
+
+                return varDir + type.getSize();
+            }
+        });
 
         dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
