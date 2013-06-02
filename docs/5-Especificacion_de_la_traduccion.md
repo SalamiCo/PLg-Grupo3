@@ -410,9 +410,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		RParams1.etqh = RParams0.etqh
 		RParam.etqh = RParams1.etq
 		RParams.etq = RParam.etq  
-		RParams1.paramsh = RParams0.paramsh
-		RParam.paramsh = RParams1.params
-		RParams.params = RParam.params  
+		RParams1.nparamsh = RParams0.nparamsh
+		RParam.nparamsh = RParams1.nparams
+		RParams.nparams = RParam.nparams 
 
 	RParams → RParam 
 		RParams.cod = RParam.cod

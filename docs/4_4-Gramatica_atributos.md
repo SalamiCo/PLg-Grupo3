@@ -270,6 +270,7 @@
 		RParam.nombresubprogh = RParams0.nombresubprogh	
 
 	RParams → RParam
+		RParam.tsh = RParams.tsh
 		RParam.nparamsh = RParams.nparamsh
 		RParams.nparams = RParam.nparams
 		RParam.nombresubprogh = RParams.nombresubprogh
