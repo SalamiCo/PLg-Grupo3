@@ -1077,7 +1077,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(insts_1.a("etqh"), attr.a("etqh"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        calculo(insts_1.a("etqh"), AsignationFun.INSTANCE);
 
         dependencias(inst.a("etqh"), insts_1.a("etq"));
         calculo(inst.a("etqh"), AsignationFun.INSTANCE);
@@ -1155,14 +1155,14 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(desig.a("etqh"), attr.a("etqh"));
-        calculo(desig.a("etqh"), AsignationFun.INSTANCE);
-
-        dependencias(expr.a("etqh"), desig.a("etq"));
+        dependencias(expr.a("etqh"), attr.a("etqh"));
         calculo(expr.a("etqh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("etq"), expr.a("etq"));
-        calculo(attr.a("etq"), new IncrementFun(2));
+        dependencias(desig.a("etqh"), expr.a("etq"));
+        calculo(desig.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), desig.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
     }
@@ -1171,6 +1171,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> IN IPAR Desig FPAR");
         TAtributos attr = atributosPara("Inst", "cod", "etqh", "etq", "tsh", "err");
 
+        dependencias(desig.a("tsh"), attr.a("tsh"));
         calculo(desig.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("err"), desig.a("err"));
@@ -1254,12 +1255,20 @@ public final class Attribution extends Atribucion {
         regla("Inst -> IF Expr THEN Insts ElseIf");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos inst_R7 (TAtributos expr, TAtributos insts) {
         regla("Inst -> WHILE Expr DO Insts ENDWHILE");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
+
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -1268,12 +1277,20 @@ public final class Attribution extends Atribucion {
         regla("Inst -> InstCall");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos inst_R9 () {
         regla("Inst -> $");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
+
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -1734,30 +1751,36 @@ public final class Attribution extends Atribucion {
     public TAtributos subprog_R1 (Lexeme ident, TAtributos sfParams, TAtributos sVars, TAtributos sInsts) {
         regla("Subprog -> SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE");
         TAtributos attr = atributosPara("Subprog", "dir", "dirh", "tsh", "ts", "cod", "etq", "etqh", "err");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(sfParams.a("dirh"), a(0));
         calculo(sfParams.a("dirh"), AsignationFun.INSTANCE);
 
-        // TODO SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
-        // dependencias(attr.a("tsh"));
-        dependencias(attr.a("tsh"), sfParams.a("ts"), a(ident.getLexeme()), attr.a("etqh"));
-        calculo(attr.a("tsh"), new SemFun() {
+        dependencias(sfParams.a("tsh"), attr.a("tsh"));
+        calculo(sfParams.a("tsh"), new SemFun() {
 
             @Override
             public Object eval (Atributo... args) {
-                SymbolTable st = new SymbolTable(); // TODO hacer lo de clonar y demas
-                String ident = (String) args[1].valor();
-                int address = (int) args[2].valor();
-                List<Parameter> params = null; // FIXME
-
-                st.putSubprogram(ident, params, address);
-
-                return st;
+                SymbolTable table = (SymbolTable) args[0].valor();
+                return new SymbolTable(table);
             }
         });
 
-        dependencias(sVars.a("tsh"), sfParams.a("ts"));
-        calculo(sVars.a("tsh"), AsignationFun.INSTANCE);
+        dependencias(sVars.a("tsh"), sfParams.a("ts"), identLex, sfParams.a("params"), attr.a("etqh"));
+        calculo(sVars.a("tsh"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+                List<Parameter> params = (List<Parameter>) args[2].valor();
+                Integer address = (Integer) args[3].valor();
+
+                table.putSubprogram(ident.getLexeme(), params, address);
+
+                return table;
+            }
+        });
 
         dependencias(sVars.a("dirh"), sfParams.a("dir"));
         calculo(sVars.a("dirh"), AsignationFun.INSTANCE);
@@ -1765,9 +1788,49 @@ public final class Attribution extends Atribucion {
         dependencias(sInsts.a("tsh"), sVars.a("ts"));
         calculo(sInsts.a("tsh"), AsignationFun.INSTANCE);
 
-        // TODO Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨
+        // TODO marina Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨
 // parametrosNoRepetidos(SParams.ts, ident)
         // dependencias(attr.a("err"), attr.a("tsh"),)
+
+        dependencias(attr.a("err"), sfParams.a("err"), sInsts.a("err"), sVars.a("err"), identLex, sfParams.a("ts"));
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                List<CompileError> sfparamsErr = (List<CompileError>) args[0].valor();
+                List<CompileError> sInstsErr = (List<CompileError>) args[1].valor();
+                List<CompileError> sVarsErr = (List<CompileError>) args[2].valor();
+
+                SymbolTable ts = (SymbolTable) args[4].valor();
+                Lexeme ident = (Lexeme) args[3].valor();
+                // Comprobamos que el identificador del subprograma no exista previamente en la tabla de símbolos
+                CompileError err1 =
+                    (!ts.hasIdentifier(ident.getLexeme())) ? new DuplicateIdentifierError(ident.getLexeme(), ident
+                        .getLine(), ident.getColumn()) : null;
+
+                // Comprobamos que no haya parametros formales declarados repetidos
+                List<Parameter> parametros = ts.getIdentifierParams(ident.getLexeme());
+
+                Iterator<Parameter> it1 = parametros.iterator();
+                while (it1.hasNext()) {
+                    Parameter element1 = it1.next();
+                    Iterator<Parameter> it2 = parametros.iterator();
+                    while (it2.hasNext()) {
+                        Parameter element2 = it2.next();
+                        if (element1 != element2) {
+                            if (element1.getName().equals(element2.getName())) {
+                                CompileError err2 =
+                                    new DuplicateIdentifierError(element2.getName(), ident.getLine(), ident.getColumn());
+                                ConcatErrorsFun.INSTANCE.eval(a(err2));
+                            }
+                        }
+                    }
+                }
+
+                return ConcatErrorsFun.INSTANCE.eval(a(sfparamsErr), a(sInstsErr), a(sVarsErr), a(err1));
+
+            }
+        });
 
         dependencias(
             attr.a("cod"), sInsts.a("cod"), a(new LoadInstruction(1, Type.INTEGER)), a(new PushInstruction(
@@ -1785,6 +1848,22 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("etq"), sInsts.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(3));
+
+        dependencias(attr.a("ts"), attr.a("tsh"), identLex, sfParams.a("params"), attr.a("etqh"));
+        calculo(attr.a("ts"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+                List<Parameter> params = (List<Parameter>) args[2].valor();
+                Integer address = (Integer) args[3].valor();
+
+                table.putSubprogram(ident.getLexeme(), params, address);
+
+                return table;
+            }
+        });
 
         return attr;
     }
@@ -1809,7 +1888,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         dependencias(attr.a("params"), fParams.a("params"));
-        calculo(attr.a("params"), ConcatErrorsFun.INSTANCE);
+        calculo(attr.a("params"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -1860,6 +1939,7 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("params"), fParams_1.a("params"), fParam.a("param"));
         calculo(attr.a("params"), new SemFun() {
+            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
                 List<Parameter> params = (List<Parameter>) args[0].valor();
@@ -1948,6 +2028,9 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), AsignationFun.INSTANCE);
 
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("id"), identLex);
         calculo(attr.a("id"), AsignationFun.INSTANCE);
 
@@ -1976,6 +2059,9 @@ public final class Attribution extends Atribucion {
         regla("FParam -> TypeDesc MUL IDENT");
         TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo", "dir", "dirh", "param");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
+
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), AsignationFun.INSTANCE);
@@ -2036,6 +2122,10 @@ public final class Attribution extends Atribucion {
                     .getLine(), ident.getColumn()) : null;
             }
         });
+
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         // DANI dependencias y calculo de cod
 
@@ -2119,6 +2209,10 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("desig"), term_1.a("desig"), term_2.a("desig"));
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -2137,6 +2231,12 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("desig"), term.a("desig"));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), term.a("etq"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
+        dependencias(term.a("etqh"), attr.a("etqh"));
+        calculo(term.a("etqh"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2367,23 +2467,113 @@ public final class Attribution extends Atribucion {
 
     // Unary
 
-    public TAtributos unary_R1 (TAtributos op4, TAtributos unary_1) {
+    public TAtributos unary_R1 (TAtributos op4, TAtributos unary_1) { // TODO Marina
         regla("Unary -> Op4 Unary");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq", "op", "type");
+
+        dependencias(unary_1.a("tsh"), attr.a("tsh"));
+        calculo(unary_1.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), unary_1.a("desig"));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(unary_1.a("etqh"), attr.a("etqh"));
+        calculo(unary_1.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), unary_1.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
+
+        dependencias(attr.a("cod"), unary_1.a("cod"), op4.a("op"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1]);
+            }
+        });
+
+        dependencias(attr.a("tipo"), unary_1.a("tipo"), op4.a("op"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                Type t = (Type) attrs[0].valor();
+                UnaryOperator op = (UnaryOperator) attrs[1].valor();
+
+                return op.getApplyType(t);
+            }
+        });
+
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
     }
 
-    public TAtributos unary_R2 (TAtributos cast, TAtributos paren) {
+    public TAtributos unary_R2 (TAtributos cast, TAtributos paren) {// TODO Marina
         regla("Unary -> IPAR Cast FPAR Paren");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "op", "type");
+
+        dependencias(paren.a("tsh"), attr.a("tsh"));
+        calculo(paren.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), paren.a("desig"));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(paren.a("etqh"), attr.a("etqh"));
+        calculo(paren.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), paren.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
+
+        dependencias(attr.a("cod"), paren.a("cod"), cast.a("type"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1]);
+            }
+        });
+
+        dependencias(attr.a("tipo"), cast.a("tipo"), paren.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... attrs) {
+                Type tCast = (Type) attrs[0].valor();
+                Type tParen = (Type) attrs[1].valor();
+
+                return tCast.canCast(tCast, tParen);
+            }
+        });
 
         return attr;
     }
 
-    public TAtributos unary_R3 (TAtributos paren) {
+    public TAtributos unary_R3 (TAtributos paren) { // TODO Marina
         regla("Unary -> Paren");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "op", "type");
+
+        dependencias(paren.a("tsh"), attr.a("tsh"));
+        calculo(paren.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), paren.a("desig"));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("tipo"), paren.a("tipo"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(paren.a("etqh"), attr.a("etqh"));
+        calculo(paren.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), paren.a("etq"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("cod"), paren.a("cod"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(attrs[0]);
+            }
+        });
 
         return attr;
     }
@@ -2394,6 +2584,10 @@ public final class Attribution extends Atribucion {
         regla("Paren -> IPAR Expr FPAR");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -2401,12 +2595,20 @@ public final class Attribution extends Atribucion {
         regla("Paren -> Lit");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos paren_R3 (TAtributos desig) {
         regla("Paren -> Desig");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
     }
