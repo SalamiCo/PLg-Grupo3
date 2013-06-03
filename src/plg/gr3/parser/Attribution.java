@@ -1274,7 +1274,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos inst_R4 () {
         regla("Inst -> SWAP1 IPAR FPAR");
-        TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "err");
+        TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "err", "tsh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1289,7 +1289,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos inst_R5 () {
         regla("Inst -> SWAP2 IPAR FPAR");
-        TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "err");
+        TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "err", "tsh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1333,8 +1333,11 @@ public final class Attribution extends Atribucion {
         dependencias(insts.a("etqh"), expr.a("etq"));
         calculo(insts.a("etqh"), new IncrementFun(1));
 
-        dependencias(attr.a("etq"), insts.a("etq"));
-        calculo(attr.a("etq"), new IncrementFun(1));
+        dependencias(elseIf.a("etqh"), insts.a("etq"));
+        calculo(elseIf.a("etqh"), new IncrementFun(1));
+
+        dependencias(attr.a("etq"), elseIf.a("etq"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("cod"), expr.a("cod"), insts.a("cod"), elseIf.a("cod"), insts.a("etq"), elseIf.a("etq"));
         calculo(attr.a("cod"), new SemFun() {
@@ -1355,9 +1358,43 @@ public final class Attribution extends Atribucion {
         regla("Inst -> WHILE Expr DO Insts ENDWHILE");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        dependencias(expr.a("tsh"), attr.a("tsh"));
+        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(insts.a("tsh"), attr.a("tsh"));
+        calculo(insts.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), expr.a("err"), insts.a("err"));
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                List<CompileError> exprErr = (List<CompileError>) args[0].valor();
+                List<CompileError> instsErr = (List<CompileError>) args[1].valor();
+                return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(instsErr));
+            }
+        });
+
+        dependencias(expr.a("etqh"), attr.a("etqh"));
+        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(insts.a("etqh"), expr.a("etq"));
+        calculo(insts.a("etqh"), new IncrementFun(1));
+
+        dependencias(attr.a("etq"), insts.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
+
+        dependencias(attr.a("cod"), expr.a("cod"), insts.a("cod"), insts.a("etq"), attr.a("etqh"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new BranchInstruction(
+                    (Integer) attrs[2].valor() + 1, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
+                    (Integer) (attrs[3].valor()))));
+            }
+
+        });
 
         return attr;
     }
@@ -1366,8 +1403,18 @@ public final class Attribution extends Atribucion {
         regla("Inst -> InstCall");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
+        dependencias(instCall.a("tsh"), attr.a("tsh"));
+        calculo(instCall.a("tsh"), AsignationFun.INSTANCE);
+
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
+        dependencias(attr.a("cod"), instCall.a("cod"));
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+
+        dependencias(instCall.a("etqh"), attr.a("etqh"));
+        calculo(instCall.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), instCall.a("etqh"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
