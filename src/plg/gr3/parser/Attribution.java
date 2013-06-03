@@ -3,6 +3,7 @@ package plg.gr3.parser;
 import java.util.List;
 
 import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.CharacterValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
@@ -2087,21 +2088,48 @@ public final class Attribution extends Atribucion {
 
     public TAtributos lit_R1 (TAtributos litBool) {
         regla("Lit -> LitBool");
-        TAtributos attr = atributosPara("Lit", "valor", "tipo");
+        TAtributos attr = atributosPara("Lit", "tipo", "valor");
+
+        // TODO revisar, si está bien, quitar TODO
+        dependencias(attr.a("tipo"), a("boolean"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("valor"), litBool.a("valor"));
+        calculo(attr.a("valor"), AsignationFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos lit_R2 (TAtributos litNum) {
         regla("Lit -> LitNum");
-        TAtributos attr = atributosPara("Lit", "valor", "tipo");
+        TAtributos attr = atributosPara("Lit", "tipo", "valor");
+
+        dependencias(attr.a("tipo"), litNum.a("tipo"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("valor"), litNum.a("valor"));
+        calculo(attr.a("valor"), AsignationFun.INSTANCE);
 
         return attr;
     }
 
-    public TAtributos lit_R3 (Lexeme litchar) {
+    public TAtributos lit_R3 (Lexeme litChar) {
         regla("Lit -> LITCHAR");
-        TAtributos attr = atributosPara("Lit", "valor", "tipo");
+        TAtributos attr = atributosPara("Lit", "tipo", "valor");
+
+        // TODO revisar, si está bien, quitar TODO
+        dependencias(attr.a("tipo"), a("char"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("valor"), a(litChar));
+        calculo(attr.a("valor"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Lexeme lexeme = (Lexeme) args[0].valor();
+
+                return CharacterValue.valueOf(lexeme.getLexeme());
+            }
+        });
 
         return attr;
     }
@@ -2110,31 +2138,66 @@ public final class Attribution extends Atribucion {
 
     public TAtributos litBool_R1 () {
         regla("LitBool -> TRUE");
-        TAtributos attr = atributosPara("LitBool", "valor", "tipo");
+        TAtributos attr = atributosPara("LitBool", "valor");
+
+        // DANI aquí he quitado el tipo, creo que no hace falta
+
+        dependencias(attr.a("valor"), a(true));
+        calculo(attr.a("valor"), AsignationFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos litBool_R2 () {
         regla("LitBool -> FALSE");
-        TAtributos attr = atributosPara("LitBool", "valor", "tipo");
+        TAtributos attr = atributosPara("LitBool", "valor");
+
+        // DANI aquí he quitado el tipo, creo que no hace falta
+
+        dependencias(attr.a("valor"), a(false));
+        calculo(attr.a("valor"), AsignationFun.INSTANCE);
 
         return attr;
     }
 
     // LitNum
 
-    public TAtributos litNum_R1 (Lexeme litnat) {
+    public TAtributos litNum_R1 (Lexeme litNat) {
         regla("LitNum -> LITNAT");
+        Atributo litFloatLex = atributoLexicoPara("LITNAT", "lex", litNat);
         TAtributos attr = atributosPara("LitNum", "valor", "tipo");
+
+        // TODO revisar, si está bien, quitar TODO
+        dependencias(attr.a("tipo"), a("natural"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("valor"), litNatLex));
+                calculo(attr.a("valor"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Lexeme lexeme = (Lexeme) args[1].valor();
+
+                return NaturalValue.valueOf(lexeme.getLexeme());
+            }
+        });
 
         return attr;
     }
 
-    public TAtributos litNum_R2 (Lexeme lexeme) {
+    public TAtributos litNum_R2 (Lexeme litFloat) {
         regla("LitNum -> LITFLOAT");
-        Atributo litfloatLex = atributoLexicoPara("LITFLOAT", "lex", lexeme);
+        Atributo litFloatLex = atributoLexicoPara("LITFLOAT", "lex", litFloat);
         TAtributos attr = atributosPara("LitNum", "valor", "tipo");
+
+        dependencias(attr.a("valor"), litFloatLex);
+        calculo(attr.a("valor"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Lexeme lexeme = (Lexeme) args[1].valor();
+
+                return FloatValue.valueOf(lexeme.getLexeme());
+            }
+        });
 
         return attr;
     }
