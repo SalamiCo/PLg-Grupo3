@@ -27,7 +27,6 @@ import plg.gr3.parser.Parser;
 import plg.gr3.parser.SymbolTable;
 import plg.gr3.vm.VirtualMachine;
 import plg.gr3.vm.instr.Instruction;
-import es.ucm.fdi.plg.evlib.Atributo;
 import es.ucm.fdi.plg.evlib.TAtributos;
 
 /**
@@ -113,19 +112,20 @@ public final class Main {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
 
-            Atributo.fijaDebug(false);
+//            Atributo.fijaDebug(false);
             TAtributos result = (TAtributos) parser.parse().value;
 
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 StreamCodeWriter writer = new StreamCodeWriter(output);
 
-                List<Instruction> code = (List<Instruction>) result.a("cod").valor();
-                List<CompileError> errors = (List<CompileError>) result.a("err").valor();
                 SymbolTable table = (SymbolTable) result.a("ts").valor();
+                Debugger.INSTANCE.debug("Tabla de símbolos: %s", table);
 
-                Debugger.INSTANCE.debug("Código: %s", code);
+                List<CompileError> errors = (List<CompileError>) result.a("err").valor();
                 Debugger.INSTANCE.debug("Errores: %s", errors);
-                Debugger.INSTANCE.debug("Tabla de símbolos:%n%s", table);
+
+                List<Instruction> code = (List<Instruction>) result.a("cod").valor();
+                Debugger.INSTANCE.debug("Código: %s", code);
 
                 if (errors.isEmpty()) {
                     writer.write(code);

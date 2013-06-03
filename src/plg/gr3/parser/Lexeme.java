@@ -32,4 +32,9 @@ public final class Lexeme {
     public int getColumn () {
         return column;
     }
+
+    @Override
+    public String toString () {
+        return "\"" + lexeme + "\"@" + line + "," + column;
+    }
 }
