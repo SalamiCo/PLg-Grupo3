@@ -17,7 +17,6 @@ import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
 import plg.gr3.errors.compile.AssignationTypeError;
-import plg.gr3.errors.compile.BadIdentifierClassError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.ExpectedDesignator;
@@ -2637,18 +2636,15 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), new IncrementFun(1));
-        
+
         dependencias(attr.a("cod"), lit.a("valor"));
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(
-                    a(new PushInstruction((Value) (attrs[0].valor()))));
-          
+                return ConcatCodeFun.INSTANCE.eval(a(new PushInstruction((Value) (attrs[0].valor()))));
+
             }
         });
-        
-        int a 
 
         return attr;
     }
