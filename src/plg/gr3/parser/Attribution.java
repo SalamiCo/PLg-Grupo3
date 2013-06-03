@@ -1833,7 +1833,7 @@ public final class Attribution extends Atribucion {
     // FParams
     public TAtributos fParams_R1 (TAtributos fParams_1, TAtributos fParam) {
         regla("FParams -> FParams COMA FParam");
-        TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "dirh", "id", "clase", "tipo");
+        TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "dirh", "id", "clase", "tipo", "params");
 
         dependencias(fParams_1.a("tsh"), attr.a("tsh"));
         calculo(fParams_1.a("tsh"), AsignationFun.INSTANCE);
@@ -1855,6 +1855,20 @@ public final class Attribution extends Atribucion {
                 Type type = (Type) args[1].valor();
 
                 return varDir + type.getSize();
+            }
+        });
+
+        dependencias(attr.a("params"), fParams_1.a("params"), fParam.a("param"));
+        calculo(attr.a("params"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                List<Parameter> params = (List<Parameter>) args[0].valor();
+                Parameter param = (Parameter) args[1].valor();
+
+                List<Parameter> moreParams = new ArrayList<>(params);
+                moreParams.add(param);
+
+                return moreParams;
             }
         });
 
@@ -1885,10 +1899,21 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParams_R2 (TAtributos fParam) {
         regla("FParams -> FParam");
-        TAtributos attr = atributosPara("FParams", "tsh", "ts", "id", "dir", "dirh", "tipo", "clase", "err");
+        TAtributos attr = atributosPara("FParams", "tsh", "ts", "id", "dir", "dirh", "tipo", "clase", "err", "params");
 
         dependencias(fParam.a("tsh"), attr.a("tsh"));
         calculo(fParam.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("params"), fParam.a("param"));
+        calculo(attr.a("params"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Parameter param = (Parameter) args[0].valor();
+
+                return Arrays.asList(param);
+            }
+        });
 
         dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
@@ -1917,7 +1942,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fParam_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("FParam -> TypeDesc IDENT");
-        TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo", "dir", "dirh");
+        TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo", "dir", "dirh", "param");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(attr.a("ts"), attr.a("tsh"));
@@ -1932,12 +1957,24 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("tipo"), typeDesc.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("param"), typeDesc.a("tipo"), identLex);
+        calculo(attr.a("param"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+
+                return new Parameter(ident.getLexeme(), type, false);
+            }
+        });
+
         return attr;
     }
 
     public TAtributos fParam_R2 (TAtributos typeDesc, Lexeme ident) {
         regla("FParam -> TypeDesc MUL IDENT");
-        TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo", "dir", "dirh");
+        TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo", "dir", "dirh", "param");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(attr.a("ts"), attr.a("tsh"));
@@ -1952,6 +1989,17 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("tipo"), typeDesc.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("param"), typeDesc.a("tipo"), identLex);
+        calculo(attr.a("param"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+
+                return new Parameter(ident.getLexeme(), type, true);
+            }
+        });
         return attr;
     }
 
