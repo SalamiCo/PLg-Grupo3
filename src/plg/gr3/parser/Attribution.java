@@ -2446,7 +2446,7 @@ public final class Attribution extends Atribucion {
         dependencias(term.a("tsh"), attr.a("tsh"));
         calculo(term.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), a(false));
+        dependencias(attr.a("desig"), term.a("desig"));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("desig"), term.a("desig"));
@@ -2479,8 +2479,8 @@ public final class Attribution extends Atribucion {
         dependencias(fact.a("tsh"), attr.a("tsh"));
         calculo(fact.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), term_1.a("desig"), fact.a("desig"));
-        // TODO calculo(attr.a("desig"),);
+        dependencias(attr.a("desig"), a(false));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("cod"), term_1.a("cod"), fact.a("cod"), op1.a("op"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
@@ -2525,8 +2525,8 @@ public final class Attribution extends Atribucion {
         dependencias(fact.a("tsh"), attr.a("tsh"));
         calculo(fact.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), term_1.a("desig"), fact.a("desig"));
-        // TODO calculo(attr.a("desig"),);
+        dependencias(attr.a("desig"), a(false));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         // TODO generacion de codigo
         // dependencias(attr.a("cod"),term_1.a("cod"),);
@@ -2611,9 +2611,8 @@ public final class Attribution extends Atribucion {
         dependencias(shft.a("tsh"), attr.a("tsh"));
         calculo(shft.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), fact_1.a("desig"), shft.a("desig"));
-        // revisar el and:
-        // Fact0.desig = Fact1.desig ˄ Shft.desig
+        dependencias(attr.a("desig"), a(false));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
@@ -2723,8 +2722,8 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("tsh"), shft_1.a("tsh"));
         calculo(attr.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig"));
-        calculo(attr.a("desig"), AndFun.INSTANCE);
+        dependencias(attr.a("desig"), a(false));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
@@ -2795,7 +2794,7 @@ public final class Attribution extends Atribucion {
         dependencias(unary_1.a("tsh"), attr.a("tsh"));
         calculo(unary_1.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), unary_1.a("desig"));
+        dependencias(attr.a("desig"), a(false));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         dependencias(unary_1.a("etqh"), attr.a("etqh"));
@@ -2848,7 +2847,7 @@ public final class Attribution extends Atribucion {
         dependencias(paren.a("tsh"), attr.a("tsh"));
         calculo(paren.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), paren.a("desig"));
+        dependencias(attr.a("desig"), a(false));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         dependencias(paren.a("etqh"), attr.a("etqh"));
@@ -2932,7 +2931,7 @@ public final class Attribution extends Atribucion {
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), expr.a("desig"));
+        dependencias(attr.a("desig"), a(false));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("tipo"), expr.a("tipo"));
