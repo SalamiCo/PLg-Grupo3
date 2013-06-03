@@ -1976,12 +1976,18 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> IGUAL");
         TAtributos attr = atributosPara("Op0", "op");
 
+        dependencias(attr.a("op"), a(BinaryOperator.EQUALS));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos op0_R2 () {
         regla("Op0 -> NOIGUAL");
         TAtributos attr = atributosPara("Op0", "op");
+
+        dependencias(attr.a("op"), a(BinaryOperator.NOT_EQUALS));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -1990,12 +1996,18 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MAY");
         TAtributos attr = atributosPara("Op0", "op");
 
+        dependencias(attr.a("op"), a(BinaryOperator.GREATER_THAN));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos op0_R4 () {
         regla("Op0 -> MEN");
         TAtributos attr = atributosPara("Op0", "op");
+
+        dependencias(attr.a("op"), a(BinaryOperator.LOWER_THAN));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2004,12 +2016,18 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MENOIG");
         TAtributos attr = atributosPara("Op0", "op");
 
+        dependencias(attr.a("op"), a(BinaryOperator.LOWER_EQUAL));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos op0_R6 () {
         regla("Op0 -> MAYOIG");
         TAtributos attr = atributosPara("Op0", "op");
+
+        dependencias(attr.a("op"), a(BinaryOperator.GREATER_EQUALS));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2020,12 +2038,18 @@ public final class Attribution extends Atribucion {
         regla("Op1 -> MENOS");
         TAtributos attr = atributosPara("Op1", "op");
 
+        dependencias(attr.a("op"), a(BinaryOperator.SUBTRACTION));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos op1_R2 () {
         regla("Op1 -> MAS");
         TAtributos attr = atributosPara("Op1", "op");
+
+        dependencias(attr.a("op"), a(BinaryOperator.ADDITION));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2036,6 +2060,9 @@ public final class Attribution extends Atribucion {
         regla("Op2 -> MOD");
         TAtributos attr = atributosPara("Op2", "op");
 
+        dependencias(attr.a("op"), a(BinaryOperator.MODULO));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -2043,12 +2070,18 @@ public final class Attribution extends Atribucion {
         regla("Op2 -> DIV");
         TAtributos attr = atributosPara("Op2", "op");
 
+        dependencias(attr.a("op"), a(BinaryOperator.DIVISION));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos op2_R3 () {
         regla("Op2 -> MUL");
         TAtributos attr = atributosPara("Op2", "op");
+
+        dependencias(attr.a("op"), a(BinaryOperator.PRODUCT));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2059,12 +2092,18 @@ public final class Attribution extends Atribucion {
         regla("Op3 -> LSH");
         TAtributos attr = atributosPara("Op3", "op");
 
+        dependencias(attr.a("op"), a(BinaryOperator.SHIFT_LEFT));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos op3_R2 () {
         regla("Op3 -> RSH");
         TAtributos attr = atributosPara("Op3", "op");
+
+        dependencias(attr.a("op"), a(BinaryOperator.SHIFT_RIGHT));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2075,12 +2114,18 @@ public final class Attribution extends Atribucion {
         regla("Op4 -> NOT");
         TAtributos attr = atributosPara("Op4", "op");
 
+        dependencias(attr.a("op"), a(UnaryOperator.NOT));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos op4_R2 () {
         regla("Op4 -> MENOS");
         TAtributos attr = atributosPara("Op4", "op");
+
+        dependencias(attr.a("op"), a(UnaryOperator.MINUS));
+        calculo(attr.a("op"), AsignationFun.INSTANCE);
 
         return attr;
     }
