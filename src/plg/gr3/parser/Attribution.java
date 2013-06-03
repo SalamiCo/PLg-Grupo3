@@ -8,6 +8,7 @@ import java.util.List;
 
 import plg.gr3.data.ArrayType;
 import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.BooleanValue;
 import plg.gr3.data.CharacterValue;
 import plg.gr3.data.FloatValue;
 import plg.gr3.data.IntegerValue;
@@ -31,6 +32,8 @@ import plg.gr3.parser.semfun.ConcatCodeFun;
 import plg.gr3.parser.semfun.ConcatErrorsFun;
 import plg.gr3.parser.semfun.IncrementFun;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.BranchInstruction;
+import plg.gr3.vm.instr.CastInstruction;
 import plg.gr3.vm.instr.DropInstruction;
 import plg.gr3.vm.instr.IndirectLoadInstruction;
 import plg.gr3.vm.instr.IndirectStoreInstruction;
@@ -45,6 +48,7 @@ import plg.gr3.vm.instr.StopInstruction;
 import plg.gr3.vm.instr.StoreInstruction;
 import plg.gr3.vm.instr.Swap1Instruction;
 import plg.gr3.vm.instr.Swap2Instruction;
+import plg.gr3.vm.instr.UnaryOperatorInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
 import es.ucm.fdi.plg.evlib.Atributo;
 import es.ucm.fdi.plg.evlib.LAtributo;
@@ -753,6 +757,9 @@ public final class Attribution extends Atribucion {
         dependencias(tArray.a("tsh"), attr.a("tsh"));
         calculo(tArray.a("tsh"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("err"), tArray.a("err"));
+        calculo(attr.a("err"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -765,6 +772,9 @@ public final class Attribution extends Atribucion {
 
         dependencias(tTupla.a("tsh"), attr.a("tsh"));
         calculo(tTupla.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), tTupla.a("err"));
+        calculo(attr.a("err"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -797,13 +807,15 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 SymbolTable table = (SymbolTable) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
+                if (table.hasIdentifier(ident.getLexeme())) {
+                    return new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn());
+                }
                 ClassDec cd = table.getIdentfierClassDec(ident.getLexeme());
-                if (table.hasIdentifier(ident.getLexeme()) && cd == ClassDec.TYPE) {
-                    return null;
-                } else {
+                if (cd != ClassDec.TYPE) {
                     return (new BadIdentifierClassError(ident.getLexeme(), cd, ClassDec.TYPE, ident.getLine(), ident
                         .getColumn()));
                 }
+                return null;
             }
         });
 
@@ -938,14 +950,36 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // TODO Error
+        dependencias(attr.a("err"), attr.a("tsh"), identLex);
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+                String identName = ident.getLexeme();
+                if (!table.hasIdentifier(identName)) {
+                    return new UndefinedIdentifierError(identName, ident.getLine(), ident.getColumn());
+                }
+                ClassDec cd = table.getIdentfierClassDec(identName);
+                if (cd != ClassDec.CONSTANT) {
+                    return new BadIdentifierClassError(identName, cd, ClassDec.CONSTANT, ident.getLine(), ident
+                        .getColumn());
+                }
+                Type typeFound = table.getIdentfierType(identName);
+                if (!typeFound.compatible(Type.NATURAL)) {
+                    return new AssignationTypeError(typeFound, Type.NATURAL, ident);
+                }
+                return null;
+            }
+        });
 
         return attr;
     }
 
     public TAtributos tArray_R2 (TAtributos typeDesc, Lexeme litnat) {
         regla("TArray -> TypeDesc ICORCHETE LITNAT FCORCHETE");
-        TAtributos attr = atributosPara("TArray", "tipo", "tsh", "err");
+        TAtributos attr = atributosPara("TArray", "tipo", "tsh");
         Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
 
         dependencias(typeDesc.a("tsh"), attr.a("tsh"));
@@ -1242,7 +1276,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos inst_R4 () {
         regla("Inst -> SWAP1 IPAR FPAR");
-        TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "err");
+        TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "err", "tsh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1257,7 +1291,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos inst_R5 () {
         regla("Inst -> SWAP2 IPAR FPAR");
-        TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "err");
+        TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "err", "tsh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1274,9 +1308,50 @@ public final class Attribution extends Atribucion {
         regla("Inst -> IF Expr THEN Insts ElseIf");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
+        dependencias(expr.a("tsh"), attr.a("tsh"));
+        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(insts.a("tsh"), attr.a("tsh"));
+        calculo(insts.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(elseIf.a("tsh"), attr.a("tsh"));
+        calculo(elseIf.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), expr.a("err"), insts.a("err"), elseIf.a("err"));
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                List<CompileError> exprErr = (List<CompileError>) args[0].valor();
+                List<CompileError> instsErr = (List<CompileError>) args[1].valor();
+                List<CompileError> elseIfErr = (List<CompileError>) args[2].valor();
+                return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(instsErr), a(elseIfErr));
+            }
+        });
+
+        dependencias(expr.a("etqh"), attr.a("etqh"));
+        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(insts.a("etqh"), expr.a("etq"));
+        calculo(insts.a("etqh"), new IncrementFun(1));
+
+        dependencias(elseIf.a("etqh"), insts.a("etq"));
+        calculo(elseIf.a("etqh"), new IncrementFun(1));
+
+        dependencias(attr.a("etq"), elseIf.a("etq"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("cod"), expr.a("cod"), insts.a("cod"), elseIf.a("cod"), insts.a("etq"), elseIf.a("etq"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new BranchInstruction(
+                    (Integer) attrs[3].valor() + 1, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
+                    (Integer) (attrs[4].valor()))), attrs[2]);
+            }
+
+        });
 
         return attr;
     }
@@ -1285,9 +1360,43 @@ public final class Attribution extends Atribucion {
         regla("Inst -> WHILE Expr DO Insts ENDWHILE");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        dependencias(expr.a("tsh"), attr.a("tsh"));
+        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(insts.a("tsh"), attr.a("tsh"));
+        calculo(insts.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), expr.a("err"), insts.a("err"));
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                List<CompileError> exprErr = (List<CompileError>) args[0].valor();
+                List<CompileError> instsErr = (List<CompileError>) args[1].valor();
+                return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(instsErr));
+            }
+        });
+
+        dependencias(expr.a("etqh"), attr.a("etqh"));
+        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(insts.a("etqh"), expr.a("etq"));
+        calculo(insts.a("etqh"), new IncrementFun(1));
+
+        dependencias(attr.a("etq"), insts.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
+
+        dependencias(attr.a("cod"), expr.a("cod"), insts.a("cod"), insts.a("etq"), attr.a("etqh"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new BranchInstruction(
+                    (Integer) attrs[2].valor() + 1, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
+                    (Integer) (attrs[3].valor()))));
+            }
+
+        });
 
         return attr;
     }
@@ -1296,8 +1405,18 @@ public final class Attribution extends Atribucion {
         regla("Inst -> InstCall");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
+        dependencias(instCall.a("tsh"), attr.a("tsh"));
+        calculo(instCall.a("tsh"), AsignationFun.INSTANCE);
+
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
+        dependencias(attr.a("cod"), instCall.a("cod"));
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+
+        dependencias(instCall.a("etqh"), attr.a("etqh"));
+        calculo(instCall.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), instCall.a("etqh"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
@@ -2144,16 +2263,76 @@ public final class Attribution extends Atribucion {
                 SymbolTable table = (SymbolTable) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
 
-                return table.hasIdentifier(ident.getLexeme()) ? new UndefinedIdentifierError(ident.getLexeme(), ident
-                    .getLine(), ident.getColumn()) : null;
+                List<CompileError> errs = new ArrayList<>();
+                if (table.hasIdentifier(ident.getLexeme())) {
+                    errs.add(new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn()));
+                }
+
+                ClassDec cdec = table.getIdentfierClassDec(ident.getLexeme());
+                if (cdec == ClassDec.TYPE || cdec == ClassDec.SUBPROGRAM) {
+                    errs.add(new BadIdentifierClassError(ident.getLexeme(), cdec, ClassDec.VARIABLE, 0, 0));
+                }
+
+                return errs;
             }
         });
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        dependencias(attr.a("etq"), attr.a("tsh"), identLex, attr.a("etqh"));
+        calculo(attr.a("etq"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme lexeme = (Lexeme) args[1].valor();
+                Integer addr = (Integer) args[2].valor();
 
-        // DANI dependencias y calculo de cod
+                Scope scope = table.getIdentfierScope(lexeme.getLexeme());
+                ClassDec cdec = table.getIdentfierClassDec(lexeme.getLexeme());
+
+                NaturalValue dirVal = NaturalValue.valueOf(table.getIdentifierAddress(lexeme.getLexeme()));
+                if (scope == Scope.GLOBAL) {
+                    if (cdec == ClassDec.VARIABLE) {
+                        return addr + 1;
+                    }
+                } else /* scope == Scope.LOCAL */{
+                    if (cdec == ClassDec.VARIABLE || cdec == ClassDec.PARAM_VALUE) {
+                        return addr + 3;
+                    } else if (cdec == ClassDec.PARAM_REF) {
+                        return addr + 4;
+                    }
+                }
+
+                return null;
+            }
+        });
+
+        dependencias(attr.a("cod"), attr.a("tsh"), identLex);
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme lexeme = (Lexeme) args[1].valor();
+
+                Scope scope = table.getIdentfierScope(lexeme.getLexeme());
+                ClassDec cdec = table.getIdentfierClassDec(lexeme.getLexeme());
+
+                NaturalValue dirVal = NaturalValue.valueOf(table.getIdentifierAddress(lexeme.getLexeme()));
+                if (scope == Scope.GLOBAL) {
+                    if (cdec == ClassDec.VARIABLE) {
+                        return new PushInstruction(dirVal);
+                    }
+                } else /* scope == Scope.LOCAL */{
+                    if (cdec == ClassDec.VARIABLE || cdec == ClassDec.PARAM_VALUE) {
+                        return Arrays.asList(new LoadInstruction(1, Type.NATURAL), new PushInstruction(dirVal));
+                    } else if (cdec == ClassDec.PARAM_REF) {
+                        return Arrays.asList(
+                            new LoadInstruction(1, Type.NATURAL), new PushInstruction(dirVal),
+                            new IndirectLoadInstruction(Type.NATURAL));
+                    }
+                }
+
+                return null;
+            }
+        });
 
         return attr;
     }
@@ -2523,8 +2702,20 @@ public final class Attribution extends Atribucion {
         regla("Shft -> Unary Op3 Shft");
         TAtributos attr = atributosPara("Shft", "tsh", "desig", "tipo", "cod", "etqh", "etq", "err");
 
-        dependencias(attr.a("tipo"), attr.a("tipo")); // TODO el tipo Func
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        dependencias(attr.a("tipo"), unary.a("tipo"), op3.a("op"), shft_1.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Type t1 = (Type) args[0].valor();
+                Type t2 = (Type) args[2].valor();
+                BinaryOperator op = (BinaryOperator) args[1].valor();
+                if (!op.canApply(t1, t2)) {
+                    return new OperatorError(t1, t2, op, -1, -1);
+                }
+                return op.getApplyType(t1, t2);
+            }
+        });
 
         dependencias(unary.a("tsh"), attr.a("tsh"));
         calculo(attr.a("tsh"), AsignationFun.INSTANCE);
@@ -2617,7 +2808,8 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1]);
+                UnaryOperator op = (UnaryOperator) attrs[1].valor();
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new UnaryOperatorInstruction(op)));
             }
         });
 
@@ -2669,7 +2861,8 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1]);
+                Type type = (Type) attrs[1].valor();
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new CastInstruction(type)));
             }
         });
 
@@ -2722,12 +2915,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("cod"), paren.a("cod"));
-        calculo(attr.a("cod"), new SemFun() {
-            @Override
-            public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0]);
-            }
-        });
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(attr.a("err"), paren.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -2737,7 +2925,7 @@ public final class Attribution extends Atribucion {
 
     // Paren
 
-    public TAtributos paren_R1 (TAtributos expr) {// TODO marina
+    public TAtributos paren_R1 (TAtributos expr) {
         regla("Paren -> IPAR Expr FPAR");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
@@ -2757,12 +2945,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("cod"), expr.a("cod"));
-        calculo(attr.a("cod"), new SemFun() {
-            @Override
-            public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0]);
-            }
-        });
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(attr.a("err"), expr.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -2770,12 +2953,9 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos paren_R2 (TAtributos lit) {// TODO marina
+    public TAtributos paren_R2 (TAtributos lit) {
         regla("Paren -> Lit");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
-
-        dependencias(lit.a("tsh"), attr.a("tsh"));
-        calculo(lit.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("desig"), a(false));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
@@ -2790,7 +2970,8 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(a(new PushInstruction((Value) (attrs[0].valor()))));
+                Value value = (Value) attrs[0].valor();
+                return ConcatCodeFun.INSTANCE.eval(a(new PushInstruction(value)));
 
             }
         });
@@ -2800,9 +2981,12 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos paren_R3 (TAtributos desig) {// TODO marina
+    public TAtributos paren_R3 (TAtributos desig) {
         regla("Paren -> Desig");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+
+        dependencias(desig.a("tsh"), attr.a("tsh"));
+        calculo(desig.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("desig"), a(true));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
@@ -2817,8 +3001,8 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction((Type) attrs[1].valor())));
-
+                Type type = (Type) attrs[1].valor();
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction(type)));
             }
         });
 

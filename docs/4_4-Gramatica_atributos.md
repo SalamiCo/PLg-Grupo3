@@ -185,18 +185,17 @@
     	TypeDesc.err = TTupla.err
 
     TypeDesc → ident
-    	TypeDesc.err = existe(TypeDesc.tsh, ident.lex) ∨ TypeDesc.tsh[ident].clase != tipo
+    	TypeDesc.err = ¬existe(TypeDesc.tsh, ident.lex) ∨ TypeDesc.tsh[ident].clase != tipo
 
 	TPrim → natural | integer | float | boolean | character
 	Cast → char | int | nat | float
 
 	TArray → TypeDesc icorchete ident fcorchete
 		TypeDesc.tsh = TArray.tsh
-		TArray.err = existe(TArray.tsh, ident.lex) ∨ TArray.tsh[ident].clase != constante
+		TArray.err = ¬existe(TArray.tsh, ident.lex) ∨ obtieneTipoString(ident) != nat ∨ TArray.tsh[ident].clase != constante
 
 	TArray → TypeDesc icorchete litnat fcorchete
 		TypeDesc.tsh = TArray.tsh
-        TArray.err = existe(TArray.tsh, ident.lex) ∨ obtieneTipoString(ident) != nat
 
 	TTupla → ipar Tupla fpar
 		Tupla.tsh = TTupla.tsh
@@ -248,7 +247,7 @@
 
 	Inst → if Expr then Insts ElseIf
 		Expr.tsh = Inst.tsh
-		Insts.tsh = Inst.tsh
+		Insts1.tsh = Inst0.tsh
 		ElseIf.tsh = Inst.tsh
 		Inst.err = Expr.err ∨ Insts.err ∨ ElseIf.err
 
