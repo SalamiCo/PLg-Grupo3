@@ -1077,7 +1077,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(insts_1.a("etqh"), attr.a("etqh"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        calculo(insts_1.a("etqh"), AsignationFun.INSTANCE);
 
         dependencias(inst.a("etqh"), insts_1.a("etq"));
         calculo(inst.a("etqh"), AsignationFun.INSTANCE);
@@ -2060,6 +2060,9 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("FParams", "ts", "tsh", "id", "clase", "tipo", "dir", "dirh", "param");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), AsignationFun.INSTANCE);
 
@@ -2498,6 +2501,10 @@ public final class Attribution extends Atribucion {
                 return op.getApplyType(t);
             }
         });
+
+        // FIXME Esto no es así
+        dependencias(attr.a("etq"), attr.a("etqh"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
     }
