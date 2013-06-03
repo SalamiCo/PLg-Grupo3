@@ -950,7 +950,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tTupla_R1 (TAtributos tupla) {
         regla("TTupla -> IPAR Tupla FPAR");
-        TAtributos attr = atributosPara("TTupla", "tipo", "tsh");
+        TAtributos attr = atributosPara("TTupla", "tipo", "tsh", "err");
 
         dependencias(tupla.a("tsh"), attr.a("tsh"));
         calculo(tupla.a("tsh"), AsignationFun.INSTANCE);
@@ -958,12 +958,17 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("tipo"), tupla.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("err"), tupla.a("err"));
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos tTupla_R2 () {
         regla("TTupla -> IPAR FPAR");
-        TAtributos attr = atributosPara("TTupla", "tipo", "tsh");
+        TAtributos attr = atributosPara("TTupla", "tipo", "err");
+
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         return attr;
     }
@@ -972,7 +977,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tupla_R1 (TAtributos typeDesc, TAtributos tupla_1) {
         regla("Tupla -> TypeDesc COMA Tupla");
-        TAtributos attr = atributosPara("Tupla", "tipo", "tsh");
+        TAtributos attr = atributosPara("Tupla", "tipo", "tsh", "err");
 
         dependencias(typeDesc.a("tsh"), attr.a("tsh"));
         calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
@@ -994,12 +999,15 @@ public final class Attribution extends Atribucion {
             }
         });
 
+        dependencias(attr.a("err"), typeDesc.a("err"), tupla_1.a("err"));
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos tupla_R2 (TAtributos typeDesc) {
         regla("Tupla -> TypeDesc");
-        TAtributos attr = atributosPara("Tupla", "tipo", "tsh");
+        TAtributos attr = atributosPara("Tupla", "tipo", "tsh", "err");
 
         dependencias(attr.a("tipo"), typeDesc.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -1014,6 +1022,9 @@ public final class Attribution extends Atribucion {
 
         dependencias(typeDesc.a("tsh"), attr.a("tsh"));
         calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), typeDesc.a("err"));
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         return attr;
     }

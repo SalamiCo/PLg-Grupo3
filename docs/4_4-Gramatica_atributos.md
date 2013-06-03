@@ -185,12 +185,18 @@
 	TTupla → ipar Tupla fpar
 		Tupla.tsh = TTupla.tsh
 		TTupla.err = Tupla.err
+
 	TTupla → ipar fpar
 		TTupla.err = false
 
 	Tupla → TypeDesc coma Tupla
-		
+		TypeDesc.tsh = Tupla0.tsh
+		Tupla1.tsh = Tupla0.tsh
+		Tupla0.err = TypeDesc.err ∨ Tupla1.err
+
 	Tupla → TypeDesc
+		TypeDesc.tsh = Tupla.tsh
+		Tupla.err = TypeDesc.err
 
 	SInsts → instructions illave Insts fllave
 		Insts.tsh = SInsts.tsh
