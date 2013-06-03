@@ -2469,7 +2469,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos unary_R1 (TAtributos op4, TAtributos unary_1) {
         regla("Unary -> Op4 Unary");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq", "op", "type");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq");
 
         dependencias(unary_1.a("tsh"), attr.a("tsh"));
         calculo(unary_1.a("tsh"), AsignationFun.INSTANCE);
@@ -2507,7 +2507,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos unary_R2 (TAtributos cast, TAtributos paren) {
         regla("Unary -> IPAR Cast FPAR Paren");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "op", "type");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
         dependencias(paren.a("tsh"), attr.a("tsh"));
         calculo(paren.a("tsh"), AsignationFun.INSTANCE);
@@ -2546,7 +2546,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos unary_R3 (TAtributos paren) {
         regla("Unary -> Paren");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "op", "type");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
         dependencias(paren.a("tsh"), attr.a("tsh"));
         calculo(paren.a("tsh"), AsignationFun.INSTANCE);
@@ -2580,9 +2580,28 @@ public final class Attribution extends Atribucion {
         regla("Paren -> IPAR Expr FPAR");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
+        dependencias(expr.a("tsh"), attr.a("tsh"));
+        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), expr.a("desig"));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("tipo"), expr.a("tipo"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(expr.a("etqh"), attr.a("etqh"));
+        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), expr.a("etq"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("cod"), expr.a("cod"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(attrs[0]);
+            }
+        });
 
         return attr;
     }
@@ -2591,9 +2610,29 @@ public final class Attribution extends Atribucion {
         regla("Paren -> Lit");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        // FIXME Esto no es así
+        dependencias(lit.a("tsh"), attr.a("tsh"));
+        calculo(lit.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), a(false));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("tipo"), lit.a("tipo"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        calculo(attr.a("etq"), new IncrementFun(1));
+        
+        dependencias(attr.a("cod"), lit.a("valor"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(
+                    a(new PushInstruction((Value) (attrs[0].valor()))));
+          
+            }
+        });
+        
+        int a 
 
         return attr;
     }
@@ -2602,9 +2641,23 @@ public final class Attribution extends Atribucion {
         regla("Paren -> Desig");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        dependencias(attr.a("desig"), a(true));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(desig.a("etqh"), attr.a("etqh"));
+        calculo(desig.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), desig.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
+
+        dependencias(attr.a("cod"), desig.a("cod"), desig.a("tipo"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction((Type) attrs[1].valor())));
+
+            }
+        });
 
         return attr;
     }
