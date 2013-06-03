@@ -2509,8 +2509,20 @@ public final class Attribution extends Atribucion {
         regla("Shft -> Unary Op3 Shft");
         TAtributos attr = atributosPara("Shft", "tsh", "desig", "tipo", "cod", "etqh", "etq", "err");
 
-        dependencias(attr.a("tipo"), attr.a("tipo")); // TODO el tipo Func
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        dependencias(attr.a("tipo"), unary.a("tipo"), op3.a("op"), shft_1.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Type t1 = (Type) args[0].valor();
+                Type t2 = (Type) args[2].valor();
+                BinaryOperator op = (BinaryOperator) args[1].valor();
+                if (!op.canApply(t1, t2)) {
+                    return new OperatorError(t1, t2, op, -1, -1);
+                }
+                return op.getApplyType(t1, t2);
+            }
+        });
 
         dependencias(unary.a("tsh"), attr.a("tsh"));
         calculo(attr.a("tsh"), AsignationFun.INSTANCE);
