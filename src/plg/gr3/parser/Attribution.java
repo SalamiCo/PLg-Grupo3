@@ -2368,10 +2368,11 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                int factEtq = (int) attrs[1].valor();
-                // TODO sustituir las funciones por su código
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new DuplicateInstruction()), a(new BranchInstruction(
-                    factEtq, BooleanValue.TRUE)), a(new DropInstruction()), attrs[2]);
+                Type typeDesig1 = (Type) attrs[2].valor();
+                Value tam = new IntegerValue(typeDesig1.getSize());
+                return ConcatCodeFun.INSTANCE.eval(
+                    attrs[0], attrs[1], a(new PushInstruction(tam)), a(new BinaryOperatorInstruction(
+                        BinaryOperator.PRODUCT)), a(new BinaryOperatorInstruction(BinaryOperator.ADDITION)));
             }
         });
 
@@ -2419,12 +2420,26 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos desig_R3 (TAtributos desig_1, Lexeme litnat) {
+    public TAtributos desig_R3 (TAtributos desig_1, Lexeme litNat) {
         regla("Desig -> Desig BARRABAJA LITNAT");
         TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq");
-        Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
+        Atributo litNatLex = atributoLexicoPara("LITNAT", "lex", litNat);
 
-        dependencias(attr.a("tipo"), desig_1.a("tipo"), litnatLex);
+        dependencias(attr.a("cod"), desig_1.a("cod"), litNatLex, desig_1.a("tipo"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                TupleType tuplaDesig1 = (TupleType) attrs[2].valor();
+                String lexString = ((Lexeme) attrs[1].valor()).getLexeme();
+                int lexInt = Integer.parseInt(lexString);
+
+                return ConcatCodeFun.INSTANCE.eval(
+                    attrs[0], a(tuplaDesig1.getOffset(lexInt)),
+                    a(new BinaryOperatorInstruction(BinaryOperator.ADDITION)));
+            }
+        });
+
+        dependencias(attr.a("tipo"), desig_1.a("tipo"), litNatLex);
         calculo(attr.a("tipo"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
@@ -2432,9 +2447,9 @@ public final class Attribution extends Atribucion {
 
                 if (type instanceof TupleType) {
                     TupleType ttype = (TupleType) type;
-                    Lexeme litnat = (Lexeme) args[1].valor();
+                    Lexeme litNat = (Lexeme) args[1].valor();
 
-                    int nat = Integer.parseInt(litnat.getLexeme());
+                    int nat = Integer.parseInt(litNat.getLexeme());
 
                     return ttype.getSubtypes().get(nat);
 
