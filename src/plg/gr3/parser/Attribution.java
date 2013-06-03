@@ -17,11 +17,13 @@ import plg.gr3.data.TupleType;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
+import plg.gr3.errors.compile.AssignationToConstantError;
 import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.BadIdentifierClassError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.ExpectedDesignator;
+import plg.gr3.errors.compile.InvalidTypeError;
 import plg.gr3.errors.compile.MismatchNumberOfParameters;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentifierError;
@@ -1177,7 +1179,8 @@ public final class Attribution extends Atribucion {
         calculo(expr.a("tsh"), AsignationFun.INSTANCE);
 
         // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
-        dependencias(attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), asigLex);
+        dependencias(
+            attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), asigLex, desig.a("const"));
         calculo(attr.a("err"), new SemFun() {
             @SuppressWarnings("unchecked")
             @Override
@@ -1187,11 +1190,19 @@ public final class Attribution extends Atribucion {
                 List<CompileError> exprErr = (List<CompileError>) args[2].valor();
                 List<CompileError> desigErr = (List<CompileError>) args[3].valor();
                 Lexeme lex = (Lexeme) args[4].valor();
+                Boolean isconst = (Boolean) args[5].valor();
 
-                CompileError err =
-                    (!desigType.compatible(exprType)) ? new AssignationTypeError(exprType, desigType, lex) : null;
+                List<CompileError> errs = new ArrayList<>();
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), a(exprErr), a(desigErr));
+                if (!desigType.compatible(exprType)) {
+                    errs.add(new AssignationTypeError(exprType, desigType, lex));
+                }
+
+                if (isconst) {
+                    errs.add(new AssignationToConstantError(null, -1, -1));
+                }
+
+                return errs;
             }
         });
 
@@ -1426,9 +1437,12 @@ public final class Attribution extends Atribucion {
         regla("Inst -> $");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        // FIXME Esto no es así
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         return attr;
     }
@@ -1459,7 +1473,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos elseIf_R2 () {
         regla("ElseIf -> ENDIF");
-        TAtributos attr = atributosPara("ElseIf", "err", "cod", "etq", "etqh");
+        TAtributos attr = atributosPara("ElseIf", "err", "cod", "tsh", "etq", "etqh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -2238,8 +2252,21 @@ public final class Attribution extends Atribucion {
 
     public TAtributos desig_R1 (Lexeme ident) {
         regla("Desig -> IDENT");
-        TAtributos attr = atributosPara("Desig", "tipo", "err", "tsh", "etqh", "etq", "cod");
+        TAtributos attr = atributosPara("Desig", "tipo", "err", "tsh", "etqh", "etq", "cod", "const");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
+
+        dependencias(attr.a("const"), attr.a("tsh"), identLex);
+        calculo(attr.a("const"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+
+                return table.hasIdentifier(ident.getLexeme())
+                       && table.getIdentfierClassDec(ident.getLexeme()) == ClassDec.CONSTANT;
+            }
+        });
 
         dependencias(attr.a("tipo"), attr.a("tsh"), identLex);
         calculo(attr.a("tipo"), new SemFun() {
@@ -2288,7 +2315,6 @@ public final class Attribution extends Atribucion {
                 Scope scope = table.getIdentfierScope(lexeme.getLexeme());
                 ClassDec cdec = table.getIdentfierClassDec(lexeme.getLexeme());
 
-                NaturalValue dirVal = NaturalValue.valueOf(table.getIdentifierAddress(lexeme.getLexeme()));
                 if (scope == Scope.GLOBAL) {
                     if (cdec == ClassDec.VARIABLE) {
                         return addr + 1;
@@ -2342,11 +2368,31 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq");
 
         dependencias(attr.a("tipo"), desig_1.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
 
-        dependencias(attr.a("err"), desig_1.a("err"), expr.a("err")); // TODO Falta comprobar poner lo de
-                                                                      // tamañoCorrecto()
-        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+                if (type instanceof ArrayType) {
+                    ArrayType atype = (ArrayType) type;
+                    return atype.getBaseType();
+
+                } else {
+                    return Type.ERROR;
+                }
+            }
+        });
+
+        dependencias(attr.a("err"), desig_1.a("err"), expr.a("err"), desig_1.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[2].valor();
+
+                CompileError err = (type instanceof ArrayType) ? null : new InvalidTypeError(type, -1, -1);
+                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[1]);
+            }
+        });
 
         // TODO Falta hacer todo lo del código
 
@@ -2359,19 +2405,47 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), expr.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(3));
 
+        dependencias(expr.a("const"), a(false));
+        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos desig_R3 (TAtributos desig_1, Lexeme litnat) {
         regla("Desig -> Desig BARRABAJA LITNAT");
         TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq");
+        Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
 
-        dependencias(attr.a("tipo"), desig_1.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        dependencias(attr.a("tipo"), desig_1.a("tipo"), litnatLex);
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
 
-        dependencias(attr.a("err"), desig_1.a("err")); // TODO Falta comprobar poner lo de
-                                                       // tamañoCorrecto()
-        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+                if (type instanceof TupleType) {
+                    TupleType ttype = (TupleType) type;
+                    Lexeme litnat = (Lexeme) args[1].valor();
+
+                    int nat = Integer.parseInt(litnat.getLexeme());
+
+                    return ttype.getSubtypes().get(nat);
+
+                } else {
+                    return Type.ERROR;
+                }
+            }
+        });
+
+        dependencias(attr.a("err"), desig_1.a("err"), expr.a("err"), desig_1.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[2].valor();
+
+                CompileError err = (type instanceof TupleType) ? null : new InvalidTypeError(type, -1, -1);
+                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[1]);
+            }
+        });
 
         // TODO Falta hacer todo lo del código
 
@@ -2380,6 +2454,9 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("etq"), desig_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(2));
+
+        dependencias(expr.a("const"), a(false));
+        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2867,13 +2944,12 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("tipo"), cast.a("tipo"), paren.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
-            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... attrs) {
                 Type tCast = (Type) attrs[0].valor();
                 Type tParen = (Type) attrs[1].valor();
 
-                return tCast.canCast(tCast, tParen);
+                return Type.canCast(tCast, tParen);
             }
         });
 
