@@ -1415,7 +1415,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams", "listaparamnombres",
-                "listaparamnombresh");
+                "listaparamnombresh", "nombresubprog", "nombresubprogh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1587,32 +1587,11 @@ public final class Attribution extends Atribucion {
                     (!esDesig) ? new ExpectedDesignator(
                         identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()) : null;
 
+                // TODO el error de la lista ident ∈ listaparamnombresh. Pero las listas todavia no estan hechas
+
                 return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(err1), a(err3));
             }
         });
-
-        /*
-         * dependencias(attr.a("err"), srParams.a("err"), srParams.a("tsh"), identLex, srParams.a("nparams"));
-         * calculo(attr.a("err"), new SemFun() {
-         * 
-         * @SuppressWarnings("unchecked")
-         * 
-         * @Override public Object eval (Atributo... args) { List<CompileError> srparamsErr = (List<CompileError>)
-         * args[0].valor();
-         * 
-         * SymbolTable ts = (SymbolTable) args[1].valor(); Lexeme ident = (Lexeme) args[2].valor(); // Comprobamos que
-         * el identificador exista en la tabla de símbolos CompileError err1 = (ts.hasIdentifier(ident.getLexeme())) ?
-         * new UndefinedIdentifierError(ident.getLexeme(), ident .getLine(), ident.getColumn()) : null;
-         * 
-         * Integer nparams = (Integer) args[3].valor(); Integer numParamsFormales =
-         * ts.getIdentifierParams(ident.getLexeme()).size();
-         * 
-         * // Comprobamos que el numero de parametros con el qe llamamos a la función sea los mismos con los que // esta
-         * declarado CompileError err2 = (nparams != numParamsFormales) ? new MismatchNumberOfParameters(nparams,
-         * numParamsFormales, ident .getLine(), ident.getColumn()) : null;
-         * 
-         * return ConcatErrorsFun.INSTANCE.eval(a(err1), a(err2), a(srparamsErr)); } });
-         */
 
         dependencias(expr.a("etqh"), attr.a("etqh"));
         calculo(expr.a("etqh"), new IncrementFun(6));
