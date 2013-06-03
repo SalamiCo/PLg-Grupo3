@@ -1,5 +1,9 @@
 package plg.gr3.parser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import plg.gr3.data.ArrayType;
@@ -8,12 +12,14 @@ import plg.gr3.data.CharacterValue;
 import plg.gr3.data.FloatValue;
 import plg.gr3.data.IntegerValue;
 import plg.gr3.data.NaturalValue;
+import plg.gr3.data.TupleType;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
 import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
+import plg.gr3.errors.compile.ExpectedDesignator;
 import plg.gr3.errors.compile.MismatchNumberOfParameters;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentifierError;
@@ -125,7 +131,7 @@ public final class Attribution extends Atribucion {
 
         // Program.dirh = 2
         dependencias(attr.a("dirh"), a(2));
-        calculo(attr.a("etqh"), AsignationFun.INSTANCE);
+        calculo(attr.a("dirh"), AsignationFun.INSTANCE);
 
         dependencias(sVars.a("dirh"), attr.a("dirh"));
         calculo(sVars.a("dirh"), AsignationFun.INSTANCE);
@@ -211,7 +217,7 @@ public final class Attribution extends Atribucion {
                 SymbolTable st = (SymbolTable) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
 
-                if (st.hasIdentifier(ident.getLexeme())) {
+                if (ident != null && st.hasIdentifier(ident.getLexeme())) {
                     return new DuplicateIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn());
                 } else {
                     return null;
@@ -246,7 +252,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), cons.a("ts"), cons.a("id"));
+        dependencias(attr.a("err"), cons.a("ts"), cons.a("id"), a(Scope.GLOBAL));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -439,7 +445,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), types_1.a("ts"), type.a("id"));
+        dependencias(attr.a("err"), types_1.a("ts"), type.a("id"), a(Scope.GLOBAL));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -498,7 +504,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(type.a("err"), type.a("ts"), type.a("id"));
+        dependencias(type.a("err"), type.a("ts"), type.a("id"), a(Scope.GLOBAL));
         calculo(type.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -629,10 +635,15 @@ public final class Attribution extends Atribucion {
                 int varDir = (Integer) args[0].valor();
                 Type type = (Type) args[1].valor();
 
-                return varDir + type.getSize();
+                if (type != null) {
+                    return varDir + type.getSize();
+                } else {
+                    return varDir;
+                }
             }
         });
 
+        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -686,11 +697,14 @@ public final class Attribution extends Atribucion {
     public TAtributos var_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("Var -> VAR TypeDesc IDENT");
         TAtributos attr = atributosPara("Var", "ts", "tsh", "id", "nivel", "tipo");
+        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), AsignationFun.INSTANCE);
 
-        Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("id"), lexIdent);
         calculo(attr.a("id"), AsignationFun.INSTANCE);
 
@@ -720,7 +734,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos typeDesc_R1 (TAtributos tPrim) {
         regla("TypeDesc -> TPrim");
-        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
         dependencias(attr.a("tipo"), tPrim.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
@@ -730,7 +744,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos typeDesc_R2 (TAtributos tArray) {
         regla("TypeDesc -> TArray");
-        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
         dependencias(attr.a("tipo"), tArray.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
@@ -743,7 +757,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos typeDesc_R3 (TAtributos tTupla) {
         regla("TypeDesc -> TTupla");
-        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
         dependencias(attr.a("tipo"), tTupla.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
@@ -940,17 +954,25 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tTupla_R1 (TAtributos tupla) {
         regla("TTupla -> IPAR Tupla FPAR");
-        TAtributos attr = atributosPara("TTupla", "tipo", "tsh");
+        TAtributos attr = atributosPara("TTupla", "tipo", "tsh", "err");
 
         dependencias(tupla.a("tsh"), attr.a("tsh"));
         calculo(tupla.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("tipo"), tupla.a("tipo"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), tupla.a("err"));
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos tTupla_R2 () {
         regla("TTupla -> IPAR FPAR");
-        TAtributos attr = atributosPara("TTupla", "tipo", "tsh");
+        TAtributos attr = atributosPara("TTupla", "tipo", "err");
+
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         return attr;
     }
@@ -959,7 +981,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tupla_R1 (TAtributos typeDesc, TAtributos tupla_1) {
         regla("Tupla -> TypeDesc COMA Tupla");
-        TAtributos attr = atributosPara("Tupla", "tipo", "tsh");
+        TAtributos attr = atributosPara("Tupla", "tipo", "tsh", "err");
 
         dependencias(typeDesc.a("tsh"), attr.a("tsh"));
         calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
@@ -967,15 +989,47 @@ public final class Attribution extends Atribucion {
         dependencias(tupla_1.a("tsh"), attr.a("tsh"));
         calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("tipo"), typeDesc.a("tipo"), tupla_1.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
+                TupleType ttype = (TupleType) args[1].valor();
+
+                List<Type> types = new ArrayList<>();
+                types.add(type);
+                types.addAll(ttype.getSubtypes());
+
+                return new TupleType(types);
+            }
+        });
+
+        dependencias(attr.a("err"), typeDesc.a("err"), tupla_1.a("err"));
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos tupla_R2 (TAtributos typeDesc) {
         regla("Tupla -> TypeDesc");
-        TAtributos attr = atributosPara("Tupla", "tipo", "tsh");
+        TAtributos attr = atributosPara("Tupla", "tipo", "tsh", "err");
+
+        dependencias(attr.a("tipo"), typeDesc.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
+
+                return new TupleType(Arrays.asList(type));
+            }
+        });
 
         dependencias(typeDesc.a("tsh"), attr.a("tsh"));
         calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), typeDesc.a("err"));
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         return attr;
     }
@@ -1328,8 +1382,8 @@ public final class Attribution extends Atribucion {
         regla("SRParams -> RParams");
         TAtributos attr =
             atributosPara(
-                "SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh",
-                "listaparamnombresh");
+                "SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog",
+                "nombresubprogh", "listaparamnombresh");
 
         dependencias(rParams.a("tsh"), attr.a("tsh"));
         calculo(rParams.a("tsh"), AsignationFun.INSTANCE);
@@ -1363,7 +1417,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams", "listaparamnombres",
-                "listaparamnombresh");
+                "listaparamnombresh", "nombresubprog", "nombresubprogh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1487,19 +1541,57 @@ public final class Attribution extends Atribucion {
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("err"), expr.a("err"));
-        // calculo(attr.a("err"), ConcatErrorsFun.INSTANCE); // TODO ver como se hacen el atb error
-
         dependencias(
-            attr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprog"), expr.a("tipo"),
-            expr.a("desig"));
+            attr.a("err"), expr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprogh"),
+            expr.a("tipo"), expr.a("desig"), attr.a("listaparamnombresh"));
         calculo(attr.a("err"), new SemFun() {
-
+            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
-                // TODO
+                List<CompileError> exprErr = (List<CompileError>) args[0].valor();
 
-                return false;
+                SymbolTable exprTsh = (SymbolTable) args[1].valor();
+                Lexeme identParamReal = (Lexeme) args[2].valor();
+                Lexeme identSubprog = (Lexeme) args[3].valor();
+
+                List<Parameter> parametros = exprTsh.getIdentifierParams(identSubprog.getLexeme());
+
+                // Comprobamos que el identificador del parámetro real esté declarado como parámetro en la tabla de
+// símbolos
+                CompileError err1 =
+                    (!parametros.contains(identParamReal.getLexeme())) ? new UndefinedIdentifierError(identParamReal
+                        .getLexeme(), identParamReal.getLine(), identParamReal.getColumn()) : null;
+
+                // Comprobamos que el tipo del parámetro real se pueda asignar al tipo del parámetro formal declarado.
+                Parameter paramFormal = null;
+                // Parameter paramReal
+
+                Iterator<Parameter> it = parametros.iterator();
+                while (it.hasNext()) {
+                    Parameter element = it.next();
+                    if (element.getName().equals(identParamReal.getLexeme())) {
+                        paramFormal = element;
+                    }
+                }
+                if (paramFormal != null) {
+                    Type exprT = (Type) args[5].valor();
+                    Type paramT = paramFormal.getType();
+                    CompileError err2 =
+                        (!paramT.compatible(exprT)) ? new AssignationTypeError(paramT, exprT, identParamReal) : null;
+
+                    ConcatErrorsFun.INSTANCE.eval(a(err2)); // FIXME Puedo hacerlo así??
+                }
+
+                // Comprobamos que la expresion sea un designador
+                boolean esDesig = (boolean) args[6].valor();
+
+                CompileError err3 =
+                    (!esDesig) ? new ExpectedDesignator(
+                        identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()) : null;
+
+                // TODO el error de la lista ident ∈ listaparamnombresh. Pero las listas todavia no estan hechas
+
+                return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(err1), a(err3));
             }
         });
 
@@ -1646,9 +1738,6 @@ public final class Attribution extends Atribucion {
         dependencias(sfParams.a("dirh"), a(0));
         calculo(sfParams.a("dirh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
-
         // TODO SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
         // dependencias(attr.a("tsh"));
         dependencias(attr.a("tsh"), sfParams.a("ts"), a(ident.getLexeme()), attr.a("etqh"));
@@ -1704,7 +1793,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sfParams_R1 (TAtributos fParams) {
         regla("SFParams -> FParams");
-        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "err");
+        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "dirh", "err", "params");
 
         // FParams
         dependencias(fParams.a("tsh"), attr.a("tsh"));
@@ -1719,16 +1808,22 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("err"), fParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
+        dependencias(attr.a("params"), fParams.a("params"));
+        calculo(attr.a("params"), ConcatErrorsFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos sfParams_R2 () {
         regla("SFParams -> $");
-        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "err");
+        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "dir", "dirh", "err", "params");
 
         // sfParams
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("params"), a(Collections.emptyList()));
+        calculo(attr.a("params"), AsignationFun.INSTANCE);
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1768,15 +1863,17 @@ public final class Attribution extends Atribucion {
 
             @Override
             public Object eval (Atributo... args) {
-                SymbolTable ts = (SymbolTable) args[0].valor();
-                String ident = (String) args[1].valor();
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
                 ClassDec cd = (ClassDec) args[2].valor();
-                int address = (int) args[3].valor();
+                Integer address = (Integer) args[3].valor();
                 Type type = (Type) args[4].valor();
 
-                ts.putParam(ident, address, type, cd == ClassDec.PARAM_REF);
+                if (ident != null) {
+                    table.putParam(ident.getLexeme(), address, type, cd == ClassDec.PARAM_REF);
+                }
 
-                return ts;
+                return table;
             }
         });
 
@@ -2063,7 +2160,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos term_R3 (TAtributos fact) {
         regla("Term -> Fact");
-        TAtributos attr = atributosPara("Term", "tipo", "tsh", "desig", "cod", "etqh", "etq", "err");
+        TAtributos attr = atributosPara("Term", "tipo", "tsh", "desig", "cod", "etqh", "etq", "err", "op");
 
         dependencias(attr.a("tipo"), fact.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
@@ -2090,7 +2187,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fact_R1 (TAtributos fact_1, TAtributos op2, TAtributos shft) {
         regla("Fact -> Fact Op2 Shft");
-        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "err", "cod", "etq", "etqh");
 
         dependencias(attr.a("tipo"), fact_1.a("tipo"), op2.a("op"), shft.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -2121,7 +2218,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos fact_R2 (TAtributos fact_1, TAtributos shft) {
         regla("Fact -> Fact AND Shft");
-        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etq", "err");
+        TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etq", "err", "etqh");
 
         // TODO
         // Fact → Fact and Shft

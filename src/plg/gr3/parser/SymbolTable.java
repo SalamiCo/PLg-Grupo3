@@ -89,8 +89,29 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
         @Override
         public String toString () {
-            return "Row[classDec=" + classDec + ", scope=" + scope + ", address=" + address + ", type=" + type
-                   + ", value=" + value + "]";
+            StringBuilder sb = new StringBuilder();
+            sb.append(classDec).append(':').append(scope);
+
+            switch (classDec) {
+                case CONSTANT:
+                    sb.append("; type=").append(type).append("; value=").append(value);
+                break;
+
+                case TYPE:
+                    sb.append("; type=").append(type);
+                break;
+
+                case VARIABLE:
+                case PARAM_VALUE:
+                case PARAM_REF:
+                    sb.append("; type=").append(type).append("; address=").append(address);
+                break;
+
+                case SUBPROGRAM:
+                    sb.append("; address=").append(address).append("; params=").append(params);
+                break;
+            }
+            return sb.toString();
         }
 
     }
@@ -98,11 +119,18 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
     /** Estructura interna de la tabla */
     private final HashMap<String, Row> table;
 
-    /**
-     * Construye una tabla de símbolos vacía
-     */
+    /** Construye una tabla de símbolos vacía */
     public SymbolTable () {
         table = new HashMap<>();
+    }
+
+    /**
+     * Construye una tabla de símbolos copiada de otra
+     * 
+     * @param original Tabla original a copiar
+     */
+    public SymbolTable (SymbolTable original) {
+        table = new HashMap<>(original.table);
     }
 
     /**
@@ -340,10 +368,13 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
         for (Map.Entry<String, Row> entry : this) {
             String id = entry.getKey();
+            sb.append("  [");
+
             for (int i = 0; i < strsize - id.length(); i++) {
                 sb.append(' ');
             }
-            sb.append("  [").append(id).append(" = (").append(entry.getValue()).append(")]\n");
+
+            sb.append(id).append(" => (").append(entry.getValue()).append(")]\n");
         }
 
         return sb.append("}").toString();

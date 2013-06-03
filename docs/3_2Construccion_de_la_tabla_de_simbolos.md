@@ -16,10 +16,13 @@ desplazamiento(tipo:CTipo, id:String) : Integer
 >Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un identificador con ese nombre devuelve terr
 
 existeID(ts:TS, id:String) : Boolean
->Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, ha sido previamente declarado.
+>Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, si ha sido previamente declarado.
 
 obtieneCtipo(typeDesc:TypeDesc) : CTipo
 >Dado un descriptor de tipos devuelve el CTipo asociado
+
+obtieneTipoString(ident:String) : String
+>Dado un identificador, devuelve su tipo en un String.
 
 stringToNat(v:String) : Natural 
 >Convierte el atributo pasado como string a un valor natural.
@@ -293,6 +296,21 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: 1>} )
+
+    TTupla → ipar Tupla fpar
+        Tupla.tsh = TTupla.tsh
+        TTupla.tipo = Tupla.tipo
+
+    TTupla → ipar fpar
+
+    Tupla → TypeDesc coma Tupla
+        TypeDesc.tsh = Tupla0.tsh
+        Tupla1.tsh = Tupla0.tsh
+        Tupla.tipo = TypeDesc.tipo ++ Tupla.tipo
+
+    Tupla → TypeDesc
+        TypeDesc.tsh = Tupla.tsh
+        Tupla.tipo = TypeDesc.tipo
 
     Lit → LitBool 
         Lit.valor = LitBool.valor
