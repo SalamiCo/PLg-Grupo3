@@ -755,6 +755,9 @@ public final class Attribution extends Atribucion {
         dependencias(tArray.a("tsh"), attr.a("tsh"));
         calculo(tArray.a("tsh"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("err"), tArray.a("err"));
+        calculo(attr.a("err"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -767,6 +770,9 @@ public final class Attribution extends Atribucion {
 
         dependencias(tTupla.a("tsh"), attr.a("tsh"));
         calculo(tTupla.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), tTupla.a("err"));
+        calculo(attr.a("err"), AsignationFun.INSTANCE);
 
         return attr;
     }
