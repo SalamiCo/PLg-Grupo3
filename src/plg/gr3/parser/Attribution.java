@@ -1,5 +1,6 @@
 package plg.gr3.parser;
 
+import java.util.Iterator;
 import java.util.List;
 
 import plg.gr3.data.ArrayType;
@@ -13,6 +14,7 @@ import plg.gr3.data.Value;
 import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
+import plg.gr3.errors.compile.ExpectedDesignator;
 import plg.gr3.errors.compile.MismatchNumberOfParameters;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentifierError;
@@ -1430,21 +1432,80 @@ public final class Attribution extends Atribucion {
         dependencias(expr.a("tsh"), attr.a("tsh"));
         calculo(expr.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("err"), expr.a("err"));
-        // calculo(attr.a("err"), ConcatErrorsFun.INSTANCE); // TODO ver como se hacen el atb error
-
         dependencias(
-            attr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprog"), expr.a("tipo"),
-            expr.a("desig"));
+            attr.a("err"), expr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprogh"),
+            expr.a("tipo"), expr.a("desig"), attr.a("listaparamnombresh"));
         calculo(attr.a("err"), new SemFun() {
-
+            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
-                // TODO
+                List<CompileError> exprErr = (List<CompileError>) args[0].valor();
 
-                return false;
+                SymbolTable exprTsh = (SymbolTable) args[1].valor();
+                Lexeme identParamReal = (Lexeme) args[2].valor();
+                Lexeme identSubprog = (Lexeme) args[3].valor();
+
+                List<Parameter> parametros = exprTsh.getIdentifierParams(identSubprog.getLexeme());
+
+                // Comprobamos que el identificador del parámetro real esté declarado como parámetro en la tabla de
+// símbolos
+                CompileError err1 =
+                    (!parametros.contains(identParamReal.getLexeme())) ? new UndefinedIdentifierError(identParamReal
+                        .getLexeme(), identParamReal.getLine(), identParamReal.getColumn()) : null;
+
+                // Comprobamos que el tipo del parámetro real se pueda asignar al tipo del parámetro formal declarado.
+                Parameter paramFormal = null;
+                // Parameter paramReal
+
+                Iterator<Parameter> it = parametros.iterator();
+                while (it.hasNext()) {
+                    Parameter element = it.next();
+                    if (element.getName().equals(identParamReal.getLexeme())) {
+                        paramFormal = element;
+                    }
+                }
+                if (paramFormal != null) {
+                    Type exprT = (Type) args[5].valor();
+                    Type paramT = paramFormal.getType();
+                    CompileError err2 =
+                        (!paramT.compatible(exprT)) ? new AssignationTypeError(paramT, exprT, identParamReal) : null;
+
+                    ConcatErrorsFun.INSTANCE.eval(a(err2)); // FIXME Puedo hacerlo así??
+                }
+
+                // Comprobamos que la expresion sea un designador
+                boolean esDesig = (boolean) args[6].valor();
+
+                CompileError err3 =
+                    (!esDesig) ? new ExpectedDesignator(
+                        identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()) : null;
+
+                return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(err1), a(err3));
             }
         });
+
+        /*
+         * dependencias(attr.a("err"), srParams.a("err"), srParams.a("tsh"), identLex, srParams.a("nparams"));
+         * calculo(attr.a("err"), new SemFun() {
+         * 
+         * @SuppressWarnings("unchecked")
+         * 
+         * @Override public Object eval (Atributo... args) { List<CompileError> srparamsErr = (List<CompileError>)
+         * args[0].valor();
+         * 
+         * SymbolTable ts = (SymbolTable) args[1].valor(); Lexeme ident = (Lexeme) args[2].valor(); // Comprobamos que
+         * el identificador exista en la tabla de símbolos CompileError err1 = (ts.hasIdentifier(ident.getLexeme())) ?
+         * new UndefinedIdentifierError(ident.getLexeme(), ident .getLine(), ident.getColumn()) : null;
+         * 
+         * Integer nparams = (Integer) args[3].valor(); Integer numParamsFormales =
+         * ts.getIdentifierParams(ident.getLexeme()).size();
+         * 
+         * // Comprobamos que el numero de parametros con el qe llamamos a la función sea los mismos con los que // esta
+         * declarado CompileError err2 = (nparams != numParamsFormales) ? new MismatchNumberOfParameters(nparams,
+         * numParamsFormales, ident .getLine(), ident.getColumn()) : null;
+         * 
+         * return ConcatErrorsFun.INSTANCE.eval(a(err1), a(err2), a(srparamsErr)); } });
+         */
 
         dependencias(expr.a("etqh"), attr.a("etqh"));
         calculo(expr.a("etqh"), new IncrementFun(6));
