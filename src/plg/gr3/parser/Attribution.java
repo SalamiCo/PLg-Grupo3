@@ -934,6 +934,9 @@ public final class Attribution extends Atribucion {
         regla("TTupla -> IPAR Tupla FPAR");
         TAtributos attr = atributosPara("TTupla", "tipo", "tsh");
 
+        dependencias(tupla.a("tsh"), attr.a("tsh"));
+        calculo(tupla.a("tsh"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
