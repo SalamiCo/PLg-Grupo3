@@ -33,6 +33,7 @@ import plg.gr3.parser.semfun.ConcatErrorsFun;
 import plg.gr3.parser.semfun.IncrementFun;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
 import plg.gr3.vm.instr.BranchInstruction;
+import plg.gr3.vm.instr.CastInstruction;
 import plg.gr3.vm.instr.DropInstruction;
 import plg.gr3.vm.instr.IndirectLoadInstruction;
 import plg.gr3.vm.instr.IndirectStoreInstruction;
@@ -47,6 +48,7 @@ import plg.gr3.vm.instr.StopInstruction;
 import plg.gr3.vm.instr.StoreInstruction;
 import plg.gr3.vm.instr.Swap1Instruction;
 import plg.gr3.vm.instr.Swap2Instruction;
+import plg.gr3.vm.instr.UnaryOperatorInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
 import es.ucm.fdi.plg.evlib.Atributo;
 import es.ucm.fdi.plg.evlib.LAtributo;
@@ -2261,16 +2263,76 @@ public final class Attribution extends Atribucion {
                 SymbolTable table = (SymbolTable) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
 
-                return table.hasIdentifier(ident.getLexeme()) ? new UndefinedIdentifierError(ident.getLexeme(), ident
-                    .getLine(), ident.getColumn()) : null;
+                List<CompileError> errs = new ArrayList<>();
+                if (table.hasIdentifier(ident.getLexeme())) {
+                    errs.add(new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn()));
+                }
+
+                ClassDec cdec = table.getIdentfierClassDec(ident.getLexeme());
+                if (cdec == ClassDec.TYPE || cdec == ClassDec.SUBPROGRAM) {
+                    errs.add(new BadIdentifierClassError(ident.getLexeme(), cdec, ClassDec.VARIABLE, 0, 0));
+                }
+
+                return errs;
             }
         });
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        dependencias(attr.a("etq"), attr.a("tsh"), identLex, attr.a("etqh"));
+        calculo(attr.a("etq"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme lexeme = (Lexeme) args[1].valor();
+                Integer addr = (Integer) args[2].valor();
 
-        // DANI dependencias y calculo de cod
+                Scope scope = table.getIdentfierScope(lexeme.getLexeme());
+                ClassDec cdec = table.getIdentfierClassDec(lexeme.getLexeme());
+
+                NaturalValue dirVal = NaturalValue.valueOf(table.getIdentifierAddress(lexeme.getLexeme()));
+                if (scope == Scope.GLOBAL) {
+                    if (cdec == ClassDec.VARIABLE) {
+                        return addr + 1;
+                    }
+                } else /* scope == Scope.LOCAL */{
+                    if (cdec == ClassDec.VARIABLE || cdec == ClassDec.PARAM_VALUE) {
+                        return addr + 3;
+                    } else if (cdec == ClassDec.PARAM_REF) {
+                        return addr + 4;
+                    }
+                }
+
+                return null;
+            }
+        });
+
+        dependencias(attr.a("cod"), attr.a("tsh"), identLex);
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme lexeme = (Lexeme) args[1].valor();
+
+                Scope scope = table.getIdentfierScope(lexeme.getLexeme());
+                ClassDec cdec = table.getIdentfierClassDec(lexeme.getLexeme());
+
+                NaturalValue dirVal = NaturalValue.valueOf(table.getIdentifierAddress(lexeme.getLexeme()));
+                if (scope == Scope.GLOBAL) {
+                    if (cdec == ClassDec.VARIABLE) {
+                        return new PushInstruction(dirVal);
+                    }
+                } else /* scope == Scope.LOCAL */{
+                    if (cdec == ClassDec.VARIABLE || cdec == ClassDec.PARAM_VALUE) {
+                        return Arrays.asList(new LoadInstruction(1, Type.NATURAL), new PushInstruction(dirVal));
+                    } else if (cdec == ClassDec.PARAM_REF) {
+                        return Arrays.asList(
+                            new LoadInstruction(1, Type.NATURAL), new PushInstruction(dirVal),
+                            new IndirectLoadInstruction(Type.NATURAL));
+                    }
+                }
+
+                return null;
+            }
+        });
 
         return attr;
     }
@@ -2642,7 +2704,8 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1]);
+                UnaryOperator op = (UnaryOperator) attrs[1].valor();
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new UnaryOperatorInstruction(op)));
             }
         });
 
@@ -2680,7 +2743,8 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1]);
+                Type type = (Type) attrs[1].valor();
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new CastInstruction(type)));
             }
         });
 
@@ -2719,12 +2783,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("cod"), paren.a("cod"));
-        calculo(attr.a("cod"), new SemFun() {
-            @Override
-            public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0]);
-            }
-        });
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         return attr;
     }
@@ -2751,12 +2810,7 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("cod"), expr.a("cod"));
-        calculo(attr.a("cod"), new SemFun() {
-            @Override
-            public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0]);
-            }
-        });
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         return attr;
     }
@@ -2764,9 +2818,6 @@ public final class Attribution extends Atribucion {
     public TAtributos paren_R2 (TAtributos lit) {
         regla("Paren -> Lit");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
-
-        dependencias(lit.a("tsh"), attr.a("tsh"));
-        calculo(lit.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("desig"), a(false));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
@@ -2781,7 +2832,8 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(a(new PushInstruction((Value) (attrs[0].valor()))));
+                Value value = (Value) attrs[0].valor();
+                return ConcatCodeFun.INSTANCE.eval(a(new PushInstruction(value)));
 
             }
         });
@@ -2792,6 +2844,9 @@ public final class Attribution extends Atribucion {
     public TAtributos paren_R3 (TAtributos desig) {
         regla("Paren -> Desig");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+
+        dependencias(desig.a("tsh"), attr.a("tsh"));
+        calculo(desig.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("desig"), a(true));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
@@ -2806,8 +2861,8 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction((Type) attrs[1].valor())));
-
+                Type type = (Type) attrs[1].valor();
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction(type)));
             }
         });
 
