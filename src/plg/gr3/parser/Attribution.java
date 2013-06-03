@@ -797,13 +797,15 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 SymbolTable table = (SymbolTable) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
+                if (table.hasIdentifier(ident.getLexeme())) {
+                    return new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn());
+                }
                 ClassDec cd = table.getIdentfierClassDec(ident.getLexeme());
-                if (table.hasIdentifier(ident.getLexeme()) && cd == ClassDec.TYPE) {
-                    return null;
-                } else {
+                if (cd != ClassDec.TYPE) {
                     return (new BadIdentifierClassError(ident.getLexeme(), cd, ClassDec.TYPE, ident.getLine(), ident
                         .getColumn()));
                 }
+                return null;
             }
         });
 
@@ -938,14 +940,36 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // TODO Error
+        dependencias(attr.a("err"), attr.a("tsh"), identLex);
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+                String identName = ident.getLexeme();
+                if (!table.hasIdentifier(identName)) {
+                    return new UndefinedIdentifierError(identName, ident.getLine(), ident.getColumn());
+                }
+                ClassDec cd = table.getIdentfierClassDec(identName);
+                if (cd != ClassDec.CONSTANT) {
+                    return new BadIdentifierClassError(identName, cd, ClassDec.CONSTANT, ident.getLine(), ident
+                        .getColumn());
+                }
+                Type typeFound = table.getIdentfierType(identName);
+                if (!typeFound.compatible(Type.NATURAL)) {
+                    return new AssignationTypeError(typeFound, Type.NATURAL, ident);
+                }
+                return null;
+            }
+        });
 
         return attr;
     }
 
     public TAtributos tArray_R2 (TAtributos typeDesc, Lexeme litnat) {
         regla("TArray -> TypeDesc ICORCHETE LITNAT FCORCHETE");
-        TAtributos attr = atributosPara("TArray", "tipo", "tsh", "err");
+        TAtributos attr = atributosPara("TArray", "tipo", "tsh");
         Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
 
         dependencias(typeDesc.a("tsh"), attr.a("tsh"));
