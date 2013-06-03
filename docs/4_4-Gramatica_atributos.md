@@ -413,13 +413,11 @@
 		Parent.tipo = Lit.tipo
 		Lit.tsh = Paren.tsh
 		Paren.desig = false
-		
-	Paren → ident
-		Paren.tipo = tipoDe(Paren.tsh, ident.lex)
-		Paren.desig = false
+		Paren.err = false
 		
 	Paren → Desig
 		Paren.desig = true
+		Paren.err = Desig.err
 		
 	Op0 → igual
 		Op0.op = igual
