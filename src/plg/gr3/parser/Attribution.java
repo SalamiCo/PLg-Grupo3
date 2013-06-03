@@ -838,7 +838,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tArray_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("TArray -> TypeDesc ICORCHETE IDENT FCORCHETE");
-        TAtributos attr = atributosPara("TArray", "tsh");
+        TAtributos attr = atributosPara("TArray", "tsh", "tipo", "err");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), attr.a("tsh"), identLex);
@@ -870,7 +870,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tArray_R2 (TAtributos typeDesc, Lexeme litnat) {
         regla("TArray -> TypeDesc ICORCHETE LITNAT FCORCHETE");
-        TAtributos attr = atributosPara("TArray");
+        TAtributos attr = atributosPara("TArray", "tipo", "tsh", "err");
         Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
 
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), litnatLex);
@@ -892,14 +892,14 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tTupla_R1 (TAtributos tupla) {
         regla("TTupla -> IPAR Tupla FPAR");
-        TAtributos attr = atributosPara("TTupla");
+        TAtributos attr = atributosPara("TTupla", "tipo");
 
         return attr;
     }
 
     public TAtributos tTupla_R2 () {
         regla("TTupla -> IPAR FPAR");
-        TAtributos attr = atributosPara("TTupla");
+        TAtributos attr = atributosPara("TTupla", "tipo");
 
         return attr;
     }
@@ -908,14 +908,14 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tupla_R1 (TAtributos typeDesc, TAtributos tupla_1) {
         regla("Tupla -> TypeDesc COMA Tupla");
-        TAtributos attr = atributosPara("Tupla");
+        TAtributos attr = atributosPara("Tupla", "tipo");
 
         return attr;
     }
 
     public TAtributos tupla_R2 (TAtributos typeDesc) {
         regla("Tupla -> TypeDesc");
-        TAtributos attr = atributosPara("Tupla");
+        TAtributos attr = atributosPara("Tupla", "tipo");
 
         return attr;
     }
