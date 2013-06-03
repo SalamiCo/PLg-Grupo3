@@ -297,6 +297,21 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: 1>} )
 
+    TTupla → ipar Tupla fpar
+        Tupla.tsh = TTupla.tsh
+        TTupla.tipo = Tupla.tipo
+
+    TTupla → ipar fpar
+
+    Tupla → TypeDesc coma Tupla
+        TypeDesc.tsh = Tupla0.tsh
+        Tupla1.tsh = Tupla0.tsh
+        Tupla.tipo = TypeDesc.tipo ++ Tupla.tipo
+
+    Tupla → TypeDesc
+        TypeDesc.tsh = Tupla.tsh
+        Tupla.tipo = TypeDesc.tipo
+
     Lit → LitBool 
         Lit.valor = LitBool.valor
 
