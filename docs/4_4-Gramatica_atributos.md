@@ -174,13 +174,29 @@
         FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
 
-    TypeDesc → TPrim | TArray | TTupla | ident
+    TypeDesc → TPrim
+
+    TypeDesc → TArray
+    	TArray.tsh = TypeDesc.tsh
+    	TypeDesc.err = TArray.err
+
+    TypeDesc → TTupla 
+    	TTupla.tsh = TypeDesc.tsh
+    	TypeDesc.err = TTupla.err
+
+    TypeDesc → ident
+    	TypeDesc.err = existe(TypeDesc.tsh, ident.lex) ∨ TypeDesc.tsh[ident].clase != tipo
 
 	TPrim → natural | integer | float | boolean | character
 	Cast → char | int | nat | float
 
-	TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
-        TArray.err = ¬existe(TArray.ts, ident.lex) ∨ ts[ident].clase != constante ∨ obtieneTipoString(ident) != nat
+	TArray → TypeDesc icorchete ident fcorchete
+		TypeDesc.tsh = TArray.tsh
+		TArray.err = existe(TArray.tsh, ident.lex) ∨ TArray.tsh[ident].clase != constante
+
+	TArray → TypeDesc icorchete litnat fcorchete
+		TypeDesc.tsh = TArray.tsh
+        TArray.err = existe(TArray.tsh, ident.lex) ∨ obtieneTipoString(ident) != nat
 
 	TTupla → ipar Tupla fpar
 		Tupla.tsh = TTupla.tsh
