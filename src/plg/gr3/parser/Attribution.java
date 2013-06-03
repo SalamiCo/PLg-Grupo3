@@ -1403,8 +1403,18 @@ public final class Attribution extends Atribucion {
         regla("Inst -> InstCall");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
+        dependencias(instCall.a("tsh"), attr.a("tsh"));
+        calculo(instCall.a("tsh"), AsignationFun.INSTANCE);
+
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
+        dependencias(attr.a("cod"), instCall.a("cod"));
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+
+        dependencias(instCall.a("etqh"), attr.a("etqh"));
+        calculo(instCall.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), instCall.a("etqh"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
