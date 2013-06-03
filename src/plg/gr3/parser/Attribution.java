@@ -1311,7 +1311,10 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sSubprogs_R2 () {
         regla("SSubprogs -> SUBPROGRAMS ILLAVE FLLAVE");
-        TAtributos attr = atributosPara("SSubprogs", "etqh", "etq", "tsh", "ts");
+        TAtributos attr = atributosPara("SSubprogs", "etqh", "etq", "tsh", "ts", "cod");
+
+        // SSublogos.cod = []
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
@@ -1325,9 +1328,8 @@ public final class Attribution extends Atribucion {
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        // TODO iniciar a lista vacía:
-        // SSubprogs.cod = []
-        // calculo(attr.a("cod"), );
+        // SSublogos.cod = []
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
