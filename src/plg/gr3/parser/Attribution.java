@@ -2467,7 +2467,7 @@ public final class Attribution extends Atribucion {
 
     // Unary
 
-    public TAtributos unary_R1 (TAtributos op4, TAtributos unary_1) { // TODO Marina
+    public TAtributos unary_R1 (TAtributos op4, TAtributos unary_1) {
         regla("Unary -> Op4 Unary");
         TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq", "op", "type");
 
@@ -2502,14 +2502,10 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
-
         return attr;
     }
 
-    public TAtributos unary_R2 (TAtributos cast, TAtributos paren) {// TODO Marina
+    public TAtributos unary_R2 (TAtributos cast, TAtributos paren) {
         regla("Unary -> IPAR Cast FPAR Paren");
         TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "op", "type");
 
@@ -2548,7 +2544,7 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos unary_R3 (TAtributos paren) { // TODO Marina
+    public TAtributos unary_R3 (TAtributos paren) {
         regla("Unary -> Paren");
         TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "op", "type");
 
@@ -2580,7 +2576,7 @@ public final class Attribution extends Atribucion {
 
     // Paren
 
-    public TAtributos paren_R1 (TAtributos expr) {
+    public TAtributos paren_R1 (TAtributos expr) {// TODO marina
         regla("Paren -> IPAR Expr FPAR");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
@@ -2591,7 +2587,7 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos paren_R2 (TAtributos lit) {
+    public TAtributos paren_R2 (TAtributos lit) {// TODO marina
         regla("Paren -> Lit");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
@@ -2602,7 +2598,7 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos paren_R3 (TAtributos desig) {
+    public TAtributos paren_R3 (TAtributos desig) {// TODO marina
         regla("Paren -> Desig");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
