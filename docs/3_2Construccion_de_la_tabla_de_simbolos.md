@@ -16,10 +16,13 @@ desplazamiento(tipo:CTipo, id:String) : Integer
 >Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un identificador con ese nombre devuelve terr
 
 existeID(ts:TS, id:String) : Boolean
->Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, ha sido previamente declarado.
+>Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, si ha sido previamente declarado.
 
 obtieneCtipo(typeDesc:TypeDesc) : CTipo
 >Dado un descriptor de tipos devuelve el CTipo asociado
+
+obtieneTipoString(ident:String) : String
+>Dado un identificador, devuelve su tipo en un String.
 
 stringToNat(v:String) : Natural 
 >Convierte el atributo pasado como string a un valor natural.

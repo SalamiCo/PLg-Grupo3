@@ -340,10 +340,13 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
         for (Map.Entry<String, Row> entry : this) {
             String id = entry.getKey();
+            sb.append("  [");
+
             for (int i = 0; i < strsize - id.length(); i++) {
                 sb.append(' ');
             }
-            sb.append("  [").append(id).append(" = (").append(entry.getValue()).append(")]\n");
+
+            sb.append(id).append(" => (").append(entry.getValue()).append(")]\n");
         }
 
         return sb.append("}").toString();

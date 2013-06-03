@@ -180,7 +180,7 @@
 	Cast → char | int | nat | float
 
 	TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
-
+        TArray.err = ¬existe(TArray.ts, ident.lex) ∨ ts[ident].clase != constante ∨ obtieneTipoString(ident) != nat
 
 	TTupla → ipar Tupla fpar
 		Tupla.tsh = TTupla.tsh
