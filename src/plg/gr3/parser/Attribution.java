@@ -32,6 +32,7 @@ import plg.gr3.parser.semfun.ConcatCodeFun;
 import plg.gr3.parser.semfun.ConcatErrorsFun;
 import plg.gr3.parser.semfun.IncrementFun;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.BranchInstruction;
 import plg.gr3.vm.instr.CastInstruction;
 import plg.gr3.vm.instr.DropInstruction;
 import plg.gr3.vm.instr.IndirectLoadInstruction;
