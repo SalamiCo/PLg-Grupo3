@@ -17,7 +17,7 @@ public enum CheckDuplicateIdentifierFun implements SemFun {
         Lexeme ident = (Lexeme) args[1].valor();
         Scope scope = (Scope) args[2].valor();
 
-        if (st.hasIdentifier(ident.getLexeme()) && st.getIdentfierScope(ident.getLexeme()) == scope) {
+        if (ident != null && st.hasIdentifier(ident.getLexeme()) && st.getIdentfierScope(ident.getLexeme()) == scope) {
             return new DuplicateIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn());
         }
 

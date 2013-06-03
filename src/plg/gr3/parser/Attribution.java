@@ -249,7 +249,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), cons.a("ts"), cons.a("id"));
+        dependencias(attr.a("err"), cons.a("ts"), cons.a("id"), a(Scope.GLOBAL));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -442,7 +442,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), types_1.a("ts"), type.a("id"));
+        dependencias(attr.a("err"), types_1.a("ts"), type.a("id"), a(Scope.GLOBAL));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -501,7 +501,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(type.a("err"), type.a("ts"), type.a("id"));
+        dependencias(type.a("err"), type.a("ts"), type.a("id"), a(Scope.GLOBAL));
         calculo(type.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -1738,7 +1738,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sfParams_R1 (TAtributos fParams) {
         regla("SFParams -> FParams");
-        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "err");
+        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "dirh", "err");
 
         // FParams
         dependencias(fParams.a("tsh"), attr.a("tsh"));
@@ -1758,7 +1758,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sfParams_R2 () {
         regla("SFParams -> $");
-        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "err");
+        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "dir", "dirh", "err");
 
         // sfParams
         dependencias(attr.a("ts"), attr.a("tsh"));
