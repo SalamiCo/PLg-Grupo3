@@ -196,7 +196,9 @@ public final class Attribution extends Atribucion {
                 Value value = (Value) args[2].valor();
                 Type type = (Type) args[3].valor();
 
-                table.putConstant(ident.getLexeme(), type, value);
+                if (ident != null) {
+                    table.putConstant(ident.getLexeme(), type, value);
+                }
 
                 return table;
             }
@@ -231,14 +233,16 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("ts"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
-                SymbolTable st = (SymbolTable) args[0].valor();
+                SymbolTable table = (SymbolTable) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
                 Value value = (Value) args[2].valor();
                 Type type = (Type) args[3].valor();
 
-                st.putConstant(ident.getLexeme(), type, value);
+                if (ident != null) {
+                    table.putConstant(ident.getLexeme(), type, value);
+                }
 
-                return st;
+                return table;
             }
         });
 
@@ -424,7 +428,12 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable ts = (SymbolTable) args[0].valor();
-                ts.putType((String) args[1].valor(), (Type) args[2].valor());
+                Lexeme ident = (Lexeme) args[1].valor();
+                Type type = (Type) args[2].valor();
+
+                if (ident != null) {
+                    ts.putType(ident.getLexeme(), type);
+                }
 
                 return ts;
             }
@@ -467,7 +476,12 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable ts = (SymbolTable) args[0].valor();
-                ts.putType((String) args[1].valor(), (Type) args[2].valor());
+                Lexeme ident = (Lexeme) args[1].valor();
+                Type type = (Type) args[2].valor();
+
+                if (ident != null) {
+                    ts.putType(ident.getLexeme(), type);
+                }
 
                 return ts;
             }
@@ -499,6 +513,9 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), AsignationFun.INSTANCE);
+
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("dir"), attr.a("dirh"));
         calculo(attr.a("dir"), AsignationFun.INSTANCE);
@@ -589,11 +606,14 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable ts = (SymbolTable) args[0].valor();
-                String ident = (String) args[1].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
                 Scope scope = (Scope) args[2].valor();
                 int address = (int) args[3].valor();
                 Type type = (Type) args[4].valor();
-                ts.putVariable(ident, scope, address, type);
+
+                if (ident != null) {
+                    ts.putVariable(ident.getLexeme(), scope, address, type);
+                }
 
                 return ts;
             }
@@ -642,11 +662,14 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable ts = (SymbolTable) args[0].valor();
-                String ident = (String) args[1].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
                 Scope scope = (Scope) args[2].valor();
                 int address = (int) args[3].valor();
                 Type type = (Type) args[4].valor();
-                ts.putVariable(ident, scope, address, type);
+
+                if (ident != null) {
+                    ts.putVariable(ident.getLexeme(), scope, address, type);
+                }
 
                 return ts;
             }
@@ -697,7 +720,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos typeDesc_R1 (TAtributos tPrim) {
         regla("TypeDesc -> TPrim");
-        TAtributos attr = atributosPara("TypeDesc", "tipo");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
 
         dependencias(attr.a("tipo"), tPrim.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
@@ -707,20 +730,26 @@ public final class Attribution extends Atribucion {
 
     public TAtributos typeDesc_R2 (TAtributos tArray) {
         regla("TypeDesc -> TArray");
-        TAtributos attr = atributosPara("TypeDesc", "tipo");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
 
         dependencias(attr.a("tipo"), tArray.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(tArray.a("tsh"), attr.a("tsh"));
+        calculo(tArray.a("tsh"), AsignationFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos typeDesc_R3 (TAtributos tTupla) {
         regla("TypeDesc -> TTupla");
-        TAtributos attr = atributosPara("TypeDesc", "tipo");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
 
         dependencias(attr.a("tipo"), tTupla.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(tTupla.a("tsh"), attr.a("tsh"));
+        calculo(tTupla.a("tsh"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -852,6 +881,9 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("TArray", "tsh", "tipo", "err");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), attr.a("tsh"), identLex);
         calculo(attr.a("tipo"), new SemFun() {
 
@@ -861,13 +893,15 @@ public final class Attribution extends Atribucion {
                 SymbolTable table = (SymbolTable) args[1].valor();
                 Lexeme ident = (Lexeme) args[2].valor();
 
-                String identStr = ident.getLexeme();
-                if (table.hasIdentifier(identStr) && table.getIdentfierClassDec(identStr) == ClassDec.CONSTANT
-                    && table.getIdentfierType(identStr).compatible(Type.NATURAL))
-                {
-                    NaturalValue val = table.getIdentifierValue(identStr, NaturalValue.class);
+                if (ident != null) {
+                    String identStr = ident.getLexeme();
+                    if (table.hasIdentifier(identStr) && table.getIdentfierClassDec(identStr) == ClassDec.CONSTANT
+                        && table.getIdentfierType(identStr).compatible(Type.NATURAL))
+                    {
+                        NaturalValue val = table.getIdentifierValue(identStr, NaturalValue.class);
 
-                    return new ArrayType(type, val.getValue());
+                        return new ArrayType(type, val.getValue());
+                    }
                 }
 
                 return Type.ERROR;
@@ -883,6 +917,9 @@ public final class Attribution extends Atribucion {
         regla("TArray -> TypeDesc ICORCHETE LITNAT FCORCHETE");
         TAtributos attr = atributosPara("TArray", "tipo", "tsh", "err");
         Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
+
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), litnatLex);
         calculo(attr.a("tipo"), new SemFun() {
@@ -903,14 +940,17 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tTupla_R1 (TAtributos tupla) {
         regla("TTupla -> IPAR Tupla FPAR");
-        TAtributos attr = atributosPara("TTupla", "tipo");
+        TAtributos attr = atributosPara("TTupla", "tipo", "tsh");
+
+        dependencias(tupla.a("tsh"), attr.a("tsh"));
+        calculo(tupla.a("tsh"), AsignationFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos tTupla_R2 () {
         regla("TTupla -> IPAR FPAR");
-        TAtributos attr = atributosPara("TTupla", "tipo");
+        TAtributos attr = atributosPara("TTupla", "tipo", "tsh");
 
         return attr;
     }
@@ -919,14 +959,23 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tupla_R1 (TAtributos typeDesc, TAtributos tupla_1) {
         regla("Tupla -> TypeDesc COMA Tupla");
-        TAtributos attr = atributosPara("Tupla", "tipo");
+        TAtributos attr = atributosPara("Tupla", "tipo", "tsh");
+
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(tupla_1.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
 
         return attr;
     }
 
     public TAtributos tupla_R2 (TAtributos typeDesc) {
         regla("Tupla -> TypeDesc");
-        TAtributos attr = atributosPara("Tupla", "tipo");
+        TAtributos attr = atributosPara("Tupla", "tipo", "tsh");
+
+        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
+        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2368,8 +2417,7 @@ public final class Attribution extends Atribucion {
         regla("Lit -> LitBool");
         TAtributos attr = atributosPara("Lit", "tipo", "valor");
 
-        // TODO revisar, si está bien, quitar TODO
-        dependencias(attr.a("tipo"), a("boolean"));
+        dependencias(attr.a("tipo"), a(Type.BOOLEAN));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("valor"), litBool.a("valor"));
@@ -2395,8 +2443,7 @@ public final class Attribution extends Atribucion {
         regla("Lit -> LITCHAR");
         TAtributos attr = atributosPara("Lit", "tipo", "valor");
 
-        // TODO revisar, si está bien, quitar TODO
-        dependencias(attr.a("tipo"), a("char"));
+        dependencias(attr.a("tipo"), a(Type.CHARACTER));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("valor"), a(litChar));
@@ -2418,8 +2465,6 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> TRUE");
         TAtributos attr = atributosPara("LitBool", "valor");
 
-        // DANI aquí he quitado el tipo, creo que no hace falta
-
         dependencias(attr.a("valor"), a(true));
         calculo(attr.a("valor"), AsignationFun.INSTANCE);
 
@@ -2429,8 +2474,6 @@ public final class Attribution extends Atribucion {
     public TAtributos litBool_R2 () {
         regla("LitBool -> FALSE");
         TAtributos attr = atributosPara("LitBool", "valor");
-
-        // DANI aquí he quitado el tipo, creo que no hace falta
 
         dependencias(attr.a("valor"), a(false));
         calculo(attr.a("valor"), AsignationFun.INSTANCE);
@@ -2445,15 +2488,14 @@ public final class Attribution extends Atribucion {
         Atributo litNatLex = atributoLexicoPara("LITNAT", "lex", litNat);
         TAtributos attr = atributosPara("LitNum", "valor", "tipo");
 
-        // TODO revisar, si está bien, quitar TODO
-        dependencias(attr.a("tipo"), a("natural"));
+        dependencias(attr.a("tipo"), a(Type.NATURAL));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("valor"), litNatLex);
         calculo(attr.a("valor"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
-                Lexeme lexeme = (Lexeme) args[1].valor();
+                Lexeme lexeme = (Lexeme) args[0].valor();
 
                 return NaturalValue.valueOf(lexeme.getLexeme());
             }
@@ -2467,11 +2509,14 @@ public final class Attribution extends Atribucion {
         Atributo litFloatLex = atributoLexicoPara("LITFLOAT", "lex", litFloat);
         TAtributos attr = atributosPara("LitNum", "valor", "tipo");
 
+        dependencias(attr.a("tipo"), a(Type.FLOAT));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("valor"), litFloatLex);
         calculo(attr.a("valor"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
-                Lexeme lexeme = (Lexeme) args[1].valor();
+                Lexeme lexeme = (Lexeme) args[0].valor();
 
                 return FloatValue.valueOf(lexeme.getLexeme());
             }

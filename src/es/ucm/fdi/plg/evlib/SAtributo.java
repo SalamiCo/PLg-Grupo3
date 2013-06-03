@@ -1,5 +1,7 @@
 package es.ucm.fdi.plg.evlib;
 
+import plg.gr3.debug.Debugger;
+
 public class SAtributo extends Atributo {
     private Atributo[] dependeDe;
 
@@ -22,7 +24,12 @@ public class SAtributo extends Atributo {
     @Override
     public Object valor () {
         if (!calculado) {
-            valor = semfun.eval(dependeDe);
+            if (semfun == null) {
+                Debugger.INSTANCE.debug("Atributo sin definir!!");
+                valor = null;
+            } else {
+                valor = semfun.eval(dependeDe);
+            }
             debug(valor);
             calculado = true;
         }
