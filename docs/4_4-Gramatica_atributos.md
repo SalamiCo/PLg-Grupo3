@@ -247,7 +247,7 @@
 
 	Inst → if Expr then Insts ElseIf
 		Expr.tsh = Inst.tsh
-		Insts.tsh = Inst.tsh
+		Insts1.tsh = Inst0.tsh
 		ElseIf.tsh = Inst.tsh
 		Inst.err = Expr.err ∨ Insts.err ∨ ElseIf.err
 
@@ -411,11 +411,7 @@
 	Paren → Lit 
 		Parent.tipo = Lit.tipo
 		Lit.tsh = Paren.tsh
-		Paren.desig = false
-		
-	Paren → ident
-		Paren.tipo = tipoDe(Paren.tsh, ident.lex)
-		Paren.desig = false
+		Paren.desig = false	
 		
 	Paren → Desig
 		Paren.desig = true
