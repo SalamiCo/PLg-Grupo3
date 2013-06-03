@@ -1651,6 +1651,21 @@ public final class Attribution extends Atribucion {
 
         // TODO SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
         // dependencias(attr.a("tsh"));
+        dependencias(attr.a("tsh"), sfParams.a("ts"), a(ident.getLexeme()), attr.a("etqh"));
+        calculo(attr.a("tsh"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable st = new SymbolTable(); // TODO hacer lo de clonar y demas
+                String ident = (String) args[1].valor();
+                int address = (int) args[2].valor();
+                List<Parameter> params = null; // FIXME
+
+                st.putSubprogram(ident, params, address);
+
+                return st;
+            }
+        });
 
         dependencias(sVars.a("tsh"), sfParams.a("ts"));
         calculo(sVars.a("tsh"), AsignationFun.INSTANCE);
