@@ -17,6 +17,7 @@ import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
 import plg.gr3.errors.compile.AssignationTypeError;
+import plg.gr3.errors.compile.BadIdentifierClassError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.ExpectedDesignator;
@@ -789,7 +790,22 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // TODO err
+        dependencias(attr.a("err"), attr.a("tsh"), identLex);
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+                ClassDec cd = table.getIdentfierClassDec(ident.getLexeme());
+                if (table.hasIdentifier(ident.getLexeme()) && cd == ClassDec.TYPE) {
+                    return null;
+                } else {
+                    return (new BadIdentifierClassError(ident.getLexeme(), cd, ClassDec.TYPE, ident.getLine(), ident
+                        .getColumn()));
+                }
+            }
+        });
 
         return attr;
     }
