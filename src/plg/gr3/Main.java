@@ -27,6 +27,7 @@ import plg.gr3.parser.Parser;
 import plg.gr3.parser.SymbolTable;
 import plg.gr3.vm.VirtualMachine;
 import plg.gr3.vm.instr.Instruction;
+import es.ucm.fdi.plg.evlib.Atributo;
 import es.ucm.fdi.plg.evlib.TAtributos;
 
 /**
@@ -95,6 +96,7 @@ public final class Main {
      * @throws IOException Si hay unproblema de E/S
      * @throws Exception Si falla otra cosa
      */
+    @SuppressWarnings("unchecked")
     public static void compile (String[] args) throws Exception {
         if (args.length != 2) {
             printUsage();
@@ -112,9 +114,10 @@ public final class Main {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
 
-//            Atributo.fijaDebug(false);
+            Atributo.fijaDebug(false);
             TAtributos result = (TAtributos) parser.parse().value;
 
+            Atributo.fijaDebug(true);
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 StreamCodeWriter writer = new StreamCodeWriter(output);
 

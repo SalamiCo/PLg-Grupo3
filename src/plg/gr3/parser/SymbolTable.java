@@ -331,7 +331,7 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
     @Override
     public String toString () {
-        StringBuilder sb = new StringBuilder("plg.gr3.parser.SymbolTable(\n");
+        StringBuilder sb = new StringBuilder("plg.gr3.parser.SymbolTable {\n");
 
         int strsize = 0;
         for (String str : table.keySet()) {
@@ -346,6 +346,6 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
             sb.append("  [").append(id).append(" = (").append(entry.getValue()).append(")]\n");
         }
 
-        return sb.toString();
+        return sb.append("}").toString();
     }
 }

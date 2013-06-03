@@ -359,7 +359,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Inst.etq = Insts + 1 
 
 	Inst → InstCall
-		Inst.cod = 
+		Inst.cod = IsntCall.cod
 		InstCall.etqh = Inst.etqh
 		Inst.etq = InstCall.etq
 
