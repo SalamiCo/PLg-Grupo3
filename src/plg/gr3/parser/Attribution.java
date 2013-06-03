@@ -35,6 +35,7 @@ import plg.gr3.vm.instr.BinaryOperatorInstruction;
 import plg.gr3.vm.instr.BranchInstruction;
 import plg.gr3.vm.instr.CastInstruction;
 import plg.gr3.vm.instr.DropInstruction;
+import plg.gr3.vm.instr.DuplicateInstruction;
 import plg.gr3.vm.instr.IndirectLoadInstruction;
 import plg.gr3.vm.instr.IndirectStoreInstruction;
 import plg.gr3.vm.instr.InputInstruction;
@@ -2573,16 +2574,47 @@ public final class Attribution extends Atribucion {
         regla("Fact -> Fact AND Shft");
         TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etq", "err", "etqh");
 
-        // TODO
-        // Fact → Fact and Shft
-        // Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
-        // Fact1.tsh = Fact0.tsh
-        // Shft.tsh = Fact0.tsh
-        // Fact0.desig = Fact1.desig ˄ Shft.desig
+        dependencias(attr.a("tipo"), fact_1.a("tipo"), shft.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                Type type1 = (Type) args[0].valor();
+                Type type2 = (Type) args[2].valor();
+
+                return BinaryOperator.AND.getApplyType(type1, type2);
+            }
+        });
+
+        dependencias(fact_1.a("tsh"), attr.a("tsh"));
+        calculo(fact_1.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(shft.a("tsh"), attr.a("tsh"));
+        calculo(shft.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), a(false));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
         // Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod
-        // Fact1.etqh = = Fact0.etqh
-        // Shft.etqh = Fact1.etq + 3
-        // Fact0.etq = Shft.etq
+        dependencias(
+            attr.a("cod"), fact_1.a("cod"), a(new DuplicateInstruction()), shft.a("etq"), a(new DropInstruction()),
+            shft.a("cod"));
+        calculo(attr.a("cod"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(new BranchInstruction(
+                    (int) args[2].valor(), BooleanValue.FALSE)), args[3], args[4]);
+            }
+        });
+
+        dependencias(fact_1.a("etqh"), attr.a("etqh"));
+        calculo(fact_1.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(shft.a("etq"), fact_1.a("etq"));
+        calculo(shft.a("etq"), new IncrementFun(3));
+
+        dependencias(attr.a("etq"), shft.a("etq"));
+        calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
         return attr;
     }
