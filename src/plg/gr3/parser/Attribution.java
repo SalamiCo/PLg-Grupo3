@@ -8,6 +8,7 @@ import java.util.List;
 
 import plg.gr3.data.ArrayType;
 import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.BooleanValue;
 import plg.gr3.data.CharacterValue;
 import plg.gr3.data.FloatValue;
 import plg.gr3.data.IntegerValue;
@@ -17,6 +18,7 @@ import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
 import plg.gr3.errors.compile.AssignationTypeError;
+import plg.gr3.errors.compile.BadIdentifierClassError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.ExpectedDesignator;
@@ -30,6 +32,7 @@ import plg.gr3.parser.semfun.ConcatCodeFun;
 import plg.gr3.parser.semfun.ConcatErrorsFun;
 import plg.gr3.parser.semfun.IncrementFun;
 import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.BranchInstruction;
 import plg.gr3.vm.instr.DropInstruction;
 import plg.gr3.vm.instr.IndirectLoadInstruction;
 import plg.gr3.vm.instr.IndirectStoreInstruction;
@@ -1270,9 +1273,47 @@ public final class Attribution extends Atribucion {
         regla("Inst -> IF Expr THEN Insts ElseIf");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        dependencias(expr.a("tsh"), attr.a("tsh"));
+        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(insts.a("tsh"), attr.a("tsh"));
+        calculo(insts.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(elseIf.a("tsh"), attr.a("tsh"));
+        calculo(elseIf.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), expr.a("err"), insts.a("err"), elseIf.a("err"));
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                List<CompileError> exprErr = (List<CompileError>) args[0].valor();
+                List<CompileError> instsErr = (List<CompileError>) args[1].valor();
+                List<CompileError> elseIfErr = (List<CompileError>) args[2].valor();
+                return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(instsErr), a(elseIfErr));
+            }
+        });
+
+        dependencias(expr.a("etqh"), attr.a("etqh"));
+        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(insts.a("etqh"), expr.a("etq"));
+        calculo(insts.a("etqh"), new IncrementFun(1));
+
+        dependencias(attr.a("etq"), insts.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
+
+        dependencias(attr.a("cod"), expr.a("cod"), insts.a("cod"), elseIf.a("cod"), insts.a("etq"), elseIf.a("etq"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new BranchInstruction(
+                    (Integer) attrs[3].valor() + 1, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
+                    (Integer) (attrs[4].valor()))), attrs[2]);
+            }
+
+        });
 
         return attr;
     }
