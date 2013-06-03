@@ -6,3 +6,4 @@
 * err: atributo que indica si se ha detectado algún error. Es un atributo de tipo booleano.
 * nparams: contador que cuenta cuántos parámetros se han pasado en la llamada (call) a un subprograma
 * nombresubprog: lleva el identificador el subprograma. Se usa para las restricciones contextuales en el paso de parámetros a funciones
+* listaparamnombres: lleva una lista con los nombres de los parámetros que han sido introducidos en una llamada a función. 

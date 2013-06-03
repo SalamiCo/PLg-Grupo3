@@ -101,12 +101,10 @@ Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de t
 Nota: En el caso de los tipos construidos, devolverá true siempre que los dos tipos sean compatibles, y false en c.o.c. Dos tipos se consideran compatibles cuando el tipo de sus componentes es el mismo y, en el caso de los arrays, su tamaño es el mismo.
 
 #### esVariable
-
     esVariable(TS ts, String id) : Boolean
         Indica si el ident dado, representado por su id, es una variable o una constante. Si devuelve true quiere decir que el ident es una variable, si devuelve false quiere decir que el identificador es una constante.
 
 #### existe
-
     existe(TS ts, String id) : Boolean
         Indica si el identificador existe en la tabla de símbolos
 
@@ -114,7 +112,6 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que los dos t
         Indica si el identificador existe en la tabla de símbolos en el nivel inidicado. 
 
 ### numParametros
-
     numParametros(TS ts, String id) : Integer
         Devuelve el número de parámetros que tiene el subprograma con el identificador id. Si el subprograma no está en la tabla del símbolos devuelve terr.
 
@@ -124,7 +121,12 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que los dos t
 
 ### compatible
 	compatible(CTipo, CTipo) : Boolean
-		Dados dos tipos nos indica si son campatibles entre ellos
-		
+		Dados dos tipos nos indica si son campatibles entre ellos		
+
+### parametrosNoRepetidos
+    parametrosNoRepetidos(TS ts, String id)
+        Dado el nombre de un identificador de un subprograma "id" comprobamos que no hay dos identificadores de parámetros en la cabecera con el mismo nombre.   
+
+
 #### Nota: 
 En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.

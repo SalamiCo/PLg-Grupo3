@@ -45,6 +45,21 @@ No se puede comparar naturales con caracteres, ni enteros con caracteres, ni rea
 
 #### 4.1.6 Sobre los subprogramas
 
+
+
+##### Sobre la invocación de subprogramas
 * No se puede invocar a un subprograma que no esté previamente declarado
-* Hay que comprobar que los parámetros con los que se invoca al subprograma son correctos. 
+* Hay que comprobar que los parámetros reales con los que se invoca al subprograma son correctos. Es decir, comprobar que:
+	* Se invoque con el mismo número de parámetros que el declarado en la cabecera del subprograma. 
+	* Que cada parámetro se invoque con un identificador que haya sido declarado en la cabecera. 
+	* Que no haya dos parámetros reales invocados con el mismo identificador
+	* Comprobar que, cuando pasamos un parámetro por referencia, sea un designador. 
+	* Que los parámetros que pasamos estén previamente declarados en la table de símbolos 
+	* Que los parámetros reales que pasemos sean compatibles con el tipo del parámetros formal declarado en la cabecera de la función. 
+
+
+##### Sobre la declaración de subprogramas hay que comprobar
+* Que no declaremos dos parámetros formales de entrada, con el mismo identificador. 
+* Que no haya un subprograma declarado previamente con el mismo identificador. 
+
  

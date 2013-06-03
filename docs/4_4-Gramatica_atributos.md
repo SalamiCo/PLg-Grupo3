@@ -135,7 +135,7 @@
         SParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
         SVars.tsh = SParams.ts
         SInsts.tsh = SVars.ts
-        Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err
+        Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨ parametrosNoRepetidos(SParams.ts, ident)
 
     SFParams → FParams 
         FParams.tsh = SFParams.tsh
@@ -245,18 +245,21 @@
 		SRParams.tsh = InstCall.tsh
 		SRParams.nparams = 0
 		SRParams.nombresubprogh = ident.lex
-		InstCall.err = SRParams.err ∨ ¬existe(SRParams.tsh, ident.lex) ∨ SRParams.nparams != numParametros(SRParams.tsh, ident.lex)
+		SRParmas.listaparamnombresh = []
+		InstCall.err = SRParams.err ∨ ¬existe(SRParams.tsh, ident.lex) ∨ SRParams.nparams != numParametros(SRParams.tsh, ident.lex) 
 
 	SRParams → RParams
 		RParams.tsh = SRParams.tsh
 		RParams.nparamsh = SRParams.nparamsh
 		SRParams.nparams = RParams.nparams
 		RParams.nombresubprogh = SRParams.nombresubprogh
+		RParams.listaparamnombresh = SRParams.listaparamnombresh
 		SRParams.err = RParams.err
 
 	SRParams → ɛ
 		SRParams.err = false
 		SRParams.nparams = SRParams.nparamsh
+		SRParams.listaparamnombres = SRParams.listaparamnombresh
 
 	RParams → RParams coma RParam
 		RParams1.tsh = RParams0.tsh
@@ -268,19 +271,24 @@
 		RParams.nparams = RParam.nparams   
 		RParams1.nombresubprogh = RParams0.nombresubprogh
 		RParam.nombresubprogh = RParams0.nombresubprogh	
+		RParams1.listaparamnombresh = RParams0.listaparamnombresh
+		RParam.listaparamnombresh = RParams1.listaparamnombres	
 
 	RParams → RParam
 		RParam.tsh = RParams.tsh
 		RParam.nparamsh = RParams.nparamsh
 		RParams.nparams = RParam.nparams
 		RParam.nombresubprogh = RParams.nombresubprogh
+		RParam.listaparamnombresh = RParams.listaparamnombresh
+		RParams.listaparamnombres = RParam.listaparamnombres
 		RParams.err = RParam.err
 
 	RParam → ident asig Expr
 		Expr.tsh = RParam.tsh
 		RParam.nparams = RParams.nparamsh + 1  
+		RParam.listaparamnombres = RParam.listaparamnombresh ++ ident 
 		RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
-		∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig 
+		∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig ∨ (ident ∈ listaparamnombresh)
 
 	Desig → ident
 		Desig.tipo = Desig.tsh[ident.lex].tipo
