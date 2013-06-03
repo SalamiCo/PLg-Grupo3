@@ -1254,7 +1254,7 @@ public final class Attribution extends Atribucion {
         });
 
         dependencias(attr.a("cod"), srParams.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE); // TODO el codigo
+        // calculo(attr.a("cod"), AsignationFun.INSTANCE); // TODO el codigo
 
         dependencias(srParams.a("etqh"), attr.a("etqh"));
         calculo(srParams.a("etqh"), new IncrementFun(13));
@@ -1270,7 +1270,9 @@ public final class Attribution extends Atribucion {
     public TAtributos srParams_R1 (TAtributos rParams) {
         regla("SRParams -> RParams");
         TAtributos attr =
-            atributosPara("SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh");
+            atributosPara(
+                "SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh",
+                "listaparamnombresh");
 
         dependencias(rParams.a("tsh"), attr.a("tsh"));
         calculo(rParams.a("tsh"), AsignationFun.INSTANCE);
@@ -1293,12 +1295,18 @@ public final class Attribution extends Atribucion {
         dependencias(rParams.a("nombresubprogh"), attr.a("nombresubprogh"));
         calculo(rParams.a("nombresubprogh"), AsignationFun.INSTANCE);
 
+        dependencias(rParams.a("listaparamnombresh"), attr.a("listaparamnombresh"));
+        calculo(rParams.a("listaparamnombresh"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos srParams_R2 () {
         regla("SRParams -> $");
-        TAtributos attr = atributosPara("SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams");
+        TAtributos attr =
+            atributosPara(
+                "SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams", "listaparamnombres",
+                "listaparamnombresh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1310,6 +1318,9 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("nparams"), attr.a("nparamsh"));
         calculo(attr.a("nparams"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("listaparamnombres"), attr.a("listaparamnombresh"));
+        calculo(attr.a("listaparamnombres"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -1318,7 +1329,9 @@ public final class Attribution extends Atribucion {
     public TAtributos rParams_R1 (TAtributos rParams_1, TAtributos rParams) {
         regla("RParams -> RParams COMA RParam");
         TAtributos attr =
-            atributosPara("RParams", "tsh", "err", "cod", "nparamsh", "nparams", "nombresubprogh", "etqh", "etq");
+            atributosPara(
+                "RParams", "tsh", "err", "cod", "nparamsh", "nparams", "nombresubprogh", "etqh", "etq",
+                "listaparamnombresh", "listaparamnombres");
 
         dependencias(rParams_1.a("tsh"), attr.a("tsh"));
         calculo(rParams_1.a("tsh"), AsignationFun.INSTANCE);
@@ -1355,13 +1368,21 @@ public final class Attribution extends Atribucion {
         dependencias(rParams.a("nombresubprogh"), attr.a("nombresubprogh"));
         calculo(rParams.a("nombresubprogh"), AsignationFun.INSTANCE);
 
+        dependencias(rParams_1.a("listaparamnombresh"), attr.a("listaparamnombresh"));
+        calculo(rParams_1.a("listaparamnombresh"), AsignationFun.INSTANCE);
+
+        dependencias(rParams.a("listaparamnombresh"), rParams_1.a("listaparamnombres"));
+        calculo(rParams.a("listaparamnombresh"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos rParams_R2 (TAtributos rParam) {
         regla("RParams -> RParam");
         TAtributos attr =
-            atributosPara("RParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh");
+            atributosPara(
+                "RParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh",
+                "listaparamnombresh", "listaparamnombres");
 
         dependencias(rParam.a("tsh"), attr.a("tsh"));
         calculo(rParam.a("tsh"), AsignationFun.INSTANCE);
@@ -1387,6 +1408,12 @@ public final class Attribution extends Atribucion {
         dependencias(rParam.a("nombresubprogh"), attr.a("nombresubprogh"));
         calculo(rParam.a("nombresubprogh"), AsignationFun.INSTANCE);
 
+        dependencias(rParam.a("listaparamnombresh"), attr.a("listaparamnombresh"));
+        calculo(rParam.a("listaparamnombresh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("listaparamnombres"), rParam.a("listaparamnombres"));
+        calculo(attr.a("listaparamnombres"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -1397,7 +1424,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog", "nombresubprogh",
-                "tipo", "desig", "err");
+                "tipo", "desig", "err", "listaparamnombres", "listaparamnombresh");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(expr.a("tsh"), attr.a("tsh"));
@@ -1425,8 +1452,11 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), expr.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
-        dependencias(attr.a("nparams"), attr.a("nparams"));
+        dependencias(attr.a("nparams"), attr.a("nparamsh"));
         calculo(attr.a("nparams"), new IncrementFun(1));
+
+        dependencias(attr.a("listaparamnombres"), attr.a("listaparamnombres"));
+        // calculo(attr.a("listaparamnombres"), new IncrementFun(1)); //TODO listaparamnombres ++ ident
 
         return attr;
     }
