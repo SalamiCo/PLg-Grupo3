@@ -950,6 +950,9 @@ public final class Attribution extends Atribucion {
         dependencias(typeDesc.a("tsh"), attr.a("tsh"));
         calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("err"), typeDesc.a("err"));
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), litnatLex);
         calculo(attr.a("tipo"), new SemFun() {
 
@@ -1899,6 +1902,9 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("dir"), fParams.a("dir"));
         calculo(attr.a("dir"), AsignationFun.INSTANCE);
 
+        dependencias(fParams.a("dirh"), attr.a("dirh"));
+        calculo(fParams.a("dirh"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("err"), fParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1938,10 +1944,10 @@ public final class Attribution extends Atribucion {
         dependencias(fParam.a("tsh"), fParams_1.a("tsh"));
         calculo(fParam.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(fParam.a("dirh"), fParams_1.a("dirh"));
+        dependencias(fParam.a("dirh"), fParams_1.a("dir"));
         calculo(fParam.a("dirh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("dir"), fParam.a("dir"), fParam.a("tipo"));
+        dependencias(attr.a("dir"), fParams_1.a("dir"), fParam.a("tipo"));
         calculo(attr.a("dir"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
@@ -1967,7 +1973,8 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParam.a("dir"), fParam.a("tipo"));
+        dependencias(
+            attr.a("ts"), fParam.a("ts"), fParam.a("id"), fParam.a("clase"), fParams_1.a("dir"), fParam.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
 
             @Override
@@ -1998,6 +2005,9 @@ public final class Attribution extends Atribucion {
 
         dependencias(fParam.a("tsh"), attr.a("tsh"));
         calculo(fParam.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("dir"), attr.a("dirh"));
+        calculo(attr.a("dir"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("params"), fParam.a("param"));
         calculo(attr.a("params"), new SemFun() {
