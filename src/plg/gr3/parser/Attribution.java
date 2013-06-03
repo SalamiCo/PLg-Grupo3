@@ -1608,7 +1608,7 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("err"), rParams_1.a("err"), rParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE); // TODO Preguntar como se hacian las cod para concatenar
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(rParams_1.a("nparamsh"), attr.a("nparamsh"));
         calculo(rParams_1.a("nparamsh"), AsignationFun.INSTANCE);
@@ -1734,7 +1734,7 @@ public final class Attribution extends Atribucion {
                     CompileError err2 =
                         (!paramT.compatible(exprT)) ? new AssignationTypeError(paramT, exprT, identParamReal) : null;
 
-                    ConcatErrorsFun.INSTANCE.eval(a(err2)); // FIXME Puedo hacerlo así??
+                    ConcatErrorsFun.INSTANCE.eval(a(err2));
                 }
 
                 // Comprobamos que la expresion sea un designador
@@ -1925,10 +1925,6 @@ public final class Attribution extends Atribucion {
 
         dependencias(sInsts.a("tsh"), sVars.a("ts"));
         calculo(sInsts.a("tsh"), AsignationFun.INSTANCE);
-
-        // TODO marina Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨
-// parametrosNoRepetidos(SParams.ts, ident)
-        // dependencias(attr.a("err"), attr.a("tsh"),)
 
         dependencias(attr.a("err"), sfParams.a("err"), sInsts.a("err"), sVars.a("err"), identLex, sfParams.a("ts"));
         calculo(attr.a("err"), new SemFun() {
@@ -2414,9 +2410,8 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("desig"), term_1.a("desig"), term_2.a("desig"));
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        dependencias(attr.a("cod"), term_1.a("cod"), term_2.a("cod"), op0.a("op"));
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         return attr;
     }
@@ -2494,10 +2489,6 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("desig"), term_1.a("desig"), fact.a("desig"));
         // TODO calculo(attr.a("desig"),);
-
-        // TODO generacion de codigo
-        // dependencias(attr.a("cod"),term_1.a("cod"),);
-        // calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(term_1.a("etqh"), attr.a("etqh"));
         calculo(term_1.a("etqh"), AsignationFun.INSTANCE);
@@ -2639,7 +2630,7 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("tsh"), shft_1.a("tsh"));
         calculo(attr.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(attr.a("desig"), unary.a("desig"), shft_1.a("desig"));
+        dependencias(attr.a("desig"), a(false));
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
         dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
