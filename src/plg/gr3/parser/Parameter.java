@@ -42,4 +42,9 @@ public final class Parameter {
     public boolean isReference () {
         return reference;
     }
+
+    @Override
+    public String toString () {
+        return "(" + type + (reference ? "* " : " ") + name + ")";
+    }
 }
