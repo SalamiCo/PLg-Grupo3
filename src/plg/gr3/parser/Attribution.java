@@ -1403,6 +1403,9 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("ts"), subprogs.a("ts"));
+        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -1416,6 +1419,9 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -1424,6 +1430,9 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("SSubprogs", "etqh", "etq", "tsh", "ts", "err", "cod");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), AsignationFun.INSTANCE);
 
         // SSublogos.cod = []
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
@@ -1443,8 +1452,11 @@ public final class Attribution extends Atribucion {
         dependencias(subprogs_1.a("tsh"), attr.a("tsh"));
         calculo(subprogs_1.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(subprog.a("tsh"), attr.a("tsh"));
+        dependencias(subprog.a("tsh"), subprogs_1.a("ts"));
         calculo(subprog.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("ts"), subprog.a("ts"));
+        calculo(attr.a("ts"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("err"), subprogs_1.a("err"), subprog.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1471,6 +1483,9 @@ public final class Attribution extends Atribucion {
         dependencias(subprog.a("tsh"), attr.a("tsh"));
         calculo(subprog.a("tsh"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("ts"), subprog.a("ts"));
+        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("err"), subprog.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1491,6 +1506,9 @@ public final class Attribution extends Atribucion {
     public TAtributos subprog_R1 (Lexeme ident, TAtributos sfParams, TAtributos sVars, TAtributos sInsts) {
         regla("Subprog -> SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE");
         TAtributos attr = atributosPara("Subprog", "tsh", "ts", "cod", "etq", "etqh", "err");
+
+        dependencias(attr.a("ts"), attr.a("tsh"));
+        calculo(attr.a("ts"), AsignationFun.INSTANCE);
 
         // TODOTODOTODO ODOTODOTOD TODOTODOTO ODOTODOTOD
         // TODO TODO TODO TODO TODO TODO TODO
