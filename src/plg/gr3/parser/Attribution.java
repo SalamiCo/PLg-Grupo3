@@ -9,6 +9,7 @@ import plg.gr3.data.Value;
 import plg.gr3.errors.compile.AssignationTypeError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
+import plg.gr3.errors.compile.MismatchNumberOfParameters;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentifierError;
 import plg.gr3.parser.semfun.AndFun;
@@ -1111,7 +1112,58 @@ public final class Attribution extends Atribucion {
 
     public TAtributos instCall_R1 (Lexeme ident, TAtributos srParams) {
         regla("InstCall -> CALL IDENT IPAR SRParams FPAR");
-        TAtributos attr = atributosPara("InstCall");
+        TAtributos attr =
+            atributosPara(
+                "InstCall", "tsh", "nparams", "nombresubprogh", "listaparamnombres", "err", "cod", "etqh", "etq");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
+
+        dependencias(srParams.a("tsh"), attr.a("tsh"));
+        calculo(srParams.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(srParams.a("nparams"));
+        calculo(srParams.a("nparams"), new IncrementFun(0)); // FIXME srParams.nparams=0
+
+        dependencias(srParams.a("nombresubprog"), identLex);
+        calculo(srParams.a("nombresubprog"), AsignationFun.INSTANCE);
+
+        dependencias(srParams.a("listaparamnombresh"), identLex);
+        // calculo(srParams.a("listaparamnombresh"), ); //TODO hay que hacer: listaparamnombres=[]
+
+        dependencias(attr.a("err"), srParams.a("err"), srParams.a("tsh"), identLex, srParams.a("nparams"));
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                List<CompileError> srparamsErr = (List<CompileError>) args[0].valor();
+
+                SymbolTable ts = (SymbolTable) args[1].valor();
+                Lexeme ident = (Lexeme) args[2].valor();
+                // Comprobamos que el identificador exista en la tabla de símbolos
+                CompileError err1 =
+                    (ts.hasIdentifier(ident.getLexeme())) ? new UndefinedIdentifierError(ident.getLexeme(), ident
+                        .getLine(), ident.getColumn()) : null;
+
+                Integer nparams = (Integer) args[3].valor();
+                Integer numParamsFormales = ts.getIdentifierParams(ident.getLexeme()).size();
+
+                // Comprobamos que el numero de parametros con el qe llamamos a la función sea los mismos con los que
+// esta declarado
+                CompileError err2 =
+                    (nparams != numParamsFormales) ? new MismatchNumberOfParameters(nparams, numParamsFormales, ident
+                        .getLine(), ident.getColumn()) : null;
+
+                return ConcatErrorsFun.INSTANCE.eval(a(err1), a(err2), a(srparamsErr));
+            }
+        });
+
+        dependencias(attr.a("cod"), srParams.a("cod"));
+        calculo(attr.a("cod"), AsignationFun.INSTANCE); // TODO el codigo
+
+        dependencias(srParams.a("etqh"), attr.a("etqh"));
+        calculo(srParams.a("etqh"), new IncrementFun(13));
+
+        dependencias(attr.a("etq"), srParams.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(6));
 
         return attr;
     }
@@ -1174,11 +1226,8 @@ public final class Attribution extends Atribucion {
         dependencias(rParams_1.a("tsh"), attr.a("tsh"));
         calculo(rParams_1.a("tsh"), AsignationFun.INSTANCE);
 
-//        dependencias(rParams.a("tsh"), rParams_1.a("ts"));
-//        calculo(rParams.a("tsh"), AsignationFun.INSTANCE);
-//
-//        dependencias(attr.a("ts"), rParams.a("ts"));
-//        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        dependencias(rParams.a("tsh"), attr.a("tsh"));
+        calculo(rParams.a("tsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("err"), rParams_1.a("err"), rParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);

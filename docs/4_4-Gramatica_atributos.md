@@ -181,6 +181,7 @@
 
 	TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
 
+
 	TTupla → ipar Tupla fpar | ipar fpar
 	Tupla → TypeDesc coma Tupla | TypeDesc
 
@@ -263,8 +264,7 @@
 
 	RParams → RParams coma RParam
 		RParams1.tsh = RParams0.tsh
-		RParam.tsh = RParams1.ts
-		RParams.ts = RParam.ts 
+		RParam.tsh = RParams0.tsh
 		RParams0.err = RParams1.err ∨ Rparam.err
 		RParams1.nparamsh = RParams0.nparamsh
 		RParam.nparamsh = RParams1.nparams
@@ -458,4 +458,4 @@
 ### Notas Marina
 
 - En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
-- que al pasar los parametros de los procedures que no se repitan los parametros 2 veces en la cabecera de la declaración de la funcion
+- El identificador "ident" ha de existir y ha de ser una constante o un natural. 
