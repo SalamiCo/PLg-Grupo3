@@ -182,8 +182,15 @@
 	TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
 
 
-	TTupla → ipar Tupla fpar | ipar fpar
-	Tupla → TypeDesc coma Tupla | TypeDesc
+	TTupla → ipar Tupla fpar
+		Tupla.tsh = TTupla.tsh
+		TTupla.err = Tupla.err
+	TTupla → ipar fpar
+		TTupla.err = false
+
+	Tupla → TypeDesc coma Tupla
+		
+	Tupla → TypeDesc
 
 	SInsts → instructions illave Insts fllave
 		Insts.tsh = SInsts.tsh
