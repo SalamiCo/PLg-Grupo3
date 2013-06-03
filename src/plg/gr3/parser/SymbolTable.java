@@ -89,8 +89,29 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
         @Override
         public String toString () {
-            return "Row[classDec=" + classDec + ", scope=" + scope + ", address=" + address + ", type=" + type
-                   + ", value=" + value + "]";
+            StringBuilder sb = new StringBuilder();
+            sb.append(classDec).append(':').append(scope);
+
+            switch (classDec) {
+                case CONSTANT:
+                    sb.append("; type=").append(type).append("; value=").append(value);
+                break;
+
+                case TYPE:
+                    sb.append("; type=").append(type);
+                break;
+
+                case VARIABLE:
+                case PARAM_VALUE:
+                case PARAM_REF:
+                    sb.append("; type=").append(type).append("; address=").append(address);
+                break;
+
+                case SUBPROGRAM:
+                    sb.append("; address=").append(address).append("; params=").append(params);
+                break;
+            }
+            return sb.toString();
         }
 
     }
