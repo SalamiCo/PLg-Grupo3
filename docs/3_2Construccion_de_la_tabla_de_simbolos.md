@@ -248,11 +248,11 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Subprogs → Subprog
         Subprog.tsh = Subprogs.tsh
 
-    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-        SParams.dirh = 0
-        SParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
-        SVars.tsh = SParams.ts
-        SVars.dirh = SParams.dir
+    Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
+        SFParams.dirh = 0
+        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        SVars.tsh = SFParams.ts
+        SVars.dirh = SFParams.dir
         SInsts.tsh = SVars.ts
 
     SFParams → FParams 

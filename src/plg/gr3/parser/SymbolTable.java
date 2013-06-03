@@ -54,7 +54,7 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
             this.address = address;
             this.type = type;
             this.value = value;
-            this.params = Collections.unmodifiableList(new ArrayList<>(params));
+            this.params = (params == null) ? null : Collections.unmodifiableList(new ArrayList<>(params));
         }
 
         /** @return Clase del identificador */
