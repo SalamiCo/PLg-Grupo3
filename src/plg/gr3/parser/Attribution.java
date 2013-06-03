@@ -733,7 +733,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos typeDesc_R1 (TAtributos tPrim) {
         regla("TypeDesc -> TPrim");
-        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
         dependencias(attr.a("tipo"), tPrim.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
@@ -743,7 +743,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos typeDesc_R2 (TAtributos tArray) {
         regla("TypeDesc -> TArray");
-        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
         dependencias(attr.a("tipo"), tArray.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
@@ -756,7 +756,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos typeDesc_R3 (TAtributos tTupla) {
         regla("TypeDesc -> TTupla");
-        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh");
+        TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
         dependencias(attr.a("tipo"), tTupla.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
@@ -1735,9 +1735,6 @@ public final class Attribution extends Atribucion {
 
         dependencias(sfParams.a("dirh"), a(0));
         calculo(sfParams.a("dirh"), AsignationFun.INSTANCE);
-
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
 
         // TODO SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
         // dependencias(attr.a("tsh"));
