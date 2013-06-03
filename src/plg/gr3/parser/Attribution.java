@@ -1939,6 +1939,7 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("params"), fParams_1.a("params"), fParam.a("param"));
         calculo(attr.a("params"), new SemFun() {
+            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
                 List<Parameter> params = (List<Parameter>) args[0].valor();
@@ -2463,31 +2464,109 @@ public final class Attribution extends Atribucion {
 
     // Unary
 
-    public TAtributos unary_R1 (TAtributos op4, TAtributos unary_1) {
+    public TAtributos unary_R1 (TAtributos op4, TAtributos unary_1) { // TODO Marina
         regla("Unary -> Op4 Unary");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq", "op", "type");
+
+        dependencias(unary_1.a("tsh"), attr.a("tsh"));
+        calculo(unary_1.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), unary_1.a("desig"));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(unary_1.a("etqh"), attr.a("etqh"));
+        calculo(unary_1.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), unary_1.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
+
+        dependencias(attr.a("cod"), unary_1.a("cod"), op4.a("op"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1]);
+            }
+        });
+
+        dependencias(attr.a("tipo"), unary_1.a("tipo"), op4.a("op"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                Type t = (Type) attrs[0].valor();
+                UnaryOperator op = (UnaryOperator) attrs[1].valor();
+
+                return op.getApplyType(t);
+            }
+        });
 
         return attr;
     }
 
-    public TAtributos unary_R2 (TAtributos cast, TAtributos paren) {
+    public TAtributos unary_R2 (TAtributos cast, TAtributos paren) {// TODO Marina
         regla("Unary -> IPAR Cast FPAR Paren");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "op", "type");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        dependencias(paren.a("tsh"), attr.a("tsh"));
+        calculo(paren.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), paren.a("desig"));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(paren.a("etqh"), attr.a("etqh"));
+        calculo(paren.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), paren.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
+
+        dependencias(attr.a("cod"), paren.a("cod"), cast.a("type"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1]);
+            }
+        });
+
+        dependencias(attr.a("tipo"), cast.a("tipo"), paren.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... attrs) {
+                Type tCast = (Type) attrs[0].valor();
+                Type tParen = (Type) attrs[1].valor();
+
+                return tCast.canCast(tCast, tParen);
+            }
+        });
 
         return attr;
     }
 
-    public TAtributos unary_R3 (TAtributos paren) {
+    public TAtributos unary_R3 (TAtributos paren) { // TODO Marina
         regla("Unary -> Paren");
-        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+        TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "op", "type");
 
-        // FIXME Esto no es así
-        dependencias(attr.a("etq"), attr.a("etqh"));
+        dependencias(paren.a("tsh"), attr.a("tsh"));
+        calculo(paren.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("desig"), paren.a("desig"));
+        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("tipo"), paren.a("tipo"));
+        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+
+        dependencias(paren.a("etqh"), attr.a("etqh"));
+        calculo(paren.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), paren.a("etq"));
         calculo(attr.a("etq"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("cod"), paren.a("cod"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                return ConcatCodeFun.INSTANCE.eval(attrs[0]);
+            }
+        });
 
         return attr;
     }
