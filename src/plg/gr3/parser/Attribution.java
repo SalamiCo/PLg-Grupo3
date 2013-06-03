@@ -2731,7 +2731,7 @@ public final class Attribution extends Atribucion {
 
     // Paren
 
-    public TAtributos paren_R1 (TAtributos expr) {// TODO marina
+    public TAtributos paren_R1 (TAtributos expr) {
         regla("Paren -> IPAR Expr FPAR");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
@@ -2761,7 +2761,7 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos paren_R2 (TAtributos lit) {// TODO marina
+    public TAtributos paren_R2 (TAtributos lit) {
         regla("Paren -> Lit");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
@@ -2789,7 +2789,7 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos paren_R3 (TAtributos desig) {// TODO marina
+    public TAtributos paren_R3 (TAtributos desig) {
         regla("Paren -> Desig");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
