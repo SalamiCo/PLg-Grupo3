@@ -640,6 +640,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
+        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"));
         calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
         return attr;
@@ -1802,15 +1803,17 @@ public final class Attribution extends Atribucion {
 
             @Override
             public Object eval (Atributo... args) {
-                SymbolTable ts = (SymbolTable) args[0].valor();
-                String ident = (String) args[1].valor();
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
                 ClassDec cd = (ClassDec) args[2].valor();
-                int address = (int) args[3].valor();
+                Integer address = (Integer) args[3].valor();
                 Type type = (Type) args[4].valor();
 
-                ts.putParam(ident, address, type, cd == ClassDec.PARAM_REF);
+                if (ident != null) {
+                    table.putParam(ident.getLexeme(), address, type, cd == ClassDec.PARAM_REF);
+                }
 
-                return ts;
+                return table;
             }
         });
 
