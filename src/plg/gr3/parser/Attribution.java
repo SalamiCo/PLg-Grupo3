@@ -3,6 +3,7 @@ package plg.gr3.parser;
 import java.util.List;
 
 import plg.gr3.data.BinaryOperator;
+import plg.gr3.data.IntegerValue;
 import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
@@ -17,12 +18,18 @@ import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
 import plg.gr3.parser.semfun.ConcatCodeFun;
 import plg.gr3.parser.semfun.ConcatErrorsFun;
 import plg.gr3.parser.semfun.IncrementFun;
+import plg.gr3.vm.instr.BinaryOperatorInstruction;
+import plg.gr3.vm.instr.IndirectLoadInstruction;
 import plg.gr3.vm.instr.IndirectStoreInstruction;
 import plg.gr3.vm.instr.InputInstruction;
 import plg.gr3.vm.instr.Instruction;
 import plg.gr3.vm.instr.JumpInstruction;
+import plg.gr3.vm.instr.LoadInstruction;
 import plg.gr3.vm.instr.OutputInstruction;
+import plg.gr3.vm.instr.PushInstruction;
+import plg.gr3.vm.instr.ReturnInstruction;
 import plg.gr3.vm.instr.StopInstruction;
+import plg.gr3.vm.instr.StoreInstruction;
 import plg.gr3.vm.instr.Swap1Instruction;
 import plg.gr3.vm.instr.Swap2Instruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
@@ -1393,15 +1400,43 @@ public final class Attribution extends Atribucion {
 
     public TAtributos subprog_R1 (Lexeme ident, TAtributos sfParams, TAtributos sVars, TAtributos sInsts) {
         regla("Subprog -> SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE");
-        TAtributos attr = atributosPara("Subprog", "tsh", "ts", "cod", "etq", "etqh", "err");
+        TAtributos attr = atributosPara("Subprog", "dir", "dirh", "tsh", "ts", "cod", "etq", "etqh", "err");
 
-        // TODOTODOTODO ODOTODOTOD TODOTODOTO ODOTODOTOD
-        // TODO TODO TODO TODO TODO TODO TODO
-        // TODO TODO TODO TODO TODO TODO TODO
-        // TODO TODO TODO TODO TODO TODO TODO
-        // TODO ODOTODOTOD TODOTODOTO ODOTODOTOD
+        dependencias(sfParams.a("dirh"), a(0));
+        calculo(sfParams.a("dirh"), AsignationFun.INSTANCE);
 
-        // PD: Dani, paaaayoh, ta tocao.
+        // TODO SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        // dependencias(attr.a("tsh"));
+
+        dependencias(sVars.a("tsh"), sfParams.a("ts"));
+        calculo(sVars.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(sVars.a("dirh"), sfParams.a("dir"));
+        calculo(sVars.a("dirh"), AsignationFun.INSTANCE);
+
+        dependencias(sInsts.a("tsh"), sVars.a("ts"));
+        calculo(sInsts.a("tsh"), AsignationFun.INSTANCE);
+
+        // TODO Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨
+// parametrosNoRepetidos(SParams.ts, ident)
+        // dependencias(attr.a("err"), attr.a("tsh"),)
+
+        dependencias(
+            attr.a("cod"), sInsts.a("cod"), a(new LoadInstruction(1, Type.INTEGER)), a(new PushInstruction(
+                new IntegerValue(3))), a(new BinaryOperatorInstruction(BinaryOperator.SUBTRACTION)),
+            a(new LoadInstruction(1, Type.INTEGER)), a(new IndirectLoadInstruction(Type.INTEGER)),
+            a(new StoreInstruction(1, Type.INTEGER)), a(new DropInstruction()),
+            a(new LoadInstruction(0, Type.INTEGER)), a(new PushInstruction(new IntegerValue(1))),
+            a(new BinaryOperatorInstruction(BinaryOperator.ADDITION)), a(new IndirectLoadInstruction(Type.INTEGER)),
+            a(new ReturnInstruction()));
+
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+
+        dependencias(sInsts.a("etqh"), attr.a("etqh"));
+        calculo(sInsts.a("etqh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("etq"), sInsts.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(3));
 
         return attr;
     }

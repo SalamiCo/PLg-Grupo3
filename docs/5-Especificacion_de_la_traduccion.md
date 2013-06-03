@@ -293,7 +293,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Subprog.etqh = Subprogs.etqh
 		Subprogs.etq = Subprog.etq
 
-	Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+	Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
 		Subprog.cod = SInsts.cod 
 					//Restaurar la cima de la pila 
 						|| apila_dir(1) || apila(3) ||  menos || desapila_dir(0)

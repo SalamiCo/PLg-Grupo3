@@ -131,9 +131,9 @@
         Subprog.tsh = Subprogs.tsh
         Subprogs.err = Subprog.err
 
-    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-        SParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
-        SVars.tsh = SParams.ts
+    Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
+        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        SVars.tsh = SFParams.ts
         SInsts.tsh = SVars.ts
         Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨ parametrosNoRepetidos(SParams.ts, ident)
 
