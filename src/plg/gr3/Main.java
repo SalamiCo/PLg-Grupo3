@@ -101,11 +101,15 @@ public final class Main {
         if (args.length != 2) {
             printUsage();
         }
+
+        boolean debug = true;
+
         Path pathInput = Paths.get(args[0]);
         Path pathOutput = Paths.get(args[1]);
 
         Debugger.INSTANCE.setLoggingEnabled(true);
-        Debugger.INSTANCE.setDebugEnabled(true);
+        Debugger.INSTANCE.setDebugEnabled(debug);
+        Atributo.fijaDebug(false);
 
         @SuppressWarnings("deprecation")
         SymbolFactory symbolFactory = new DefaultSymbolFactory();
@@ -114,23 +118,25 @@ public final class Main {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
 
-            Atributo.fijaDebug(false);
             TAtributos result = (TAtributos) parser.parse().value;
 
-            Atributo.fijaDebug(true);
+            Atributo.fijaDebug(debug);
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 StreamCodeWriter writer = new StreamCodeWriter(output);
 
+                Debugger.INSTANCE.log("Generando tabla de símbolos...");
                 SymbolTable table = (SymbolTable) result.a("ts").valor();
                 Debugger.INSTANCE.debug("Tabla de símbolos: %s", table);
 
+                Debugger.INSTANCE.log("Recopilando errores...");
                 List<CompileError> errors = (List<CompileError>) result.a("err").valor();
                 Debugger.INSTANCE.debug("Errores: %s", errors);
 
-                List<Instruction> code = (List<Instruction>) result.a("cod").valor();
-                Debugger.INSTANCE.debug("Código: %s", code);
-
                 if (errors.isEmpty()) {
+                    Debugger.INSTANCE.log("Generando el código...");
+                    List<Instruction> code = (List<Instruction>) result.a("cod").valor();
+                    Debugger.INSTANCE.debug("Código: %s", code);
+
                     writer.write(code);
                 }
             }
