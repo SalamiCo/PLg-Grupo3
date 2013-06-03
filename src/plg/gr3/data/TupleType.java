@@ -9,26 +9,26 @@ import plg.gr3.Util;
 import plg.gr3.vm.instr.ConstructedType;
 
 public final class TupleType extends ConstructedType {
-    
+
     private final List<Type> subtypes;
-    
-    protected TupleType (List<Type> types) {
+
+    public TupleType (List<Type> types) {
         super("(" + Util.join(",", Objects.requireNonNull(types, "types")) + ")");
-        
+
         if (types.contains(null)) {
             throw new NullPointerException("types");
         }
-        
+
         subtypes = Collections.unmodifiableList(types);
     }
-    
+
     @Override
     public boolean compatible (Type type) {
         if (!(type instanceof TupleType)) {
             return false;
         }
         TupleType tupt = (TupleType) type;
-        
+
         if (subtypes.size() != tupt.subtypes.size()) {
             return false;
         }
@@ -39,11 +39,11 @@ public final class TupleType extends ConstructedType {
         }
         return true;
     }
-    
+
     public List<Type> getSubtypes () {
         return subtypes;
     }
-    
+
     @Override
     public int getSize () {
         Iterator<Type> it = subtypes.iterator();
@@ -53,7 +53,7 @@ public final class TupleType extends ConstructedType {
         }
         return length;
     }
-    
+
     public int getOffset (int numElement) {
         if (numElement < 0 || numElement > getSize()) {
             throw new IllegalArgumentException("numElement: " + numElement);

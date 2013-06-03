@@ -16,10 +16,13 @@ desplazamiento(tipo:CTipo, id:String) : Integer
 >Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un identificador con ese nombre devuelve terr
 
 existeID(ts:TS, id:String) : Boolean
->Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, ha sido previamente declarado.
+>Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, si ha sido previamente declarado.
 
 obtieneCtipo(typeDesc:TypeDesc) : CTipo
 >Dado un descriptor de tipos devuelve el CTipo asociado
+
+obtieneTipoString(ident:String) : String
+>Dado un identificador, devuelve su tipo en un String.
 
 stringToNat(v:String) : Natural 
 >Convierte el atributo pasado como string a un valor natural.
@@ -245,11 +248,11 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Subprogs → Subprog
         Subprog.tsh = Subprogs.tsh
 
-    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-        SParams.dirh = 0
-        SParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
-        SVars.tsh = SParams.ts
-        SVars.dirh = SParams.dir
+    Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
+        SFParams.dirh = 0
+        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        SVars.tsh = SFParams.ts
+        SVars.dirh = SFParams.dir
         SInsts.tsh = SVars.ts
 
     SFParams → FParams 

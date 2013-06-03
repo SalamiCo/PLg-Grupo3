@@ -54,7 +54,7 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
             this.address = address;
             this.type = type;
             this.value = value;
-            this.params = Collections.unmodifiableList(new ArrayList<>(params));
+            this.params = (params == null) ? null : Collections.unmodifiableList(new ArrayList<>(params));
         }
 
         /** @return Clase del identificador */
@@ -89,8 +89,29 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
         @Override
         public String toString () {
-            return "Row[classDec=" + classDec + ", scope=" + scope + ", address=" + address + ", type=" + type
-                   + ", value=" + value + "]";
+            StringBuilder sb = new StringBuilder();
+            sb.append(classDec).append(':').append(scope);
+
+            switch (classDec) {
+                case CONSTANT:
+                    sb.append("; type=").append(type).append("; value=").append(value);
+                break;
+
+                case TYPE:
+                    sb.append("; type=").append(type);
+                break;
+
+                case VARIABLE:
+                case PARAM_VALUE:
+                case PARAM_REF:
+                    sb.append("; type=").append(type).append("; address=").append(address);
+                break;
+
+                case SUBPROGRAM:
+                    sb.append("; address=").append(address).append("; params=").append(params);
+                break;
+            }
+            return sb.toString();
         }
 
     }
@@ -340,10 +361,13 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
         for (Map.Entry<String, Row> entry : this) {
             String id = entry.getKey();
+            sb.append("  [");
+
             for (int i = 0; i < strsize - id.length(); i++) {
                 sb.append(' ');
             }
-            sb.append("  [").append(id).append(" = (").append(entry.getValue()).append(")]\n");
+
+            sb.append(id).append(" => (").append(entry.getValue()).append(")]\n");
         }
 
         return sb.append("}").toString();

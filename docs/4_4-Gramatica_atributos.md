@@ -131,9 +131,9 @@
         Subprog.tsh = Subprogs.tsh
         Subprogs.err = Subprog.err
 
-    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
-        SParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
-        SVars.tsh = SParams.ts
+    Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
+        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        SVars.tsh = SFParams.ts
         SInsts.tsh = SVars.ts
         Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨ parametrosNoRepetidos(SParams.ts, ident)
 
@@ -180,10 +180,23 @@
 	Cast → char | int | nat | float
 
 	TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
+        TArray.err = ¬existe(TArray.ts, ident.lex) ∨ ts[ident].clase != constante ∨ obtieneTipoString(ident) != nat
 
+	TTupla → ipar Tupla fpar
+		Tupla.tsh = TTupla.tsh
+		TTupla.err = Tupla.err
 
-	TTupla → ipar Tupla fpar | ipar fpar
-	Tupla → TypeDesc coma Tupla | TypeDesc
+	TTupla → ipar fpar
+		TTupla.err = false
+
+	Tupla → TypeDesc coma Tupla
+		TypeDesc.tsh = Tupla0.tsh
+		Tupla1.tsh = Tupla0.tsh
+		Tupla0.err = TypeDesc.err ∨ Tupla1.err
+
+	Tupla → TypeDesc
+		TypeDesc.tsh = Tupla.tsh
+		Tupla.err = TypeDesc.err
 
 	SInsts → instructions illave Insts fllave
 		Insts.tsh = SInsts.tsh
