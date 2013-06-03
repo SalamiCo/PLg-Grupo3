@@ -2402,8 +2402,8 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), expr.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(3));
 
-        dependencias(expr.a("const"), a(false));
-        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+        dependencias(attr.a("const"), a(false));
+        calculo(attr.a("etqh"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -2433,14 +2433,14 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), desig_1.a("err"), expr.a("err"), desig_1.a("tipo"));
+        dependencias(attr.a("err"), desig_1.a("err"), desig_1.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
-                Type type = (Type) args[2].valor();
+                Type type = (Type) args[1].valor();
 
                 CompileError err = (type instanceof TupleType) ? null : new InvalidTypeError(type, -1, -1);
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[1]);
+                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0]);
             }
         });
 
@@ -2452,8 +2452,8 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), desig_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(2));
 
-        dependencias(expr.a("const"), a(false));
-        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+        dependencias(attr.a("const"), a(false));
+        calculo(attr.a("etqh"), AsignationFun.INSTANCE);
 
         return attr;
     }
