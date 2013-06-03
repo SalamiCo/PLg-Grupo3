@@ -2364,6 +2364,17 @@ public final class Attribution extends Atribucion {
         regla("Desig -> Desig ICORCHETE Expr FCORCHETE");
         TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq");
 
+        dependencias(attr.a("cod"), desig_1.a("cod"), expr.a("cod"), desig_1.a("tipo"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                int factEtq = (int) attrs[1].valor();
+                // TODO sustituir las funciones por su código
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new DuplicateInstruction()), a(new BranchInstruction(
+                    factEtq, BooleanValue.TRUE)), a(new DropInstruction()), attrs[2]);
+            }
+        });
+
         dependencias(attr.a("tipo"), desig_1.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
             @Override
@@ -2464,6 +2475,9 @@ public final class Attribution extends Atribucion {
         regla("Expr -> Term Op0 Term");
         TAtributos attr = atributosPara("Expr", "desig", "tipo", "tsh", "err", "cod", "etqh", "etq");
 
+        dependencias(attr.a("cod"), term_1.a("cod"), term_2.a("cod"), op0.a("cod"));
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+
         dependencias(attr.a("desig"), a(false));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
@@ -2516,11 +2530,11 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("tipo"), term.a("tipo"));
         calculo(attr.a("tipo"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("cod"), term.a("cod"));
+        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+
         dependencias(term.a("tsh"), attr.a("tsh"));
         calculo(term.a("tsh"), AsignationFun.INSTANCE);
-
-        dependencias(attr.a("desig"), term.a("desig"));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("desig"), term.a("desig"));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
@@ -2542,6 +2556,9 @@ public final class Attribution extends Atribucion {
     public TAtributos term_R1 (TAtributos term_1, TAtributos op1, TAtributos fact) {
         regla("Term -> Term Op1 Fact");
         TAtributos attr = atributosPara("Term", "tipo", "tsh", "desig", "op", "etq", "etqh", "cod", "err");
+
+        dependencias(attr.a("cod"), term_1.a("cod"), fact.a("cod"), op1.a("cod"));
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(attr.a("tipo"), term_1.a("tipo"), op1.a("op"), fact.a("tipo"));
         // TODO calculo(attr.a("tipo"),);
@@ -2588,6 +2605,17 @@ public final class Attribution extends Atribucion {
     public TAtributos term_R2 (TAtributos term_1, TAtributos fact) {
         regla("Term -> Term OR Fact");
         TAtributos attr = atributosPara("Term", "tipo", "op", "tsh", "desig", "cod", "etq", "etqh", "err");
+
+        dependencias(attr.a("cod"), term_1.a("cod"), fact.a("etq"), fact.a("cod"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... attrs) {
+                int factEtq = (int) attrs[1].valor();
+                // TODO sustituir las funciones por su código
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new DuplicateInstruction()), a(new BranchInstruction(
+                    factEtq, BooleanValue.TRUE)), a(new DropInstruction()), attrs[2]);
+            }
+        });
 
         dependencias(attr.a("tipo"), term_1.a("tipo"), fact.a("tipo"));
         // TODO la tipoFUnc con or calculo(attr.a("tipo"), );
@@ -2662,6 +2690,9 @@ public final class Attribution extends Atribucion {
         regla("Fact -> Fact Op2 Shft");
         TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "err", "cod", "etq", "etqh");
 
+        dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("cod"), op2.a("cod"));
+        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("tipo"), fact_1.a("tipo"), op2.a("op"), shft.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
             @Override
@@ -2728,15 +2759,14 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
         // Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod
-        dependencias(
-            attr.a("cod"), fact_1.a("cod"), a(new DuplicateInstruction()), shft.a("etq"), a(new DropInstruction()),
-            shft.a("cod"));
+        dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("etq"), shft.a("cod"));
         calculo(attr.a("cod"), new SemFun() {
-
             @Override
-            public Object eval (Atributo... args) {
-                return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(new BranchInstruction(
-                    (int) args[2].valor(), BooleanValue.FALSE)), args[3], args[4]);
+            public Object eval (Atributo... attrs) {
+                int shftEtq = (int) attrs[1].valor();
+                // TODO sustituir las funciones por su código
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new DuplicateInstruction()), a(new BranchInstruction(
+                    shftEtq, BooleanValue.FALSE)), a(new DropInstruction()), attrs[2]);
             }
         });
 
