@@ -323,9 +323,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 	 
 	Inst → Desig asig Expr
 		Inst.cod = Expr.cod || Desig.cod || desapila-ind
-		Desig.etqh = Inst.etqh 
-		Expr.etqh = Desig.etq 
-		Inst.etq = Expr.etq + 2 
+		Expr.etqh = Inst.etqh
+		Desig.etqh = Expr.etq
+		Inst.etq = Desig.etq + 1 
 
 	Inst → in ipar Desig fpar
 		Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 

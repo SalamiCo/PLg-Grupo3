@@ -1734,6 +1734,7 @@ public final class Attribution extends Atribucion {
     public TAtributos subprog_R1 (Lexeme ident, TAtributos sfParams, TAtributos sVars, TAtributos sInsts) {
         regla("Subprog -> SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE");
         TAtributos attr = atributosPara("Subprog", "dir", "dirh", "tsh", "ts", "cod", "etq", "etqh", "err");
+        Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         dependencias(sfParams.a("dirh"), a(0));
         calculo(sfParams.a("dirh"), AsignationFun.INSTANCE);
@@ -1765,9 +1766,49 @@ public final class Attribution extends Atribucion {
         dependencias(sInsts.a("tsh"), sVars.a("ts"));
         calculo(sInsts.a("tsh"), AsignationFun.INSTANCE);
 
-        // TODO Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨
+        // TODO marina Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨
 // parametrosNoRepetidos(SParams.ts, ident)
         // dependencias(attr.a("err"), attr.a("tsh"),)
+
+        dependencias(attr.a("err"), sfParams.a("err"), sInsts.a("err"), sVars.a("err"), identLex, sfParams.a("ts"));
+        calculo(attr.a("err"), new SemFun() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object eval (Atributo... args) {
+                List<CompileError> sfparamsErr = (List<CompileError>) args[0].valor();
+                List<CompileError> sInstsErr = (List<CompileError>) args[1].valor();
+                List<CompileError> sVarsErr = (List<CompileError>) args[2].valor();
+
+                SymbolTable ts = (SymbolTable) args[4].valor();
+                Lexeme ident = (Lexeme) args[3].valor();
+                // Comprobamos que el identificador del subprograma no exista previamente en la tabla de símbolos
+                CompileError err1 =
+                    (!ts.hasIdentifier(ident.getLexeme())) ? new DuplicateIdentifierError(ident.getLexeme(), ident
+                        .getLine(), ident.getColumn()) : null;
+
+                // Comprobamos que no haya parametros formales declarados repetidos
+                List<Parameter> parametros = ts.getIdentifierParams(ident.getLexeme());
+
+                Iterator<Parameter> it1 = parametros.iterator();
+                while (it1.hasNext()) {
+                    Parameter element1 = it1.next();
+                    Iterator<Parameter> it2 = parametros.iterator();
+                    while (it2.hasNext()) {
+                        Parameter element2 = it2.next();
+                        if (element1 != element2) {
+                            if (element1.getName().equals(element2.getName())) {
+                                CompileError err2 =
+                                    new DuplicateIdentifierError(element2.getName(), ident.getLine(), ident.getColumn());
+                                ConcatErrorsFun.INSTANCE.eval(a(err2));
+                            }
+                        }
+                    }
+                }
+
+                return ConcatErrorsFun.INSTANCE.eval(a(sfparamsErr), a(sInstsErr), a(sVarsErr), a(err1));
+
+            }
+        });
 
         dependencias(
             attr.a("cod"), sInsts.a("cod"), a(new LoadInstruction(1, Type.INTEGER)), a(new PushInstruction(
