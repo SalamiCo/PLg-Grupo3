@@ -300,7 +300,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Lit → LitNum
         Lit.valor = LitNum.valor
 
-    Lit → litchar
+    Lit → litChar
         Lit.valor = stringToChar(litchar)
 
     LitBool → true 
@@ -309,8 +309,8 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     LitBool → false
         LitBool.valor = false
 
-    LitNum → litnat
+    LitNum → litNat
         LitNum.valor = stringToNat(litnat)
 
-    LitNum → litfloat
+    LitNum → litFloat
         LitNum.valor = stringToFloat(litfloat)
