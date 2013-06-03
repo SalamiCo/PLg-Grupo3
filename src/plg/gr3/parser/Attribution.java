@@ -17,6 +17,7 @@ import plg.gr3.data.Type;
 import plg.gr3.data.UnaryOperator;
 import plg.gr3.data.Value;
 import plg.gr3.errors.compile.AssignationTypeError;
+import plg.gr3.errors.compile.BadIdentifierClassError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.ExpectedDesignator;
@@ -752,6 +753,9 @@ public final class Attribution extends Atribucion {
         dependencias(tArray.a("tsh"), attr.a("tsh"));
         calculo(tArray.a("tsh"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("err"), tArray.a("err"));
+        calculo(attr.a("err"), AsignationFun.INSTANCE);
+
         return attr;
     }
 
@@ -764,6 +768,9 @@ public final class Attribution extends Atribucion {
 
         dependencias(tTupla.a("tsh"), attr.a("tsh"));
         calculo(tTupla.a("tsh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("err"), tTupla.a("err"));
+        calculo(attr.a("err"), AsignationFun.INSTANCE);
 
         return attr;
     }
