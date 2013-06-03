@@ -2,6 +2,7 @@ package plg.gr3.parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -995,8 +996,9 @@ public final class Attribution extends Atribucion {
                 Type type = (Type) args[0].valor();
                 TupleType ttype = (TupleType) args[1].valor();
 
-                List<Type> types = new ArrayList<>(ttype.getSubtypes());
+                List<Type> types = new ArrayList<>();
                 types.add(type);
+                types.addAll(ttype.getSubtypes());
 
                 return new TupleType(types);
             }
@@ -1776,7 +1778,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sfParams_R1 (TAtributos fParams) {
         regla("SFParams -> FParams");
-        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "dirh", "err");
+        TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "dirh", "err", "params");
 
         // FParams
         dependencias(fParams.a("tsh"), attr.a("tsh"));
@@ -1791,16 +1793,22 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("err"), fParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
+        dependencias(attr.a("params"), fParams.a("params"));
+        calculo(attr.a("params"), ConcatErrorsFun.INSTANCE);
+
         return attr;
     }
 
     public TAtributos sfParams_R2 () {
         regla("SFParams -> $");
-        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "dir", "dirh", "err");
+        TAtributos attr = atributosPara("SFParams", "ts", "tsh", "dir", "dirh", "err", "params");
 
         // sfParams
         dependencias(attr.a("ts"), attr.a("tsh"));
         calculo(attr.a("ts"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("params"), a(Collections.emptyList()));
+        calculo(attr.a("params"), AsignationFun.INSTANCE);
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 

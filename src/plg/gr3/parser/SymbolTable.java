@@ -119,11 +119,18 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
     /** Estructura interna de la tabla */
     private final HashMap<String, Row> table;
 
-    /**
-     * Construye una tabla de símbolos vacía
-     */
+    /** Construye una tabla de símbolos vacía */
     public SymbolTable () {
         table = new HashMap<>();
+    }
+
+    /**
+     * Construye una tabla de símbolos copiada de otra
+     * 
+     * @param original Tabla original a copiar
+     */
+    public SymbolTable (SymbolTable original) {
+        table = new HashMap<>(original.table);
     }
 
     /**
