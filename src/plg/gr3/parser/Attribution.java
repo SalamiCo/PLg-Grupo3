@@ -2362,7 +2362,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos desig_R2 (TAtributos desig_1, TAtributos expr) {
         regla("Desig -> Desig ICORCHETE Expr FCORCHETE");
-        TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq");
+        TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq", "const");
 
         dependencias(attr.a("cod"), desig_1.a("cod"), expr.a("cod"), desig_1.a("tipo"));
         calculo(attr.a("cod"), new SemFun() {
@@ -2420,12 +2420,12 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos desig_R3 (TAtributos desig_1, Lexeme litNat) {
+    public TAtributos desig_R3 (TAtributos desig_1, Lexeme litnat) {
         regla("Desig -> Desig BARRABAJA LITNAT");
-        TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq");
-        Atributo litNatLex = atributoLexicoPara("LITNAT", "lex", litNat);
+        TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq", "const");
+        Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
 
-        dependencias(attr.a("cod"), desig_1.a("cod"), litNatLex, desig_1.a("tipo"));
+        dependencias(attr.a("cod"), desig_1.a("cod"), litnatLex, desig_1.a("tipo"));
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
@@ -2439,7 +2439,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("tipo"), desig_1.a("tipo"), litNatLex);
+        dependencias(attr.a("tipo"), desig_1.a("tipo"), litnatLex);
         calculo(attr.a("tipo"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
@@ -2517,8 +2517,11 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("desig"), term_1.a("desig"), term_2.a("desig"));
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
-        dependencias(attr.a("cod"), term_1.a("cod"), term_2.a("cod"), op0.a("op"));
+        dependencias(attr.a("cod"), term_1.a("cod"), term_2.a("cod"), op0.a("op")); // FIXME
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+
+        dependencias(attr.a("etq"), term_2.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), op0.a("op"), term_2.a("err"), term_2.a("tipo"));
         calculo(attr.a("err"), new SemFun() {
