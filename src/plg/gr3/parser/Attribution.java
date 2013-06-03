@@ -2845,6 +2845,9 @@ public final class Attribution extends Atribucion {
         regla("Paren -> Desig");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
+        dependencias(desig.a("tsh"), attr.a("tsh"));
+        calculo(desig.a("tsh"), AsignationFun.INSTANCE);
+
         dependencias(attr.a("desig"), a(true));
         calculo(attr.a("desig"), AsignationFun.INSTANCE);
 
