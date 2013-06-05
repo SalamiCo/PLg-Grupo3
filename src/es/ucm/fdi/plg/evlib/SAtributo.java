@@ -1,5 +1,9 @@
 package es.ucm.fdi.plg.evlib;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import plg.gr3.debug.Debugger;
 
 public class SAtributo extends Atributo {
@@ -34,6 +38,14 @@ public class SAtributo extends Atributo {
             calculado = true;
         }
         return valor;
+    }
+
+    public List<Atributo> dependencias () {
+        if (dependeDe == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(Arrays.asList(dependeDe));
+        }
     }
 
     public void fijaValor (Object valor) {

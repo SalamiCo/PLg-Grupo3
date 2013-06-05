@@ -118,9 +118,9 @@ public final class Main {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
 
+            Atributo.fijaDebug(debug);
             TAtributos result = (TAtributos) parser.parse().value;
 
-            Atributo.fijaDebug(debug);
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 StreamCodeWriter writer = new StreamCodeWriter(output);
 
@@ -135,7 +135,7 @@ public final class Main {
                     error.print();
                 }
 
-                if (errors.isEmpty()) {
+                if (errors.isEmpty() || true) {
                     Debugger.INSTANCE.log("Generando el código...");
                     List<Instruction> code = (List<Instruction>) result.a("cod").valor();
                     Debugger.INSTANCE.debug("Código: %s", code);

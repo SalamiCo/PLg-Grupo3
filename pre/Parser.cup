@@ -53,6 +53,7 @@ non terminal TAtributos
 // TODO ¿End of file?
 Program ::= PROGRAM IDENT ILLAVE SConsts:sConsts STypes:sTypes SVars:sVars SSubprogs:sSubprogs SInsts:sInsts FLLAVE {:
 	RESULT = attr.program_R1(sConsts, sTypes, sVars, sSubprogs, sInsts);
+	attr.calc();
 :};
 
 

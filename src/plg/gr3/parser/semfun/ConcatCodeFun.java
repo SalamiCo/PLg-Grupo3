@@ -17,6 +17,10 @@ public enum ConcatCodeFun implements SemFun {
     public List<Instruction> eval (Atributo... attrs) {
         List<Instruction> code = Collections.checkedList(new ArrayList<Instruction>(), Instruction.class);
 
+        if (attrs == null) {
+            return Collections.emptyList();
+        }
+
         for (Atributo attr : attrs) {
             Object obj = (attr == null) ? null : attr.valor();
             if (obj instanceof Instruction) {
