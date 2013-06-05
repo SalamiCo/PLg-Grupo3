@@ -359,6 +359,10 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
     @Override
     public String toString () {
+        return "SymbolTable" + table.keySet();
+    }
+
+    public String toFullString () {
         StringBuilder sb = new StringBuilder("plg.gr3.parser.SymbolTable {\n");
 
         int strsize = 0;

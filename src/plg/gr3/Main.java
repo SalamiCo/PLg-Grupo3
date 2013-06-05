@@ -130,7 +130,10 @@ public final class Main {
 
                 Debugger.INSTANCE.log("Recopilando errores...");
                 List<CompileError> errors = (List<CompileError>) result.a("err").valor();
-                Debugger.INSTANCE.debug("Errores: %s", errors);
+                Debugger.INSTANCE.debug("Errores:", errors);
+                for (CompileError error : errors) {
+                    error.print();
+                }
 
                 if (errors.isEmpty()) {
                     Debugger.INSTANCE.log("Generando el código...");

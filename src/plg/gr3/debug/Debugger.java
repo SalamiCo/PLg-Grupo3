@@ -13,31 +13,31 @@ import plg.gr3.vm.instr.Instruction;
 public enum Debugger {
     /** Singleton del depurador */
     INSTANCE;
-    
+
     /** Flujo de salida de todos los mensajes */
     private volatile PrintWriter out;
-    
+
     /** Flujo de salida de todos los mensajes */
     private volatile PrintWriter err;
-    
+
     /** Línea en la que se envía un mensaje */
     private int line = 0;
-    
+
     /** Columna en la que se envía un mensaje */
     private int column = 0;
-    
+
     /** Posición en la que se dioel error */
     private int pos = 0;
-    
+
     /** Fichero en el que se envía un mensaje */
     private Instruction instr = null;
-    
+
     /** Si el *logging* está activado */
     private boolean logging;
-    
+
     /** Si el modo depuración está activado */
     private boolean debug;
-    
+
     /** Devuelve el depurador a su estado original */
     private void reset () {
         line = 0;
@@ -45,37 +45,37 @@ public enum Debugger {
         pos = 0;
         instr = null;
     }
-    
+
     private Debugger () {
         useStandardStreams();
     }
-    
+
     /** Establece como streams de salida y error la salida y error estándares del sistema */
     public void useStandardStreams () {
         useOutputStream(new PrintWriter(System.out));
         useErrorStream(new PrintWriter(System.err));
     }
-    
+
     /** @param output Flujo a usar como salida */
     public void useOutputStream (PrintWriter output) {
         this.out = Objects.requireNonNull(output, "output");
     }
-    
+
     /** @param error Flujo a usar como salida de error */
     public void useErrorStream (PrintWriter error) {
         this.err = Objects.requireNonNull(error, "error");
     }
-    
+
     /** @param logging <tt>true</tt> para activar el <i>logging</i>, <tt>false</tt> para desactivarlo */
     public void setLoggingEnabled (boolean logging) {
         this.logging = logging;
     }
-    
+
     /** @param debug <tt>true</tt> para activar el <i>debug</i>, <tt>false</tt> para desactivarlo */
     public void setDebugEnabled (boolean debug) {
         this.debug = debug;
     }
-    
+
     /**
      * Define la línea y columna que afectan siguiente mensaje.
      * 
@@ -90,7 +90,7 @@ public enum Debugger {
         this.instr = null;
         return this;
     }
-    
+
     /**
      * Define la posición de memoria y la instrucción que afectan al siguiente mensaje.
      * 
@@ -105,21 +105,21 @@ public enum Debugger {
         this.column = 0;
         return this;
     }
-    
+
     private void message (String type, String message, PrintWriter pw) {
-        String fmtInstr = instr == null ? "" : ", %5$s";
-        String fmtPos = pos <= 0 ? "" : " pos %6$s";
-        
-        String fmtLine = line <= 0 ? "" : " line %3$d";
-        String fmtCol = column <= 0 ? "" : ", col %4$d";
-        
+        String fmtInstr = instr == null ? "" : " %5$s";
+        String fmtPos = pos <= 0 ? "" : " p:%6$s";
+
+        String fmtLine = line <= 0 ? "" : " l:%3$d";
+        String fmtCol = column <= 0 ? "" : " c:%4$d";
+
         String fmt = "[%1$s]" + fmtPos + fmtInstr + fmtLine + fmtCol + ": %2$s%n";
-        
+
         String msg = String.format(fmt, type, message, line, column, instr, pos + 1);
         pw.printf(msg);
         pw.flush();
     }
-    
+
     /**
      * Escribe un mensaje informativo.
      * 
@@ -132,7 +132,7 @@ public enum Debugger {
         }
         reset();
     }
-    
+
     /**
      * Escribe un mensaje de depuración.
      * 
@@ -145,7 +145,7 @@ public enum Debugger {
         }
         reset();
     }
-    
+
     /**
      * Escribe un mensaje de error
      * 

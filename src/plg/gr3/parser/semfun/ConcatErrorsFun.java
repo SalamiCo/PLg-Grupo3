@@ -16,6 +16,10 @@ public enum ConcatErrorsFun implements SemFun {
     public List<CompileError> eval (Atributo... attrs) {
         List<CompileError> errors = Collections.checkedList(new ArrayList<CompileError>(), CompileError.class);
 
+        if (attrs == null) {
+            return Collections.emptyList();
+        }
+
         for (Atributo attr : attrs) {
             Object obj = (attr == null) ? null : attr.valor();
             if (obj instanceof CompileError) {
