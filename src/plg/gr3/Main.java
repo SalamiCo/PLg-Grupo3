@@ -103,12 +103,13 @@ public final class Main {
         }
 
         boolean debug = true;
+        boolean trace = true;
 
         Path pathInput = Paths.get(args[0]);
         Path pathOutput = Paths.get(args[1]);
 
         Debugger.INSTANCE.setLoggingEnabled(true);
-        Debugger.INSTANCE.setDebugEnabled(debug);
+        Debugger.INSTANCE.setDebugEnabled(debug || trace);
         Atributo.fijaDebug(false);
 
         @SuppressWarnings("deprecation")
@@ -118,7 +119,7 @@ public final class Main {
             Lexer lexer = new Lexer(input);
             Parser parser = new Parser(lexer, symbolFactory);
 
-            Atributo.fijaDebug(debug);
+            Atributo.fijaDebug(trace);
             TAtributos result = (TAtributos) parser.parse().value;
 
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
@@ -135,7 +136,7 @@ public final class Main {
                     error.print();
                 }
 
-                if (errors.isEmpty() || true) {
+                if (errors.isEmpty()) {
                     Debugger.INSTANCE.log("Generando el código...");
                     List<Instruction> code = (List<Instruction>) result.a("cod").valor();
                     Debugger.INSTANCE.debug("Código: %s", code);

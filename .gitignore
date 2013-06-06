@@ -11,3 +11,6 @@ plg-grupo3/
 gen
 .~*
 ~*
+
+output.txt
+*.bin

@@ -12,10 +12,10 @@ import plg.gr3.vm.VirtualMachine;
  * @author PLg Grupo 03 2012/2013
  */
 public final class IndirectStoreInstruction extends Instruction {
-    
+
     /** Tipo de datos */
     private final Type type;
-    
+
     /**
      * @param address Dirección en la que guardar el valor desapilado
      * @param type Tipo al que convertir el dato antes de almacenarlo
@@ -26,12 +26,12 @@ public final class IndirectStoreInstruction extends Instruction {
         }
         this.type = type;
     }
-    
+
     /** @return Tipo del valor en la memoria */
     public Type getType () {
         return type;
     }
-    
+
     @Override
     public void execute (VirtualMachine vm) {
         int address = vm.popValue().toIntegerValue().getValue();
@@ -42,9 +42,9 @@ public final class IndirectStoreInstruction extends Instruction {
             vm.abort(new EmptyStackError(vm.getProgramCounter(), this));
         }
     }
-    
+
     @Override
     public String toString () {
-        return "STORE(" + type.getName() + ")";
+        return "STORE-IND(" + type.getName() + ")";
     }
 }
