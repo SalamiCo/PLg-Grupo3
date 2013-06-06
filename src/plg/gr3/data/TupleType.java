@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 import plg.gr3.Util;
-import plg.gr3.vm.instr.ConstructedType;
 
 public final class TupleType extends ConstructedType {
 

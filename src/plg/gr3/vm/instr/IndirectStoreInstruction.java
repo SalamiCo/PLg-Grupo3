@@ -17,7 +17,6 @@ public final class IndirectStoreInstruction extends Instruction {
     private final Type type;
 
     /**
-     * @param address Dirección en la que guardar el valor desapilado
      * @param type Tipo al que convertir el dato antes de almacenarlo
      */
     public IndirectStoreInstruction (Type type) {

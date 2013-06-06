@@ -141,4 +141,7 @@ public abstract class Instruction {
     /* package */Instruction () {
         // NOP
     }
+
+    @Override
+    public abstract String toString ();
 }

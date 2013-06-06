@@ -1,6 +1,5 @@
 package plg.gr3.data;
 
-import plg.gr3.vm.instr.ConstructedType;
 
 public final class ArrayType extends ConstructedType {
     

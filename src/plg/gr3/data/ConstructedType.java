@@ -1,6 +1,5 @@
-package plg.gr3.vm.instr;
+package plg.gr3.data;
 
-import plg.gr3.data.Type;
 
 public abstract class ConstructedType extends Type {
     

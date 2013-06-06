@@ -11,12 +11,11 @@ import plg.gr3.vm.VirtualMachine;
  * @author PLg Grupo 03 2012/2013
  */
 public final class IndirectLoadInstruction extends Instruction {
-    
+
     /** Tipo de datos */
     private final Type type;
-    
+
     /**
-     * @param address Dirección de memoria de la carga
      * @param type Tipo al que convertir el dato antes de apilarlo
      */
     public IndirectLoadInstruction (Type type) {
@@ -25,24 +24,24 @@ public final class IndirectLoadInstruction extends Instruction {
         }
         this.type = type;
     }
-    
+
     /** @return Tipo del valor enla memoria */
     public Type getType () {
         return type;
     }
-    
+
     @Override
     public void execute (VirtualMachine vm) {
         int address = vm.popValue().toIntegerValue().getValue();
         Value value = vm.getMemoryValue(address);
         if (value != null) {
             vm.pushValue(value.castTo(type)); // Cima = Mem[dir]
-            
+
         } else {
             vm.abort(new UninitializedMemoryError(vm.getProgramCounter(), this, address));
         }
     }
-    
+
     @Override
     public String toString () {
         return "LOAD-IND(" + type.getName() + ")";
