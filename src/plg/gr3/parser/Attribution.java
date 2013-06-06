@@ -23,8 +23,8 @@ import plg.gr3.errors.compile.BadIdentifierClassError;
 import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.errors.compile.ExpectedDesignator;
+import plg.gr3.errors.compile.InvalidNumberOfParametersError;
 import plg.gr3.errors.compile.InvalidTypeError;
-import plg.gr3.errors.compile.MismatchNumberOfParameters;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentifierError;
 import plg.gr3.parser.semfun.AndFun;
@@ -1250,7 +1250,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(desig.a("etqh"), attr.a("etq"));
+        dependencias(desig.a("etqh"), attr.a("etqh"));
         calculo(desig.a("etqh"), new IncrementFun(1));
 
         dependencias(attr.a("etq"), desig.a("etq"));
@@ -1493,39 +1493,40 @@ public final class Attribution extends Atribucion {
         dependencias(srParams.a("tsh"), attr.a("tsh"));
         calculo(srParams.a("tsh"), AsignationFun.INSTANCE);
 
-        dependencias(srParams.a("nparams"), a(0));
-        calculo(srParams.a("nparams"), AsignationFun.INSTANCE); // FIXME srParams.nparams=0
+        dependencias(srParams.a("nparamsh"), a(0));
+        calculo(srParams.a("nparamsh"), AsignationFun.INSTANCE);
 
-        dependencias(srParams.a("nombresubprog"), identLex);
-        calculo(srParams.a("nombresubprog"), AsignationFun.INSTANCE);
+        dependencias(srParams.a("nombresubprogh"), identLex);
+        calculo(srParams.a("nombresubprogh"), AsignationFun.INSTANCE);
 
         dependencias(srParams.a("listaparamnombresh"), identLex);
         calculo(srParams.a("listaparamnombresh"), null); // TODO hay que hacer: listaparamnombres=[]
 
         dependencias(attr.a("err"), srParams.a("err"), srParams.a("tsh"), identLex, srParams.a("nparams"));
         calculo(attr.a("err"), new SemFun() {
-            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
-                List<CompileError> srparamsErr = (List<CompileError>) args[0].valor();
-
                 SymbolTable ts = (SymbolTable) args[1].valor();
                 Lexeme ident = (Lexeme) args[2].valor();
-                // Comprobamos que el identificador exista en la tabla de símbolos
-                CompileError err1 =
-                    (ts.hasIdentifier(ident.getLexeme())) ? new UndefinedIdentifierError(ident.getLexeme(), ident
-                        .getLine(), ident.getColumn()) : null;
-
                 Integer nparams = (Integer) args[3].valor();
-                Integer numParamsFormales = ts.getIdentifierParams(ident.getLexeme()).size();
 
-                // Comprobamos que el numero de parametros con el qe llamamos a la función sea los mismos con los que
-// esta declarado
-                CompileError err2 =
-                    (nparams != numParamsFormales) ? new MismatchNumberOfParameters(nparams, numParamsFormales, ident
-                        .getLine(), ident.getColumn()) : null;
+                List<CompileError> errs = new ArrayList<>();
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err1), a(err2), a(srparamsErr));
+                // Comprobamos que el identificador exista en la tabla de símbolos
+                if (!ts.hasIdentifier(ident.getLexeme())) {
+                    errs.add(new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn()));
+
+                } else {
+                    Integer numParamsFormales = ts.getIdentifierParams(ident.getLexeme()).size();
+
+                    // Comprobamos que el numero de parametros con el que llamamos a la función sea los mismos con los
+                    // que esta declarado
+                    if (nparams.intValue() != numParamsFormales.intValue()) {
+                        errs.add(new InvalidNumberOfParametersError(nparams, numParamsFormales, ident.getLine(), ident
+                            .getColumn()));
+                    }
+                }
+                return ConcatErrorsFun.INSTANCE.eval(args[0], a(errs));
             }
         });
 
@@ -1548,7 +1549,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog",
-                "nombresubprogh", "listaparamnombresh");
+                "nombresubprogh", "listaparamnombresh", "listaparamnombres");
 
         dependencias(rParams.a("tsh"), attr.a("tsh"));
         calculo(rParams.a("tsh"), AsignationFun.INSTANCE);
@@ -1568,11 +1569,17 @@ public final class Attribution extends Atribucion {
         dependencias(rParams.a("nparamsh"), attr.a("nparamsh"));
         calculo(rParams.a("nparamsh"), AsignationFun.INSTANCE);
 
+        dependencias(attr.a("nparams"), rParams.a("nparams"));
+        calculo(attr.a("nparams"), AsignationFun.INSTANCE);
+
         dependencias(rParams.a("nombresubprogh"), attr.a("nombresubprogh"));
         calculo(rParams.a("nombresubprogh"), AsignationFun.INSTANCE);
 
-        dependencias(rParams.a("listaparamnombresh"), attr.a("listaparamnombresh"));
+        dependencias(rParams.a("listaparamnombresh"), a(new ArrayList<Lexeme>()));
         calculo(rParams.a("listaparamnombresh"), AsignationFun.INSTANCE);
+
+        dependencias(attr.a("listaparamnombres"), rParams.a("listaparamnombres"));
+        calculo(attr.a("listaparamnombres"), AsignationFun.INSTANCE);
 
         return attr;
     }
@@ -1624,7 +1631,7 @@ public final class Attribution extends Atribucion {
         calculo(rParams_1.a("nparamsh"), AsignationFun.INSTANCE);
 
         dependencias(rParam.a("nparamsh"), rParams_1.a("nparams"));
-        calculo(rParam.a("nparams"), AsignationFun.INSTANCE);
+        calculo(rParam.a("nparamsh"), AsignationFun.INSTANCE);
 
         dependencias(attr.a("nparams"), rParam.a("nparams"));
         calculo(attr.a("nparams"), AsignationFun.INSTANCE);
@@ -1769,8 +1776,18 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("nparams"), attr.a("nparamsh"));
         calculo(attr.a("nparams"), new IncrementFun(1));
 
-        dependencias(attr.a("listaparamnombres"), attr.a("listaparamnombres"));
-        // calculo(attr.a("listaparamnombres"), new IncrementFun(1)); //TODO listaparamnombres ++ ident
+        dependencias(attr.a("listaparamnombres"), attr.a("listaparamnombresh"), identLex);
+        calculo(attr.a("listaparamnombres"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                List<Lexeme> nombres = (List<Lexeme>) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+
+                nombres.add(ident);
+                return nombres;
+            }
+        }); // TODO listaparamnombres ++ ident
 
         return attr;
     }

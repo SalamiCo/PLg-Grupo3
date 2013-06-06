@@ -6,7 +6,7 @@ package plg.gr3.errors.compile;
  * @author PLg Grupo 03 2012/2013
  */
 
-public class MismatchNumberOfParameters extends CompileError {
+public class InvalidNumberOfParametersError extends CompileError {
 
     private int realParams;
 
@@ -17,7 +17,7 @@ public class MismatchNumberOfParameters extends CompileError {
      * @param line Línea en la que se dio
      * @param column Columna en la que se dio
      */
-    public MismatchNumberOfParameters (int realParams, int formalParams, int line, int column) {
+    public InvalidNumberOfParametersError (int realParams, int formalParams, int line, int column) {
         super(line, column);
         this.realParams = realParams;
         this.formalParams = formalParams;
