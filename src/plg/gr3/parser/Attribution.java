@@ -2457,7 +2457,6 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... attrs) {
                 int factEtq = (int) attrs[1].valor();
-                // TODO sustituir las funciones por su código
                 return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new DuplicateInstruction()), a(new BranchInstruction(
                     factEtq, BooleanValue.TRUE)), a(new DropInstruction()), attrs[2]);
             }
