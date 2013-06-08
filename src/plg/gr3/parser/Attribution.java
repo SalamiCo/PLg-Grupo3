@@ -1393,7 +1393,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams", "listaparamnombres",
-                "listaparamnombresh", "nombresubprog", "nombresubprogh");
+                "listaparamnombresh", "nombresubprog", "nombresubprogh", "tsh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
