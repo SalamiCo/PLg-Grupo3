@@ -2207,8 +2207,6 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // TODO Falta hacer todo lo del código
-
         asigna(desig_1.a("etqh"), attr.a("etqh"));
 
         asigna(expr.a("etqh"), desig_1.a("etq"));
@@ -2286,8 +2284,6 @@ public final class Attribution extends Atribucion {
                 return ConcatErrorsFun.INSTANCE.eval(args[0], a(err));
             }
         });
-
-        // TODO Falta hacer todo lo del código
 
         asigna(desig_1.a("etqh"), attr.a("etqh"));
 
