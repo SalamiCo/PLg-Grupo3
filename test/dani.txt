@@ -1,6 +1,6 @@
 program: test {
 	vars {
-		var array[2] arr;
+		var natural[2] arr;
 	}
 	
 	instructions {

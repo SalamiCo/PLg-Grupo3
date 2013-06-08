@@ -65,12 +65,20 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         // Program.cod
-        dependencias(attr.a("cod"), sSubprogs.a("etq"), sSubprogs.a("cod"), sInsts.a("cod"));
+        dependencias(attr.a("cod"), sSubprogs.a("etq"), sSubprogs.a("cod"), sInsts.a("cod"), sVars.a("dir"));
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
+                Integer jump = (Integer) attrs[0].valor();
+                Integer stackAddr = (Integer) attrs[3].valor();
+
+                List<Instruction> initStack =
+                    Arrays.asList(
+                        new PushInstruction(NaturalValue.valueOf(stackAddr)), new DuplicateInstruction(),
+                        new StoreInstruction(0, Type.NATURAL), new StoreInstruction(1, Type.NATURAL));
+
                 return ConcatCodeFun.INSTANCE.eval(
-                    a(new JumpInstruction((Integer) (attrs[0].valor()))), attrs[1], attrs[2], a(new StopInstruction()));
+                    a(new JumpInstruction(jump)), a(initStack), attrs[1], attrs[2], a(new StopInstruction()));
             }
         });
 
@@ -95,7 +103,7 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("ts"), sSubprogs.a("ts"));
 
         // SSubprogs.etqh
-        asigna(sSubprogs.a("etqh"), a(1));
+        asigna(sSubprogs.a("etqh"), a(5));
 
         // SInsts.etqh
         asigna(sInsts.a("etqh"), sSubprogs.a("etq"));
