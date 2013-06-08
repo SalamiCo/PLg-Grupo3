@@ -5,7 +5,7 @@ program: test3{
 	vars {
         var integer y;
         var integer y;
-        var nat = -2 ;
+        var natural n;
         var matriz tmatriz;
     }
     
