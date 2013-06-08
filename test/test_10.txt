@@ -1,0 +1,36 @@
+//Programa que en el que hay dos funciones una a la que se pasan los parámetros por valor y por referencia. Pensado para ver que el paso de parámetros se realiza bien. 
+
+program: test10{
+   
+    vars {
+    var integer x;
+    var integer y;
+  }
+
+	subprograms {
+    subprogram: aumentar_var_valor(integer var){ 
+        instructions {
+            var = var + 1;
+        }
+    }
+
+    subprogram: aumentar_var_referencia(integer *  var){ 
+        instructions {
+            var = var + 1; 
+        }
+    }
+
+  }
+    
+	instructions {
+     
+        y = 1;
+        x = 1;
+
+     call aumentar_var_referencia(var = x);
+     call aumentar_var_referencia(var = y);
+     out(x);
+     out(y);
+
+	}
+}
