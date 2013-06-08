@@ -1,3 +1,5 @@
+# 10 Esquema de traducción para la construcción de grafos de dependencias
+
 Program ::= PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE
     {$$ = program_R1($4, $5, $6, $7, $8);}
 
@@ -10,7 +12,6 @@ Consts ::= Consts PYC Const
     {consts_R1($1, $3);}
 Consts ::= Const
     {$$ = const_R2($1);}
-
 
 Const ::= CONST TPrim IDENT ASIG ConstLit
     {$$ = const_R1($1, $3.lex, $5);}
