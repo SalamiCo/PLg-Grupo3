@@ -1,5 +1,6 @@
 package plg.gr3.parser.semfun;
 
+import plg.gr3.errors.compile.CompileError;
 import plg.gr3.errors.compile.DuplicateIdentifierError;
 import plg.gr3.parser.Lexeme;
 import plg.gr3.parser.Scope;
@@ -12,7 +13,7 @@ public enum CheckDuplicateIdentifierFun implements SemFun {
     INSTANCE;
 
     @Override
-    public Object eval (Atributo... args) {
+    public CompileError eval (Atributo... args) {
         SymbolTable st = (SymbolTable) args[0].valor();
         Lexeme ident = (Lexeme) args[1].valor();
         Scope scope = (Scope) args[2].valor();
