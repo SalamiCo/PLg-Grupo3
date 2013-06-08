@@ -1,0 +1,57 @@
+
+program: test24 {
+
+    tipos {
+        tipo natural[2][2] tmatriz; 
+    } 
+   
+    vars {
+        var tmatriz matrizA;
+        var tmatriz matrizB;
+        var tmatriz matrizC;
+    }
+
+    instructions {
+        matrizA[0][0] = 1;
+        matrizA[0][1] = 1;
+        matrizA[1][0] = 0;
+        matrizA[1][1] = 1;
+
+        matrizB[0][0] = 1;
+        matrizB[0][1] = 0;
+        matrizB[1][0] = 1;
+        matrizB[1][1] = 1;
+
+        matrizC[0][0] = matrizA[0][0] * matrizB[0][0] + matrizA[0][1] * matrizB[1][0];
+        matrizC[0][1] = matrizA[0][0] * matrizB[0][1] + matrizA[0][1] * matrizB[1][1];
+        matrizC[1][0] = matrizA[1][0] * matrizB[0][0] + matrizA[1][1] * matrizB[1][0];
+        matrizC[1][1] = matrizA[1][0] * matrizB[0][1] + matrizA[1][1] * matrizB[1][1];
+
+        out('A');
+        out(' ');
+
+        out(matrizA[0][0]);
+        out(matrizA[0][1]);
+        out(matrizA[1][0]);
+        out(matrizA[1][1]);
+
+        out(' ');
+        out('B');
+        out(' ');
+        
+
+        out(matrizB[0][0]);
+        out(matrizB[0][1]);
+        out(matrizB[1][0]);
+        out(matrizB[1][1]);
+
+        out(' ');
+        out('C');
+        out(' ');
+
+        out(matrizC[0][0]);
+        out(matrizC[0][1]);
+        out(matrizC[1][0]);
+        out(matrizC[1][1]);
+    }
+}
