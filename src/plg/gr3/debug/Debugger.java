@@ -116,7 +116,7 @@ public enum Debugger {
         String fmt = "[%1$s]" + fmtPos + fmtInstr + fmtLine + fmtCol + ": %2$s%n";
 
         String msg = String.format(fmt, type, message, line, column, instr, pos + 1);
-        pw.printf(msg);
+        pw.print(msg);
         pw.flush();
     }
 

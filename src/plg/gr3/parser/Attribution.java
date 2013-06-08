@@ -2170,11 +2170,18 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
-                Type typeDesig1 = (Type) attrs[2].valor();
-                Value tam = new IntegerValue(typeDesig1.getSize());
-                return ConcatCodeFun.INSTANCE.eval(
-                    attrs[0], attrs[1], a(new PushInstruction(tam)), a(new BinaryOperatorInstruction(
-                        BinaryOperator.PRODUCT)), a(new BinaryOperatorInstruction(BinaryOperator.ADDITION)));
+                Type type = (Type) attrs[2].valor();
+                if (type instanceof ArrayType) {
+                    ArrayType atype = (ArrayType) type;
+
+                    Value tam = new IntegerValue(atype.getBaseType().getSize());
+
+                    return ConcatCodeFun.INSTANCE.eval(
+                        attrs[0], attrs[1], a(new PushInstruction(tam)), a(new BinaryOperatorInstruction(
+                            BinaryOperator.PRODUCT)), a(new BinaryOperatorInstruction(BinaryOperator.ADDITION)));
+                }
+
+                return null;
             }
         });
 
@@ -2264,8 +2271,13 @@ public final class Attribution extends Atribucion {
                     Lexeme litNat = (Lexeme) args[1].valor();
 
                     int nat = Integer.parseInt(litNat.getLexeme());
+                    List<Type> subtypes = ttype.getSubtypes();
 
-                    return ttype.getSubtypes().get(nat);
+                    if (nat > subtypes.size()) {
+                        return Type.ERROR;
+                    } else {
+                        return subtypes.get(nat);
+                    }
 
                 } else {
                     return Type.ERROR;
