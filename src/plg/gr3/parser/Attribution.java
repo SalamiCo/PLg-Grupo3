@@ -535,7 +535,7 @@ public final class Attribution extends Atribucion {
         asigna(var.a("tsh"), vars_1.a("ts"));
 
         dependencias(
-            attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), attr.a("dir"), var.a("tipo"), attr.a("err"));
+            attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), vars_1.a("dir"), var.a("tipo"), attr.a("err"));
         calculo(attr.a("ts"), new SemFun() {
 
             @Override
@@ -556,7 +556,7 @@ public final class Attribution extends Atribucion {
 
         asigna(vars_1.a("dirh"), attr.a("dirh"));
 
-        dependencias(attr.a("dir"), vars_1.a("dir"), var.a("tipo"));
+        dependencias(attr.a("dir"), vars_1.a("dir"), var.a("tipo"), attr.a("ts"));
         calculo(attr.a("dir"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
@@ -583,7 +583,7 @@ public final class Attribution extends Atribucion {
 
         asigna(var.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("dir"), attr.a("dirh"), var.a("tipo"));
+        dependencias(attr.a("dir"), attr.a("dirh"), var.a("tipo"), attr.a("ts"));
         calculo(attr.a("dir"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {

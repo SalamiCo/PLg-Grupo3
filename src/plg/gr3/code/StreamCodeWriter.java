@@ -137,10 +137,12 @@ public final class StreamCodeWriter extends CodeWriter {
 
     private void writeIndirectStore (IndirectStoreInstruction inst) throws IOException {
         stream.writeByte(Instruction.OPCODE_STORE_IND);
+        stream.writeByte(inst.getType().getCode());
     }
 
     private void writeIndirectLoad (IndirectLoadInstruction inst) throws IOException {
         stream.writeByte(Instruction.OPCODE_LOAD_IND);
+        stream.writeByte(inst.getType().getCode());
     }
 
     @Override
