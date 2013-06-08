@@ -37,22 +37,31 @@ import es.ucm.fdi.plg.evlib.TAtributos;
  */
 public final class Main {
 
+    private enum Mode {
+        NORMAL,
+        VERBOSE,
+        TRACE;
+    }
+
     /** Comando utilizado para compilar un fichero */
     private static final String CMD_COMPILE = "compile";
 
     /** Comando utilizado para ejecutar un programa */
     private static final String CMD_RUN = "run";
 
-    /** Comando utilizado para ejecutar un programa */
-    private static final String CMD_DEBUG = "debug";
-
     /** Escribe por pantalla cómo se usa la aplicación */
     private static void printUsage () {
         final String CMD = "java " + Main.class.getName();
-        System.out.println("usage: " + CMD + " " + CMD_COMPILE + " <input> <output>");
-        System.out.println("   or: " + CMD + " " + CMD_RUN + " <file>");
-        System.out.println("   or: " + CMD + " " + CMD_DEBUG + " <file>");
+        final String SUFFIX = "[.v|.vv]";
+
+        System.out.println("usage: " + CMD + " " + CMD_COMPILE + SUFFIX + " <input> <output>");
+        System.out.println("   or: " + CMD + " " + CMD_RUN + SUFFIX + " <file>");
         System.out.println();
+        System.out.println("Ambos comandos disponen de los sufijos '.v' y '.vv' que activan mensajes de depuraciób.");
+        System.out
+            .println("En el primer modo (.v), se mostrarán mensajes que darán detalles de lo que está ocurriendo.");
+        System.out
+            .println("En el segundo modo (.vv), se mostrarán muchos más detalles para la depuración del sistema.");
     }
 
     /**
@@ -63,21 +72,40 @@ public final class Main {
     public static void main (String[] args) {
         if (args.length < 1) {
             printUsage();
+
         } else {
 
             try {
-                String command = args[0];
+                String[] first = args[0].split("\\.");
+                Mode mode = Mode.NORMAL;
+                if (first.length == 0 || first.length > 2) {
+                    printUsage();
+                    return;
+
+                } else if (first.length == 2) {
+                    switch (first[1].trim()) {
+                        case "v":
+                            mode = Mode.VERBOSE;
+                        break;
+
+                        case "vv":
+                            mode = Mode.TRACE;
+                        break;
+
+                        default:
+                            printUsage();
+                            return;
+                    }
+                }
+
+                String command = first[0];
                 switch (command) {
-                    case "compile":
-                        compile(Arrays.copyOfRange(args, 1, args.length));
+                    case CMD_COMPILE:
+                        compile(mode, Arrays.copyOfRange(args, 1, args.length));
                     break;
 
-                    case "run":
-                        run(Arrays.copyOfRange(args, 1, args.length));
-                    break;
-
-                    case "debug":
-                        debug(Arrays.copyOfRange(args, 1, args.length));
+                    case CMD_RUN:
+                        run(mode, Arrays.copyOfRange(args, 1, args.length));
                     break;
 
                     default:
@@ -92,18 +120,19 @@ public final class Main {
     /**
      * Comando de compilación.
      * 
+     * @param mode Modo de ejecución
      * @param args Argumentos de línea de comandos
      * @throws IOException Si hay unproblema de E/S
      * @throws Exception Si falla otra cosa
      */
     @SuppressWarnings("unchecked")
-    public static void compile (String[] args) throws Exception {
+    public static void compile (Mode mode, String... args) throws Exception {
         if (args.length != 2) {
             printUsage();
         }
 
-        boolean debug = true;
-        boolean trace = true;
+        boolean debug = mode == Mode.VERBOSE || mode == Mode.TRACE;
+        boolean trace = mode == Mode.TRACE;
 
         Path pathInput = Paths.get(args[0]);
         Path pathOutput = Paths.get(args[1]);
@@ -125,21 +154,22 @@ public final class Main {
             try (OutputStream output = Files.newOutputStream(pathOutput, WRITE, CREATE, TRUNCATE_EXISTING)) {
                 StreamCodeWriter writer = new StreamCodeWriter(output);
 
-                Debugger.INSTANCE.log("Generando tabla de símbolos...");
                 SymbolTable table = (SymbolTable) result.a("ts").valor();
-                Debugger.INSTANCE.debug("Tabla de símbolos: %s", table);
+                Debugger.INSTANCE.debug("Tabla de símbolos: %s", table.toFullString());
 
-                Debugger.INSTANCE.log("Recopilando errores...");
                 List<CompileError> errors = (List<CompileError>) result.a("err").valor();
-                Debugger.INSTANCE.debug("Errores:", errors);
                 for (CompileError error : errors) {
                     error.print();
                 }
 
                 if (errors.isEmpty()) {
-                    Debugger.INSTANCE.log("Generando el código...");
                     List<Instruction> code = (List<Instruction>) result.a("cod").valor();
-                    Debugger.INSTANCE.debug("Código: %s", code);
+                    if (debug) {
+                        int pos = 0;
+                        for (Instruction instr : code) {
+                            System.out.printf("%3X  %s%n", pos++, instr);
+                        }
+                    }
 
                     writer.write(code);
                 }
@@ -150,9 +180,10 @@ public final class Main {
     /**
      * Comando de ejecución.
      * 
+     * @param mode Modo de ejecución
      * @param args Argumentos de línea de comandos
      */
-    public static void run (String[] args) {
+    public static void run (Mode mode, String... args) {
         if (args.length != 1) {
             printUsage();
         }
@@ -180,7 +211,7 @@ public final class Main {
      * 
      * @param args Argumentos de línea de comandos
      */
-    public static void debug (String[] args) {
+    public static void debug (String... args) {
         if (args.length != 1) {
             printUsage();
         }
@@ -191,7 +222,8 @@ public final class Main {
 
         Console console = System.console();
         if (console == null) {
-            Debugger.INSTANCE.error("¡No puedes ejecutar en modo traza sin una terminal!");
+            System.err.println("No puedes ejecutar en modo traza sin una terminal.");
+
         } else {
 
             try (StreamCodeReader reader = new StreamCodeReader(Files.newInputStream(pathInput))) {

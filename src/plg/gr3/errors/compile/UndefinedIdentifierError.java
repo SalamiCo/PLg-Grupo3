@@ -6,9 +6,9 @@ package plg.gr3.errors.compile;
  * @author PLg Grupo 03 2012/2013
  */
 public class UndefinedIdentifierError extends CompileError {
-    
+
     private String identName;
-    
+
     /**
      * @param identName Nombre del identificador
      * @param line Línea en la que se dio
@@ -18,11 +18,11 @@ public class UndefinedIdentifierError extends CompileError {
         super(line, column);
         this.identName = identName;
     }
-    
+
     @Override
     public String getErrorMessage () {
-        final String format = "El identificador %s no esta definido ";
+        final String format = "El identificador '%s' no esta definido ";
         return String.format(format, identName);
     }
-    
+
 }

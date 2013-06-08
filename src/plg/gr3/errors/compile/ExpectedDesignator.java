@@ -17,7 +17,7 @@ public class ExpectedDesignator extends CompileError {
 
     @Override
     public String getErrorMessage () {
-        final String format = "Se esperaba que %s fuese un designador, pero no lo es. ";
+        final String format = "Se esperaba que '%s' fuese un designador";
         return String.format(format, identName);
     }
 

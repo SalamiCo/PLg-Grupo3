@@ -7,15 +7,15 @@ import plg.gr3.data.Type;
 //es decir, no pordemos hacer (nat+boolean;char mod float etc)
 
 public class OperatorError extends CompileError {
-    
+
     private Type typeA;
-    
+
     private Type typeB;
-    
+
     private Operator op;
-    
+
     private boolean esOpBinario;
-    
+
     // Constructor para cuando los operadores son binarios
     public OperatorError (Type typeA, Type typeB, Operator op, int line, int column) {
         super(line, column);
@@ -23,28 +23,28 @@ public class OperatorError extends CompileError {
         this.typeB = typeB;
         this.op = op;
         esOpBinario = true;
-        
+
     }
-    
+
     // Constructor para cuando el operador el unario. (Solo entra un tipo)
     public OperatorError (Type typeA, Operator op, int line, int column) {
         super(line, column);
         this.typeA = typeA;
         this.op = op;
         esOpBinario = false;
-        
+
     }
-    
+
     @Override
     public String getErrorMessage () {
         final String format;
         if (esOpBinario) {
-            format = "No puedes aplicar el operador binario '%s' a los tipos '%s' y '%s' ";
+            format = "El operador binario '%s' no es aplicable a los tipos '%s' y '%s' ";
             return String.format(format, op, typeA, typeB);
         } else {
-            format = "No puedes aplicar el operador unario '%s' al tipo '%s'";
+            format = "El operador unario '%s' no es aplicable al tipo '%s'";
             return String.format(format, op, typeA);
         }
-        
+
     }
 }

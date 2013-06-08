@@ -85,7 +85,7 @@ program: ejemplo{
     call leeMatriz(matriz = matriz);
     call procesaMatriz(matriz = matriz,
                          resultado = resul);
-    out(resultado_0);
+    out(resul_0);
     out(resul_1)
 	}
 }

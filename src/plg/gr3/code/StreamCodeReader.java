@@ -7,34 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import plg.gr3.data.BinaryOperator;
-import plg.gr3.data.BooleanValue;
-import plg.gr3.data.CharacterValue;
-import plg.gr3.data.FloatValue;
-import plg.gr3.data.IntegerValue;
-import plg.gr3.data.NaturalValue;
-import plg.gr3.data.Type;
-import plg.gr3.data.UnaryOperator;
-import plg.gr3.vm.instr.BinaryOperatorInstruction;
-import plg.gr3.vm.instr.BranchInstruction;
-import plg.gr3.vm.instr.CastInstruction;
-import plg.gr3.vm.instr.DropInstruction;
-import plg.gr3.vm.instr.DuplicateInstruction;
-import plg.gr3.vm.instr.IndirectLoadInstruction;
-import plg.gr3.vm.instr.IndirectStoreInstruction;
-import plg.gr3.vm.instr.InputInstruction;
-import plg.gr3.vm.instr.Instruction;
-import plg.gr3.vm.instr.JumpInstruction;
-import plg.gr3.vm.instr.LoadInstruction;
-import plg.gr3.vm.instr.MoveInstruction;
-import plg.gr3.vm.instr.OutputInstruction;
-import plg.gr3.vm.instr.PushInstruction;
-import plg.gr3.vm.instr.ReturnInstruction;
-import plg.gr3.vm.instr.StopInstruction;
-import plg.gr3.vm.instr.StoreInstruction;
-import plg.gr3.vm.instr.Swap1Instruction;
-import plg.gr3.vm.instr.Swap2Instruction;
-import plg.gr3.vm.instr.UnaryOperatorInstruction;
+import plg.gr3.data.*;
+import plg.gr3.vm.instr.*;
 
 /**
  * Lector dce código de un {@link InputStream}

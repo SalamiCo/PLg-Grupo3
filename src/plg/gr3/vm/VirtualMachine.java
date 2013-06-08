@@ -11,14 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
-import plg.gr3.data.BinaryOperator;
-import plg.gr3.data.BooleanValue;
-import plg.gr3.data.CharacterValue;
-import plg.gr3.data.FloatValue;
-import plg.gr3.data.IntegerValue;
-import plg.gr3.data.NaturalValue;
-import plg.gr3.data.Type;
-import plg.gr3.data.Value;
+import plg.gr3.data.*;
 import plg.gr3.errors.runtime.EmptyStackError;
 import plg.gr3.errors.runtime.InvalidInstructionAddressError;
 import plg.gr3.errors.runtime.RuntimeError;
