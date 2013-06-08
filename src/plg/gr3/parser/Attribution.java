@@ -78,7 +78,7 @@ public final class Attribution extends Atribucion {
                         new StoreInstruction(0, Type.NATURAL), new StoreInstruction(1, Type.NATURAL));
 
                 return ConcatCodeFun.INSTANCE.eval(
-                    a(new JumpInstruction(jump)), a(initStack), attrs[1], attrs[2], a(new StopInstruction()));
+                    a(initStack), a(new JumpInstruction(jump)), attrs[1], attrs[2], a(new StopInstruction()));
             }
         });
 
