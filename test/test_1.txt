@@ -3,7 +3,7 @@
 program: test1{
 
 	consts {
-		const natural TRES = -3;
+		const natural TRES = 3;
 	}
 
 	vars {

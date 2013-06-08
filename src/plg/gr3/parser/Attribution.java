@@ -172,18 +172,13 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), cons.a("ts"), cons.a("id"));
+        dependencias(attr.a("err"), consts_1.a("err"), cons.a("err"), cons.a("ts"), cons.a("id"));
         calculo(attr.a("err"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
-                SymbolTable st = (SymbolTable) args[0].valor();
-                Lexeme ident = (Lexeme) args[1].valor();
+                CompileError dupErr = CheckDuplicateIdentifierFun.INSTANCE.eval(args[2], args[3], a(Scope.GLOBAL));
 
-                if (ident != null && st.hasIdentifier(ident.getLexeme())) {
-                    return new DuplicateIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn());
-                } else {
-                    return null;
-                }
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[1], a(dupErr));
             }
         });
 
@@ -213,8 +208,16 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), cons.a("ts"), cons.a("id"), a(Scope.GLOBAL));
-        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
+        dependencias(attr.a("err"), cons.a("err"), cons.a("ts"), cons.a("id"));
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                CompileError dupErr = CheckDuplicateIdentifierFun.INSTANCE.eval(args[1], args[2], a(Scope.GLOBAL));
+
+                return ConcatErrorsFun.INSTANCE.eval(args[0], a(dupErr));
+            }
+        });
 
         return attr;
     }
