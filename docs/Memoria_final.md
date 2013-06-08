@@ -98,76 +98,76 @@
 
 ## 2.2 Formalización de la sintaxis 
 
-Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+    Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 
-SConsts → consts illave Consts fllave | ɛ
-Consts → Consts pyc Const | Const
-Const → const TPrim ident asig ConstLit | ɛ
+    SConsts → consts illave Consts fllave | ɛ
+    Consts → Consts pyc Const | Const
+    Const → const TPrim ident asig ConstLit | ɛ
 
-ConstLit → Lit | menos Lit
+    ConstLit → Lit | menos Lit
 
-STypes → tipos illave Types fllave | ɛ
-Types → Types pyc Type | Type
-Type → tipo TypeDesc ident | ɛ
+    STypes → tipos illave Types fllave | ɛ
+    Types → Types pyc Type | Type
+    Type → tipo TypeDesc ident | ɛ
 
-SVars → vars illave Vars fllave | ɛ
-Vars → Vars pyc Var | Var
-Var → var TypeDesc ident | ɛ
+    SVars → vars illave Vars fllave | ɛ
+    Vars → Vars pyc Var | Var
+    Var → var TypeDesc ident | ɛ
 
-SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | ɛ
-Subprogs → Subprogs Subprog | Subprog
-Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+    SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | ɛ
+    Subprogs → Subprogs Subprog | Subprog
+    Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
 
-SFParams → FParams | ɛ
-FParams → FParams coma FParam | FParam
-FParam → TypeDesc ident | TypeDesc mul ident
+    SFParams → FParams | ɛ
+    FParams → FParams coma FParam | FParam
+    FParam → TypeDesc ident | TypeDesc mul ident
 
-TypeDesc → TPrim | TArray | TTupla | ident
+    TypeDesc → TPrim | TArray | TTupla | ident
 
-TPrim → natural | integer | float | boolean | character
-Cast → char | int | nat | float
+    TPrim → natural | integer | float | boolean | character
+    Cast → char | int | nat | float
 
-TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
+    TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
 
-TTupla → ipar Tupla fpar | ipar fpar
-Tupla → TypeDesc coma Tupla | TypeDesc
+    TTupla → ipar Tupla fpar | ipar fpar
+    Tupla → TypeDesc coma Tupla | TypeDesc
 
-SInsts → instructions illave Insts fllave
-Insts → Insts pyc Inst | Inst
-Inst → Desig asig Expr
-     | in ipar Desig fpar
-     | out ipar Expr fpar
-     | swap1 ipar fpar
-     | swap2 ipar fpar
-     | if Expr then Insts ElseIf
-     | while Expr do Insts endwhile
-     | InstCall
-     | ɛ
-ElseIf → else Insts endif | endif
-InstCall → call ident lpar SRParams rpar
+    SInsts → instructions illave Insts fllave
+    Insts → Insts pyc Inst | Inst
+    Inst → Desig asig Expr
+         | in ipar Desig fpar
+         | out ipar Expr fpar
+         | swap1 ipar fpar
+         | swap2 ipar fpar
+         | if Expr then Insts ElseIf
+         | while Expr do Insts endwhile
+         | InstCall
+         | ɛ
+    ElseIf → else Insts endif | endif
+    InstCall → call ident lpar SRParams rpar
 
-SRParams → RParams | ɛ
-RParams → RParams coma RParam | RParam
-RParam → ident asig Expr
+    SRParams → RParams | ɛ
+    RParams → RParams coma RParam | RParam
+    RParam → ident asig Expr
 
-Desig → ident | Desig icorchete Expr fcorchete | Desig barrabaja litnat
+    Desig → ident | Desig icorchete Expr fcorchete | Desig barrabaja litnat
 
-Expr → Term Op0 Term | Term
-Term → Term Op1 Fact | Term or Fact | Fact
-Fact → Fact Op2 Shft | Fact and Shft |Shft
-Shft → Unary Op3 Shft | Unary
-Unary → Op4 Unary | lpar Cast rpar Paren | Paren
-Paren → lpar Expr rpar | Lit | Desig
+    Expr → Term Op0 Term | Term
+    Term → Term Op1 Fact | Term or Fact | Fact
+    Fact → Fact Op2 Shft | Fact and Shft |Shft
+    Shft → Unary Op3 Shft | Unary
+    Unary → Op4 Unary | lpar Cast rpar Paren | Paren
+    Paren → lpar Expr rpar | Lit | Desig
 
-Op0 → igual | noigual | men | may | menoig | mayoig
-Op1 →  menos | mas
-Op2 →  mod | div | mul
-Op3 → lsh | rsh
-Op4 → not | menos
+    Op0 → igual | noigual | men | may | menoig | mayoig
+    Op1 →  menos | mas
+    Op2 →  mod | div | mul
+    Op3 → lsh | rsh
+    Op4 → not | menos
 
-Lit → LitBool | LitNum | litchar
-LitBool → true | false
-LitNum → litnat | litfloat
+    Lit → LitBool | LitNum | litchar
+    LitBool → true | false
+    LitNum → litnat | litfloat
 
 # 3. Estructura y construcción de la tabla de símbolos 
 
@@ -1245,243 +1245,243 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
 
 Pseudocódigo del algoritmo de su ejecución:
 
->CPila ← -1<br/>
->CProg ← 0<br/>
->S1 ← 0<br/>
->S2 ← 0<br/>
->P ← 0<br/>
->mientras P = 0<br/>
->    ejecutar Prog[CProg]<br/>
->fmientras<br/>
+    CPila ← -1<br/>
+    CProg ← 0<br/>
+    S1 ← 0<br/>
+    S2 ← 0<br/>
+    P ← 0<br/>
+    mientras P = 0<br/>
+        ejecutar Prog[CProg]<br/>
+    fmientras<br/>
 
- * Mem[dirección]: Dato de una celda de memoria principal localizado a través de una dirección.
+ * **Mem[dirección]:** Dato de una celda de memoria principal localizado a través de una dirección.
+ * **Prog[dirección]:** Instrucción de una celda de memoria de programa localizado a través de una dirección.
 
- * Prog[dirección]: Instrucción de una celda de memoria de programa localizado a través de una dirección.
-
-La dirección -1 en CPila indica que la pila está vacía.
+La dirección **-1** en CPila indica que la pila está vacía.
 
 
 ### 5.1.3 Repertorio de instrucciones
 
 #### Operaciones con la Pila:
 
-apila(valor)
->CPila ← CPila + 1<br/>
->Pila[CPila] ← valor<br/>
->CProg ← CProg + 1<br/>
+    apila(valor)
+        CPila ← CPila + 1<br/>
+        Pila[CPila] ← valor<br/>
+        CProg ← CProg + 1<br/>
 
-apila-dir(dirección)
->CPila ← CPila + 1<br/>
->Pila[CPila] ← Mem[dirección]<br/>
->CProg ← CProg + 1<br/>
+    apila-dir(dirección)
+        CPila ← CPila + 1<br/>
+        Pila[CPila] ← Mem[dirección]<br/>
+        CProg ← CProg + 1<br/>
 
-apila-ind
->Pila[CPila] ← Mem[Pila[CPila]]<br/>
->CProg ← CProg + 1<br/>
+    apila-ind
+        Pila[CPila] ← Mem[Pila[CPila]]<br/>
+        CProg ← CProg + 1<br/>
 
-mueve(nCeldas)
->para i ← 0 hasta nCeldas-1 hacer<br/>
->   Mem[Pila[CPila-1]+i] ← Mem[Pila[CPila]+i]<br/>
->CPila ← Cpila - 2<br/>
->CProg ← CProg + 1<br/>
+    mueve(nCeldas)
+        para i ← 0 hasta nCeldas-1 hacer<br/>
+           Mem[Pila[CPila-1]+i] ← Mem[Pila[CPila]+i]<br/>
+        CPila ← Cpila - 2<br/>
+        CProg ← CProg + 1<br/>
 
-Nota: Si la dirección de memoria no ha sido cargada previamente con datos usando la siguiente instrucción (desapila-dir), esta instrucción dará un error de ejecución.
+#### Nota:
+Si la dirección de memoria no ha sido cargada previamente con datos usando la siguiente instrucción (desapila-dir), esta instrucción dará un error de ejecución.
 
-ir_ind
->CprogPila[CPila]<br/>
->Cpila←Cpila-1<br/>
+    ir_ind
+        CprogPila[CPila]<br/>
+        Cpila←Cpila-1<br/>
 
-desapila-dir(dirección)
->Mem[dirección] ← Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    desapila-dir(dirección)
+        Mem[dirección] ← Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-desapila-ind
->Mem[Pila[CPila]] ← Pila[CPila-1]<br/>
->CPila ← CPila - 2<br/>
->CProg ← CProg + 1<br/>
+    desapila-ind
+        Mem[Pila[CPila]] ← Pila[CPila-1]<br/>
+        CPila ← CPila - 2<br/>
+        CProg ← CProg + 1<br/>
 
-desapila-ret
->Mem[Pila[Cpila]] ← CProg <br/>
->Cpila ← CPila -1 <br/>
->CProg ← Cprog + 1 <br/>
+    desapila-ret
+        Mem[Pila[Cpila]] ← CProg <br/>
+        Cpila ← CPila -1 <br/>
+        CProg ← Cprog + 1 <br/>
 
-copia
->CPila ← CPila + 1<br/>
->Pila[CPila] ← Pila[CPila-1]<br/>
->CProg ← CProg + 1<br/>
+    copia
+        CPila ← CPila + 1<br/>
+        Pila[CPila] ← Pila[CPila-1]<br/>
+        CProg ← CProg + 1<br/>
 
 #### Saltos
 
-ir-a(direccion)
->CProg ← direccion<br/>
+    ir-a(direccion)
+        CProg ← direccion<br/>
 
-ir-v(direccion)
->si Pila[CPila]: CProg ← direccion<br/>
->si no: CProg ← CProg + 1<br/>
->CPila ← CPila-1<br/>
+    ir-v(direccion)
+        si Pila[CPila]: CProg ← direccion<br/>
+        si no: CProg ← CProg + 1<br/>
+        CPila ← CPila-1<br/>
 
-ir-f(direccion)
->si Pila[CPila]: CProg ← CProg + 1<br/>
->si no: CProg ← direccion<br/>
->CPila ← CPila-1<br/>
+    ir-f(direccion)
+        si Pila[CPila]: CProg ← CProg + 1<br/>
+        si no: CProg ← direccion<br/>
+        CPila ← CPila-1<br/>
 
 #### Operaciones aritméticas
 
-mas
->si S1 = 0: Pila[CPila - 1] ← Pila[CPila - 1] + Pila[CPila]<br/>
->si S1 = 1: Pila[CPila - 1] ← Pila[CPila - 1]  - Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    mas
+        si S1 = 0: Pila[CPila - 1] ← Pila[CPila - 1] + Pila[CPila]<br/>
+        si S1 = 1: Pila[CPila - 1] ← Pila[CPila - 1]  - Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-menos (binario)
->si S1 = 0: Pila[CPila - 1] ← Pila[CPila - 1] - Pila[CPila]<br/>
->si S1 = 1: Pila[CPila - 1] ← Pila[CPila - 1] + Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    menos (binario)
+        si S1 = 0: Pila[CPila - 1] ← Pila[CPila - 1] - Pila[CPila]<br/>
+        si S1 = 1: Pila[CPila - 1] ← Pila[CPila - 1] + Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-mul
->si S2 = 0: Pila[CPila - 1] ← Pila[CPila - 1] * Pila[CPila]<br/>
->si S2 = 1: Pila[CPila - 1] ← Pila[CPila - 1] / Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    mul
+        si S2 = 0: Pila[CPila - 1] ← Pila[CPila - 1] * Pila[CPila]<br/>
+        si S2 = 1: Pila[CPila - 1] ← Pila[CPila - 1] / Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-div
->si S2 = 0: Pila[CPila - 1] ← Pila[CPila - 1] / Pila[CPila]<br/>
->si S2 = 1: Pila[CPila - 1] ← Pila[CPila - 1] * Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    div
+        si S2 = 0: Pila[CPila - 1] ← Pila[CPila - 1] / Pila[CPila]<br/>
+        si S2 = 1: Pila[CPila - 1] ← Pila[CPila - 1] * Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-mod
->Pila[CPila - 1] ← Pila[CPila - 1] % Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    mod
+        Pila[CPila - 1] ← Pila[CPila - 1] % Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-menos (unario)
->Pila[CPila] ← - Pila[CPila]<br/>
->CProg ← CProg + 1<br/>
+    menos (unario)
+        Pila[CPila] ← - Pila[CPila]<br/>
+        CProg ← CProg + 1<br/>
 
 #### Operaciones de desplazamiento
 
-lsh
->Pila[CPila - 1] ← Pila[CPila - 1] << Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    lsh
+        Pila[CPila - 1] ← Pila[CPila - 1] << Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-rsh
->Pila[CPila - 1] ← Pila[CPila - 1] >> Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    rsh
+        Pila[CPila - 1] ← Pila[CPila - 1] >> Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
 #### Operaciones de comparación
 
-igual
->Pila[CPila - 1] ← Pila[CPila - 1] == Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    igual
+        Pila[CPila - 1] ← Pila[CPila - 1] == Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-noigual
->Pila[CPila - 1] ← Pila[CPila - 1] != Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    noigual
+        Pila[CPila - 1] ← Pila[CPila - 1] != Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-may
->Pila[CPila - 1] ← Pila[CPila - 1] > Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    may
+        Pila[CPila - 1] ← Pila[CPila - 1] > Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-men
->Pila[CPila - 1] ← Pila[CPila - 1] < Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    men
+        Pila[CPila - 1] ← Pila[CPila - 1] < Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-mayoig
->Pila[CPila - 1] ← Pila[CPila - 1] >= Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CPoprog + 1<br/>
+    mayoig
+        Pila[CPila - 1] ← Pila[CPila - 1] >= Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CPoprog + 1<br/>
 
-menoig
->Pila[CPila - 1] ← Pila[CPila - 1] <= Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    menoig
+        Pila[CPila - 1] ← Pila[CPila - 1] <= Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
 #### Operaciones lógicas
 
-and
->Pila[CPila - 1] ← Pila[CPila - 1] && Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    and
+        Pila[CPila - 1] ← Pila[CPila - 1] && Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-or
->Pila[CPila - 1] ← Pila[CPila - 1] || Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    or
+        Pila[CPila - 1] ← Pila[CPila - 1] || Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
-not
->Pila[CPila] ← ! Pila[CPila]<br/>
->CProg ← CProg + 1<br/>
+    not
+        Pila[CPila] ← ! Pila[CPila]<br/>
+        CProg ← CProg + 1<br/>
 
 #### Operaciones de conversión
 
-castFloat
->Pila[CPila] ← (float) Pila[CPila]<br/>
->CProg ← CProg + 1<br/>
+    castFloat
+        Pila[CPila] ← (float) Pila[CPila]<br/>
+        CProg ← CProg + 1<br/>
 
-castInt
->Pila[CPila] ← (int) Pila[CPila]<br/>
->CProg ← CProg + 1<br/>
+    castInt
+        Pila[CPila] ← (int) Pila[CPila]<br/>
+        CProg ← CProg + 1<br/>
 
-castNat
->Pila[CPila] ← (nat) Pila[CPila]<br/>
->CProg ← CProg + 1<br/>
+    castNat
+        Pila[CPila] ← (nat) Pila[CPila]<br/>
+    >CProg ← CProg + 1<br/>
 
-castChar
->Pila[CPila] ← (char) Pila[CPila]<br/>
->CProg ← CProg + 1<br/>
+    castChar
+        Pila[CPila] ← (char) Pila[CPila]<br/>
+        CProg ← CProg + 1<br/>
 
 #### Operaciones de Entrada-Salida
 
-in(type)
->CPila ← CPila + 1<br/>
->Pila[CPila] ← Leer un valor de tipo type de BufferIN<br/>
->CProg ← CProg + 1<br/>
+    in(type)
+        CPila ← CPila + 1<br/>
+        Pila[CPila] ← Leer un valor de tipo type de BufferIN<br/>
+        CProg ← CProg + 1<br/>
 
-out
->Escribir en BufferOUT ← Pila[CPila]<br/>
->CPila ← CPila - 1<br/>
->CProg ← CProg + 1<br/>
+    out
+        Escribir en BufferOUT ← Pila[CPila]<br/>
+        CPila ← CPila - 1<br/>
+        CProg ← CProg + 1<br/>
 
 #### Operaciones de intercambio
 
-swap1
->si S1 = 0: S1 ← 1<br/>
->si S1 = 1: S1 ← 0<br/>
+    swap1
+        si S1 = 0: S1 ← 1<br/>
+        si S1 = 1: S1 ← 0<br/>
 
-swap2
->si S2 = 0: S2 ← 1<br/>
->si S2 = 1: S2 ← 0<br/>
+    swap2
+        si S2 = 0: S2 ← 1<br/>
+        si S2 = 1: S2 ← 0<br/>
 
 #### Otras operaciones
 
-stop
->P ← 1<br/>
+    stop
+        P ← 1<br/>
 
-Consideraciones sobre “Repertorio de instrucciones”
+##### Consideraciones sobre “Repertorio de instrucciones”
 
 En la operación castNat, hemos creado la operación en la máquina virtual (nat), que no está predefinida en Java, pero cuyo comportamiento está definido en las tablas correspondientes a los tipos definidos.
 
 ## 5.2 Funciones semánticas
 
-tamTipo(CTipo): dado un registro de tipo, devuelve el tamaño del tipo
-desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el offset hasta el indice (incluido)
-numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
+* **tamTipo(CTipo):** dado un registro de tipo, devuelve el tamaño del tipo
+* **desplTupla(indice, CTipo):** dado un registro de tipo y un indice, devuelve el offset hasta el indice (incluido)
+* **numCeldas(CTipo):** Dado un tipo te devuelve el numero de celdas de memoria.
 
 ## 5.3 Atributos semánticos
 
- * cod: Atributo sintetizado de generación de código.
- * op: Enumerado que nos dice cuál es el operador utilizado.
- * etq: Contador de instrucciones. Cuenta instucciones de la máquina a pila generadas. 
- * etqh: Contador de instrucciones heredado.  
+ * **cod:** Atributo sintetizado de generación de código.
+ * **op:** Enumerado que nos dice cuál es el operador utilizado.
+ * **etq:** Contador de instrucciones. Cuenta instucciones de la máquina a pila generadas. 
+ * **etqh:** Contador de instrucciones heredado.  
 
 ## 5.4 Gramática de atributos
 
@@ -1802,7 +1802,3 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         Op4.op = not
     Op4 → menos
         Op4.op = menos
-
-#### Nota:
-
-- Resulta que el codigo de Desig -> Ident está mal. No tiene en cuenta si es una constante. Hay que hacer un apaño y explicar el apaño en algún punto de la memoria. 
