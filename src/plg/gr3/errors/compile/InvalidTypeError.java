@@ -13,7 +13,7 @@ public final class InvalidTypeError extends CompileError {
 
     @Override
     public String getErrorMessage () {
-        return "No se puede realizar esa operación en el tipo " + type;
+        return "No se esperaba el tipo '" + type + "' aquí";
     }
 
 }
