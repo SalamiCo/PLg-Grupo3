@@ -2,28 +2,27 @@
 
 program: test2{
 
- consts {
-    const natural DIM=10;
-  } 
+    consts {
+        const natural DIM=10;
+    } 
 
 	vars {
-    var integer x;
-    var integer y;
-    var float z;
-    var character w;
-  }
+        var integer x;
+        var integer y;
+        var float z;
+        var character w;
+    }
   
   
 	instructions {
-    x = -6;
-    y = x * 3; 
-    z = x * y;
-    w = '"';
+        x = -6;
+        y = x * 3; 
+        z = x * y;
+        w = '"';
 
-    out(x);
-    out(y);
-    out(z);
-    out(w);
-    
+        out(x);
+        out(y);
+        out(z);
+        out(w);
 	}
 }

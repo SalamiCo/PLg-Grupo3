@@ -2,35 +2,36 @@
 
 program: test16{
 
-	consts {
-    const integer numero2=1;
-  } 
+    consts {
+        const integer numero2=1;
+    } 
 
-	vars{
-		var integer numero;
-		var float numfloat;
-		var natural numnat;
-		var character letra;
-		var encontrado;
-		const integer numero2:=1;
-	}
-	@prueba de asignaciones correctas con castings automaticos
-	instructions{
-	numnat=10;
-	numero=2;
-	numfloat=-3.53;
-	letra='a';
-	encontrado=true;
-	out(numfloat);
-	numfloat=numfloat+numero;
-	out(numfloat);
-	numfloat=numfloat-numnat;
-	out(numflat);
-	out(numero);
-	numero=numero*numnat;
-	out(numero);
-	out(numnat);
-	out(encontrado);
-	out(letra);
-	}
+    vars{
+        var integer numero;
+        var float numfloat;
+        var natural numnat;
+        var character letra;
+        var encontrado;
+        const integer numero2:=1;
+    }
+
+    @prueba de asignaciones correctas con castings automaticos
+    instructions {
+        numnat=10;
+        numero=2;
+        numfloat=-3.53;
+        letra='a';
+        encontrado=true;
+        out(numfloat);
+        numfloat=numfloat+numero;
+        out(numfloat);
+        numfloat=numfloat-numnat;
+        out(numflat);
+        out(numero);
+        numero=numero*numnat;
+        out(numero);
+        out(numnat);
+        out(encontrado);
+        out(letra);
+    }
 }

@@ -25,7 +25,7 @@ program: ejemplo{
           while i < DIM do
             traza = traza + matriz[i][i];
             i = i+1     
-          endwhile  
+          endwhile;
         }
     }
     
@@ -46,7 +46,7 @@ program: ejemplo{
             j = j + 1
           endwhile;
           i = i + 1
-        endwhile          
+        endwhile;
      }
   }
   
@@ -76,7 +76,7 @@ program: ejemplo{
             j = j + 1
           endwhile;
           i = i + 1
-        endwhile            
+        endwhile;
      } 
   }
   }

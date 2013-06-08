@@ -1,0 +1,12 @@
+@Test para probar los booleanos
+
+program: test20{
+	vars{
+		var boolean x;
+	}
+
+	instructions{
+		x = false and true;
+		out(x);
+	}
+}
