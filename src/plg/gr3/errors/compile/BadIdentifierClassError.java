@@ -19,7 +19,7 @@ public class BadIdentifierClassError extends CompileError {
 
     @Override
     public String getErrorMessage () {
-        final String format = "La clase del identificador %s no es correcta. Se esperaba %s pero su clase es %s .";
+        final String format = "Se esperaba un identificador '%s' pero se encontró '%s' .";
         return String.format(format, ident, expectedClassDecName, classDecName);
     }
 
