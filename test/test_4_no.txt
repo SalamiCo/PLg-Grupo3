@@ -7,7 +7,7 @@ program: test4{
   }
     
 	instructions {
-     x =  +;
+     x =  5;
      out (x);
 
     
