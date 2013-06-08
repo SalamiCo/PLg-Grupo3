@@ -2609,7 +2609,7 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 Type type1 = (Type) args[0].valor();
-                Type type2 = (Type) args[2].valor();
+                Type type2 = (Type) args[1].valor();
 
                 return BinaryOperator.AND.getApplyType(type1, type2);
             }
