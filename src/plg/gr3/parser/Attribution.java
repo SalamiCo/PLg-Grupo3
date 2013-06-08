@@ -1113,7 +1113,7 @@ public final class Attribution extends Atribucion {
 
         asigna(expr.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), expr.a("etqh"));
+        dependencias(attr.a("etq"), expr.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
         return attr;
@@ -1204,12 +1204,9 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("err"), expr.a("err"), insts.a("err"));
         calculo(attr.a("err"), new SemFun() {
-            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
-                List<CompileError> exprErr = (List<CompileError>) args[0].valor();
-                List<CompileError> instsErr = (List<CompileError>) args[1].valor();
-                return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(instsErr));
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[1]);
             }
         });
 
@@ -2995,19 +2992,19 @@ public final class Attribution extends Atribucion {
     }
 
     public TAtributos op0_R3 () {
-        regla("Op0 -> MAY");
+        regla("Op0 -> MEN");
         TAtributos attr = atributosPara("Op0", "op");
 
-        asigna(attr.a("op"), a(BinaryOperator.GREATER_THAN));
+        asigna(attr.a("op"), a(BinaryOperator.LOWER_THAN));
 
         return attr;
     }
 
     public TAtributos op0_R4 () {
-        regla("Op0 -> MEN");
+        regla("Op0 -> MAY");
         TAtributos attr = atributosPara("Op0", "op");
 
-        asigna(attr.a("op"), a(BinaryOperator.LOWER_THAN));
+        asigna(attr.a("op"), a(BinaryOperator.GREATER_THAN));
 
         return attr;
     }
