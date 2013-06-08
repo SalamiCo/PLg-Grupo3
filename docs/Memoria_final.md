@@ -296,43 +296,32 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Program.tsh = creaTS()
         Program.dirh = 2
         SConsts.tsh = Program.tsh
-        SConsts.dirh = Program.dirh
         STypes.tsh = SConsts.ts
-        STypes.dirh = SConsts.dir
         SVars.tsh = STypes.ts
-        SVars.dirh = STypes.dir
+        SVars.dirh = SProgram.dirh
         SSubprogs.tsh = SVars.ts
         SSubprogs.dirh = SVars.dir
         SInsts.tsh = SVars.ts
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
-        Consts.dirh = SConsts.dirh
         SConsts.ts = Consts.ts
-        SConsts.dir = Consts.dir
 
     SConsts → ɛ
         SConsts.ts = SConsts.tsh
-        SConsts.dir = SConsts.dirh
 
     Consts → Consts pyc Const
         Consts1.tsh = Consts0.tsh
-        Consts1.dirh = Consts0.dirh
         Const.tsh = Consts1.ts
-        Const.dirh = Consts1.dir
-        Consts0.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
-        Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Conts0.dir, Const.tipo, Const.valor)
+        Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
 
     Consts → Const
         Const.tsh = Consts.tsh
-        Const.dirh = Consts.dirh
-        Consts.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
-        Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo, Const.valor)
+        Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
 
 
     Const → const TPrim ident asig ConstLit 
         Const.ts = Const.tsh
-        Const.dir = Const.dirh
         Const.id = ident.lex
         Const.clase = const
         Const.nivel = global
@@ -341,7 +330,6 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     Const → ɛ
         Const.ts = Const.tsh
-        Const.dir = Const.dirh
 
     ConstLit → Lit
         ConstLit.valor = Lit.valor
