@@ -1047,10 +1047,9 @@ public final class Attribution extends Atribucion {
 
     // Inst
 
-    public TAtributos inst_R1 (TAtributos desig, TAtributos expr, Lexeme asig) {
+    public TAtributos inst_R1 (TAtributos desig, TAtributos expr) {
         regla("Inst -> Desig ASIG Expr");
         TAtributos attr = atributosPara("Inst", "cod", "etqh", "etq", "tsh", "err");
-        Atributo asigLex = atributoLexicoPara("ASIG", "lex", asig);
 
         asigna(desig.a("tsh"), attr.a("tsh"));
 
@@ -1058,7 +1057,8 @@ public final class Attribution extends Atribucion {
 
         // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
         dependencias(
-            attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), asigLex, desig.a("const"));
+            attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), desig.a("id"),
+            desig.a("const"));
         calculo(attr.a("err"), new SemFun() {
             @SuppressWarnings("unchecked")
             @Override
@@ -1090,7 +1090,8 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 Type type = (Type) args[2].valor();
 
-                return ConcatCodeFun.INSTANCE.eval(a(args[0]), a(args[1]), a(new IndirectStoreInstruction(type)));
+                Instruction instr = type.isPrimitive() ? new IndirectStoreInstruction(type) : null;
+                return ConcatCodeFun.INSTANCE.eval(a(args[0]), a(args[1]), a(instr));
             }
         });
 
@@ -2542,8 +2543,16 @@ public final class Attribution extends Atribucion {
         regla("Fact -> Fact Op2 Shft");
         TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "err", "cod", "etq", "etqh");
 
-        dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("cod"), op2.a("cod"));
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+        dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("cod"), op2.a("op"));
+        calculo(attr.a("cod"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                BinaryOperator op = (BinaryOperator) args[2].valor();
+
+                return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(new BinaryOperatorInstruction(op)));
+            }
+        });
 
         dependencias(attr.a("tipo"), fact_1.a("tipo"), op2.a("op"), shft.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -2556,6 +2565,12 @@ public final class Attribution extends Atribucion {
                 return op.getApplyType(type1, type2);
             }
         });
+
+        asigna(fact_1.a("etqh"), attr.a("etqh"));
+
+        asigna(shft.a("etqh"), fact_1.a("etq"));
+
+        asigna(attr.a("etq"), shft.a("etq"));
 
         asigna(fact_1.a("tsh"), attr.a("tsh"));
 
