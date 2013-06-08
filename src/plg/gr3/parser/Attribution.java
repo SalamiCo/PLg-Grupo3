@@ -2464,7 +2464,16 @@ public final class Attribution extends Atribucion {
         });
 
         dependencias(attr.a("tipo"), term_1.a("tipo"), fact.a("tipo"));
-        // TODO la tipoFUnc con or calculo(attr.a("tipo"), );
+        calculo(attr.a("tipo"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Type type1 = (Type) args[0].valor();
+                Type type2 = (Type) args[1].valor();
+
+                return BinaryOperator.OR.getApplyType(type1, type2);
+            }
+        });
 
         dependencias(term_1.a("tsh"), attr.a("tsh"));
         calculo(term_1.a("tipo"), AssignationFun.INSTANCE);
