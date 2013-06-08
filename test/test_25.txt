@@ -1,0 +1,17 @@
+program: test25 {
+
+    tipos {
+        tipo (integer, boolean) ttupla; 
+    } 
+   
+    vars {
+        var ttupla tupla;
+    }
+
+    instructions{
+    	tupla_0 = 2;
+    	tupla_1 = true;
+    	out(tupla_0);
+    	out(tupla_1);
+    }
+}

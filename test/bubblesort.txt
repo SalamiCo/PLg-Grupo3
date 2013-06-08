@@ -1,0 +1,22 @@
+program: test {
+	vars {
+		var (natural,integer,float,character,boolean) t;
+	}
+	
+	instructions {
+		t_0 = 1;
+		out(t_0);
+		
+		t_1 = -2;
+		out(t_1);
+		
+		t_2 = -2;
+		out(t_2);
+		
+		t_3 = -2;
+		out(t_3);
+		
+		t_4 = -2;
+		out(t_4);
+	}
+}

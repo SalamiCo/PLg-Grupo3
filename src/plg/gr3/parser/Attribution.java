@@ -65,14 +65,24 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         // Program.cod
-        dependencias(attr.a("cod"), sSubprogs.a("etq"), sSubprogs.a("cod"), sInsts.a("cod"));
+        dependencias(attr.a("cod"), sSubprogs.a("etq"), sSubprogs.a("cod"), sInsts.a("cod"), sVars.a("dir"));
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
+                Integer jump = (Integer) attrs[0].valor();
+                Integer stackAddr = (Integer) attrs[3].valor();
+
+                List<Instruction> initStack =
+                    Arrays.asList(
+                        new PushInstruction(NaturalValue.valueOf(stackAddr)), new DuplicateInstruction(),
+                        new StoreInstruction(0, Type.NATURAL), new StoreInstruction(1, Type.NATURAL));
+
                 return ConcatCodeFun.INSTANCE.eval(
-                    a(new JumpInstruction((Integer) (attrs[0].valor()))), attrs[1], attrs[2], a(new StopInstruction()));
+                    a(initStack), a(new JumpInstruction(jump)), attrs[1], attrs[2], a(new StopInstruction()));
             }
         });
+
+        asigna(sVars.a("nivel"), a(Scope.GLOBAL));
 
         // SConsts.tsh
         asigna(sConsts.a("tsh"), attr.a("tsh"));
@@ -93,7 +103,7 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("ts"), sSubprogs.a("ts"));
 
         // SSubprogs.etqh
-        asigna(sSubprogs.a("etqh"), a(1));
+        asigna(sSubprogs.a("etqh"), a(5));
 
         // SInsts.etqh
         asigna(sInsts.a("etqh"), sSubprogs.a("etq"));
@@ -456,7 +466,9 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sVars_R1 (TAtributos vars) {
         regla("SVars -> VARS ILLAVE Vars FLLAVE");
-        TAtributos attr = atributosPara("SVars", "tsh", "ts", "id", "dirh", "dir", "err");
+        TAtributos attr = atributosPara("SVars", "tsh", "ts", "id", "dirh", "dir", "err", "nivel");
+
+        asigna(vars.a("nivel"), attr.a("nivel"));
 
         asigna(vars.a("tsh"), attr.a("tsh"));
 
@@ -474,7 +486,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sVars_R2 () {
         regla("SVars -> $");
-        TAtributos attr = atributosPara("SVars", "ts", "tsh", "dir", "dirh", "err");
+        TAtributos attr = atributosPara("SVars", "ts", "tsh", "dir", "dirh", "err", "nivel");
 
         asigna(attr.a("ts"), attr.a("tsh"));
 
@@ -489,14 +501,16 @@ public final class Attribution extends Atribucion {
 
     public TAtributos vars_R1 (TAtributos vars_1, TAtributos var) {
         regla("Vars -> Vars PYC Var");
-        TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir", "dirh");
+        TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir", "dirh", "nivel");
 
         asigna(vars_1.a("tsh"), attr.a("tsh"));
 
         asigna(var.a("tsh"), vars_1.a("ts"));
 
+        asigna(vars_1.a("nivel"), attr.a("nivel"));
+
         dependencias(
-            attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), vars_1.a("dir"), var.a("tipo"), attr.a("err"));
+            attr.a("ts"), var.a("ts"), var.a("id"), attr.a("nivel"), vars_1.a("dir"), var.a("tipo"), attr.a("err"));
         calculo(attr.a("ts"), new SemFun() {
 
             @Override
@@ -532,15 +546,22 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"));
-        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
+        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"), var.a("err"), vars_1.a("err"));
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                CompileError dupErr = CheckDuplicateIdentifierFun.INSTANCE.eval(args[0], args[1], args[2]);
+                return ConcatErrorsFun.INSTANCE.eval(args[3], args[4], a(dupErr));
+            }
+        });
 
         return attr;
     }
 
     public TAtributos vars_R2 (TAtributos var) {
         regla("Vars -> Var");
-        TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir", "dirh");
+        TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir", "dirh", "nivel");
 
         asigna(var.a("tsh"), attr.a("tsh"));
 
@@ -556,7 +577,7 @@ public final class Attribution extends Atribucion {
         });
 
         dependencias(
-            attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), attr.a("dirh"), var.a("tipo"), attr.a("err"));
+            attr.a("ts"), var.a("ts"), var.a("id"), attr.a("nivel"), attr.a("dirh"), var.a("tipo"), attr.a("err"));
         calculo(attr.a("ts"), new SemFun() {
 
             @Override
@@ -575,8 +596,15 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"));
-        calculo(attr.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
+        dependencias(attr.a("err"), var.a("ts"), var.a("id"), var.a("nivel"), var.a("err"));
+        calculo(attr.a("err"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                CompileError dupErr = CheckDuplicateIdentifierFun.INSTANCE.eval(args[0], args[1], args[2]);
+                return ConcatErrorsFun.INSTANCE.eval(args[3], a(dupErr));
+            }
+        });
 
         return attr;
     }
@@ -585,7 +613,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos var_R1 (TAtributos typeDesc, Lexeme ident) {
         regla("Var -> VAR TypeDesc IDENT");
-        TAtributos attr = atributosPara("Var", "ts", "tsh", "id", "nivel", "tipo");
+        TAtributos attr = atributosPara("Var", "ts", "tsh", "id", "nivel", "tipo", "err");
         Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
 
         asigna(attr.a("ts"), attr.a("tsh"));
@@ -594,9 +622,10 @@ public final class Attribution extends Atribucion {
 
         asigna(attr.a("id"), lexIdent);
 
-        asigna(attr.a("nivel"), a(Scope.GLOBAL));
-
         asigna(attr.a("tipo"), typeDesc.a("tipo"));
+
+        asigna(attr.a("err"), typeDesc.a("err"));
+
         // Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
         // si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
 
@@ -681,8 +710,10 @@ public final class Attribution extends Atribucion {
 
                 List<CompileError> errs = new ArrayList<>();
 
-                if (table.hasIdentifier(ident.getLexeme())) {
+                if (!table.hasIdentifier(ident.getLexeme())) {
                     errs.add(new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn()));
+
+                } else {
 
                     ClassDec cd = table.getIdentfierClassDec(ident.getLexeme());
                     if (cd != ClassDec.TYPE) {
@@ -691,7 +722,7 @@ public final class Attribution extends Atribucion {
                     }
                 }
 
-                return errs;
+                return ConcatErrorsFun.INSTANCE.eval(a(errs));
             }
         });
 
@@ -801,8 +832,9 @@ public final class Attribution extends Atribucion {
                 SymbolTable table = (SymbolTable) args[1].valor();
                 Lexeme ident = (Lexeme) args[2].valor();
 
-                if (ident != null) {
+                if (ident != null && type != Type.ERROR) {
                     String identStr = ident.getLexeme();
+
                     if (table.hasIdentifier(identStr) && table.getIdentfierClassDec(identStr) == ClassDec.CONSTANT
                         && table.getIdentfierType(identStr).compatible(Type.NATURAL))
                     {
@@ -824,19 +856,26 @@ public final class Attribution extends Atribucion {
                 SymbolTable table = (SymbolTable) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
                 String identName = ident.getLexeme();
+
+                List<CompileError> errs = new ArrayList<>();
+
                 if (!table.hasIdentifier(identName)) {
-                    return new UndefinedIdentifierError(identName, ident.getLine(), ident.getColumn());
+                    errs.add(new UndefinedIdentifierError(identName, ident.getLine(), ident.getColumn()));
+
+                } else {
+
+                    ClassDec cd = table.getIdentfierClassDec(identName);
+                    if (cd != ClassDec.CONSTANT) {
+                        errs.add(new BadIdentifierClassError(identName, cd, ClassDec.CONSTANT, ident.getLine(), ident
+                            .getColumn()));
+                    }
+
+                    Type typeFound = table.getIdentfierType(identName);
+                    if (!typeFound.compatible(Type.NATURAL)) {
+                        errs.add(new AssignationTypeError(typeFound, Type.NATURAL, ident));
+                    }
                 }
-                ClassDec cd = table.getIdentfierClassDec(identName);
-                if (cd != ClassDec.CONSTANT) {
-                    return new BadIdentifierClassError(identName, cd, ClassDec.CONSTANT, ident.getLine(), ident
-                        .getColumn());
-                }
-                Type typeFound = table.getIdentfierType(identName);
-                if (!typeFound.compatible(Type.NATURAL)) {
-                    return new AssignationTypeError(typeFound, Type.NATURAL, ident);
-                }
-                return null;
+                return ConcatErrorsFun.INSTANCE.eval(a(errs));
             }
         });
 
@@ -850,7 +889,7 @@ public final class Attribution extends Atribucion {
 
         asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("err"), typeDesc.a("err"));
+        dependencias(attr.a("err"), typeDesc.a("err"), typeDesc.a("tipo"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), litnatLex);
@@ -861,7 +900,11 @@ public final class Attribution extends Atribucion {
                 Type type = (Type) args[0].valor();
                 Lexeme litnat = (Lexeme) args[1].valor();
 
-                return new ArrayType(type, Integer.parseInt(litnat.getLexeme(), 10));
+                if (type != Type.ERROR) {
+                    return new ArrayType(type, Integer.parseInt(litnat.getLexeme(), 10));
+                }
+
+                return Type.ERROR;
             }
         });
 
@@ -1587,7 +1630,7 @@ public final class Attribution extends Atribucion {
 
         asigna(subprogs.a("etqh"), attr.a("etqh"));
 
-        asigna(attr.a("etq"), attr.a("etqh"));
+        asigna(attr.a("etq"), subprogs.a("etq"));
 
         asigna(attr.a("ts"), subprogs.a("ts"));
 
@@ -1706,6 +1749,8 @@ public final class Attribution extends Atribucion {
             }
         });
 
+        asigna(sVars.a("nivel"), a(Scope.LOCAL));
+
         asigna(sVars.a("dirh"), sfParams.a("dir"));
 
         asigna(sInsts.a("tsh"), sVars.a("ts"));
@@ -1817,6 +1862,8 @@ public final class Attribution extends Atribucion {
 
         // sfParams
         asigna(attr.a("ts"), attr.a("tsh"));
+
+        asigna(attr.a("dir"), attr.a("dirh"));
 
         asigna(attr.a("params"), a(Collections.emptyList()));
 
@@ -2110,10 +2157,10 @@ public final class Attribution extends Atribucion {
                         }
                     } else /* scope == Scope.LOCAL */{
                         if (cdec == ClassDec.VARIABLE || cdec == ClassDec.PARAM_VALUE) {
-                            return addr + 2;
+                            return addr + 3;
 
                         } else if (cdec == ClassDec.PARAM_REF) {
-                            return addr + 3;
+                            return addr + 4;
 
                         }
                     }
@@ -2141,11 +2188,15 @@ public final class Attribution extends Atribucion {
                         }
                     } else /* scope == Scope.LOCAL */{
                         if (cdec == ClassDec.VARIABLE || cdec == ClassDec.PARAM_VALUE) {
-                            return Arrays.asList(new LoadInstruction(1, Type.NATURAL), new PushInstruction(dirVal));
+                            return Arrays.asList(
+                                new LoadInstruction(1, Type.NATURAL), new PushInstruction(dirVal),
+                                new BinaryOperatorInstruction(BinaryOperator.ADDITION));
+
                         } else if (cdec == ClassDec.PARAM_REF) {
                             return Arrays.asList(
                                 new LoadInstruction(1, Type.NATURAL), new PushInstruction(dirVal),
-                                new IndirectLoadInstruction(Type.NATURAL));
+                                new BinaryOperatorInstruction(BinaryOperator.ADDITION), new IndirectLoadInstruction(
+                                    Type.NATURAL));
                         }
                     }
                 }
