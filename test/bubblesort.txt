@@ -1,6 +1,6 @@
 program: test {
 	vars {
-		var (natural,integer,float,boolean,character) t;
+		var (natural,integer,float,character,boolean) t;
 	}
 	
 	instructions {
@@ -10,13 +10,13 @@ program: test {
 		t_1 = -2;
 		out(t_1);
 		
-		t_2 = 3.5;
+		t_2 = -2;
 		out(t_2);
 		
-		t_3 = true;
+		t_3 = -2;
 		out(t_3);
 		
-		t_4 = '$';
+		t_4 = -2;
 		out(t_4);
 	}
 }
