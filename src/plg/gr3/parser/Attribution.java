@@ -1065,8 +1065,6 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 Type desigType = (Type) args[0].valor();
                 Type exprType = (Type) args[1].valor();
-                List<CompileError> exprErr = (List<CompileError>) args[2].valor();
-                List<CompileError> desigErr = (List<CompileError>) args[3].valor();
                 Lexeme lex = (Lexeme) args[4].valor();
                 Boolean isconst = (Boolean) args[5].valor();
 
@@ -1080,7 +1078,7 @@ public final class Attribution extends Atribucion {
                     errs.add(new AssignationToConstantError(null, 0xFFFFFF, 0xFFFFFF));
                 }
 
-                return errs;
+                return ConcatErrorsFun.INSTANCE.eval(args[2], args[3], a(errs));
             }
         });
 
@@ -2222,7 +2220,7 @@ public final class Attribution extends Atribucion {
 
                 CompileError err =
                     (type instanceof ArrayType) ? null : new InvalidTypeError(type, ident.getLine(), ident.getColumn());
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[1]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[1], a(err));
             }
         });
 
@@ -2299,7 +2297,7 @@ public final class Attribution extends Atribucion {
 
                 CompileError err =
                     (type instanceof TupleType) ? null : new InvalidTypeError(type, ident.getLine(), ident.getColumn());
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], a(err));
             }
         });
 
@@ -2455,9 +2453,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[4].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
         });
 
@@ -2506,9 +2504,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[3].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[2]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[2], a(err));
             }
         });
 
@@ -2590,9 +2588,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[4].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
         });
 
@@ -2649,9 +2647,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[3].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[2]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[2], a(err));
             }
         });
 
@@ -2694,9 +2692,7 @@ public final class Attribution extends Atribucion {
                 Type t1 = (Type) args[0].valor();
                 Type t2 = (Type) args[2].valor();
                 BinaryOperator op = (BinaryOperator) args[1].valor();
-                if (!op.canApply(t1, t2)) {
-                    return new OperatorError(t1, t2, op, 0xFFFFFF, 0xFFFFFF);
-                }
+
                 return op.getApplyType(t1, t2);
             }
         });
@@ -2728,9 +2724,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[4].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
         });
 
@@ -2758,8 +2754,6 @@ public final class Attribution extends Atribucion {
 
         return attr;
     }
-
-    // Unary
 
     // Unary
 
@@ -2804,9 +2798,9 @@ public final class Attribution extends Atribucion {
                 UnaryOperator op = (UnaryOperator) args[0].valor();
                 Type type = (Type) args[2].valor();
 
-                CompileError err = op.canApply(type) ? new OperatorError(type, op, 0xFFFFFF, 0xFFFFFF) : null;
+                CompileError err = !op.canApply(type) ? new OperatorError(type, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[1]);
+                return ConcatErrorsFun.INSTANCE.eval(args[1], a(err));
             }
         });
 
@@ -2856,7 +2850,7 @@ public final class Attribution extends Atribucion {
 
                 CompileError err = Type.canCast(type1, type2) ? new AssignationTypeError(type2, type1, null) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], a(err));
             }
         });
 
