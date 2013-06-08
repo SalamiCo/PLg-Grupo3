@@ -1,0 +1,34 @@
+//Programa simple para probar las llamadas a subprogramas. 
+
+program: test9{
+
+consts {
+    const floar x=10.0;
+  } 
+   
+    vars {
+    var boolean y;
+    var character z;
+  }
+
+	subprograms {
+        subprogram: imprimir_variable(integer var){ 
+            instructions {
+                out(var);
+            }
+        }
+
+    }
+    
+	instructions {
+     
+        y = true;
+        z = '??YJDsad%%·$%&/&·$%'
+
+     call imprimir_variable(var = x);
+     call imprimir_variable(var = y);
+     call imprimir_variable(var = z);
+
+
+	}
+}

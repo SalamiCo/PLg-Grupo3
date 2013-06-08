@@ -1,0 +1,18 @@
+//Programa pensado para fallar. 
+
+program: test3{
+
+	vars {
+    var integer y;
+    var integer y;
+    var nat = -2 ;
+    var matriz tmatriz;
+  }
+    
+	instructions {
+     x = c;
+     out (x);
+
+    
+	}
+}

@@ -1,0 +1,42 @@
+//Calcula el factorial de 9. Para probar temas de recursion  
+
+program: test15{
+   
+  vars {
+    var integer x;
+    var integer uno;
+  }
+
+  
+
+	subprograms {
+    subprogram: factorial(integer x, integer acumulado){ 
+        instructions {
+           vars {
+              var integer uno;
+            } 
+
+            uno= 1;
+            if (x = 0) then
+              out(uno);
+            else
+              if(x = 1) then 
+                out (acumulado);
+              else
+                acumulado = x * a;
+                factorial(acumulado = acumulado , x = x-1);
+              elseif
+            elseif
+
+        }
+    }
+
+  }
+    
+	instructions {
+     x = 9;
+     uno = 1;
+
+     call factorial(acumulado = 1, x = x);
+	}
+}
