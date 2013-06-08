@@ -161,69 +161,116 @@ Subprogs ::= Subprog
 Subprog ::= SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE
     {$$ = subprog_R1($2.lex, $4, $7, $8);}
 
-SFParams ::= FParams {$$ = sfParams_R1($1);}
-SFParams ::= {$$ = sfParams_R2();}
+SFParams ::= FParams 
+    {$$ = sfParams_R1($1);}
+SFParams ::= 
+    {$$ = sfParams_R2();}
 
-FParams ::= FParams COMA FParam {$$ = fParams_R1($1, $3);}
-FParams ::= FParam {$$ = fParams_R2($1);}
+FParams ::= FParams COMA FParam 
+    {$$ = fParams_R1($1, $3);}
+FParams ::= FParam 
+    {$$ = fParams_R2($1);}
 
-FParam ::= TypeDesc IDENT {$$ = fParam_R1($1, $2.lex);}
-FParam ::= TypeDesc MUL IDENT {$$ = fParam_R2($1, $3.lex);}
+FParam ::= TypeDesc IDENT 
+    {$$ = fParam_R1($1, $2.lex);}
+FParam ::= TypeDesc MUL IDENT 
+    {$$ = fParam_R2($1, $3.lex);}
 
-Desig ::= IDENT {$$ = desig_R1($1.lex)));}
-Desig ::= Desig ICORCHETE Expr FCORCHETE {$$ = desig_R2($1, $3);}
-Desig ::= Desig BARRABAJA LITNAT {$$ = desig_R3($1, $3.lex);}
+Desig ::= IDENT 
+    {$$ = desig_R1($1.lex)));}
+Desig ::= Desig ICORCHETE Expr FCORCHETE 
+    {$$ = desig_R2($1, $3);}
+Desig ::= Desig BARRABAJA LITNAT 
+    {$$ = desig_R3($1, $3.lex);}
 
-Expr ::= Term Op0 Term {$$ = expr_R1($1, $2, $3);}
-Expr ::= Term {$$ = expr_R2($1);}
+Expr ::= Term Op0 Term 
+    {$$ = expr_R1($1, $2, $3);}
+Expr ::= Term 
+    {$$ = expr_R2($1);}
 
-Term ::= Term Op1 Fact {$$ = term_R1($1, $2, $3);}
-Term ::= Term OR Fact {$$ = term_R2($1, $3);}
-Term ::= Fact {$$ = term_R3($1);}
+Term ::= Term Op1 Fact 
+    {$$ = term_R1($1, $2, $3);}
+Term ::= Term OR Fact 
+    {$$ = term_R2($1, $3);}
+Term ::= Fact 
+    {$$ = term_R3($1);}
 
-Fact ::= Fact Op2 Shft {$$ = fact_R1($1, $2, $3);}
-Fact ::= Fact AND Shft {$$ = fact_R2($1, $3);}
-Fact ::= Shft {$$ = fact_R3($1);}
+Fact ::= Fact Op2 Shft 
+    {$$ = fact_R1($1, $2, $3);}
+Fact ::= Fact AND Shft 
+    {$$ = fact_R2($1, $3);}
+Fact ::= Shft 
+    {$$ = fact_R3($1);}
 
-Shft ::= Unary Op3 Shft {$$ = shft_R1($1, $2, $3);}
-Shft ::= Unary {$$ = shft_R2($1);}
+Shft ::= Unary Op3 Shft 
+    {$$ = shft_R1($1, $2, $3);}
+Shft ::= Unary 
+    {$$ = shft_R2($1);}
 
-Unary ::= Op4 Unary {$$ = unary_R1($1, $2);}
-Unary ::= IPAR Cast FPAR Paren {$$ = unary_R2($2, $4);}
-Unary ::= Paren {$$ = unary_R3($1);}
+Unary ::= Op4 Unary 
+    {$$ = unary_R1($1, $2);}
+Unary ::= IPAR Cast FPAR Paren 
+    {$$ = unary_R2($2, $4);}
+Unary ::= Paren 
+    {$$ = unary_R3($1);}
 
-Paren ::= IPAR Expr FPAR {$$ = paren_R1($2);}
-Paren ::= Lit {$$ = paren_R2($1);}
-Paren ::= Desig {$$ = paren_R3($1);}
-
-
-Op0 ::= IGUAL {$$ = op0_R1();}
-Op0 ::= NOIGUAL {$$ = op0_R2();}
-Op0 ::= MEN {$$ = op0_R3();}
-Op0 ::= MAY {$$ = op0_R4();}
-Op0 ::= MENOIG {$$ = op0_R5();}
-Op0 ::= MAYOIG {$$ = op0_R6();}
-
-Op1 ::= MENOS {$$ = op1_R1();}
-Op1 ::= MAS {$$ = op1_R2();}
-
-Op2 ::= MOD {$$ = op2_R1();}
-Op2 ::= DIV {$$ = op2_R2();}
-Op2 ::= MUL {$$ = op2_R3();}
-
-Op3 ::= LSH {$$ = op3_R1();}
-Op3 ::= RSH {$$ = op3_R2();}
-
-Op4 ::= NOT {$$ = op4_R1();}
-Op4 ::= MENOS {$$ = op4_R2();}
+Paren ::= IPAR Expr FPAR 
+    {$$ = paren_R1($2);}
+Paren ::= Lit 
+    {$$ = paren_R2($1);}
+Paren ::= Desig 
+    {$$ = paren_R3($1);}
 
 
-Lit ::= LitBool {$$ = lit_R1($1);}
-Lit ::= LitNum {$$ = lit_R2($1);}
-Lit ::= LITCHAR {$$ = lit_R3($1.lex));}
+Op0 ::= IGUAL 
+    {$$ = op0_R1();}
+Op0 ::= NOIGUAL 
+    {$$ = op0_R2();}
+Op0 ::= MEN 
+    {$$ = op0_R3();}
+Op0 ::= MAY 
+    {$$ = op0_R4();}
+Op0 ::= MENOIG 
+    {$$ = op0_R5();}
+Op0 ::= MAYOIG 
+    {$$ = op0_R6();}
 
-LitBool ::= TRUE {$$ = litBool_R1();}
-LitBool ::= FALSE {$$ = litBool_R2();}
+Op1 ::= MENOS 
+    {$$ = op1_R1();}
+Op1 ::= MAS 
+    {$$ = op1_R2();}
 
-LitNum ::= LITNAT {$$ = litNum_R1($1.lex);}
-LitNum ::= LITFLOAT {$$ = litNum_R2($1.lex);}
+Op2 ::= MOD 
+    {$$ = op2_R1();}
+Op2 ::= DIV 
+    {$$ = op2_R2();}
+Op2 ::= MUL 
+    {$$ = op2_R3();}
+
+Op3 ::= LSH 
+    {$$ = op3_R1();}
+Op3 ::= RSH 
+    {$$ = op3_R2();}
+
+Op4 ::= NOT 
+    {$$ = op4_R1();}
+Op4 ::= MENOS 
+    {$$ = op4_R2();}
+
+
+Lit ::= LitBool 
+    {$$ = lit_R1($1);}
+Lit ::= LitNum 
+    {$$ = lit_R2($1);}
+Lit ::= LITCHAR 
+    {$$ = lit_R3($1.lex));}
+
+LitBool ::= TRUE 
+    {$$ = litBool_R1();}
+LitBool ::= FALSE 
+    {$$ = litBool_R2();}
+
+LitNum ::= LITNAT 
+    {$$ = litNum_R1($1.lex);}
+LitNum ::= LITFLOAT 
+    {$$ = litNum_R2($1.lex);}
