@@ -1,0 +1,14 @@
+@programa para progar los booleanos
+
+program: test5{
+
+	vars {
+    var boolean b;
+  }
+    
+	instructions {
+    b = true or true;
+
+}
+
+}
