@@ -348,7 +348,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Inst.etq = Inst.etqh +1 
 
 	Inst → if Expr then Insts ElseIf
-		Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
+		Inst.cod = Expr.cod || ir_f(Insts.etq + 2) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
 		Expr.etqh = Inst.etqh
 		Insts.etqh = Expr.etq + 1
 		ElseIf.etqh = Insts.etq + 1

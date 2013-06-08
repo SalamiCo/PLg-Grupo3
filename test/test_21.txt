@@ -1,0 +1,21 @@
+@programa para progar los if. Sin probar los booleanos
+
+program: test5{
+
+	vars {
+    var integer x;
+  }
+    
+	instructions {
+    x = 5;
+     
+     if (x  < 5) then
+
+     	x = x + 1;
+    else 
+    	x = x - 1;
+
+    endif; 
+
+	}
+}
