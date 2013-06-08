@@ -1,0 +1,30 @@
+@ caso de prueba 18
+@deberia funcionar prueba de que por muchos espacios que dejes funciona correctamente
+program:                test18    {
+
+	vars-consts{
+		var 
+		             integer numero                          ;
+					 
+					 
+					 
+		const                        
+		  integer numero2             :                   =1    ;
+	}
+	
+											instructions                  {
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	out(numero2                                                  )
+	}
+}
