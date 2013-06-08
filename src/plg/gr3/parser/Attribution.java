@@ -2609,7 +2609,7 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... args) {
                 Type type1 = (Type) args[0].valor();
-                Type type2 = (Type) args[2].valor();
+                Type type2 = (Type) args[1].valor();
 
                 return BinaryOperator.AND.getApplyType(type1, type2);
             }
@@ -2635,8 +2635,8 @@ public final class Attribution extends Atribucion {
 
         asigna(fact_1.a("etqh"), attr.a("etqh"));
 
-        dependencias(shft.a("etq"), fact_1.a("etq"));
-        calculo(shft.a("etq"), new IncrementFun(3));
+        dependencias(shft.a("etqh"), fact_1.a("etq"));
+        calculo(shft.a("etqh"), new IncrementFun(3));
 
         asigna(attr.a("etq"), shft.a("etq"));
 
