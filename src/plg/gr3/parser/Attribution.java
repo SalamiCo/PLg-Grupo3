@@ -286,7 +286,16 @@ public final class Attribution extends Atribucion {
         regla("ConstLit -> MENOS Lit");
         TAtributos attr = atributosPara("ConstLit", "tipo", "valor", "err");
 
-        asigna(attr.a("tipo"), lit.a("tipo"));
+        dependencias(attr.a("tipo"), lit.a("tipo"));
+        calculo(attr.a("tipo"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Type type = (Type) args[0].valor();
+
+                return UnaryOperator.MINUS.getApplyType(type);
+            }
+        });
 
         dependencias(attr.a("valor"), lit.a("valor"), lit.a("tipo"));
         calculo(attr.a("valor"), new SemFun() {
