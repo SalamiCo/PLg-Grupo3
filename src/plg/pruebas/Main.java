@@ -1,10 +1,11 @@
 package plg.pruebas;
 
-import es.ucm.fdi.plg.evlib.TAtributos;
-import es.ucm.fdi.plg.evlib.Atributo;
-
 import java.io.FileInputStream;
-import java_cup.runtime.*;
+
+import java_cup.runtime.DefaultSymbolFactory;
+import java_cup.runtime.Symbol;
+import es.ucm.fdi.plg.evlib.Atributo;
+import es.ucm.fdi.plg.evlib.TAtributos;
 
 
 public class Main {
