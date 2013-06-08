@@ -555,7 +555,7 @@ public final class Attribution extends Atribucion {
                 int address = (int) args[3].valor();
                 Type type = (Type) args[4].valor();
 
-                if (ident != null) {
+                if (ident != null && type != Type.ERROR) {
                     ts.putVariable(ident.getLexeme(), scope, address, type);
                 }
 
@@ -615,7 +615,7 @@ public final class Attribution extends Atribucion {
                 int address = (int) args[3].valor();
                 Type type = (Type) args[4].valor();
 
-                if (ident != null) {
+                if (ident != null && type != Type.ERROR) {
                     ts.putVariable(ident.getLexeme(), scope, address, type);
                 }
 
@@ -1088,7 +1088,7 @@ public final class Attribution extends Atribucion {
                 }
 
                 if (isconst) {
-                    errs.add(new AssignationToConstantError(null, 0xFFFFFF, 0xFFFFFF));
+                    errs.add(new AssignationToConstantError(lex.getLexeme(), lex.getLine(), lex.getColumn()));
                 }
 
                 return ConcatErrorsFun.INSTANCE.eval(args[2], args[3], a(errs));
@@ -2068,7 +2068,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos desig_R1 (Lexeme ident) {
         regla("Desig -> IDENT");
-        TAtributos attr = atributosPara("Desig", "tipo", "err", "tsh", "etqh", "etq", "cod", "const", "id");
+        TAtributos attr = atributosPara("Desig", "tipo", "err", "tsh", "etqh", "etq", "cod", "const", "id", "valor");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         asigna(attr.a("id"), identLex);
@@ -2083,6 +2083,24 @@ public final class Attribution extends Atribucion {
 
                 return table.hasIdentifier(ident.getLexeme())
                        && table.getIdentfierClassDec(ident.getLexeme()) == ClassDec.CONSTANT;
+            }
+        });
+
+        dependencias(attr.a("valor"), attr.a("tsh"), identLex);
+        calculo(attr.a("valor"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme ident = (Lexeme) args[1].valor();
+
+                if (table.hasIdentifier(ident.getLexeme())
+                    && table.getIdentfierClassDec(ident.getLexeme()) == ClassDec.CONSTANT)
+                {
+                    return table.getIdentifierValue(ident.getLexeme());
+                }
+
+                return null;
             }
         });
 
@@ -2192,9 +2210,12 @@ public final class Attribution extends Atribucion {
 
     public TAtributos desig_R2 (TAtributos desig_1, TAtributos expr) {
         regla("Desig -> Desig ICORCHETE Expr FCORCHETE");
-        TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq", "const", "id");
+        TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq", "const", "id", "valor");
 
         asigna(attr.a("id"), desig_1.a("id"));
+
+        asigna(attr.a("const"), a(false));
+        asigna(attr.a("valor"), desig_1.a("valor"));
 
         dependencias(attr.a("cod"), desig_1.a("cod"), expr.a("cod"), desig_1.a("tipo"));
         calculo(attr.a("cod"), new SemFun() {
@@ -2258,8 +2279,11 @@ public final class Attribution extends Atribucion {
 
     public TAtributos desig_R3 (TAtributos desig_1, Lexeme litnat) {
         regla("Desig -> Desig BARRABAJA LITNAT");
-        TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq", "const", "id");
+        TAtributos attr = atributosPara("Desig", "tsh", "tipo", "err", "cod", "etqh", "etq", "const", "id", "valor");
         Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
+
+        asigna(attr.a("const"), a(false));
+        asigna(attr.a("valor"), desig_1.a("valor"));
 
         asigna(attr.a("id"), desig_1.a("id"));
 
@@ -2965,15 +2989,20 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), desig.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
-        dependencias(attr.a("cod"), desig.a("cod"), desig.a("tipo"));
+        dependencias(attr.a("cod"), desig.a("cod"), desig.a("tipo"), desig.a("const"), desig.a("valor"));
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
                 Type type = (Type) attrs[1].valor();
+                Boolean constant = (Boolean) attrs[2].valor();
+                Value value = (Value) attrs[3].valor();
 
-                // TODO FIXME y de tó
                 if (type.isPrimitive()) {
-                    return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction(type)));
+                    if (constant) {
+                        return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new PushInstruction(value)));
+                    } else {
+                        return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction(type)));
+                    }
                 } else {
                     return null;
                 }
