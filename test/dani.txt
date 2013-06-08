@@ -1,22 +1,9 @@
 program: test {
 	vars {
-		var (natural,integer,float,boolean,character) t;
+		var array[2] arr;
 	}
 	
 	instructions {
-		t_0 = 1;
-		out(t_0);
-		
-		t_1 = -2;
-		out(t_1);
-		
-		t_2 = 3.5;
-		out(t_2);
-		
-		t_3 = true;
-		out(t_3);
-		
-		t_4 = '$';
-		out(t_4);
+	
 	}
 }
