@@ -1,6 +1,6 @@
 @Test para probar los while
 
-program: test20{
+program: test23{
 	vars{
 		var integer i;
 	}
