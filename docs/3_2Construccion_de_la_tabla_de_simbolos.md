@@ -115,6 +115,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SSubprogs.tsh = SVars.ts
         SSubprogs.dirh = SVars.dir
         SInsts.tsh = SVars.ts
+        SVars.nivelh = global
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
@@ -137,6 +138,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Consts → Const
         Const.tsh = Consts.tsh
         Const.dirh = Consts.dirh
+        Const.nivelh = Consts.nivelh
         Consts.dir = Const.dir + desplazamiento(Const.tipo, Const.id)
         Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo, Const.valor)
 
@@ -190,7 +192,6 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Type.dir = Type.dirh
         Type.id = ident.lex
         Type.clase = Tipo
-        Type.nivel = global
         Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)> //TODO mirar como añadir el tamaño al tipo
 
     Type → ɛ
@@ -200,6 +201,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     SVars → vars illave Vars fllave 
         Vars.tsh = SVars.tsh
         Vars.dirh = SVars.dirh
+        Vars.nivelh = SVars.nivelh
         SVars.ts = Vars.ts
         SVars.dir = Vars.dir
 
@@ -210,6 +212,8 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Vars → Vars pyc Var 
         Vars1.tsh = Vars0.tsh
         Vars1.dirh = Vars0.dirh
+        Vars1.nivelh = Vars0.nivelh
+        Var.nivelh = Vars0.nivelh
         Var.tsh = Vars1.ts
         Var.dirh = Vars1.dir
         Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
@@ -218,6 +222,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Vars → Var
         Var.tsh = Vars.tsh
         Var.dirh = Vars.dirh
+        Var.nivelh = Vars.nivelh
         Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
         Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
 
@@ -226,7 +231,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Var.dir = Var.dirh
         Var.id = ident.lex
         Var.clase = Var
-        Var.nivel = global
+        Var.nivel = Var.nivelh
         Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
 
@@ -254,6 +259,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SVars.tsh = SFParams.ts
         SVars.dirh = SFParams.dir
         SInsts.tsh = SVars.ts
+        SVars.nivelh = local
 
     SFParams → FParams 
         FParams.tsh = SFParams.tsh
