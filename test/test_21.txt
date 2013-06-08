@@ -17,5 +17,16 @@ program: test5 {
 
         endif; 
 
+
+    if (x  == 9 ) then
+
+        x = x + 1;
+    else 
+        x = x - 1;
+
+    endif;
+
+
     }
+
 }
