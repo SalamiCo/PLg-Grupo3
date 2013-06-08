@@ -1,302 +1,272 @@
 Program ::= PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE
     {$$ = program_R1($4, $5, $6, $7, $8);}
 
+SConsts ::= CONSTS ILLAVE Consts FLLAVE
+    {$$ = sConsts_R1($3);}
+SConsts ::=
+    {$$ = sConsts_R1();}
 
-SConsts ::= CONSTS ILLAVE Consts:consts FLLAVE{:
-    RESULT = attr.sConsts_R1(consts);
-:}
-          | {:
-    RESULT = attr.sConsts_R2();
-:};
-
-Consts ::= Consts:consts_1 PYC Const:cons {:
-    RESULT = attr.consts_R1(consts_1, cons);
-:}
-         | Const:cons {:
-    RESULT = attr.consts_R2(cons);
-:};
-
-Const ::= CONST TPrim:tPrim IDENT:ident ASIG ConstLit:lit {:
-    RESULT = attr.const_R1(tPrim, (new Lexeme(ident, identleft, identright)), lit);
-:}
-        | {:
-    RESULT = attr.const_R2();
-:};
-
-ConstLit ::= Lit:lit {:
-    RESULT = attr.constLit_R1(lit);
-:}
-        | MENOS Lit:lit {:
-    RESULT = attr.constLit_R2(lit);
-:};
+Consts ::= Consts PYC Const
+    {consts_R1($1, $3);}
+Consts ::= Const
+    {$$ = const_R2($1);}
 
 
-STypes ::= TIPOS ILLAVE Types:types FLLAVE {:
-    RESULT = attr.sTypes_R1(types);
-:}
-         | {:
-    RESULT = attr.sTypes_R2();
-:};
+Const ::= CONST TPrim IDENT ASIG ConstLit
+    {$$ = const_R1($1, $3.lex, $5);}
+Const ::= 
+    {$$ = const_R2();}
 
-Types ::= Types:types_1 PYC Type:type {:
-    RESULT = attr.types_R1(types_1, type);
-:}
-        | Type:type {:
-    RESULT = attr.types_R2(type);
-:};
+ConstLit ::= Lit
+    {$$ = constLit_R1($1);}
+ConstLit ::= MENOS Lit
+    {$$ = constLit_R1($1);}
 
-Type ::= TIPO TypeDesc:typeDesc IDENT:ident {:
-    RESULT = attr.type_R1(typeDesc, new Lexeme(ident, identleft, identright));
-:}
-       | {:
-    RESULT = attr.type_R2();
-:};
+STypes ::= TIPOS ILLAVE Types FLLAVE
+    {$$ = sTypes_R1($3);}
+STypes ::= 
+    {$$ = sTypes_R2();}
 
+Types ::= Types PYC Type
+    {$$ = types_R1($1, $3);}
+Types ::= Type
+    {$$ = types_R2($1);}
 
-SVars ::= VARS ILLAVE Vars:vars FLLAVE {:
-    RESULT = attr.sVars_R1(vars);
-:}
-        | {:
-    RESULT = attr.sVars_R2();
-:};
+Type ::= TIPO TypeDesc IDENT
+    {$$ = type_R1($2, $3.lex);}
+Type ::=
+    {$$ = type_R2();}
 
-Vars ::= Vars:vars_1 PYC Var:var {:
-    RESULT = attr.vars_R1(vars_1, var);
-:}
-       | Var:var {:
-    RESULT = attr.vars_R2(var);
-:};
+SVars ::= VARS ILLAVE Vars FLLAVE
+    {$$ = sVars_R1($3);}
+SVars ::=
+    {$$ = sVars_R2();}
 
-Var ::= VAR TypeDesc:typeDesc IDENT:ident {:
-    RESULT = attr.var_R1(typeDesc, (new Lexeme(ident, identleft, identright)));
-:}
-      | {:
-    RESULT = attr.var_R2();
-:};
+Vars ::= Vars:vars_1 PYC Var
+    {$$ = vars_R1($1, $3);}
+Vars ::=
+    {$$ = vars_R2($1);}
 
-TypeDesc ::= TPrim:tPrim {:
-    RESULT = attr.typeDesc_R1(tPrim);
-:}
-           | TArray:tArray {:
-    RESULT = attr.typeDesc_R2(tArray);
-:}
-           | TTupla:tTupla {:
-    RESULT = attr.typeDesc_R3(tTupla);
-:}
-           | IDENT:ident {:
-    RESULT = attr.typeDesc_R4((new Lexeme(ident, identleft, identright)));
-:};
+Var ::= VAR TypeDesc IDENT
+    {$$ = var_R1($1, $2.lex);}
+Var ::=
+    {$$ = var_R2();}
 
+TypeDesc ::= TPrim
+    {$$ = typeDesc_R1($1);}
+TypeDesc ::= TArray
+    {$$ = typeDesc_R2($1);}
+TypeDesc ::= TTupla
+    {$$ = typeDesc_R3($1);}
+TypeDesc ::= IDENT
+    {$$ = typeDesc_R4($1.lex);}
 
-TPrim ::= NATURAL {:
-    RESULT = attr.tPrim_R1();
-:}
-        | INTEGER {:
-    RESULT = attr.tPrim_R2();
-:}
-        | FLOAT {:
-    RESULT = attr.tPrim_R3();
-:}
-        | BOOLEAN {:
-    RESULT = attr.tPrim_R4();
-:}
-        | CHARACTER {:
-    RESULT = attr.tPrim_R5();
-:};
+TPrim ::= NATURAL
+    {$$ = tPrim_R1();}
+TPrim ::= INTEGER
+    {$$ = tPrim_R2();}
+TPrim ::= FLOAT
+    {$$ = tPrim_R3();}
+TPrim ::= BOOLEAN
+    {$$ = tPrim_R4();}
+TPrim ::= CHARACTER
+    {$$ = tPrim_R5();}
 
-Cast ::= CHAR {:
-    RESULT = attr.cast_R1();
-:}
-       | INT {:
-    RESULT = attr.cast_R2();
-:}
-       | NAT {:
-    RESULT = attr.cast_R3();
-:}
-       | FLOAT {:
-    RESULT = attr.cast_R4();
-:};
+Cast ::= CHAR
+    {$$ = cast_R1();}
+Cast ::= INT
+    {$$ = cast_R2();}
+Cast ::= NAT
+    {$$ = cast_R3();}
+Cast ::= FLOAT
+    {$$ = cast_R4();}
 
+TArray ::= TypeDesc ICORCHETE IDENT FCORCHETE
+    {$$ = tArray_R1($1, $3.lex);}
+TArray ::= TypeDesc ICORCHETE LITNAT FCORCHETE
+    {$$ = tArray_R2($1, $3.lex);}
 
-TArray ::= TypeDesc:typeDesc ICORCHETE IDENT:ident FCORCHETE {:
-    RESULT = attr.tArray_R1(typeDesc, (new Lexeme(ident, identleft, identright)));
-:}
-         | TypeDesc:typeDesc ICORCHETE LITNAT:litnat FCORCHETE {:
-    RESULT = attr.tArray_R2(typeDesc, new Lexeme(litnat, litnatleft, litnatright));
-:};
+TTupla ::= IPAR Tupla FPAR
+    {$$ = tTupla_R1($2);}
+TTupla ::= IPAR FPAR
+    {$$ = tTupla_R2();}
 
+Tupla ::= TypeDesc COMA Tupla
+    {$$ = tupla_R1($1, $3);}
+Tupla ::= TypeDesc
+    {$$ = tupla_R2($1);}
 
-TTupla ::= IPAR Tupla:tupla FPAR {:
-    RESULT = attr.tTupla_R1(tupla);
-:}
-         | IPAR FPAR {:
-    RESULT = attr.tTupla_R2();
-:};
+SInsts ::= INSTRUCTIONS ILLAVE Insts FLLAVE
+    {$$ = sInsts_R1($3);}
 
-Tupla ::= TypeDesc:typeDesc COMA Tupla:tupla_1 {:
-    RESULT = attr.tupla_R1(typeDesc, tupla_1);
-:}
-        | TypeDesc:typeDesc {:
-    RESULT = attr.tupla_R2(typeDesc);
-:};
+Insts ::= InstsPYC Inst
+    {$$ = insts_R1($1, $3);}
+Insts ::= Inst
+    {$$ = insts_R2($1);}
 
+Inst ::= Desig ASIG Expr
+    {$$ = inst_R1($1, $3, $2.lex);}
+Inst ::= IN PAR Desig FPAR
+    {$$ = inst_R2($3);}
+Inst ::= OUT IPAR Expr FPAR
+    {$$ = inst_R3($3);}
+Inst ::= SWAP1 IPAR FPAR
+    {$$ = inst_R4();}
+Inst ::= SWAP2 IPAR FPAR
+    {$$ = inst_R5();}
+Inst ::= IF Expr THEN Insts ElseIf
+    {$$ = inst_R6($2, $4, $5);}
+Inst ::= WHILE Expr DO Insts ENDWHILE
+    {$$ = inst_R7($2, $4);}
+Inst ::= InstCall
+    {$$ = inst_R8($1);}
+Inst ::=
+    {$$ = inst_R9();}
 
-SInsts ::= INSTRUCTIONS ILLAVE Insts:insts FLLAVE {:
-    RESULT = attr.sInsts_R1(insts);
-:};
+ElseIf ::= ELSE Insts ENDIF
+    {$$ = elseIf_R1($2);}
+ElseIf ::= ENDIF
+    {$$ = elseIf_R2();}
 
-Insts ::= Insts:insts_1 PYC Inst:inst {:
-    RESULT = attr.insts_R1(insts_1, inst);
-:}
-        | Inst:inst {:
-    RESULT = attr.insts_R2(inst);
-:};
+InstCall ::= CALL IDENT IPAR SRParams FPAR
+    {$$ = instCall_R1($2.lex, $4);}
 
-Inst ::= Desig:desig ASIG:asig Expr:expr {:
-    RESULT = attr.inst_R1(desig, expr, new Lexeme(asig, asigleft, asigright));
-:}
-       | IN IPAR Desig:desig FPAR {:
-    RESULT = attr.inst_R2(desig);
-:}
-       | OUT IPAR Expr:expr FPAR {:
-    RESULT = attr.inst_R3(expr);
-:}
-       | SWAP1 IPAR FPAR {:
-    RESULT = attr.inst_R4();
-:}
-       | SWAP2 IPAR FPAR {:
-    RESULT = attr.inst_R5();
-:}
-       | IF Expr:expr THEN Insts:insts ElseIf:elseIf {:
-    RESULT = attr.inst_R6(expr, insts, elseIf);
-:}
-       | WHILE Expr:expr DO Insts:insts ENDWHILE {:
-    RESULT = attr.inst_R7(expr, insts);
-:}
-       | InstCall:instCall {:
-    RESULT = attr.inst_R8(instCall);
-:}
-       | {:
-    RESULT = attr.inst_R9();
-:};
+SRParams ::= RParams
+    {$$ = srParams_R1($1);}
+SRParams ::=
+    {$$ = srParams_R2();}
 
+RParams ::= RParams COMA RParam
+    {$$ = rParams_R1($1, $3);}
+RParams ::= RParam
+    {$$ = rParams_R2($1);}
 
-ElseIf ::= ELSE Insts:insts ENDIF {:
-    RESULT = attr.elseIf_R1(insts);
-:}
-         | ENDIF {:
-    RESULT = attr.elseIf_R2();
-:};
+RParam ::= IDENT ASIG Expr
+    {$$ = rParam_R1($1.lex, $3);}
 
-InstCall ::= CALL IDENT:ident IPAR SRParams:srParams FPAR {:
-    RESULT = attr.instCall_R1((new Lexeme(ident, identleft, identright)), srParams);
-:};
+SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs FLLAVE
+    {$$ = sSubprogs_R1($3);}
+SSubprogs ::= SUBPROGRAMS ILLAVE FLLAVE
+    {$$ = sSubprogs_R2();}
+SSubprogs ::=
+    {$$ = sSubprogs_R3();}
 
+Subprogs ::= Subprogs Subprog
+    {$$ = subprogs_R1($1, $2);}
+Subprogs ::= Subprog
+    {$$ = subprogs_R2($1);}
 
-SRParams ::= RParams:rParams {:
-    RESULT = attr.srParams_R1(rParams);
-:}
-       | {:
-    RESULT = attr.srParams_R2();
-:};
+Subprog ::= SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE
+    {$$ = subprog_R1($2.lex, $4, $7, $8);}
 
-RParams ::= RParams:rParams_1 COMA RParam:rParam {:
-    RESULT = attr.rParams_R1(rParams_1, rParam);
-:}
-          | RParam:rParam {:
-    RESULT = attr.rParams_R2(rParam);
-:};
+SFParams ::= FParams 
+    {$$ = sfParams_R1($1);}
+SFParams ::= 
+    {$$ = sfParams_R2();}
 
-RParam ::= IDENT:ident ASIG Expr:expr {:
-    RESULT = attr.rParam_R1((new Lexeme(ident, identleft, identright)), expr);
-:};
+FParams ::= FParams COMA FParam 
+    {$$ = fParams_R1($1, $3);}
+FParams ::= FParam 
+    {$$ = fParams_R2($1);}
 
+FParam ::= TypeDesc IDENT 
+    {$$ = fParam_R1($1, $2.lex);}
+FParam ::= TypeDesc MUL IDENT 
+    {$$ = fParam_R2($1, $3.lex);}
 
-SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs:subprogs FLLAVE {:
-    RESULT = attr.sSubprogs_R1(subprogs);
-:}
-            | SUBPROGRAMS ILLAVE FLLAVE {:
-    RESULT = attr.sSubprogs_R2();
-:}
-            | {:
-    RESULT = attr.sSubprogs_R3();
-:};
+Desig ::= IDENT 
+    {$$ = desig_R1($1.lex)));}
+Desig ::= Desig ICORCHETE Expr FCORCHETE 
+    {$$ = desig_R2($1, $3);}
+Desig ::= Desig BARRABAJA LITNAT 
+    {$$ = desig_R3($1, $3.lex);}
 
-Subprogs ::= Subprogs:subprogs_1 Subprog:subprog {:
-    RESULT = attr.subprogs_R1(subprogs_1, subprog);
-:}
-           | Subprog:subprog {:
-    RESULT = attr.subprogs_R2(subprog);
-:};
+Expr ::= Term Op0 Term 
+    {$$ = expr_R1($1, $2, $3);}
+Expr ::= Term 
+    {$$ = expr_R2($1);}
 
-Subprog ::= SUBPROGRAM IDENT:ident IPAR SFParams:sfParams FPAR ILLAVE SVars:sVars SInsts:sInsts FLLAVE {:
-    RESULT = attr.subprog_R1((new Lexeme(ident, identleft, identright)), sfParams, sVars, sInsts);
-:};
+Term ::= Term Op1 Fact 
+    {$$ = term_R1($1, $2, $3);}
+Term ::= Term OR Fact 
+    {$$ = term_R2($1, $3);}
+Term ::= Fact 
+    {$$ = term_R3($1);}
 
+Fact ::= Fact Op2 Shft 
+    {$$ = fact_R1($1, $2, $3);}
+Fact ::= Fact AND Shft 
+    {$$ = fact_R2($1, $3);}
+Fact ::= Shft 
+    {$$ = fact_R3($1);}
 
-SFParams ::= FParams {$$ = sfParams_R1($1);}
-SFParams ::= {$$ = sfParams_R2();}
+Shft ::= Unary Op3 Shft 
+    {$$ = shft_R1($1, $2, $3);}
+Shft ::= Unary 
+    {$$ = shft_R2($1);}
 
-FParams ::= FParams COMA FParam {$$ = fParams_R1($1, $3);}
-FParams ::= FParam {$$ = fParams_R2($1);}
+Unary ::= Op4 Unary 
+    {$$ = unary_R1($1, $2);}
+Unary ::= IPAR Cast FPAR Paren 
+    {$$ = unary_R2($2, $4);}
+Unary ::= Paren 
+    {$$ = unary_R3($1);}
 
-FParam ::= TypeDesc IDENT {$$ = fParam_R1($1, $2.lex);}
-FParam ::= TypeDesc MUL IDENT {$$ = fParam_R2($1, $3.lex);}
+Paren ::= IPAR Expr FPAR 
+    {$$ = paren_R1($2);}
+Paren ::= Lit 
+    {$$ = paren_R2($1);}
+Paren ::= Desig 
+    {$$ = paren_R3($1);}
 
-Desig ::= IDENT {$$ = desig_R1($1.lex)));}
-Desig ::= Desig ICORCHETE Expr FCORCHETE {$$ = desig_R2($1, $3);}
-Desig ::= Desig BARRABAJA LITNAT {$$ = desig_R3($1, $3.lex);}
+Op0 ::= IGUAL 
+    {$$ = op0_R1();}
+Op0 ::= NOIGUAL 
+    {$$ = op0_R2();}
+Op0 ::= MEN 
+    {$$ = op0_R3();}
+Op0 ::= MAY 
+    {$$ = op0_R4();}
+Op0 ::= MENOIG 
+    {$$ = op0_R5();}
+Op0 ::= MAYOIG 
+    {$$ = op0_R6();}
 
-Expr ::= Term Op0 Term {$$ = expr_R1($1, $2, $3);}
-Expr ::= Term {$$ = expr_R2($1);}
+Op1 ::= MENOS 
+    {$$ = op1_R1();}
+Op1 ::= MAS 
+    {$$ = op1_R2();}
 
-Term ::= Term Op1 Fact {$$ = term_R1($1, $2, $3);}
-Term ::= Term OR Fact {$$ = term_R2($1, $3);}
-Term ::= Fact {$$ = term_R3($1);}
+Op2 ::= MOD 
+    {$$ = op2_R1();}
+Op2 ::= DIV 
+    {$$ = op2_R2();}
+Op2 ::= MUL 
+    {$$ = op2_R3();}
 
-Fact ::= Fact Op2 Shft {$$ = fact_R1($1, $2, $3);}
-Fact ::= Fact AND Shft {$$ = fact_R2($1, $3);}
-Fact ::= Shft {$$ = fact_R3($1);}
+Op3 ::= LSH 
+    {$$ = op3_R1();}
+Op3 ::= RSH 
+    {$$ = op3_R2();}
 
-Shft ::= Unary Op3 Shft {$$ = shft_R1($1, $2, $3);}
-Shft ::= Unary {$$ = shft_R2($1);}
+Op4 ::= NOT 
+    {$$ = op4_R1();}
+Op4 ::= MENOS 
+    {$$ = op4_R2();}
 
-Unary ::= Op4 Unary {$$ = unary_R1($1, $2);}
-Unary ::= IPAR Cast FPAR Paren {$$ = unary_R2($2, $4);}
-Unary ::= Paren {$$ = unary_R3($1);}
+Lit ::= LitBool 
+    {$$ = lit_R1($1);}
+Lit ::= LitNum 
+    {$$ = lit_R2($1);}
+Lit ::= LITCHAR 
+    {$$ = lit_R3($1.lex));}
 
-Paren ::= IPAR Expr FPAR {$$ = paren_R1($2);}
-Paren ::= Lit {$$ = paren_R2($1);}
-Paren ::= Desig {$$ = paren_R3($1);}
+LitBool ::= TRUE 
+    {$$ = litBool_R1();}
+LitBool ::= FALSE 
+    {$$ = litBool_R2();}
 
-
-Op0 ::= IGUAL {$$ = op0_R1();}
-Op0 ::= NOIGUAL {$$ = op0_R2();}
-Op0 ::= MEN {$$ = op0_R3();}
-Op0 ::= MAY {$$ = op0_R4();}
-Op0 ::= MENOIG {$$ = op0_R5();}
-Op0 ::= MAYOIG {$$ = op0_R6();}
-
-Op1 ::= MENOS {$$ = op1_R1();}
-Op1 ::= MAS {$$ = op1_R2();}
-
-Op2 ::= MOD {$$ = op2_R1();}
-Op2 ::= DIV {$$ = op2_R2();}
-Op2 ::= MUL {$$ = op2_R3();}
-
-Op3 ::= LSH {$$ = op3_R1();}
-Op3 ::= RSH {$$ = op3_R2();}
-
-Op4 ::= NOT {$$ = op4_R1();}
-Op4 ::= MENOS {$$ = op4_R2();}
-
-
-Lit ::= LitBool {$$ = lit_R1($1);}
-Lit ::= LitNum {$$ = lit_R2($1);}
-Lit ::= LITCHAR {$$ = lit_R3($1.lex));}
-
-LitBool ::= TRUE {$$ = litBool_R1();}
-LitBool ::= FALSE {$$ = litBool_R2();}
-
-LitNum ::= LITNAT {$$ = litNum_R1($1.lex);}
-LitNum ::= LITFLOAT {$$ = litNum_R2($1.lex);}
+LitNum ::= LITNAT 
+    {$$ = litNum_R1($1.lex);}
+LitNum ::= LITFLOAT 
+    {$$ = litNum_R2($1.lex);}
