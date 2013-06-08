@@ -365,24 +365,7 @@ public final class Attribution extends Atribucion {
 
         asigna(types_1.a("tsh"), attr.a("tsh"));
 
-//        dependencias(types_1.a("dirh"), attr.a("dirh"));
-//        calculo(types_1.a("dirh"), AsignationFun.INSTANCE);
-
         asigna(type.a("tsh"), attr.a("ts"));
-
-//        dependencias(type.a("dirh"), types_1.a("dir"));
-//        calculo(type.a("dirh"), AsignationFun.INSTANCE);
-
-//        dependencias(attr.a("dir"), type.a("dir"), type.a("tipo"));
-//        calculo(attr.a("dir"), new SemFun() {
-//            @Override
-//            public Object eval (Atributo... args) {
-//                int varDir = (Integer) args[0].valor();
-//                Type type = (Type) args[1].valor();
-//
-//                return varDir + type.getSize();
-//            }
-//        });
 
         dependencias(attr.a("ts"), types_1.a("ts"), type.a("id"), type.a("tipo"), attr.a("err"));
         calculo(attr.a("ts"), new SemFun() {
@@ -411,24 +394,7 @@ public final class Attribution extends Atribucion {
         regla("Types -> Type");
         TAtributos attr = atributosPara("Types", "tsh", "ts", "tipo", "err");
 
-//        dependencias(attr.a("dir"), attr.a("dirh"));
-//        calculo(attr.a("dir"), AsignationFun.INSTANCE);
-
         asigna(type.a("tsh"), attr.a("tsh"));
-
-//        dependencias(type.a("dirh"), attr.a("dirh"));
-//        calculo(type.a("dirh"), AsignationFun.INSTANCE);
-
-//        dependencias(attr.a("dir"), type.a("dir"), type.a("tipo"));
-//        calculo(attr.a("dir"), new SemFun() {
-//            @Override
-//            public Object eval (Atributo... args) {
-//                int varDir = (Integer) args[0].valor();
-//                Type type = (Type) args[1].valor();
-//
-//                return varDir + type.getSize();
-//            }
-//        });
 
         dependencias(attr.a("ts"), type.a("ts"), type.a("id"), type.a("tipo"), attr.a("err"));
         calculo(attr.a("ts"), new SemFun() {
@@ -447,17 +413,6 @@ public final class Attribution extends Atribucion {
             }
         });
 
-//        dependencias(attr.a("dir"), type.a("dir"), type.a("tipo"));
-//        calculo(attr.a("dir"), new SemFun() {
-//            @Override
-//            public Object eval (Atributo... args) {
-//                int varDir = (Integer) args[0].valor();
-//                Type type = (Type) args[1].valor();
-//
-//                return varDir + type.getSize();
-//            }
-//        });
-
         dependencias(type.a("err"), type.a("ts"), type.a("id"), a(Scope.GLOBAL));
         calculo(type.a("err"), CheckDuplicateIdentifierFun.INSTANCE);
 
@@ -473,9 +428,6 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("ts"), attr.a("tsh"));
 
         asigna(typeDesc.a("tsh"), attr.a("tsh"));
-
-//        dependencias(attr.a("dir"), attr.a("dirh"));
-//        calculo(attr.a("dir"), AsignationFun.INSTANCE);
 
         Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
         asigna(attr.a("id"), lexIdent);
@@ -494,9 +446,6 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Type", "ts", "tsh", "id", "err", "tipo", "clase", "nivel");
 
         asigna(attr.a("ts"), attr.a("tsh"));
-
-//        dependencias(attr.a("dir"), attr.a("dirh"));
-//        calculo(attr.a("dir"), AsignationFun.INSTANCE);
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
