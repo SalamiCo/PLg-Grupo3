@@ -1,0 +1,17 @@
+@ Programa para ver las tuplas
+
+program: test1{
+
+	vars {
+    var (integer, boolean) e;
+  }
+  
+	instructions {
+	e_0 = 1;
+	e_1 = true;
+
+	out(e_0);
+	out(e_1);
+    
+	}
+}
