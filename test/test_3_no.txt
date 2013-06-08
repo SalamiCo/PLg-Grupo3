@@ -1,4 +1,4 @@
-//Programa pensado para fallar. 
+@Programa pensado para fallar. 
 
 program: test3{
 

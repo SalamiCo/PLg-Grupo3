@@ -1,4 +1,4 @@
-//Programa para ver que el paso de parámetros desordenados lo hace bien
+@Programa para ver que el paso de parámetros desordenados lo hace bien
 
 program: test11{
    

@@ -1,4 +1,4 @@
-//Calcula el factorial de 9. Para probar temas de recursion  
+@Calcula el factorial de 9. Para probar temas de recursion  
 
 program: test15{
    

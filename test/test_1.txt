@@ -1,4 +1,4 @@
-//Programa sencillo, solo ha de imprimir -6 por pantalla
+@Programa sencillo, solo ha de imprimir -6 por pantalla
 
 program: test1{
 

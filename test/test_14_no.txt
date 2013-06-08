@@ -1,9 +1,9 @@
-El programa debería fallar en lo siguiente:
-- params_repetidos tiene dos parámetros repetidos declarados 
-- se llama a un subprograma, llamado, que no está declarado.
-- se llama a pruebas la primera vez con un número erróneo de parámetros 
--  llama a pruebas la segunda vez con parámetros repetidos.
-- cualquier otra cosa que se me pase. 
+@El programa debería fallar en lo siguiente:
+@ - params_repetidos tiene dos parámetros repetidos declarados 
+@ - se llama a un subprograma, llamado, que no está declarado.
+@ - se llama a pruebas la primera vez con un número erróneo de parámetros 
+@ -  llama a pruebas la segunda vez con parámetros repetidos.
+@ - cualquier otra cosa que se me pase. 
 
 program: test14{
 

@@ -1,4 +1,4 @@
-//Programa simple para probar los if. 
+@Programa simple para probar los if. 
 
 program: test7{
 
