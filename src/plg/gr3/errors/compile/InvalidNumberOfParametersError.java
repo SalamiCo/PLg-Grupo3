@@ -1,5 +1,7 @@
 package plg.gr3.errors.compile;
 
+import plg.gr3.parser.Lexeme;
+
 /**
  * Error que el numero de parámetros con el que se invoca la función es diferente de los declarados
  * 
@@ -8,26 +10,27 @@ package plg.gr3.errors.compile;
 
 public class InvalidNumberOfParametersError extends CompileError {
 
-    private int realParams;
+    private final int realParams;
 
-    private int formalParams;
+    private final int formalParams;
+
+    private final String ident;
 
     /**
      * @param identName Nombre del identificador
      * @param line Línea en la que se dio
      * @param column Columna en la que se dio
      */
-    public InvalidNumberOfParametersError (int realParams, int formalParams, int line, int column) {
-        super(line, column);
+    public InvalidNumberOfParametersError (Lexeme ident, int realParams, int formalParams) {
+        super(ident.getLine(), ident.getColumn());
+        this.ident = ident.getLexeme();
         this.realParams = realParams;
         this.formalParams = formalParams;
     }
 
     @Override
     public String getErrorMessage () {
-        final String format =
-            "El número de parámetros con el que has invocado la función no coincide con el número de parámetros con el que está declarada. ";
-        return String.format(format, realParams, formalParams);
+        final String format = "La función '%s' llamada con %d argumentos está declarada con %d parámetros";
+        return String.format(format, ident, realParams, formalParams);
     }
-
 }
