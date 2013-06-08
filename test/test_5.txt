@@ -3,45 +3,42 @@
 program: test5{
 
 	vars {
-    var integer uno;
-    var integer dos;
-    var integer tres;
-    var integer cuatro;
-    var integer cinco;
-  }
+        var integer uno;
+        var integer dos;
+        var integer tres;
+        var integer cuatro;
+        var integer cinco;
+    }
     
 	instructions {
 
-    uno = 1;
-    dos = 2;
-    tres = 3;
-    cuatro = 4;
-    cinco = 5;
-     
-     if (true or false) then
+        uno = 1;
+        dos = 2;
+        tres = 3;
+        cuatro = 4;
+        cinco = 5;
+         
+        if (true or false) then
+         	out (uno);
+        else 
+        	out (2);
+        endif; 
 
-     	out (uno);
+        if (true and false) then
 
-    else 
-    	out (2);
+        	out (tres);
 
-    endif; 
+        else 
 
-    if (true and false) then
+        	out(4);
 
-    	out (tres);
+        endif;
 
-    else 
+        if (true or false and true) then
 
-    	out(4);
+        	out(5);
 
-    endif;
-
-    if (true or false and true) then
-
-    	out(5);
-
-    endif;
+        endif;
 
 	}
 }
