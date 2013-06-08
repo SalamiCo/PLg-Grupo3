@@ -2,9 +2,9 @@
 
 program: test7{
 
-	vars {
-    var integer x ;
-    var integer y  ;
+    vars {
+    var integer x;
+    var integer y;
     
   }
     
