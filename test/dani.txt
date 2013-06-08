@@ -1,11 +1,42 @@
 program: test {
-	vars {
-		var natural i;
+	consts {
+		const natural SIZE = 16;
 	}
+
+	vars {
+		var natural[SIZE] list;
+		var natural i;
+		var natural j;
+		var natural tmp;
+	}
+	
 	instructions {
 		i = 0;
-		while i < 5 do
-			out(i+1);
+		while i < SIZE do
+			list[i] = (i * 37) % 31;
+			out(list[i]);
+			i = i + 1;
+		endwhile;
+		
+		out('-');
+		
+		i = 1;
+		while i < SIZE do
+			j = 0;
+			while j < SIZE - i do
+				if list[j+1] < list[j] then
+					tmp = list[j+1];
+					list[j+1] = list[j];
+					list[j] = tmp;
+				endif;
+				j = j + 1;
+			endwhile;
+			i = i + 1;
+		endwhile;
+		
+		i = 0;
+		while i < SIZE do
+			out(list[i]);
 			i = i + 1;
 		endwhile;
 	}

@@ -189,12 +189,46 @@ public final class Main {
         }
         Path pathInput = Paths.get(args[0]);
 
+        boolean debug = mode == Mode.VERBOSE || mode == Mode.TRACE;
+        boolean trace = mode == Mode.TRACE;
+
+        Console console = System.console();
+        if (trace && console == null) {
+            System.err.println("No hay ninguna terminal asociada.");
+            System.err.println("Ejecuta el comando desde una terminal y sin redirecciones.");
+            System.err.println();
+
+            printUsage();
+            return;
+        }
+
         Debugger.INSTANCE.setLoggingEnabled(true);
-        Debugger.INSTANCE.setDebugEnabled(false);
+        Debugger.INSTANCE.setDebugEnabled(debug);
+
+        Debugger.INSTANCE.debug("Cargando código...");
 
         try (StreamCodeReader reader = new StreamCodeReader(Files.newInputStream(pathInput))) {
-            VirtualMachine vm = new VirtualMachine(reader.readAll());
-            vm.execute();
+            List<Instruction> code = reader.readAll();
+
+            Debugger.INSTANCE.debug("Cargadas %d instrucciones pila.", code.size());
+            VirtualMachine vm = new VirtualMachine(code);
+
+            Debugger.INSTANCE.debug("Ejecutando...");
+            while (!vm.isStopped()) {
+                int pc = vm.getProgramCounter();
+                Debugger.INSTANCE.debug("Instruction: %d => %s", pc, vm.getInstruction(pc));
+
+                vm.step();
+
+                Debugger.INSTANCE.debug("Stack: %s", vm.getStackAsString());
+                Debugger.INSTANCE.debug("Memory:%n%s", vm.getMemoryAsString());
+                Debugger.INSTANCE.debug("==========");
+
+                if (trace) {
+                    console.printf("Pulsa ENTER para continuar...");
+                    console.readLine();
+                }
+            }
 
             RuntimeError error = vm.getError();
             if (error != null) {
@@ -204,53 +238,8 @@ public final class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
-    /**
-     * Comando de depuración.
-     * 
-     * @param args Argumentos de línea de comandos
-     */
-    public static void debug (String... args) {
-        if (args.length != 1) {
-            printUsage();
-        }
-        Path pathInput = Paths.get(args[0]);
-
-        Debugger.INSTANCE.setLoggingEnabled(true);
-        Debugger.INSTANCE.setDebugEnabled(true);
-
-        Console console = System.console();
-        if (console == null) {
-            System.err.println("No puedes ejecutar en modo traza sin una terminal.");
-
-        } else {
-
-            try (StreamCodeReader reader = new StreamCodeReader(Files.newInputStream(pathInput))) {
-                VirtualMachine vm = new VirtualMachine(reader.readAll());
-
-                while (!vm.isStopped()) {
-                    int pc = vm.getProgramCounter();
-                    Instruction instr = vm.getInstruction(pc);
-
-                    Debugger.INSTANCE.in(pc, instr).log("Pulsa ENTER para ejecutar");
-                    String line = console.readLine();
-                    if (line == null) {
-                        vm.stop();
-                    } else {
-                        vm.step();
-                    }
-                }
-
-                RuntimeError error = vm.getError();
-                if (error != null) {
-                    error.print();
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        Debugger.INSTANCE.debug("Terminado");
     }
 
     /** Deshabilita la posibilidad de construir objetos de esta clase */

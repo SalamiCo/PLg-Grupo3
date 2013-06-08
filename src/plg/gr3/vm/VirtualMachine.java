@@ -211,4 +211,12 @@ public final class VirtualMachine {
         }
     }
 
+    public String getStackAsString () {
+        return stack.toString();
+    }
+
+    public String getMemoryAsString () {
+        return memory.toString();
+    }
+
 }
