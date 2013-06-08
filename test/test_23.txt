@@ -7,8 +7,9 @@ program: test20{
 
 	instructions{
 		i = 3;
-		while(i != 3) do
+		while(i != 0) do
 			out(i);
+			i = i-1;
 		endwhile;
 	}
 }
