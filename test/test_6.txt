@@ -3,33 +3,31 @@
 program: test6{
 
 	vars {
-    var integer x ;
-    
-  }
+        var integer x ;
+    }
     
 	instructions {
-     
-     x = 7;
+        x = 7;
 
-     if (x == 6) then
+        if (x == 6) then
 
-        x = x + 1;
-        out(x);
-    else
+            x = x + 1;
+            out(x);
+        else
 
-        x = 8 + 2;
-        out(x);
-        if(x > 9) then 
+            x = 8 + 2;
+            out(x);
+            if(x > 9) then 
 
-            if (x < 100) then
+                if (x < 100) then
 
-                x = x+x;
-                out(x);
+                    x = x+x;
+                    out(x);
+                endif;
+
             endif;
 
         endif;
-
-    endif;
 
 	}
 }

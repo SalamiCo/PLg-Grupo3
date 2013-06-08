@@ -2,14 +2,14 @@
 
 program: test9{
 
-consts {
-    const floar x=10.0;
-  } 
+    consts {
+        const floar x=10.0;
+    } 
    
     vars {
-    var boolean y;
-    var character z;
-  }
+        var boolean y;
+        var character z;
+    }
 
 	subprograms {
         subprogram: imprimir_variable(integer var){ 
@@ -25,9 +25,9 @@ consts {
         y = true;
         z = '??YJDsad%%·$%&/&·$%'
 
-     call imprimir_variable(var = x);
-     call imprimir_variable(var = y);
-     call imprimir_variable(var = z);
+        call imprimir_variable(var = x);
+        call imprimir_variable(var = y);
+        call imprimir_variable(var = z);
 
 
 	}

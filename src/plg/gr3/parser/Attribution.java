@@ -2454,7 +2454,6 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... attrs) {
                 int factEtq = (int) attrs[1].valor();
-                // TODO sustituir las funciones por su código
                 return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new DuplicateInstruction()), a(new BranchInstruction(
                     factEtq, BooleanValue.TRUE)), a(new DropInstruction()), attrs[2]);
             }
@@ -2484,7 +2483,7 @@ public final class Attribution extends Atribucion {
         dependencias(fact.a("etqh"), term_1.a("etq"));
         calculo(fact.a("etqh"), new IncrementFun(3));
 
-        asigna(attr.a("etq"), term_1.a("etq"));
+        asigna(attr.a("etq"), fact.a("etq"));
 
         dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), fact.a("err"), fact.a("tipo"));
         calculo(attr.a("err"), new SemFun() {

@@ -3,13 +3,11 @@
 program: test4{
 
 	vars {
-    var integer y;
-  }
+        var integer y;
+    }
     
 	instructions {
-     x =  5;
-     out (x);
-
-    
+        x =  5;
+        out (x);
 	}
 }

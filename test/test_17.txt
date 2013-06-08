@@ -3,26 +3,26 @@
 program: test17{
 
 	consts {
-   	 const integer numero2:=1;
-  } 
+   	 	const integer numero2:=1;
+  	} 
 
-	vars{
+	vars {
 		var integer numero;
 		var integer numero3;
 	}
 
 	@pruebas swap1 y swap2 que funcionan correctamente
-	instructions{
-	in(numero);
-	swap1();
-	numero=numero-3;
-	out(numero);
-	numero=numero+10;
-	out(numero);
-	swap2();
-	numero=numero*3;
-	out(numero);
-	numero=numero/2;
-	out(numero);
+	instructions {
+		in(numero);
+		swap1();
+		numero=numero-3;
+		out(numero);
+		numero=numero+10;
+		out(numero);
+		swap2();
+		numero=numero*3;
+		out(numero);
+		numero=numero/2;
+		out(numero);
 	}
 }
