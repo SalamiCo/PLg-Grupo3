@@ -1,0 +1,23 @@
+@Programa simple para probar los subprogramas
+
+program: test8{
+
+	subprograms {
+        subprogram: imprimirtres(){
+            vars {
+              var natural x;
+            }  
+            instructions {
+                x = 3;
+                out(x);
+            }
+        }
+
+    }
+    
+	instructions {
+     
+     call imprimirtres();
+
+	}
+}

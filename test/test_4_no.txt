@@ -1,0 +1,15 @@
+@ha de fallar
+
+program: test4{
+
+	vars {
+    var integer y;
+  }
+    
+	instructions {
+     x =  +;
+     out (x);
+
+    
+	}
+}

@@ -1,0 +1,22 @@
+@Programa simple para probar los if. 
+
+program: test7{
+
+	vars {
+    var integer x ;
+    var integer y  ;
+    
+  }
+    
+	instructions {
+     
+     x = 1;
+     x = 2;
+
+     if (x == y) then
+    else
+        out(x);
+    endif
+
+	}
+}

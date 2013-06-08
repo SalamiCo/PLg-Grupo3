@@ -1,0 +1,33 @@
+@Programa para ver que se hace bien el paso de parámetros. En especial el designador x[3]
+
+program: test12{
+   
+    vars {
+    var array[5] x;
+    var float y;
+    var natural W;
+  }
+
+	subprograms {
+    subprogram: suma_variables(integer var1, float var2, natural var3){ 
+        instructions {
+           vars {
+              var float var;
+            } 
+
+            var = var1 + var2 + var3 + var4;
+            out(var);
+        }
+    }
+
+  }
+    
+	instructions {
+     x[3] = 3;
+     y = 2.3;
+     w = 1;
+    
+
+     call suma_variables(var4 = z, var2 = y, var3 = w, var1 = x[3]);
+	}
+}

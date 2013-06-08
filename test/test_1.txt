@@ -1,0 +1,15 @@
+@Programa sencillo, solo ha de imprimir -6 por pantalla
+
+program: test1{
+
+	vars {
+    var integer e;
+  }
+  
+  
+	instructions {
+    e = -6;
+    out(e);
+    
+	}
+}

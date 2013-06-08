@@ -6,7 +6,6 @@
 
 package plg.pruebas;
 
-import java_cup.runtime.*;
 import es.ucm.fdi.plg.evlib.TAtributos;
 
 /** CUP v0.11a beta 20060608 generated parser.
