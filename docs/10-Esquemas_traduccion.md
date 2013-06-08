@@ -234,42 +234,21 @@ Subprog ::= SUBPROGRAM IDENT:ident IPAR SFParams:sfParams FPAR ILLAVE SVars:sVar
 :};
 
 
-SFParams ::= FParams:fParams {:
-    RESULT = attr.sfParams_R1(fParams);
-:}
-           | {:
-    RESULT = attr.sfParams_R2();
-:};
+SFParams ::= FParams {$$ = sfParams_R1($1);}
+SFParams ::= {$$ = sfParams_R2();}
 
-FParams ::= FParams:fParams_1 COMA FParam:fParam {:
-    RESULT = attr.fParams_R1(fParams_1, fParam);
-:}
-          | FParam:fParam {:
-    RESULT = attr.fParams_R2(fParam);
-:};
+FParams ::= FParams COMA FParam {$$ = fParams_R1($1, $3);}
+FParams ::= FParam {$$ = fParams_R2($1);}
 
-FParam ::= TypeDesc:typedesc IDENT:ident {:
-    RESULT = attr.fParam_R1(typedesc, (new Lexeme(ident, identleft, identright)));
-:}
-         | TypeDesc:typedesc MUL IDENT:ident {:
-    RESULT = attr.fParam_R2(typedesc, (new Lexeme(ident, identleft, identright)));
-:};
+FParam ::= TypeDesc IDENT {$$ = fParam_R1($1, $2.lex);}
+FParam ::= TypeDesc MUL IDENT {$$ = fParam_R2($1, $3.lex);}
 
-
-Desig ::= IDENT:ident {:
-    RESULT = attr.desig_R1((new Lexeme(ident, identleft, identright)));
-:}
-        | Desig:desig_1 ICORCHETE Expr:expr FCORCHETE {:
-    RESULT = attr.desig_R2(desig_1, expr);
-:}
-        | Desig:desig_1 BARRABAJA LITNAT:litnat {:
-    RESULT = attr.desig_R3(desig_1, new Lexeme(litnat, litnatleft, litnatright));
-:};
-
+Desig ::= IDENT {$$ = desig_R1($1.lex)));}
+Desig ::= Desig ICORCHETE Expr FCORCHETE {$$ = desig_R2($1, $3);}
+Desig ::= Desig BARRABAJA LITNAT {$$ = desig_R3($1, $3.lex);}
 
 Expr ::= Term Op0 Term {$$ = expr_R1($1, $2, $3);}
 Expr ::= Term {$$ = expr_R2($1);}
-
 
 Term ::= Term Op1 Fact {$$ = term_R1($1, $2, $3);}
 Term ::= Term OR Fact {$$ = term_R2($1, $3);}
