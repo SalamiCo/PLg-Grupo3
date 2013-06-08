@@ -1,6 +1,8 @@
 # 5. Especificación de la traducción
 
-### 5.1.1. Arquitectura
+## 5.1 Lenguaje objeto y máquina virtual 
+
+### 5.1.1 Arquitectura
 
  * Mem: Memoria principal con celdas direccionables con datos. Los datos de la memoria no incluyen información sobre de qué tipo son, las instrucciones sí.
 
@@ -20,7 +22,7 @@
 
  * Reg: Registro auxiliar para apila-ind y desapila-ind
 
-### 5.1.2.  Comportamiento interno
+### 5.1.2 Comportamiento interno
 
 Pseudocódigo del algoritmo de su ejecución:
 
@@ -40,7 +42,7 @@ Pseudocódigo del algoritmo de su ejecución:
 La dirección -1 en CPila indica que la pila está vacía.
 
 
-### 5.1.3.  Repertorio de instrucciones
+### 5.1.3 Repertorio de instrucciones
 
 #### Operaciones con la Pila:
 
@@ -249,20 +251,20 @@ Consideraciones sobre “Repertorio de instrucciones”
 
 En la operación castNat, hemos creado la operación en la máquina virtual (nat), que no está predefinida en Java, pero cuyo comportamiento está definido en las tablas correspondientes a los tipos definidos.
 
-## 5.2. Funciones semánticas
+## 5.2 Funciones semánticas
 
 tamTipo(CTipo): dado un registro de tipo, devuelve el tamaño del tipo
 desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el offset hasta el indice (incluido)
 numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
-## 5.3. Atributos semánticos
+## 5.3 Atributos semánticos
 
  * cod: Atributo sintetizado de generación de código.
  * op: Enumerado que nos dice cuál es el operador utilizado.
  * etq: Contador de instrucciones. Cuenta instucciones de la máquina a pila generadas. 
  * etqh: Contador de instrucciones heredado.  
 
-## 5.4. Gramática de atributos
+## 5.4 Gramática de atributos
 
 	Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 		Program.cod =  ir_a(parchea(?,SSubprogs.etq)) || SSubprogs || SInsts.cod || stop 
@@ -582,6 +584,6 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 	Op4 → menos
 		Op4.op = menos
 
-### NOTA
+#### Nota:
 
 - Resulta que el codigo de Desig -> Ident está mal. No tiene en cuenta si es una constante. Hay que hacer un apaño y explicar el apaño en algún punto de la memoria. 
