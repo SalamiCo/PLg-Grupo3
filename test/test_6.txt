@@ -25,11 +25,11 @@ program: test6{
 
                 x = x+x;
                 out(x);
-            endif
+            endif;
 
-        endif
+        endif;
 
-    endif
+    endif;
 
 	}
 }

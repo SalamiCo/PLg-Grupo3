@@ -351,32 +351,23 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
-        Types.dirh = STypes.dirh
         STypes.ts = Types.ts 
-        STypes.dir = Types.dir 
 
     STypes → ɛ
         STypes.ts = STypes.tsh
-        STypes.dir = STypes.dirh
 
     Types → Types pyc Type 
         Types1.tsh = Types0.tsh
-        Types1.dirh = Types0.dirh
         Type.tsh = Types1.ts
-        Type.dirh = Types1.dir
-        Types0.dir = Type.dir + desplazamiento(Type.tipo, Types0.id)
-        Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, Types0.dir, Type.tipo)
+        Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
 
     Types → Type
         Type.tsh = Types.tsh
-        Type.dirh = Types.dirh
-        Types.dir = Type.dir + desplazamiento(Type.tipo, Type.id)
-        Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, Type.dir, Type.tipo)
+        Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
 
 
     Type → tipo TypeDesc ident 
         Type.ts = Type.tsh
-        Type.dir = Type.dirh
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
@@ -384,7 +375,6 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     Type → ɛ
         Type.ts = Type.tsh
-        Type.dir = Type.dirh
 
     SVars → vars illave Vars fllave 
         Vars.tsh = SVars.tsh
