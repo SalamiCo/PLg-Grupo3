@@ -267,135 +267,57 @@ Desig ::= IDENT:ident {:
 :};
 
 
-Expr ::= Term:term_1 Op0:op0 Term:term_2 {:
-    RESULT = attr.expr_R1(term_1, op0, term_2);
-:}
-       | Term:term {:
-    RESULT = attr.expr_R2(term);
-:};
+Expr ::= Term Op0 Term {$$ = expr_R1($1, $2, $3);}
+Expr ::= Term {$$ = expr_R2($1);}
 
 
-Term ::= Term:term_1 Op1:op1 Fact:fact {:
-    RESULT = attr.term_R1(term_1, op1, fact);
-:}
-       | Term:term_1 OR Fact:fact {:
-    RESULT = attr.term_R2(term_1, fact);
-:}
-       | Fact:fact {:
-    RESULT = attr.term_R3(fact);
-:};
+Term ::= Term Op1 Fact {$$ = term_R1($1, $2, $3);}
+Term ::= Term OR Fact {$$ = term_R2($1, $3);}
+Term ::= Fact {$$ = term_R3($1);}
 
-Fact ::= Fact:fact_1 Op2:op3 Shft:shft {:
-    RESULT = attr.fact_R1(fact_1, op3, shft);
-:}
-       | Fact:fact_1 AND Shft:shft {:
-    RESULT = attr.fact_R2(fact_1, shft);
-:}
-       | Shft:shft {:
-    RESULT = attr.fact_R3(shft);
-:};
+Fact ::= Fact Op2 Shft {$$ = fact_R1($1, $2, $3);}
+Fact ::= Fact AND Shft {$$ = fact_R2($1, $3);}
+Fact ::= Shft {$$ = fact_R3($1);}
 
-Shft ::= Unary:unary Op3:op3 Shft:shft {:
-    RESULT = attr.shft_R1(unary, op3, shft);
-:}
-       | Unary:unary {:
-    RESULT = attr.shft_R2(unary);
-:};
+Shft ::= Unary Op3 Shft {$$ = shft_R1($1, $2, $3);}
+Shft ::= Unary {$$ = shft_R2($1);}
 
-Unary ::= Op4:op4 Unary:unary_1 {:
-    RESULT = attr.unary_R1(op4, unary_1);
-:}
-        | IPAR Cast:cast FPAR Paren:paren {:
-    RESULT = attr.unary_R2(cast, paren);
-:}
-        | Paren:paren {:
-    RESULT = attr.unary_R3(paren);
-:};
+Unary ::= Op4 Unary {$$ = unary_R1($1, $2);}
+Unary ::= IPAR Cast FPAR Paren {$$ = unary_R2($2, $4);}
+Unary ::= Paren {$$ = unary_R3($1);}
 
-Paren ::= IPAR Expr:expr FPAR {:
-    RESULT = attr.paren_R1(expr);
-:}
-        | Lit:lit {:
-    RESULT = attr.paren_R2(lit);
-:}
-        | Desig:desig {:
-    RESULT = attr.paren_R3(desig);
-:};
+Paren ::= IPAR Expr FPAR {$$ = paren_R1($2);}
+Paren ::= Lit {$$ = paren_R2($1);}
+Paren ::= Desig {$$ = paren_R3($1);}
 
 
-Op0 ::= IGUAL {:
-    RESULT = attr.op0_R1();
-:}
-      | NOIGUAL {:
-    RESULT = attr.op0_R2();
-:}
-      | MEN {:
-    RESULT = attr.op0_R3();
-:}
-      | MAY {:
-    RESULT = attr.op0_R4();
-:}
-      | MENOIG {:
-    RESULT = attr.op0_R5();
-:}
-      | MAYOIG {:
-    RESULT = attr.op0_R6();
-:};
+Op0 ::= IGUAL {$$ = op0_R1();}
+Op0 ::= NOIGUAL {$$ = op0_R2();}
+Op0 ::= MEN {$$ = op0_R3();}
+Op0 ::= MAY {$$ = op0_R4();}
+Op0 ::= MENOIG {$$ = op0_R5();}
+Op0 ::= MAYOIG {$$ = op0_R6();}
 
-Op1 ::= MENOS {:
-    RESULT = attr.op1_R1();
-:}
-      | MAS {:
-    RESULT = attr.op1_R2();
-:};
+Op1 ::= MENOS {$$ = op1_R1();}
+Op1 ::= MAS {$$ = op1_R2();}
 
-Op2 ::= MOD {:
-    RESULT = attr.op2_R1();
-:}
-      | DIV {:
-    RESULT = attr.op2_R2();
-:}
-      | MUL {:
-    RESULT = attr.op2_R3();
-:};
+Op2 ::= MOD {$$ = op2_R1();}
+Op2 ::= DIV {$$ = op2_R2();}
+Op2 ::= MUL {$$ = op2_R3();}
 
-Op3 ::= LSH {:
-    RESULT = attr.op3_R1();
-:}
-      | RSH {:
-    RESULT = attr.op3_R2();
-:};
+Op3 ::= LSH {$$ = op3_R1();}
+Op3 ::= RSH {$$ = op3_R2();}
 
-Op4 ::= NOT {:
-    RESULT = attr.op4_R1();
-:}
-      | MENOS {:
-    RESULT = attr.op4_R2();
-:};
+Op4 ::= NOT {$$ = op4_R1();}
+Op4 ::= MENOS {$$ = op4_R2();}
 
 
-Lit ::= LitBool:litBool {:
-    RESULT = attr.lit_R1(litBool);
-:}
-      | LitNum:litNum {:
-    RESULT = attr.lit_R2(litNum);
-:}
-      | LITCHAR:litchar {:
-    RESULT = attr.lit_R3(new Lexeme(litchar, litcharleft, litcharright));
-:};
+Lit ::= LitBool {$$ = lit_R1($1);}
+Lit ::= LitNum {$$ = lit_R2($1);}
+Lit ::= LITCHAR {$$ = lit_R3($1.lex));}
 
-LitBool ::= TRUE {:
-    RESULT = attr.litBool_R1();
-:}
-          | FALSE {:
-    RESULT = attr.litBool_R2();
-:};
+LitBool ::= TRUE {$$ = litBool_R1();}
+LitBool ::= FALSE {$$ = litBool_R2();}
 
-LitNum ::= LITNAT:litnat {:
-    RESULT = attr.litNum_R1(new Lexeme(litnat, litnatleft, litnatright));
-:}
-//| MENOS LITNAT {::}
-         | LITFLOAT:litfloat {:
-    RESULT = attr.litNum_R2(new Lexeme(litfloat,litfloatleft, litfloatright));
-:};
-//| MENOS LITFLOAT {::};
+LitNum ::= LITNAT {$$ = litNum_R1($1.lex);}
+LitNum ::= LITFLOAT {$$ = litNum_R2($1.lex);}
