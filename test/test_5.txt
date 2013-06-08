@@ -20,28 +20,28 @@ program: test5{
      
      if (true or false) then
 
-     	out (uno)
+     	out (uno);
 
     else 
-    	out (2)
+    	out (2);
 
-    endif 
+    endif; 
 
-    if (true and 0) then
+    if (true and false) then
 
-    	out (tres)
+    	out (tres);
 
     else 
 
-    	out(4)
+    	out(4);
 
-    endif
+    endif;
 
-    if (true or false and true)
+    if (true or false and true) then
 
-    	out(5)
+    	out(5);
 
-    endif
+    endif;
 
 	}
 }

@@ -3171,7 +3171,7 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> TRUE");
         TAtributos attr = atributosPara("LitBool", "valor");
 
-        asigna(attr.a("valor"), a(true));
+        asigna(attr.a("valor"), a(BooleanValue.TRUE));
 
         return attr;
     }
@@ -3180,7 +3180,7 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> FALSE");
         TAtributos attr = atributosPara("LitBool", "valor");
 
-        asigna(attr.a("valor"), a(false));
+        asigna(attr.a("valor"), a(BooleanValue.FALSE));
 
         return attr;
     }
