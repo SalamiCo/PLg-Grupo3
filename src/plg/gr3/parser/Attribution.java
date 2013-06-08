@@ -1224,7 +1224,7 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... attrs) {
 
                 return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new BranchInstruction(
-                    (Integer) attrs[3].valor() + 1, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
+                    (Integer) attrs[3].valor() + 2, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
                     (Integer) (attrs[4].valor()))), attrs[2]);
             }
 
