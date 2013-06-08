@@ -1630,7 +1630,7 @@ public final class Attribution extends Atribucion {
 
         asigna(subprogs.a("etqh"), attr.a("etqh"));
 
-        asigna(attr.a("etq"), attr.a("etqh"));
+        asigna(attr.a("etq"), subprogs.a("etq"));
 
         asigna(attr.a("ts"), subprogs.a("ts"));
 
@@ -1862,6 +1862,8 @@ public final class Attribution extends Atribucion {
 
         // sfParams
         asigna(attr.a("ts"), attr.a("tsh"));
+
+        asigna(attr.a("dir"), attr.a("dirh"));
 
         asigna(attr.a("params"), a(Collections.emptyList()));
 

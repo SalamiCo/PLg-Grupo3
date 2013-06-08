@@ -29,7 +29,7 @@ public class SAtributo extends Atributo {
     public Object valor () {
         if (!calculado) {
             if (semfun == null) {
-                Debugger.INSTANCE.error("Atributo sin definir!!");
+                Debugger.INSTANCE.debug("Atributo sin definir!!");
                 valor = null;
             } else {
                 valor = semfun.eval(dependeDe);
