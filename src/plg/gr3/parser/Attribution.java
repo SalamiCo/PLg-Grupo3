@@ -1060,7 +1060,6 @@ public final class Attribution extends Atribucion {
             attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), desig.a("id"),
             desig.a("const"));
         calculo(attr.a("err"), new SemFun() {
-            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
                 Type desigType = (Type) args[0].valor();
@@ -1089,7 +1088,7 @@ public final class Attribution extends Atribucion {
                 Type type = (Type) args[2].valor();
 
                 Instruction instr = type.isPrimitive() ? new IndirectStoreInstruction(type) : null;
-                return ConcatCodeFun.INSTANCE.eval(a(args[0]), a(args[1]), a(instr));
+                return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(instr));
             }
         });
 
@@ -2543,7 +2542,6 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("cod"), op2.a("op"));
         calculo(attr.a("cod"), new SemFun() {
-
             @Override
             public Object eval (Atributo... args) {
                 BinaryOperator op = (BinaryOperator) args[2].valor();
@@ -2705,7 +2703,15 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("desig"), a(false));
 
         dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+        calculo(attr.a("cod"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                BinaryOperator op = (BinaryOperator) args[2].valor();
+
+                return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(new BinaryOperatorInstruction(op)));
+            }
+        });
 
         asigna(unary.a("etqh"), attr.a("etqh"));
 
@@ -2775,6 +2781,7 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... attrs) {
                 UnaryOperator op = (UnaryOperator) attrs[1].valor();
+
                 return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new UnaryOperatorInstruction(op)));
             }
         });
@@ -2871,8 +2878,7 @@ public final class Attribution extends Atribucion {
 
         asigna(attr.a("etq"), paren.a("etq"));
 
-        dependencias(attr.a("cod"), paren.a("cod"));
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+        asigna(attr.a("cod"), paren.a("cod"));
 
         dependencias(attr.a("err"), paren.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -2896,8 +2902,7 @@ public final class Attribution extends Atribucion {
 
         asigna(attr.a("etq"), expr.a("etq"));
 
-        dependencias(attr.a("cod"), expr.a("cod"));
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+        asigna(attr.a("cod"), expr.a("cod"));
 
         dependencias(attr.a("err"), expr.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
