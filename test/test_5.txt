@@ -1,4 +1,4 @@
-//programa para progar los if. Especialmente el ultimo if que tiene que hacer las cosas en cortocircuito booleano
+@programa para progar los if. Especialmente el ultimo if que tiene que hacer las cosas en cortocircuito booleano
 
 program: test5{
 

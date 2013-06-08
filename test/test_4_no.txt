@@ -1,3 +1,5 @@
+@ha de fallar
+
 program: test4{
 
 	vars {

@@ -1,4 +1,4 @@
-//Programa para ver que se hace bien el paso de parámetros. En especial el designador x[3]
+@Programa para ver que se hace bien el paso de parámetros. En especial el designador x[3]
 
 program: test12{
    

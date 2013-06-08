@@ -1,4 +1,4 @@
-### 4.4 Gramática de atributos
+## 4.4 Gramática de atributos
 
     Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
         Program.tsh = creaTS()
@@ -481,7 +481,7 @@
 	LitNum → litfloat | menos litfloat 
 		LitNum.tipo = float
 
-### Notas Marina
+#### Notas Marina
 
 - En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
 - El identificador "ident" ha de existir y ha de ser una constante o un natural. 

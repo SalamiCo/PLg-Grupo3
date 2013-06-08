@@ -1,4 +1,4 @@
-//Programa que en el que hay dos funciones una a la que se pasan los parámetros por valor y por referencia. Pensado para ver que el paso de parámetros se realiza bien. 
+@Programa que en el que hay dos funciones una a la que se pasan los parámetros por valor y por referencia. Pensado para ver que el paso de parámetros se realiza bien. 
 
 program: test10{
    

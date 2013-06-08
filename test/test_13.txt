@@ -1,4 +1,4 @@
-El programa está pensado para que esté bien escrito. Que se pasen bien los arrays, la matriz y la tupla.  
+@El programa está pensado para que esté bien escrito. Que se pasen bien los arrays, la matriz y la tupla.  
 
 program: test13{
 

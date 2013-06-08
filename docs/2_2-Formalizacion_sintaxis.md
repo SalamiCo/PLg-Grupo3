@@ -1,3 +1,5 @@
+## 2.2. Formalización de la sintaxis 
+
 Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
 
 SConsts → consts illave Consts fllave | ɛ

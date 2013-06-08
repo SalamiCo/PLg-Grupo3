@@ -1,4 +1,4 @@
-//Programa simple para probar las llamadas a subprogramas. 
+@Programa simple para probar las llamadas a subprogramas. 
 
 program: test9{
 

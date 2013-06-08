@@ -1,4 +1,4 @@
-//Programa simple para probar los subprogramas
+@Programa simple para probar los subprogramas
 
 program: test8{
 

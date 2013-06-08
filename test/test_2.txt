@@ -1,4 +1,4 @@
-//Programa sencillo para probar los out. Que imprima bien w 
+@Programa sencillo para probar los out. Que imprima bien w 
 
 program: test2{
 
