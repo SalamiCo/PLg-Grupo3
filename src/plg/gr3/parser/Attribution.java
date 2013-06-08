@@ -2487,7 +2487,7 @@ public final class Attribution extends Atribucion {
         dependencias(fact.a("etqh"), term_1.a("etq"));
         calculo(fact.a("etqh"), new IncrementFun(3));
 
-        asigna(attr.a("etq"), term_1.a("etq"));
+        asigna(attr.a("etq"), fact.a("etq"));
 
         dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), fact.a("err"), fact.a("tipo"));
         calculo(attr.a("err"), new SemFun() {

@@ -7,7 +7,7 @@ program: test5{
   }
     
 	instructions {
-    b = true or true;
+    b = (true and false) and false;
 
 }
 
