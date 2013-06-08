@@ -11,12 +11,12 @@ program: test7{
 	instructions {
      
      x = 1;
-     x = 2;
+     y = 2;
 
-     if (x == y) then
+    if (x == y) then
     else
         out(x);
-    endif
+    endif;
 
 	}
 }

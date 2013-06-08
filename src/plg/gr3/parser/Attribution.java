@@ -1185,7 +1185,7 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... attrs) {
 
                 return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new BranchInstruction(
-                    (Integer) attrs[3].valor() + 2, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
+                    (Integer) attrs[3].valor() + 1, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
                     (Integer) (attrs[4].valor()))), attrs[2]);
             }
 
@@ -2113,10 +2113,10 @@ public final class Attribution extends Atribucion {
                         }
                     } else /* scope == Scope.LOCAL */{
                         if (cdec == ClassDec.VARIABLE || cdec == ClassDec.PARAM_VALUE) {
-                            return addr + 3;
+                            return addr + 2;
 
                         } else if (cdec == ClassDec.PARAM_REF) {
-                            return addr + 4;
+                            return addr + 3;
 
                         }
                     }
@@ -2210,8 +2210,6 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // TODO Falta hacer todo lo del código
-
         asigna(desig_1.a("etqh"), attr.a("etqh"));
 
         asigna(expr.a("etqh"), desig_1.a("etq"));
@@ -2250,7 +2248,8 @@ public final class Attribution extends Atribucion {
                 if (type instanceof TupleType) {
                     TupleType ttype = (TupleType) type;
                     return ConcatCodeFun.INSTANCE.eval(
-                        attrs[0], a(ttype.getOffset(lexInt)), a(new BinaryOperatorInstruction(BinaryOperator.ADDITION)));
+                        attrs[0], a(new PushInstruction(NaturalValue.valueOf(ttype.getOffset(lexInt)))),
+                        a(new BinaryOperatorInstruction(BinaryOperator.ADDITION)));
                 } else {
                     return null;
                 }
@@ -2289,8 +2288,6 @@ public final class Attribution extends Atribucion {
                 return ConcatErrorsFun.INSTANCE.eval(args[0], a(err));
             }
         });
-
-        // TODO Falta hacer todo lo del código
 
         asigna(desig_1.a("etqh"), attr.a("etqh"));
 
@@ -2429,7 +2426,7 @@ public final class Attribution extends Atribucion {
 
         asigna(fact.a("etqh"), term_1.a("etq"));
 
-        dependencias(attr.a("etq"), term_1.a("etq"));
+        dependencias(attr.a("etq"), fact.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
         dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), op1.a("op"), fact.a("err"), fact.a("tipo"));
@@ -2556,7 +2553,8 @@ public final class Attribution extends Atribucion {
 
         asigna(shft.a("etqh"), fact_1.a("etq"));
 
-        asigna(attr.a("etq"), shft.a("etq"));
+        dependencias(attr.a("etq"), shft.a("etq"));
+        calculo(attr.a("etq"), new IncrementFun(1));
 
         asigna(fact_1.a("tsh"), attr.a("tsh"));
 
