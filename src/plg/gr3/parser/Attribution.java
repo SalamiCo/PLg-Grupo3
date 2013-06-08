@@ -135,7 +135,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sConsts_R2 () {
         regla("SConst -> $");
-        TAtributos attr = atributosPara("SConst", "ts", "err", "etqh");
+        TAtributos attr = atributosPara("SConst", "ts", "tsh", "err", "etqh");
 
         asigna(attr.a("ts"), attr.a("tsh"));
 
