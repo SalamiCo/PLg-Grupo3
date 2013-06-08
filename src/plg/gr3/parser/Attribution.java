@@ -845,7 +845,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos tArray_R2 (TAtributos typeDesc, Lexeme litnat) {
         regla("TArray -> TypeDesc ICORCHETE LITNAT FCORCHETE");
-        TAtributos attr = atributosPara("TArray", "tipo", "tsh");
+        TAtributos attr = atributosPara("TArray", "tipo", "tsh", "err");
         Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
 
         asigna(typeDesc.a("tsh"), attr.a("tsh"));
@@ -1393,7 +1393,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams", "listaparamnombres",
-                "listaparamnombresh", "nombresubprog", "nombresubprogh");
+                "listaparamnombresh", "nombresubprog", "nombresubprogh", "tsh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
