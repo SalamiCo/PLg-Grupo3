@@ -9,7 +9,7 @@ program: test1{
   
   
 	instructions {
-    e = -6;
+    e = 6;
     out(e);
     
 	}

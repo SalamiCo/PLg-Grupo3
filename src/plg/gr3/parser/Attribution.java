@@ -717,15 +717,20 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 SymbolTable table = (SymbolTable) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
+
+                List<CompileError> errs = new ArrayList<>();
+
                 if (table.hasIdentifier(ident.getLexeme())) {
-                    return new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn());
+                    errs.add(new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn()));
+
+                    ClassDec cd = table.getIdentfierClassDec(ident.getLexeme());
+                    if (cd != ClassDec.TYPE) {
+                        errs.add(new BadIdentifierClassError(
+                            ident.getLexeme(), cd, ClassDec.TYPE, ident.getLine(), ident.getColumn()));
+                    }
                 }
-                ClassDec cd = table.getIdentfierClassDec(ident.getLexeme());
-                if (cd != ClassDec.TYPE) {
-                    return (new BadIdentifierClassError(ident.getLexeme(), cd, ClassDec.TYPE, ident.getLine(), ident
-                        .getColumn()));
-                }
-                return null;
+
+                return errs;
             }
         });
 
@@ -2912,7 +2917,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos paren_R2 (TAtributos lit) {
         regla("Paren -> Lit");
-        TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+        TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "valor");
 
         asigna(attr.a("desig"), a(false));
 
@@ -3166,7 +3171,7 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> TRUE");
         TAtributos attr = atributosPara("LitBool", "valor");
 
-        asigna(attr.a("valor"), a(true));
+        asigna(attr.a("valor"), a(BooleanValue.TRUE));
 
         return attr;
     }
@@ -3175,7 +3180,7 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> FALSE");
         TAtributos attr = atributosPara("LitBool", "valor");
 
-        asigna(attr.a("valor"), a(false));
+        asigna(attr.a("valor"), a(BooleanValue.FALSE));
 
         return attr;
     }
