@@ -2,20 +2,27 @@
 
 program: test8{
 
+    vars{
+        var natural g;
+    }
+
 	subprograms {
         subprogram: imprimirtres(){
             vars {
-                var natural x;
+                var natural l;
             }
             instructions {
-                x = 3;
-                out(x);
+                l = 3;
+                out(g);
+                out(l);
             }
         }
     }
     
 	instructions {
-     
+        g = 1;
+        call imprimirtres();
+        g = 2;
         call imprimirtres();
 
 	}

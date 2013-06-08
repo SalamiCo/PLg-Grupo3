@@ -352,7 +352,8 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
 
     @Override
     public String toString () {
-        return "SymbolTable" + table.keySet();
+        // return "SymbolTable" + table.keySet();
+        return toFullString();
     }
 
     public String toFullString () {
