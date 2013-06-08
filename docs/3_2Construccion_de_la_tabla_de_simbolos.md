@@ -97,7 +97,7 @@ La lista `params` guarda los parámetros de entrada que recibe el subprograma. S
 
 **valor:** Si es una constante, almacena su valor. Si no, es indefinido.
 
-## 3.2.3 Gramáticas de atributos
+### 3.2.3 Gramáticas de atributos
 
 A continuación se detalla la construcción de los atributos relevantes para la creación de la tabla de símbolos. Otros atributos, como la tabla de símbolos heredada (que tan solo se propaga) o el tipo y el valor de las expresiones se detallarán más adelante en sus correspondientes secciones.
 
