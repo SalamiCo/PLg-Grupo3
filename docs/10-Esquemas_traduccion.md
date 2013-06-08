@@ -1,7 +1,6 @@
 Program ::= PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE
     {$$ = program_R1($4, $5, $6, $7, $8);}
 
-
 SConsts ::= CONSTS ILLAVE Consts FLLAVE
     {$$ = sConsts_R1($3);}
 SConsts ::=
@@ -33,7 +32,7 @@ Types ::= Types PYC Type
 Types ::= Type
     {$$ = types_R2($1);}
 
-Type ::= TIPO TypeDesc:typeDesc IDENT:ident {:
+Type ::= TIPO TypeDesc IDENT
     {$$ = type_R1($2, $3.lex);}
 Type ::=
     {$$ = type_R2();}
@@ -43,19 +42,18 @@ SVars ::= VARS ILLAVE Vars FLLAVE
 SVars ::=
     {$$ = sVars_R2();}
 
-Vars ::= Vars:vars_1 PYC Var:var {:
+Vars ::= Vars:vars_1 PYC Var
     {$$ = vars_R1($1, $3);}
 Vars ::=
     {$$ = vars_R2($1);}
 
-Var ::= VAR TypeDesc:typeDesc IDENT:ident {:
+Var ::= VAR TypeDesc IDENT
     {$$ = var_R1($1, $2.lex);}
 Var ::=
     {$$ = var_R2();}
 
 TypeDesc ::= TPrim
     {$$ = typeDesc_R1($1);}
-:}
 TypeDesc ::= TArray
     {$$ = typeDesc_R2($1);}
 TypeDesc ::= TTupla
@@ -85,7 +83,7 @@ Cast ::= FLOAT
 
 TArray ::= TypeDesc ICORCHETE IDENT FCORCHETE
     {$$ = tArray_R1($1, $3.lex);}
-TArray ::= TypeDesc:typeDesc ICORCHETE LITNAT:litnat FCORCHETE
+TArray ::= TypeDesc ICORCHETE LITNAT FCORCHETE
     {$$ = tArray_R2($1, $3.lex);}
 
 TTupla ::= IPAR Tupla FPAR
@@ -221,7 +219,6 @@ Paren ::= Lit
 Paren ::= Desig 
     {$$ = paren_R3($1);}
 
-
 Op0 ::= IGUAL 
     {$$ = op0_R1();}
 Op0 ::= NOIGUAL 
@@ -256,7 +253,6 @@ Op4 ::= NOT
     {$$ = op4_R1();}
 Op4 ::= MENOS 
     {$$ = op4_R2();}
-
 
 Lit ::= LitBool 
     {$$ = lit_R1($1);}
