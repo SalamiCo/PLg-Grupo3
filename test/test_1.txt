@@ -4,12 +4,11 @@ program: test1{
 
 	vars {
     var integer e;
-    var integer a;
   }
   
   
 	instructions {
-    e = 6;
+    e = -6;
     out(e);
     
 	}
