@@ -28,7 +28,7 @@ import plg.gr3.errors.compile.InvalidTypeError;
 import plg.gr3.errors.compile.OperatorError;
 import plg.gr3.errors.compile.UndefinedIdentifierError;
 import plg.gr3.parser.semfun.AndFun;
-import plg.gr3.parser.semfun.AsignationFun;
+import plg.gr3.parser.semfun.AssignationFun;
 import plg.gr3.parser.semfun.CheckDuplicateIdentifierFun;
 import plg.gr3.parser.semfun.ConcatCodeFun;
 import plg.gr3.parser.semfun.ConcatErrorsFun;
@@ -55,6 +55,7 @@ import plg.gr3.vm.instr.UnaryOperatorInstruction;
 import es.ucm.fdi.plg.evlib.Atribucion;
 import es.ucm.fdi.plg.evlib.Atributo;
 import es.ucm.fdi.plg.evlib.LAtributo;
+import es.ucm.fdi.plg.evlib.SAtributo;
 import es.ucm.fdi.plg.evlib.SemFun;
 import es.ucm.fdi.plg.evlib.TAtributos;
 
@@ -72,6 +73,11 @@ public final class Attribution extends Atribucion {
      */
     private static Atributo a (Object obj) {
         return new LAtributo("", obj);
+    }
+
+    private void asigna (SAtributo attrLeft, Atributo attrRight) {
+        dependencias(attrLeft, attrRight);
+        calculo(attrLeft, AssignationFun.INSTANCE);
     }
 
     // Program
@@ -106,43 +112,33 @@ public final class Attribution extends Atribucion {
         });
 
         // SConsts.tsh
-        dependencias(sConsts.a("tsh"), attr.a("tsh"));
-        calculo(sConsts.a("tsh"), AsignationFun.INSTANCE);
+        asigna(sConsts.a("tsh"), attr.a("tsh"));
 
         // STypes.tsh
-        dependencias(sTypes.a("tsh"), sConsts.a("ts"));
-        calculo(sTypes.a("tsh"), AsignationFun.INSTANCE);
+        asigna(sTypes.a("tsh"), sConsts.a("ts"));
 
         // SVars.tsh
-        dependencias(sVars.a("tsh"), sTypes.a("ts"));
-        calculo(sVars.a("tsh"), AsignationFun.INSTANCE);
+        asigna(sVars.a("tsh"), sTypes.a("ts"));
 
         // SSubprogs.tsh
-        dependencias(sSubprogs.a("tsh"), sVars.a("ts"));
-        calculo(sSubprogs.a("tsh"), AsignationFun.INSTANCE);
+        asigna(sSubprogs.a("tsh"), sVars.a("ts"));
 
         // SInsts.tsh
-        dependencias(sInsts.a("tsh"), sSubprogs.a("ts"));
-        calculo(sInsts.a("tsh"), AsignationFun.INSTANCE);
+        asigna(sInsts.a("tsh"), sSubprogs.a("ts"));
 
         // Program.ts
-        dependencias(attr.a("ts"), sSubprogs.a("ts"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), sSubprogs.a("ts"));
 
         // SSubprogs.etqh
-        dependencias(sSubprogs.a("etqh"), a(1));
-        calculo(sSubprogs.a("etqh"), AsignationFun.INSTANCE);
+        asigna(sSubprogs.a("etqh"), a(1));
 
         // SInsts.etqh
-        dependencias(sInsts.a("etqh"), sSubprogs.a("etq"));
-        calculo(sInsts.a("etqh"), AsignationFun.INSTANCE);
+        asigna(sInsts.a("etqh"), sSubprogs.a("etq"));
 
         // Program.dirh = 2
-        dependencias(attr.a("dirh"), a(2));
-        calculo(attr.a("dirh"), AsignationFun.INSTANCE);
+        asigna(attr.a("dirh"), a(2));
 
-        dependencias(sVars.a("dirh"), attr.a("dirh"));
-        calculo(sVars.a("dirh"), AsignationFun.INSTANCE);
+        asigna(sVars.a("dirh"), attr.a("dirh"));
 
 //        dependencias(sSubprogs.a("dirh"), sVars.a("dir"));
 //        calculo(sSubprogs.a("dirh"), AsignationFun.INSTANCE);
@@ -164,11 +160,9 @@ public final class Attribution extends Atribucion {
         regla("SConst -> CONSTS ILLAVE Consts FLLAVE");
         TAtributos attr = atributosPara("SConst", "tsh", "ts", "err");
 
-        dependencias(consts.a("tsh"), attr.a("tsh"));
-        calculo(consts.a("tsh"), AsignationFun.INSTANCE);
+        asigna(consts.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("ts"), consts.a("ts"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), consts.a("ts"));
 
         dependencias(attr.a("err"), consts.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -180,8 +174,7 @@ public final class Attribution extends Atribucion {
         regla("SConst -> $");
         TAtributos attr = atributosPara("SConst", "ts", "err", "etqh");
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -194,11 +187,9 @@ public final class Attribution extends Atribucion {
         regla("Consts -> Consts PYC Const");
         TAtributos attr = atributosPara("Consts", "tsh", "ts", "err");
 
-        dependencias(consts_1.a("tsh"), attr.a("tsh"));
-        calculo(consts_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(consts_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(cons.a("tsh"), consts_1.a("ts"));
-        calculo(cons.a("tsh"), AsignationFun.INSTANCE);
+        asigna(cons.a("tsh"), consts_1.a("ts"));
 
         dependencias(attr.a("ts"), cons.a("ts"), cons.a("id"), cons.a("valor"), cons.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
@@ -240,8 +231,7 @@ public final class Attribution extends Atribucion {
         regla("Consts -> Const");
         TAtributos attr = atributosPara("Consts", "tsh", "ts", "err");
 
-        dependencias(cons.a("tsh"), attr.a("tsh"));
-        calculo(cons.a("tsh"), AsignationFun.INSTANCE);
+        asigna(cons.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("ts"), cons.a("ts"), cons.a("id"), cons.a("valor"), cons.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
@@ -273,17 +263,13 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Const", "tsh", "ts", "id", "tipo", "err", "valor");
         LAtributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(attr.a("id"), lexIdent);
-        calculo(attr.a("id"), AsignationFun.INSTANCE);
+        asigna(attr.a("id"), lexIdent);
 
-        dependencias(attr.a("tipo"), tPrim.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), tPrim.a("tipo"));
 
-        dependencias(attr.a("valor"), constLit.a("valor"));
-        calculo(attr.a("valor"), AsignationFun.INSTANCE);
+        asigna(attr.a("valor"), constLit.a("valor"));
 
         // Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
         dependencias(attr.a("err"), tPrim.a("tipo"), constLit.a("tipo"), lexIdent);
@@ -309,11 +295,9 @@ public final class Attribution extends Atribucion {
         regla("Const -> $");
         TAtributos attr = atributosPara("Const", "ts", "tsh", "id", "err", "dir", "dirh", "valor", "tipo");
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(attr.a("dir"), attr.a("dirh"));
-        calculo(attr.a("dir"), AsignationFun.INSTANCE);
+        asigna(attr.a("dir"), attr.a("dirh"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -326,11 +310,9 @@ public final class Attribution extends Atribucion {
         regla("ConstLit -> Lit");
         TAtributos attr = atributosPara("ConstLit", "valor", "tipo", "err");
 
-        dependencias(attr.a("valor"), lit.a("valor"));
-        calculo(attr.a("valor"), AsignationFun.INSTANCE);
+        asigna(attr.a("valor"), lit.a("valor"));
 
-        dependencias(attr.a("tipo"), lit.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), lit.a("tipo"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -341,8 +323,7 @@ public final class Attribution extends Atribucion {
         regla("ConstLit -> MENOS Lit");
         TAtributos attr = atributosPara("ConstLit", "tipo", "valor", "err");
 
-        dependencias(attr.a("tipo"), lit.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), lit.a("tipo"));
 
         dependencias(attr.a("valor"), lit.a("valor"), lit.a("tipo"));
         calculo(attr.a("valor"), new SemFun() {
@@ -374,17 +355,13 @@ public final class Attribution extends Atribucion {
         regla("STypes -> TIPOS ILLAVE Types FLLAVE");
         TAtributos attr = atributosPara("STypes", "tsh", "dirh", "ts", "dir", "err");
 
-        dependencias(attr.a("tsh"), types.a("tsh"));
-        calculo(attr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(attr.a("tsh"), types.a("tsh"));
 
-        dependencias(types.a("tsh"), attr.a("tsh"));
-        calculo(types.a("tsh"), AsignationFun.INSTANCE);
+        asigna(types.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("ts"), types.a("ts"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), types.a("ts"));
 
-        dependencias(attr.a("dir"), attr.a("dirh"));
-        calculo(attr.a("dir"), AsignationFun.INSTANCE);
+        asigna(attr.a("dir"), attr.a("dirh"));
 
         dependencias(attr.a("err"), types.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -396,11 +373,9 @@ public final class Attribution extends Atribucion {
         regla("STypes -> $");
         TAtributos attr = atributosPara("STypes", "tsh", "ts", "dir", "dirh", "err");
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(attr.a("dir"), attr.a("dirh"));
-        calculo(attr.a("dir"), AsignationFun.INSTANCE);
+        asigna(attr.a("dir"), attr.a("dirh"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -413,14 +388,12 @@ public final class Attribution extends Atribucion {
         regla("Types -> Types PYC Type");
         TAtributos attr = atributosPara("Types", "tsh", "ts", "tipo", "err");
 
-        dependencias(types_1.a("tsh"), attr.a("tsh"));
-        calculo(types_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(types_1.a("tsh"), attr.a("tsh"));
 
 //        dependencias(types_1.a("dirh"), attr.a("dirh"));
 //        calculo(types_1.a("dirh"), AsignationFun.INSTANCE);
 
-        dependencias(type.a("tsh"), attr.a("ts"));
-        calculo(type.a("tsh"), AsignationFun.INSTANCE);
+        asigna(type.a("tsh"), attr.a("ts"));
 
 //        dependencias(type.a("dirh"), types_1.a("dir"));
 //        calculo(type.a("dirh"), AsignationFun.INSTANCE);
@@ -466,8 +439,7 @@ public final class Attribution extends Atribucion {
 //        dependencias(attr.a("dir"), attr.a("dirh"));
 //        calculo(attr.a("dir"), AsignationFun.INSTANCE);
 
-        dependencias(type.a("tsh"), attr.a("tsh"));
-        calculo(type.a("tsh"), AsignationFun.INSTANCE);
+        asigna(type.a("tsh"), attr.a("tsh"));
 
 //        dependencias(type.a("dirh"), attr.a("dirh"));
 //        calculo(type.a("dirh"), AsignationFun.INSTANCE);
@@ -523,25 +495,21 @@ public final class Attribution extends Atribucion {
         regla("Type -> TIPO TypeDesc IDENT");
         TAtributos attr = atributosPara("Type", "ts", "tsh", "id", "id", "clase", "nivel", "tipo", "err");
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
 //        dependencias(attr.a("dir"), attr.a("dirh"));
 //        calculo(attr.a("dir"), AsignationFun.INSTANCE);
 
         Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
-        dependencias(attr.a("id"), lexIdent);
-        calculo(attr.a("id"), AsignationFun.INSTANCE);
+        asigna(attr.a("id"), lexIdent);
 
-        dependencias(attr.a("tipo"), typeDesc.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), typeDesc.a("tipo"));
         // Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc),
         // Type.id)>
 
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        calculo(attr.a("tipo"), AssignationFun.INSTANCE);
 
         return attr;
     }
@@ -550,8 +518,7 @@ public final class Attribution extends Atribucion {
         regla("Type -> $");
         TAtributos attr = atributosPara("Type", "ts", "tsh", "id", "err", "tipo", "clase", "nivel");
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
 //        dependencias(attr.a("dir"), attr.a("dirh"));
 //        calculo(attr.a("dir"), AsignationFun.INSTANCE);
@@ -567,17 +534,13 @@ public final class Attribution extends Atribucion {
         regla("SVars -> VARS ILLAVE Vars FLLAVE");
         TAtributos attr = atributosPara("SVars", "tsh", "ts", "id", "dirh", "dir", "err");
 
-        dependencias(vars.a("tsh"), attr.a("tsh"));
-        calculo(vars.a("tsh"), AsignationFun.INSTANCE);
+        asigna(vars.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("ts"), vars.a("ts"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), vars.a("ts"));
 
-        dependencias(vars.a("dirh"), attr.a("dirh"));
-        calculo(vars.a("dirh"), AsignationFun.INSTANCE);
+        asigna(vars.a("dirh"), attr.a("dirh"));
 
-        dependencias(attr.a("dir"), vars.a("dir"));
-        calculo(attr.a("dir"), AsignationFun.INSTANCE);
+        asigna(attr.a("dir"), vars.a("dir"));
 
         dependencias(attr.a("err"), vars.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -589,11 +552,9 @@ public final class Attribution extends Atribucion {
         regla("SVars -> $");
         TAtributos attr = atributosPara("SVars", "ts", "tsh", "dir", "dirh", "err");
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(attr.a("dir"), attr.a("dirh"));
-        calculo(attr.a("dir"), AsignationFun.INSTANCE);
+        asigna(attr.a("dir"), attr.a("dirh"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -606,11 +567,9 @@ public final class Attribution extends Atribucion {
         regla("Vars -> Vars PYC Var");
         TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir", "dirh");
 
-        dependencias(vars_1.a("tsh"), attr.a("tsh"));
-        calculo(vars_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(vars_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(var.a("tsh"), vars_1.a("ts"));
-        calculo(var.a("tsh"), AsignationFun.INSTANCE);
+        asigna(var.a("tsh"), vars_1.a("ts"));
 
         dependencias(attr.a("ts"), var.a("ts"), var.a("id"), var.a("nivel"), attr.a("dir"), var.a("tipo"));
         calculo(attr.a("ts"), new SemFun() {
@@ -631,8 +590,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(vars_1.a("dirh"), attr.a("dirh"));
-        calculo(vars_1.a("dirh"), AsignationFun.INSTANCE);
+        asigna(vars_1.a("dirh"), attr.a("dirh"));
 
         dependencias(attr.a("dir"), vars_1.a("dir"), var.a("tipo"));
         calculo(attr.a("dir"), new SemFun() {
@@ -659,8 +617,7 @@ public final class Attribution extends Atribucion {
         regla("Vars -> Var");
         TAtributos attr = atributosPara("Vars", "tsh", "ts", "err", "dir", "dirh");
 
-        dependencias(var.a("tsh"), attr.a("tsh"));
-        calculo(var.a("tsh"), AsignationFun.INSTANCE);
+        asigna(var.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("dir"), attr.a("dirh"), var.a("tipo"));
         calculo(attr.a("dir"), new SemFun() {
@@ -705,20 +662,15 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Var", "ts", "tsh", "id", "nivel", "tipo");
         Atributo lexIdent = atributoLexicoPara("IDENT", "lex", ident);
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("id"), lexIdent);
-        calculo(attr.a("id"), AsignationFun.INSTANCE);
+        asigna(attr.a("id"), lexIdent);
 
-        dependencias(attr.a("nivel"), a(Scope.GLOBAL));
-        calculo(attr.a("nivel"), AsignationFun.INSTANCE);
+        asigna(attr.a("nivel"), a(Scope.GLOBAL));
 
-        dependencias(attr.a("tipo"), typeDesc.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), typeDesc.a("tipo"));
         // Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
         // si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
 
@@ -728,8 +680,7 @@ public final class Attribution extends Atribucion {
     public TAtributos var_R2 () {
         regla("Var -> $");
         TAtributos attr = atributosPara("Var", "ts", "tsh", "err", "id", "nivel", "tipo");
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -742,8 +693,7 @@ public final class Attribution extends Atribucion {
         regla("TypeDesc -> TPrim");
         TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
-        dependencias(attr.a("tipo"), tPrim.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), tPrim.a("tipo"));
 
         return attr;
     }
@@ -752,14 +702,11 @@ public final class Attribution extends Atribucion {
         regla("TypeDesc -> TArray");
         TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
-        dependencias(attr.a("tipo"), tArray.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), tArray.a("tipo"));
 
-        dependencias(tArray.a("tsh"), attr.a("tsh"));
-        calculo(tArray.a("tsh"), AsignationFun.INSTANCE);
+        asigna(tArray.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("err"), tArray.a("err"));
-        calculo(attr.a("err"), AsignationFun.INSTANCE);
+        asigna(attr.a("err"), tArray.a("err"));
 
         return attr;
     }
@@ -768,14 +715,11 @@ public final class Attribution extends Atribucion {
         regla("TypeDesc -> TTupla");
         TAtributos attr = atributosPara("TypeDesc", "tipo", "tsh", "err");
 
-        dependencias(attr.a("tipo"), tTupla.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), tTupla.a("tipo"));
 
-        dependencias(tTupla.a("tsh"), attr.a("tsh"));
-        calculo(tTupla.a("tsh"), AsignationFun.INSTANCE);
+        asigna(tTupla.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("err"), tTupla.a("err"));
-        calculo(attr.a("err"), AsignationFun.INSTANCE);
+        asigna(attr.a("err"), tTupla.a("err"));
 
         return attr;
     }
@@ -829,8 +773,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> NATURAL");
         TAtributos attr = atributosPara("TPrim", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.NATURAL));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.NATURAL));
 
         return attr;
     }
@@ -839,8 +782,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> INTEGER");
         TAtributos attr = atributosPara("TPrim", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.INTEGER));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.INTEGER));
 
         return attr;
     }
@@ -849,8 +791,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> FLOAT");
         TAtributos attr = atributosPara("TPrim", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.FLOAT));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.FLOAT));
 
         return attr;
     }
@@ -859,8 +800,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> BOOLEAN");
         TAtributos attr = atributosPara("TPrim", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.BOOLEAN));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.BOOLEAN));
 
         return attr;
     }
@@ -869,8 +809,7 @@ public final class Attribution extends Atribucion {
         regla("TPrim -> CHARACTER");
         TAtributos attr = atributosPara("TPrim", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.CHARACTER));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.CHARACTER));
 
         return attr;
     }
@@ -881,8 +820,7 @@ public final class Attribution extends Atribucion {
         regla("Cast -> CHAR");
         TAtributos attr = atributosPara("Cast", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.CHARACTER));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.CHARACTER));
 
         return attr;
     }
@@ -891,8 +829,7 @@ public final class Attribution extends Atribucion {
         regla("Cast -> INT");
         TAtributos attr = atributosPara("Cast", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.INTEGER));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.INTEGER));
 
         return attr;
     }
@@ -901,8 +838,7 @@ public final class Attribution extends Atribucion {
         regla("Cast -> NAT");
         TAtributos attr = atributosPara("Cast", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.NATURAL));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.NATURAL));
 
         return attr;
     }
@@ -911,8 +847,7 @@ public final class Attribution extends Atribucion {
         regla("Cast -> FLOAT");
         TAtributos attr = atributosPara("Cast", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.FLOAT));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.FLOAT));
 
         return attr;
     }
@@ -924,8 +859,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("TArray", "tsh", "tipo", "err");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
-        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), attr.a("tsh"), identLex);
         calculo(attr.a("tipo"), new SemFun() {
@@ -983,8 +917,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("TArray", "tipo", "tsh");
         Atributo litnatLex = atributoLexicoPara("LITNAT", "lex", litnat);
 
-        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), typeDesc.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1010,11 +943,9 @@ public final class Attribution extends Atribucion {
         regla("TTupla -> IPAR Tupla FPAR");
         TAtributos attr = atributosPara("TTupla", "tipo", "tsh", "err");
 
-        dependencias(tupla.a("tsh"), attr.a("tsh"));
-        calculo(tupla.a("tsh"), AsignationFun.INSTANCE);
+        asigna(tupla.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("tipo"), tupla.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), tupla.a("tipo"));
 
         dependencias(attr.a("err"), tupla.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1037,11 +968,10 @@ public final class Attribution extends Atribucion {
         regla("Tupla -> TypeDesc COMA Tupla");
         TAtributos attr = atributosPara("Tupla", "tipo", "tsh", "err");
 
-        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
         dependencias(tupla_1.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        calculo(typeDesc.a("tsh"), AssignationFun.INSTANCE);
 
         dependencias(attr.a("tipo"), typeDesc.a("tipo"), tupla_1.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -1079,8 +1009,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), typeDesc.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1094,20 +1023,16 @@ public final class Attribution extends Atribucion {
         regla("SInsts -> INSTRUCTIONS ILLAVE Insts FLLAVE");
         TAtributos attr = atributosPara("SInsts", "cod", "etq", "etqh", "tsh", "err");
 
-        dependencias(insts.a("tsh"), attr.a("tsh"));
-        calculo(insts.a("tsh"), AsignationFun.INSTANCE);
+        asigna(insts.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), insts.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(attr.a("cod"), insts.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), insts.a("cod"));
 
-        dependencias(insts.a("etqh"), attr.a("etqh"));
-        calculo(insts.a("etqh"), AsignationFun.INSTANCE);
+        asigna(insts.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), insts.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), insts.a("etq"));
 
         return attr;
     }
@@ -1118,11 +1043,9 @@ public final class Attribution extends Atribucion {
         regla("Insts -> Insts PYC Inst");
         TAtributos attr = atributosPara("Insts", "cod", "etqh", "etq", "tsh", "err");
 
-        dependencias(insts_1.a("tsh"), attr.a("tsh"));
-        calculo(insts_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(insts_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(inst.a("tsh"), attr.a("tsh"));
-        calculo(inst.a("tsh"), AsignationFun.INSTANCE);
+        asigna(inst.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), insts_1.a("err"), inst.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1130,14 +1053,11 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("cod"), insts_1.a("cod"), inst.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(insts_1.a("etqh"), attr.a("etqh"));
-        calculo(insts_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(insts_1.a("etqh"), attr.a("etqh"));
 
-        dependencias(inst.a("etqh"), insts_1.a("etq"));
-        calculo(inst.a("etqh"), AsignationFun.INSTANCE);
+        asigna(inst.a("etqh"), insts_1.a("etq"));
 
-        dependencias(attr.a("etq"), inst.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), inst.a("etq"));
 
         return attr;
     }
@@ -1146,20 +1066,16 @@ public final class Attribution extends Atribucion {
         regla("Insts -> Inst");
         TAtributos attr = atributosPara("Insts", "cod", "etqh", "etq", "tsh", "err");
 
-        dependencias(inst.a("tsh"), attr.a("tsh"));
-        calculo(inst.a("tsh"), AsignationFun.INSTANCE);
+        asigna(inst.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), inst.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(attr.a("cod"), inst.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), inst.a("cod"));
 
-        dependencias(inst.a("etqh"), attr.a("etqh"));
-        calculo(inst.a("etqh"), AsignationFun.INSTANCE);
+        asigna(inst.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), inst.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), inst.a("etq"));
 
         return attr;
     }
@@ -1171,11 +1087,9 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Inst", "cod", "etqh", "etq", "tsh", "err");
         Atributo asigLex = atributoLexicoPara("ASIG", "lex", asig);
 
-        dependencias(desig.a("tsh"), attr.a("tsh"));
-        calculo(desig.a("tsh"), AsignationFun.INSTANCE);
+        asigna(desig.a("tsh"), attr.a("tsh"));
 
-        dependencias(expr.a("tsh"), attr.a("tsh"));
-        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(expr.a("tsh"), attr.a("tsh"));
 
         // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
         dependencias(
@@ -1215,11 +1129,9 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(expr.a("etqh"), attr.a("etqh"));
-        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+        asigna(expr.a("etqh"), attr.a("etqh"));
 
-        dependencias(desig.a("etqh"), expr.a("etq"));
-        calculo(desig.a("etqh"), AsignationFun.INSTANCE);
+        asigna(desig.a("etqh"), expr.a("etq"));
 
         dependencias(attr.a("etq"), desig.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -1231,8 +1143,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> IN IPAR Desig FPAR");
         TAtributos attr = atributosPara("Inst", "cod", "etqh", "etq", "tsh", "err");
 
-        dependencias(desig.a("tsh"), attr.a("tsh"));
-        calculo(desig.a("tsh"), AsignationFun.INSTANCE);
+        asigna(desig.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), desig.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1263,8 +1174,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> OUT IPAR Expr FPAR");
         TAtributos attr = atributosPara("Inst", "cod", "etq", "etqh", "tsh", "err");
 
-        dependencias(expr.a("tsh"), attr.a("tsh"));
-        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(expr.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), expr.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1272,8 +1182,7 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("cod"), expr.a("cod"), a(new OutputInstruction()));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(expr.a("etqh"), attr.a("etqh"));
-        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+        asigna(expr.a("etqh"), attr.a("etqh"));
 
         dependencias(attr.a("etq"), expr.a("etqh"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -1287,8 +1196,7 @@ public final class Attribution extends Atribucion {
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(attr.a("cod"), a(new Swap1Instruction()));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), a(new Swap1Instruction()));
 
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -1302,8 +1210,7 @@ public final class Attribution extends Atribucion {
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(attr.a("cod"), a(new Swap2Instruction()));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), a(new Swap2Instruction()));
 
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -1315,14 +1222,11 @@ public final class Attribution extends Atribucion {
         regla("Inst -> IF Expr THEN Insts ElseIf");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        dependencias(expr.a("tsh"), attr.a("tsh"));
-        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(expr.a("tsh"), attr.a("tsh"));
 
-        dependencias(insts.a("tsh"), attr.a("tsh"));
-        calculo(insts.a("tsh"), AsignationFun.INSTANCE);
+        asigna(insts.a("tsh"), attr.a("tsh"));
 
-        dependencias(elseIf.a("tsh"), attr.a("tsh"));
-        calculo(elseIf.a("tsh"), AsignationFun.INSTANCE);
+        asigna(elseIf.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), expr.a("err"), insts.a("err"), elseIf.a("err"));
         calculo(attr.a("err"), new SemFun() {
@@ -1336,8 +1240,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(expr.a("etqh"), attr.a("etqh"));
-        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+        asigna(expr.a("etqh"), attr.a("etqh"));
 
         dependencias(insts.a("etqh"), expr.a("etq"));
         calculo(insts.a("etqh"), new IncrementFun(1));
@@ -1345,8 +1248,7 @@ public final class Attribution extends Atribucion {
         dependencias(elseIf.a("etqh"), insts.a("etq"));
         calculo(elseIf.a("etqh"), new IncrementFun(1));
 
-        dependencias(attr.a("etq"), elseIf.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), elseIf.a("etq"));
 
         dependencias(attr.a("cod"), expr.a("cod"), insts.a("cod"), elseIf.a("cod"), insts.a("etq"), elseIf.a("etq"));
         calculo(attr.a("cod"), new SemFun() {
@@ -1367,11 +1269,9 @@ public final class Attribution extends Atribucion {
         regla("Inst -> WHILE Expr DO Insts ENDWHILE");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        dependencias(expr.a("tsh"), attr.a("tsh"));
-        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(expr.a("tsh"), attr.a("tsh"));
 
-        dependencias(insts.a("tsh"), attr.a("tsh"));
-        calculo(insts.a("tsh"), AsignationFun.INSTANCE);
+        asigna(insts.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), expr.a("err"), insts.a("err"));
         calculo(attr.a("err"), new SemFun() {
@@ -1384,8 +1284,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(expr.a("etqh"), attr.a("etqh"));
-        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+        asigna(expr.a("etqh"), attr.a("etqh"));
 
         dependencias(insts.a("etqh"), expr.a("etq"));
         calculo(insts.a("etqh"), new IncrementFun(1));
@@ -1412,19 +1311,16 @@ public final class Attribution extends Atribucion {
         regla("Inst -> InstCall");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        dependencias(instCall.a("tsh"), attr.a("tsh"));
-        calculo(instCall.a("tsh"), AsignationFun.INSTANCE);
+        asigna(instCall.a("tsh"), attr.a("tsh"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         dependencias(attr.a("cod"), instCall.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(instCall.a("etqh"), attr.a("etqh"));
-        calculo(instCall.a("etqh"), AsignationFun.INSTANCE);
+        asigna(instCall.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), instCall.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), instCall.a("etqh"));
 
         return attr;
     }
@@ -1433,8 +1329,7 @@ public final class Attribution extends Atribucion {
         regla("Inst -> $");
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), attr.a("etqh"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1449,8 +1344,7 @@ public final class Attribution extends Atribucion {
         regla("ElseIf -> ELSE Insts ENDIF");
         TAtributos attr = atributosPara("ElseIf", "tsh", "err", "cod", "etq", "etqh");
 
-        dependencias(insts.a("tsh"), attr.a("tsh"));
-        calculo(insts.a("tsh"), AsignationFun.INSTANCE);
+        asigna(insts.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), insts.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1458,11 +1352,9 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("cod"), insts.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(insts.a("etqh"), attr.a("etqh"));
-        calculo(insts.a("etqh"), AsignationFun.INSTANCE);
+        asigna(insts.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), insts.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), insts.a("etq"));
 
         return attr;
     }
@@ -1475,8 +1367,7 @@ public final class Attribution extends Atribucion {
 
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), attr.a("etqh"));
 
         return attr;
     }
@@ -1490,14 +1381,11 @@ public final class Attribution extends Atribucion {
                 "InstCall", "tsh", "nparams", "nombresubprogh", "listaparamnombres", "err", "cod", "etqh", "etq");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
-        dependencias(srParams.a("tsh"), attr.a("tsh"));
-        calculo(srParams.a("tsh"), AsignationFun.INSTANCE);
+        asigna(srParams.a("tsh"), attr.a("tsh"));
 
-        dependencias(srParams.a("nparamsh"), a(0));
-        calculo(srParams.a("nparamsh"), AsignationFun.INSTANCE);
+        asigna(srParams.a("nparamsh"), a(0));
 
-        dependencias(srParams.a("nombresubprogh"), identLex);
-        calculo(srParams.a("nombresubprogh"), AsignationFun.INSTANCE);
+        asigna(srParams.a("nombresubprogh"), identLex);
 
         dependencias(srParams.a("listaparamnombresh"), identLex);
         calculo(srParams.a("listaparamnombresh"), null); // TODO hay que hacer: listaparamnombres=[]
@@ -1530,8 +1418,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("cod"), srParams.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE); // TODO el codigo
+        asigna(attr.a("cod"), srParams.a("cod")); // TODO el codigo
 
         dependencias(srParams.a("etqh"), attr.a("etqh"));
         calculo(srParams.a("etqh"), new IncrementFun(13));
@@ -1551,8 +1438,7 @@ public final class Attribution extends Atribucion {
                 "SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog",
                 "nombresubprogh", "listaparamnombresh", "listaparamnombres");
 
-        dependencias(rParams.a("tsh"), attr.a("tsh"));
-        calculo(rParams.a("tsh"), AsignationFun.INSTANCE);
+        asigna(rParams.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), rParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1560,26 +1446,19 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("cod"), rParams.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(rParams.a("etqh"), attr.a("etqh"));
-        calculo(rParams.a("etqh"), AsignationFun.INSTANCE);
+        asigna(rParams.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), rParams.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), rParams.a("etq"));
 
-        dependencias(rParams.a("nparamsh"), attr.a("nparamsh"));
-        calculo(rParams.a("nparamsh"), AsignationFun.INSTANCE);
+        asigna(rParams.a("nparamsh"), attr.a("nparamsh"));
 
-        dependencias(attr.a("nparams"), rParams.a("nparams"));
-        calculo(attr.a("nparams"), AsignationFun.INSTANCE);
+        asigna(attr.a("nparams"), rParams.a("nparams"));
 
-        dependencias(rParams.a("nombresubprogh"), attr.a("nombresubprogh"));
-        calculo(rParams.a("nombresubprogh"), AsignationFun.INSTANCE);
+        asigna(rParams.a("nombresubprogh"), attr.a("nombresubprogh"));
 
-        dependencias(rParams.a("listaparamnombresh"), a(new ArrayList<Lexeme>()));
-        calculo(rParams.a("listaparamnombresh"), AsignationFun.INSTANCE);
+        asigna(rParams.a("listaparamnombresh"), a(new ArrayList<Lexeme>()));
 
-        dependencias(attr.a("listaparamnombres"), rParams.a("listaparamnombres"));
-        calculo(attr.a("listaparamnombres"), AsignationFun.INSTANCE);
+        asigna(attr.a("listaparamnombres"), rParams.a("listaparamnombres"));
 
         return attr;
     }
@@ -1595,14 +1474,11 @@ public final class Attribution extends Atribucion {
 
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), attr.a("etqh"));
 
-        dependencias(attr.a("nparams"), attr.a("nparamsh"));
-        calculo(attr.a("nparams"), AsignationFun.INSTANCE);
+        asigna(attr.a("nparams"), attr.a("nparamsh"));
 
-        dependencias(attr.a("listaparamnombres"), attr.a("listaparamnombresh"));
-        calculo(attr.a("listaparamnombres"), AsignationFun.INSTANCE);
+        asigna(attr.a("listaparamnombres"), attr.a("listaparamnombresh"));
 
         return attr;
     }
@@ -1616,46 +1492,34 @@ public final class Attribution extends Atribucion {
                 "RParams", "tsh", "err", "cod", "nparamsh", "nparams", "nombresubprogh", "etqh", "etq",
                 "listaparamnombresh", "listaparamnombres");
 
-        dependencias(rParams_1.a("tsh"), attr.a("tsh"));
-        calculo(rParams_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(rParams_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(rParam.a("tsh"), attr.a("tsh"));
-        calculo(rParam.a("tsh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), rParams_1.a("err"), rParam.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(rParams_1.a("nparamsh"), attr.a("nparamsh"));
-        calculo(rParams_1.a("nparamsh"), AsignationFun.INSTANCE);
+        asigna(rParams_1.a("nparamsh"), attr.a("nparamsh"));
 
-        dependencias(rParam.a("nparamsh"), rParams_1.a("nparams"));
-        calculo(rParam.a("nparamsh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("nparamsh"), rParams_1.a("nparams"));
 
-        dependencias(attr.a("nparams"), rParam.a("nparams"));
-        calculo(attr.a("nparams"), AsignationFun.INSTANCE);
+        asigna(attr.a("nparams"), rParam.a("nparams"));
 
-        dependencias(rParams_1.a("etqh"), attr.a("etqh"));
-        calculo(rParams_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(rParams_1.a("etqh"), attr.a("etqh"));
 
-        dependencias(rParam.a("etqh"), rParams_1.a("etq"));
-        calculo(rParam.a("etqh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("etqh"), rParams_1.a("etq"));
 
-        dependencias(attr.a("etq"), rParam.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), rParam.a("etq"));
 
-        dependencias(rParams_1.a("nombresubprogh"), attr.a("nombresubprogh"));
-        calculo(rParams_1.a("nombresubprogh"), AsignationFun.INSTANCE);
+        asigna(rParams_1.a("nombresubprogh"), attr.a("nombresubprogh"));
 
-        dependencias(rParam.a("nombresubprogh"), attr.a("nombresubprogh"));
-        calculo(rParam.a("nombresubprogh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("nombresubprogh"), attr.a("nombresubprogh"));
 
-        dependencias(rParams_1.a("listaparamnombresh"), attr.a("listaparamnombresh"));
-        calculo(rParams_1.a("listaparamnombresh"), AsignationFun.INSTANCE);
+        asigna(rParams_1.a("listaparamnombresh"), attr.a("listaparamnombresh"));
 
-        dependencias(rParam.a("listaparamnombresh"), rParams_1.a("listaparamnombres"));
-        calculo(rParam.a("listaparamnombresh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("listaparamnombresh"), rParams_1.a("listaparamnombres"));
 
         return attr;
     }
@@ -1667,8 +1531,7 @@ public final class Attribution extends Atribucion {
                 "RParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh",
                 "listaparamnombresh", "listaparamnombres");
 
-        dependencias(rParam.a("tsh"), attr.a("tsh"));
-        calculo(rParam.a("tsh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("cod"), rParam.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
@@ -1676,26 +1539,19 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("err"), rParam.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(rParam.a("etqh"), attr.a("etqh"));
-        calculo(rParam.a("etqh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), rParam.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), rParam.a("etq"));
 
-        dependencias(rParam.a("nparamsh"), attr.a("nparamsh"));
-        calculo(rParam.a("nparamsh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("nparamsh"), attr.a("nparamsh"));
 
-        dependencias(attr.a("nparams"), rParam.a("nparams"));
-        calculo(attr.a("nparams"), AsignationFun.INSTANCE);
+        asigna(attr.a("nparams"), rParam.a("nparams"));
 
-        dependencias(rParam.a("nombresubprogh"), attr.a("nombresubprogh"));
-        calculo(rParam.a("nombresubprogh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("nombresubprogh"), attr.a("nombresubprogh"));
 
-        dependencias(rParam.a("listaparamnombresh"), attr.a("listaparamnombresh"));
-        calculo(rParam.a("listaparamnombresh"), AsignationFun.INSTANCE);
+        asigna(rParam.a("listaparamnombresh"), attr.a("listaparamnombresh"));
 
-        dependencias(attr.a("listaparamnombres"), rParam.a("listaparamnombres"));
-        calculo(attr.a("listaparamnombres"), AsignationFun.INSTANCE);
+        asigna(attr.a("listaparamnombres"), rParam.a("listaparamnombres"));
 
         return attr;
     }
@@ -1710,8 +1566,7 @@ public final class Attribution extends Atribucion {
                 "tipo", "desig", "err", "listaparamnombres", "listaparamnombresh");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
-        dependencias(expr.a("tsh"), attr.a("tsh"));
-        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(expr.a("tsh"), attr.a("tsh"));
 
         dependencias(
             attr.a("err"), expr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprogh"),
@@ -1798,23 +1653,18 @@ public final class Attribution extends Atribucion {
         regla("SSubprogs -> SUBPROGRAMS ILLAVE Subprogs FLLAVE");
         TAtributos attr = atributosPara("SSubprogs", "etqh", "etq", "tsh", "ts", "err", "cod");
 
-        dependencias(subprogs.a("tsh"), attr.a("tsh"));
-        calculo(subprogs.a("tsh"), AsignationFun.INSTANCE);
+        asigna(subprogs.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), subprogs.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(attr.a("cod"), subprogs.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), subprogs.a("cod"));
 
-        dependencias(subprogs.a("etqh"), attr.a("etqh"));
-        calculo(subprogs.a("etqh"), AsignationFun.INSTANCE);
+        asigna(subprogs.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), attr.a("etqh"));
 
-        dependencias(attr.a("ts"), subprogs.a("ts"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), subprogs.a("ts"));
 
         return attr;
     }
@@ -1826,11 +1676,9 @@ public final class Attribution extends Atribucion {
         // SSublogos.cod = []
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), attr.a("etqh"));
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
         return attr;
     }
@@ -1841,14 +1689,12 @@ public final class Attribution extends Atribucion {
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
         // SSublogos.cod = []
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(attr.a("etq"), attr.a("etqh"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), attr.a("etqh"));
 
         return attr;
     }
@@ -1859,14 +1705,11 @@ public final class Attribution extends Atribucion {
         regla("Subprogs -> Subprogs Subprog");
         TAtributos attr = atributosPara("Subprogs", "tsh", "ts", "err", "cod", "etq", "etqh");
 
-        dependencias(subprogs_1.a("tsh"), attr.a("tsh"));
-        calculo(subprogs_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(subprogs_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(subprog.a("tsh"), subprogs_1.a("ts"));
-        calculo(subprog.a("tsh"), AsignationFun.INSTANCE);
+        asigna(subprog.a("tsh"), subprogs_1.a("ts"));
 
-        dependencias(attr.a("ts"), subprog.a("ts"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), subprog.a("ts"));
 
         dependencias(attr.a("err"), subprogs_1.a("err"), subprog.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1874,14 +1717,11 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("cod"), subprogs_1.a("cod"), subprog.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(subprogs_1.a("etqh"), attr.a("etqh"));
-        calculo(subprogs_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(subprogs_1.a("etqh"), attr.a("etqh"));
 
-        dependencias(subprog.a("etqh"), subprogs_1.a("etq"));
-        calculo(subprog.a("etqh"), AsignationFun.INSTANCE);
+        asigna(subprog.a("etqh"), subprogs_1.a("etq"));
 
-        dependencias(attr.a("etq"), subprog.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), subprog.a("etq"));
 
         return attr;
     }
@@ -1890,23 +1730,18 @@ public final class Attribution extends Atribucion {
         regla("Subprogs -> Subprog");
         TAtributos attr = atributosPara("Subprogs", "tsh", "ts", "err", "cod", "etq", "etqh");
 
-        dependencias(subprog.a("tsh"), attr.a("tsh"));
-        calculo(subprog.a("tsh"), AsignationFun.INSTANCE);
+        asigna(subprog.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("ts"), subprog.a("ts"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), subprog.a("ts"));
 
         dependencias(attr.a("err"), subprog.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(attr.a("cod"), subprog.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), subprog.a("cod"));
 
-        dependencias(subprog.a("etqh"), attr.a("etqh"));
-        calculo(subprog.a("etqh"), AsignationFun.INSTANCE);
+        asigna(subprog.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), subprog.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), subprog.a("etq"));
 
         return attr;
     }
@@ -1918,8 +1753,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Subprog", "dir", "dirh", "tsh", "ts", "cod", "etq", "etqh", "err");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
-        dependencias(sfParams.a("dirh"), a(0));
-        calculo(sfParams.a("dirh"), AsignationFun.INSTANCE);
+        asigna(sfParams.a("dirh"), a(0));
 
         dependencias(sfParams.a("tsh"), attr.a("tsh"));
         calculo(sfParams.a("tsh"), new SemFun() {
@@ -1947,11 +1781,9 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(sVars.a("dirh"), sfParams.a("dir"));
-        calculo(sVars.a("dirh"), AsignationFun.INSTANCE);
+        asigna(sVars.a("dirh"), sfParams.a("dir"));
 
-        dependencias(sInsts.a("tsh"), sVars.a("ts"));
-        calculo(sInsts.a("tsh"), AsignationFun.INSTANCE);
+        asigna(sInsts.a("tsh"), sVars.a("ts"));
 
         dependencias(attr.a("err"), sfParams.a("err"), sInsts.a("err"), sVars.a("err"), identLex, sfParams.a("ts"));
         calculo(attr.a("err"), new SemFun() {
@@ -2007,8 +1839,7 @@ public final class Attribution extends Atribucion {
 
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(sInsts.a("etqh"), attr.a("etqh"));
-        calculo(sInsts.a("etqh"), AsignationFun.INSTANCE);
+        asigna(sInsts.a("etqh"), attr.a("etqh"));
 
         dependencias(attr.a("etq"), sInsts.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(3));
@@ -2039,23 +1870,18 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("SFParams", "tsh", "ts", "dir", "dirh", "err", "params");
 
         // FParams
-        dependencias(fParams.a("tsh"), attr.a("tsh"));
-        calculo(fParams.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fParams.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("ts"), fParams.a("ts"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), fParams.a("ts"));
 
-        dependencias(attr.a("dir"), fParams.a("dir"));
-        calculo(attr.a("dir"), AsignationFun.INSTANCE);
+        asigna(attr.a("dir"), fParams.a("dir"));
 
-        dependencias(fParams.a("dirh"), attr.a("dirh"));
-        calculo(fParams.a("dirh"), AsignationFun.INSTANCE);
+        asigna(fParams.a("dirh"), attr.a("dirh"));
 
         dependencias(attr.a("err"), fParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
-        dependencias(attr.a("params"), fParams.a("params"));
-        calculo(attr.a("params"), AsignationFun.INSTANCE);
+        asigna(attr.a("params"), fParams.a("params"));
 
         return attr;
     }
@@ -2065,11 +1891,9 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("SFParams", "ts", "tsh", "dir", "dirh", "err", "params");
 
         // sfParams
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(attr.a("params"), a(Collections.emptyList()));
-        calculo(attr.a("params"), AsignationFun.INSTANCE);
+        asigna(attr.a("params"), a(Collections.emptyList()));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -2081,17 +1905,13 @@ public final class Attribution extends Atribucion {
         regla("FParams -> FParams COMA FParam");
         TAtributos attr = atributosPara("FParams", "tsh", "ts", "err", "dir", "dirh", "id", "clase", "tipo", "params");
 
-        dependencias(fParams_1.a("tsh"), attr.a("tsh"));
-        calculo(fParams_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fParams_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(fParams_1.a("dirh"), attr.a("dirh"));
-        calculo(fParams_1.a("dirh"), AsignationFun.INSTANCE);
+        asigna(fParams_1.a("dirh"), attr.a("dirh"));
 
-        dependencias(fParam.a("tsh"), fParams_1.a("tsh"));
-        calculo(fParam.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fParam.a("tsh"), fParams_1.a("tsh"));
 
-        dependencias(fParam.a("dirh"), fParams_1.a("dir"));
-        calculo(fParam.a("dirh"), AsignationFun.INSTANCE);
+        asigna(fParam.a("dirh"), fParams_1.a("dir"));
 
         dependencias(attr.a("dir"), fParams_1.a("dir"), fParam.a("tipo"));
         calculo(attr.a("dir"), new SemFun() {
@@ -2149,14 +1969,11 @@ public final class Attribution extends Atribucion {
         regla("FParams -> FParam");
         TAtributos attr = atributosPara("FParams", "tsh", "ts", "id", "dir", "dirh", "tipo", "clase", "err", "params");
 
-        dependencias(fParam.a("tsh"), attr.a("tsh"));
-        calculo(fParam.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fParam.a("tsh"), attr.a("tsh"));
 
-        dependencias(fParam.a("dirh"), attr.a("dirh"));
-        calculo(fParam.a("dirh"), AsignationFun.INSTANCE);
+        asigna(fParam.a("dirh"), attr.a("dirh"));
 
-        dependencias(attr.a("dir"), fParam.a("dir"));
-        calculo(attr.a("dir"), AsignationFun.INSTANCE);
+        asigna(attr.a("dir"), fParam.a("dir"));
 
         dependencias(attr.a("params"), fParam.a("param"));
         calculo(attr.a("params"), new SemFun() {
@@ -2211,20 +2028,15 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("id"), identLex);
-        calculo(attr.a("id"), AsignationFun.INSTANCE);
+        asigna(attr.a("id"), identLex);
 
-        dependencias(attr.a("clase"), a(ClassDec.PARAM_VALUE));
-        calculo(attr.a("clase"), AsignationFun.INSTANCE);
+        asigna(attr.a("clase"), a(ClassDec.PARAM_VALUE));
 
-        dependencias(attr.a("tipo"), typeDesc.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), typeDesc.a("tipo"));
 
         dependencias(attr.a("param"), typeDesc.a("tipo"), identLex);
         calculo(attr.a("param"), new SemFun() {
@@ -2249,20 +2061,15 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("dir"), attr.a("dirh"));
         calculo(attr.a("dir"), new IncrementFun(1));
 
-        dependencias(typeDesc.a("tsh"), attr.a("tsh"));
-        calculo(typeDesc.a("tsh"), AsignationFun.INSTANCE);
+        asigna(typeDesc.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("ts"), attr.a("tsh"));
-        calculo(attr.a("ts"), AsignationFun.INSTANCE);
+        asigna(attr.a("ts"), attr.a("tsh"));
 
-        dependencias(attr.a("id"), identLex);
-        calculo(attr.a("id"), AsignationFun.INSTANCE);
+        asigna(attr.a("id"), identLex);
 
-        dependencias(attr.a("clase"), a(ClassDec.PARAM_REF));
-        calculo(attr.a("clase"), AsignationFun.INSTANCE);
+        asigna(attr.a("clase"), a(ClassDec.PARAM_REF));
 
-        dependencias(attr.a("tipo"), typeDesc.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), typeDesc.a("tipo"));
 
         dependencias(attr.a("param"), typeDesc.a("tipo"), identLex);
         calculo(attr.a("param"), new SemFun() {
@@ -2447,23 +2254,19 @@ public final class Attribution extends Atribucion {
 
         // TODO Falta hacer todo lo del código
 
-        dependencias(desig_1.a("etqh"), attr.a("etqh"));
-        calculo(desig_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(desig_1.a("etqh"), attr.a("etqh"));
 
-        dependencias(expr.a("etqh"), desig_1.a("etq"));
-        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+        asigna(expr.a("etqh"), desig_1.a("etq"));
 
-        dependencias(expr.a("tsh"), attr.a("tsh"));
-        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(expr.a("tsh"), attr.a("tsh"));
 
-        dependencias(desig_1.a("tsh"), attr.a("tsh"));
-        calculo(desig_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(desig_1.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("etq"), expr.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(3));
 
         dependencias(attr.a("const"), a(false));
-        calculo(attr.a("etqh"), AsignationFun.INSTANCE);
+        calculo(attr.a("etqh"), AssignationFun.INSTANCE);
 
         return attr;
     }
@@ -2524,17 +2327,15 @@ public final class Attribution extends Atribucion {
 
         // TODO Falta hacer todo lo del código
 
-        dependencias(desig_1.a("etqh"), attr.a("etqh"));
-        calculo(desig_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(desig_1.a("etqh"), attr.a("etqh"));
 
         dependencias(attr.a("etq"), desig_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(2));
 
-        dependencias(desig_1.a("tsh"), attr.a("tsh"));
-        calculo(desig_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(desig_1.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("const"), a(false));
-        calculo(attr.a("etqh"), AsignationFun.INSTANCE);
+        calculo(attr.a("etqh"), AssignationFun.INSTANCE);
 
         return attr;
     }
@@ -2556,8 +2357,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
         dependencias(attr.a("tipo"), term_1.a("tipo"), op0.a("op"), term_2.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -2571,20 +2371,15 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
-        dependencias(term_1.a("etqh"), attr.a("etqh"));
-        calculo(term_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(term_1.a("etqh"), attr.a("etqh"));
 
-        dependencias(term_2.a("etqh"), term_1.a("etq"));
-        calculo(term_2.a("etqh"), AsignationFun.INSTANCE);
+        asigna(term_2.a("etqh"), term_1.a("etq"));
 
-        dependencias(term_1.a("tsh"), attr.a("tsh"));
-        calculo(term_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(term_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(term_2.a("tsh"), attr.a("tsh"));
-        calculo(term_2.a("tsh"), AsignationFun.INSTANCE);
+        asigna(term_2.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("etq"), term_2.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -2612,23 +2407,17 @@ public final class Attribution extends Atribucion {
         regla("Expr -> Term");
         TAtributos attr = atributosPara("Expr", "tipo", "tsh", "desig", "err", "cod", "etqh", "etq");
 
-        dependencias(attr.a("tipo"), term.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), term.a("tipo"));
 
-        dependencias(attr.a("cod"), term.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), term.a("cod"));
 
-        dependencias(term.a("tsh"), attr.a("tsh"));
-        calculo(term.a("tsh"), AsignationFun.INSTANCE);
+        asigna(term.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), term.a("desig"));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), term.a("desig"));
 
-        dependencias(attr.a("etq"), term.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), term.a("etq"));
 
-        dependencias(term.a("etqh"), attr.a("etqh"));
-        calculo(term.a("etqh"), AsignationFun.INSTANCE);
+        asigna(term.a("etqh"), attr.a("etqh"));
 
         dependencias(attr.a("err"), term.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -2665,20 +2454,15 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(term_1.a("tsh"), attr.a("tsh"));
-        calculo(term_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(term_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(fact.a("tsh"), attr.a("tsh"));
-        calculo(fact.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fact.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
-        dependencias(term_1.a("etqh"), attr.a("etqh"));
-        calculo(term_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(term_1.a("etqh"), attr.a("etqh"));
 
-        dependencias(fact.a("etqh"), term_1.a("etq"));
-        calculo(fact.a("etqh"), AsignationFun.INSTANCE);
+        asigna(fact.a("etqh"), term_1.a("etq"));
 
         dependencias(attr.a("etq"), term_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -2721,22 +2505,18 @@ public final class Attribution extends Atribucion {
         // TODO la tipoFUnc con or calculo(attr.a("tipo"), );
 
         dependencias(term_1.a("tsh"), attr.a("tsh"));
-        calculo(term_1.a("tipo"), AsignationFun.INSTANCE);
+        calculo(term_1.a("tipo"), AssignationFun.INSTANCE);
 
-        dependencias(fact.a("tsh"), attr.a("tsh"));
-        calculo(fact.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fact.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
-        dependencias(term_1.a("etqh"), attr.a("etqh"));
-        calculo(term_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(term_1.a("etqh"), attr.a("etqh"));
 
         dependencias(fact.a("etqh"), term_1.a("etq"));
         calculo(fact.a("etqh"), new IncrementFun(3));
 
-        dependencias(attr.a("etq"), term_1.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), term_1.a("etq"));
 
         dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), fact.a("err"), fact.a("tipo"));
         calculo(attr.a("err"), new SemFun() {
@@ -2761,23 +2541,17 @@ public final class Attribution extends Atribucion {
         regla("Term -> Fact");
         TAtributos attr = atributosPara("Term", "tipo", "tsh", "desig", "cod", "etqh", "etq", "err", "op");
 
-        dependencias(attr.a("tipo"), fact.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), fact.a("tipo"));
 
-        dependencias(fact.a("tsh"), attr.a("tsh"));
-        calculo(fact.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fact.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), fact.a("desig"));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), fact.a("desig"));
 
-        dependencias(attr.a("cod"), fact.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), fact.a("cod"));
 
-        dependencias(fact.a("etqh"), attr.a("etqh"));
-        calculo(fact.a("etqh"), AsignationFun.INSTANCE);
+        asigna(fact.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), fact.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), fact.a("etq"));
 
         dependencias(attr.a("err"), fact.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -2792,7 +2566,7 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "err", "cod", "etq", "etqh");
 
         dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("cod"), op2.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
         dependencias(attr.a("tipo"), fact_1.a("tipo"), op2.a("op"), shft.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -2806,14 +2580,11 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(fact_1.a("tsh"), attr.a("tsh"));
-        calculo(fact_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fact_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(shft.a("tsh"), attr.a("tsh"));
-        calculo(shft.a("tsh"), AsignationFun.INSTANCE);
+        asigna(shft.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
@@ -2851,14 +2622,11 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(fact_1.a("tsh"), attr.a("tsh"));
-        calculo(fact_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(fact_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(shft.a("tsh"), attr.a("tsh"));
-        calculo(shft.a("tsh"), AsignationFun.INSTANCE);
+        asigna(shft.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
         // Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod
         dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("etq"), shft.a("cod"));
@@ -2872,14 +2640,12 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(fact_1.a("etqh"), attr.a("etqh"));
-        calculo(fact_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(fact_1.a("etqh"), attr.a("etqh"));
 
         dependencias(shft.a("etq"), fact_1.a("etq"));
         calculo(shft.a("etq"), new IncrementFun(3));
 
-        dependencias(attr.a("etq"), shft.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), shft.a("etq"));
 
         dependencias(attr.a("err"), fact_1.a("err"), fact_1.a("tipo"), shft.a("err"), shft.a("tipo"));
         calculo(attr.a("err"), new SemFun() {
@@ -2904,23 +2670,17 @@ public final class Attribution extends Atribucion {
         regla("Fact -> Shft");
         TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etqh", "etq", "err");
 
-        dependencias(attr.a("tipo"), shft.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), shft.a("tipo"));
 
-        dependencias(shft.a("tsh"), attr.a("tsh"));
-        calculo(shft.a("tsh"), AsignationFun.INSTANCE);
+        asigna(shft.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), shft.a("desig"));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), shft.a("desig"));
 
-        dependencias(attr.a("cod"), shft.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), shft.a("cod"));
 
-        dependencias(shft.a("etqh"), attr.a("etqh"));
-        calculo(shft.a("etqh"), AsignationFun.INSTANCE);
+        asigna(shft.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), shft.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), shft.a("etq"));
 
         dependencias(attr.a("err"), shft.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -2950,22 +2710,18 @@ public final class Attribution extends Atribucion {
         });
 
         dependencias(unary.a("tsh"), attr.a("tsh"));
-        calculo(attr.a("tsh"), AsignationFun.INSTANCE);
+        calculo(attr.a("tsh"), AssignationFun.INSTANCE);
 
-        dependencias(attr.a("tsh"), shft_1.a("tsh"));
-        calculo(attr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(attr.a("tsh"), shft_1.a("tsh"));
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
         dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
-        dependencias(unary.a("etqh"), attr.a("etqh"));
-        calculo(unary.a("etqh"), AsignationFun.INSTANCE);
+        asigna(unary.a("etqh"), attr.a("etqh"));
 
-        dependencias(shft_1.a("etqh"), unary.a("etq"));
-        calculo(shft_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(shft_1.a("etqh"), unary.a("etq"));
 
         dependencias(attr.a("etq"), shft_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -2993,23 +2749,17 @@ public final class Attribution extends Atribucion {
         regla("Shft -> Unary");
         TAtributos attr = atributosPara("Shft", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        dependencias(unary.a("tsh"), attr.a("tsh"));
-        calculo(unary.a("tsh"), AsignationFun.INSTANCE);
+        asigna(unary.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("tipo"), unary.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), unary.a("tipo"));
 
-        dependencias(attr.a("desig"), unary.a("desig"));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), unary.a("desig"));
 
-        dependencias(attr.a("cod"), unary.a("cod"));
-        calculo(attr.a("cod"), AsignationFun.INSTANCE);
+        asigna(attr.a("cod"), unary.a("cod"));
 
-        dependencias(unary.a("etqh"), attr.a("etqh"));
-        calculo(unary.a("etqh"), AsignationFun.INSTANCE);
+        asigna(unary.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), unary.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), unary.a("etq"));
 
         dependencias(attr.a("err"), unary.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -3025,14 +2775,11 @@ public final class Attribution extends Atribucion {
         regla("Unary -> Op4 Unary");
         TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq");
 
-        dependencias(unary_1.a("tsh"), attr.a("tsh"));
-        calculo(unary_1.a("tsh"), AsignationFun.INSTANCE);
+        asigna(unary_1.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
-        dependencias(unary_1.a("etqh"), attr.a("etqh"));
-        calculo(unary_1.a("etqh"), AsignationFun.INSTANCE);
+        asigna(unary_1.a("etqh"), attr.a("etqh"));
 
         dependencias(attr.a("etq"), unary_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -3078,14 +2825,11 @@ public final class Attribution extends Atribucion {
         regla("Unary -> IPAR Cast FPAR Paren");
         TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        dependencias(paren.a("tsh"), attr.a("tsh"));
-        calculo(paren.a("tsh"), AsignationFun.INSTANCE);
+        asigna(paren.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
-        dependencias(paren.a("etqh"), attr.a("etqh"));
-        calculo(paren.a("etqh"), AsignationFun.INSTANCE);
+        asigna(paren.a("etqh"), attr.a("etqh"));
 
         dependencias(attr.a("etq"), paren.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -3131,20 +2875,15 @@ public final class Attribution extends Atribucion {
         regla("Unary -> Paren");
         TAtributos attr = atributosPara("Unary", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        dependencias(paren.a("tsh"), attr.a("tsh"));
-        calculo(paren.a("tsh"), AsignationFun.INSTANCE);
+        asigna(paren.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), paren.a("desig"));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), paren.a("desig"));
 
-        dependencias(attr.a("tipo"), paren.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), paren.a("tipo"));
 
-        dependencias(paren.a("etqh"), attr.a("etqh"));
-        calculo(paren.a("etqh"), AsignationFun.INSTANCE);
+        asigna(paren.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), paren.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), paren.a("etq"));
 
         dependencias(attr.a("cod"), paren.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
@@ -3161,20 +2900,15 @@ public final class Attribution extends Atribucion {
         regla("Paren -> IPAR Expr FPAR");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        dependencias(expr.a("tsh"), attr.a("tsh"));
-        calculo(expr.a("tsh"), AsignationFun.INSTANCE);
+        asigna(expr.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
-        dependencias(attr.a("tipo"), expr.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), expr.a("tipo"));
 
-        dependencias(expr.a("etqh"), attr.a("etqh"));
-        calculo(expr.a("etqh"), AsignationFun.INSTANCE);
+        asigna(expr.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), expr.a("etq"));
-        calculo(attr.a("etq"), AsignationFun.INSTANCE);
+        asigna(attr.a("etq"), expr.a("etq"));
 
         dependencias(attr.a("cod"), expr.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
@@ -3189,11 +2923,9 @@ public final class Attribution extends Atribucion {
         regla("Paren -> Lit");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        dependencias(attr.a("desig"), a(false));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(false));
 
-        dependencias(attr.a("tipo"), lit.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), lit.a("tipo"));
 
         dependencias(attr.a("etq"), attr.a("etqh"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -3217,17 +2949,13 @@ public final class Attribution extends Atribucion {
         regla("Paren -> Desig");
         TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
 
-        dependencias(desig.a("tsh"), attr.a("tsh"));
-        calculo(desig.a("tsh"), AsignationFun.INSTANCE);
+        asigna(desig.a("tsh"), attr.a("tsh"));
 
-        dependencias(attr.a("tipo"), desig.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), desig.a("tipo"));
 
-        dependencias(attr.a("desig"), a(true));
-        calculo(attr.a("desig"), AsignationFun.INSTANCE);
+        asigna(attr.a("desig"), a(true));
 
-        dependencias(desig.a("etqh"), attr.a("etqh"));
-        calculo(desig.a("etqh"), AsignationFun.INSTANCE);
+        asigna(desig.a("etqh"), attr.a("etqh"));
 
         dependencias(attr.a("etq"), desig.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
@@ -3267,8 +2995,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> IGUAL");
         TAtributos attr = atributosPara("Op0", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.EQUALS));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.EQUALS));
 
         return attr;
     }
@@ -3277,8 +3004,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> NOIGUAL");
         TAtributos attr = atributosPara("Op0", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.NOT_EQUALS));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.NOT_EQUALS));
 
         return attr;
     }
@@ -3287,8 +3013,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MAY");
         TAtributos attr = atributosPara("Op0", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.GREATER_THAN));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.GREATER_THAN));
 
         return attr;
     }
@@ -3297,8 +3022,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MEN");
         TAtributos attr = atributosPara("Op0", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.LOWER_THAN));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.LOWER_THAN));
 
         return attr;
     }
@@ -3307,8 +3031,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MENOIG");
         TAtributos attr = atributosPara("Op0", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.LOWER_EQUAL));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.LOWER_EQUAL));
 
         return attr;
     }
@@ -3317,8 +3040,7 @@ public final class Attribution extends Atribucion {
         regla("Op0 -> MAYOIG");
         TAtributos attr = atributosPara("Op0", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.GREATER_EQUALS));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.GREATER_EQUALS));
 
         return attr;
     }
@@ -3329,8 +3051,7 @@ public final class Attribution extends Atribucion {
         regla("Op1 -> MENOS");
         TAtributos attr = atributosPara("Op1", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.SUBTRACTION));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.SUBTRACTION));
 
         return attr;
     }
@@ -3339,8 +3060,7 @@ public final class Attribution extends Atribucion {
         regla("Op1 -> MAS");
         TAtributos attr = atributosPara("Op1", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.ADDITION));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.ADDITION));
 
         return attr;
     }
@@ -3351,8 +3071,7 @@ public final class Attribution extends Atribucion {
         regla("Op2 -> MOD");
         TAtributos attr = atributosPara("Op2", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.MODULO));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.MODULO));
 
         return attr;
     }
@@ -3361,8 +3080,7 @@ public final class Attribution extends Atribucion {
         regla("Op2 -> DIV");
         TAtributos attr = atributosPara("Op2", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.DIVISION));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.DIVISION));
 
         return attr;
     }
@@ -3371,8 +3089,7 @@ public final class Attribution extends Atribucion {
         regla("Op2 -> MUL");
         TAtributos attr = atributosPara("Op2", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.PRODUCT));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.PRODUCT));
 
         return attr;
     }
@@ -3383,8 +3100,7 @@ public final class Attribution extends Atribucion {
         regla("Op3 -> LSH");
         TAtributos attr = atributosPara("Op3", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.SHIFT_LEFT));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.SHIFT_LEFT));
 
         return attr;
     }
@@ -3393,8 +3109,7 @@ public final class Attribution extends Atribucion {
         regla("Op3 -> RSH");
         TAtributos attr = atributosPara("Op3", "op");
 
-        dependencias(attr.a("op"), a(BinaryOperator.SHIFT_RIGHT));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(BinaryOperator.SHIFT_RIGHT));
 
         return attr;
     }
@@ -3405,8 +3120,7 @@ public final class Attribution extends Atribucion {
         regla("Op4 -> NOT");
         TAtributos attr = atributosPara("Op4", "op");
 
-        dependencias(attr.a("op"), a(UnaryOperator.NOT));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(UnaryOperator.NOT));
 
         return attr;
     }
@@ -3415,8 +3129,7 @@ public final class Attribution extends Atribucion {
         regla("Op4 -> MENOS");
         TAtributos attr = atributosPara("Op4", "op");
 
-        dependencias(attr.a("op"), a(UnaryOperator.MINUS));
-        calculo(attr.a("op"), AsignationFun.INSTANCE);
+        asigna(attr.a("op"), a(UnaryOperator.MINUS));
 
         return attr;
     }
@@ -3427,11 +3140,9 @@ public final class Attribution extends Atribucion {
         regla("Lit -> LitBool");
         TAtributos attr = atributosPara("Lit", "tipo", "valor");
 
-        dependencias(attr.a("tipo"), a(Type.BOOLEAN));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.BOOLEAN));
 
-        dependencias(attr.a("valor"), litBool.a("valor"));
-        calculo(attr.a("valor"), AsignationFun.INSTANCE);
+        asigna(attr.a("valor"), litBool.a("valor"));
 
         return attr;
     }
@@ -3440,11 +3151,9 @@ public final class Attribution extends Atribucion {
         regla("Lit -> LitNum");
         TAtributos attr = atributosPara("Lit", "tipo", "valor");
 
-        dependencias(attr.a("tipo"), litNum.a("tipo"));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), litNum.a("tipo"));
 
-        dependencias(attr.a("valor"), litNum.a("valor"));
-        calculo(attr.a("valor"), AsignationFun.INSTANCE);
+        asigna(attr.a("valor"), litNum.a("valor"));
 
         return attr;
     }
@@ -3453,8 +3162,7 @@ public final class Attribution extends Atribucion {
         regla("Lit -> LITCHAR");
         TAtributos attr = atributosPara("Lit", "tipo", "valor");
 
-        dependencias(attr.a("tipo"), a(Type.CHARACTER));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.CHARACTER));
 
         dependencias(attr.a("valor"), a(litChar));
         calculo(attr.a("valor"), new SemFun() {
@@ -3475,8 +3183,7 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> TRUE");
         TAtributos attr = atributosPara("LitBool", "valor");
 
-        dependencias(attr.a("valor"), a(true));
-        calculo(attr.a("valor"), AsignationFun.INSTANCE);
+        asigna(attr.a("valor"), a(true));
 
         return attr;
     }
@@ -3485,8 +3192,7 @@ public final class Attribution extends Atribucion {
         regla("LitBool -> FALSE");
         TAtributos attr = atributosPara("LitBool", "valor");
 
-        dependencias(attr.a("valor"), a(false));
-        calculo(attr.a("valor"), AsignationFun.INSTANCE);
+        asigna(attr.a("valor"), a(false));
 
         return attr;
     }
@@ -3498,8 +3204,7 @@ public final class Attribution extends Atribucion {
         Atributo litNatLex = atributoLexicoPara("LITNAT", "lex", litNat);
         TAtributos attr = atributosPara("LitNum", "valor", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.NATURAL));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.NATURAL));
 
         dependencias(attr.a("valor"), litNatLex);
         calculo(attr.a("valor"), new SemFun() {
@@ -3519,8 +3224,7 @@ public final class Attribution extends Atribucion {
         Atributo litFloatLex = atributoLexicoPara("LITFLOAT", "lex", litFloat);
         TAtributos attr = atributosPara("LitNum", "valor", "tipo");
 
-        dependencias(attr.a("tipo"), a(Type.FLOAT));
-        calculo(attr.a("tipo"), AsignationFun.INSTANCE);
+        asigna(attr.a("tipo"), a(Type.FLOAT));
 
         dependencias(attr.a("valor"), litFloatLex);
         calculo(attr.a("valor"), new SemFun() {

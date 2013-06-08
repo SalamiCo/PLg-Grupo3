@@ -3,7 +3,7 @@ package plg.gr3.parser.semfun;
 import es.ucm.fdi.plg.evlib.Atributo;
 import es.ucm.fdi.plg.evlib.SemFun;
 
-public enum AsignationFun implements SemFun {
+public enum AssignationFun implements SemFun {
     INSTANCE;
 
     @Override
