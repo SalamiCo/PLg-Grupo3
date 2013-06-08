@@ -17,8 +17,8 @@ program: test2{
 	instructions {
     x = -6;
     y = x * 3; 
-    Z = x * y;
-    w = '""$·$%$%&/&/(·$"·$%·$%"' 
+    z = x * y;
+    w = '"';
 
     out(x);
     out(y);

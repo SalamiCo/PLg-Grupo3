@@ -207,8 +207,8 @@ Insts ::= Insts:insts_1 PYC Inst:inst {:
 	RESULT = attr.insts_R2(inst);
 :};
 
-Inst ::= Desig:desig ASIG:asig Expr:expr {:
-	RESULT = attr.inst_R1(desig, expr, new Lexeme(asig, asigleft, asigright));
+Inst ::= Desig:desig ASIG Expr:expr {:
+	RESULT = attr.inst_R1(desig, expr);
 :}
        | IN IPAR Desig:desig FPAR {:
 	RESULT = attr.inst_R2(desig);

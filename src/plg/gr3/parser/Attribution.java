@@ -135,7 +135,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos sConsts_R2 () {
         regla("SConst -> $");
-        TAtributos attr = atributosPara("SConst", "ts", "err", "etqh");
+        TAtributos attr = atributosPara("SConst", "ts", "tsh", "err", "etqh");
 
         asigna(attr.a("ts"), attr.a("tsh"));
 
@@ -1047,10 +1047,9 @@ public final class Attribution extends Atribucion {
 
     // Inst
 
-    public TAtributos inst_R1 (TAtributos desig, TAtributos expr, Lexeme asig) {
+    public TAtributos inst_R1 (TAtributos desig, TAtributos expr) {
         regla("Inst -> Desig ASIG Expr");
         TAtributos attr = atributosPara("Inst", "cod", "etqh", "etq", "tsh", "err");
-        Atributo asigLex = atributoLexicoPara("ASIG", "lex", asig);
 
         asigna(desig.a("tsh"), attr.a("tsh"));
 
@@ -1058,15 +1057,13 @@ public final class Attribution extends Atribucion {
 
         // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
         dependencias(
-            attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), asigLex, desig.a("const"));
+            attr.a("err"), desig.a("tipo"), expr.a("tipo"), expr.a("err"), desig.a("err"), desig.a("id"),
+            desig.a("const"));
         calculo(attr.a("err"), new SemFun() {
-            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
                 Type desigType = (Type) args[0].valor();
                 Type exprType = (Type) args[1].valor();
-                List<CompileError> exprErr = (List<CompileError>) args[2].valor();
-                List<CompileError> desigErr = (List<CompileError>) args[3].valor();
                 Lexeme lex = (Lexeme) args[4].valor();
                 Boolean isconst = (Boolean) args[5].valor();
 
@@ -1080,7 +1077,7 @@ public final class Attribution extends Atribucion {
                     errs.add(new AssignationToConstantError(null, 0xFFFFFF, 0xFFFFFF));
                 }
 
-                return errs;
+                return ConcatErrorsFun.INSTANCE.eval(args[2], args[3], a(errs));
             }
         });
 
@@ -1090,7 +1087,8 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 Type type = (Type) args[2].valor();
 
-                return ConcatCodeFun.INSTANCE.eval(a(args[0]), a(args[1]), a(new IndirectStoreInstruction(type)));
+                Instruction instr = type.isPrimitive() ? new IndirectStoreInstruction(type) : null;
+                return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(instr));
             }
         });
 
@@ -2221,7 +2219,7 @@ public final class Attribution extends Atribucion {
 
                 CompileError err =
                     (type instanceof ArrayType) ? null : new InvalidTypeError(type, ident.getLine(), ident.getColumn());
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[1]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[1], a(err));
             }
         });
 
@@ -2298,7 +2296,7 @@ public final class Attribution extends Atribucion {
 
                 CompileError err =
                     (type instanceof TupleType) ? null : new InvalidTypeError(type, ident.getLine(), ident.getColumn());
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], a(err));
             }
         });
 
@@ -2454,9 +2452,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[4].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
         });
 
@@ -2505,9 +2503,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[3].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[2]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[2], a(err));
             }
         });
 
@@ -2542,8 +2540,15 @@ public final class Attribution extends Atribucion {
         regla("Fact -> Fact Op2 Shft");
         TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "err", "cod", "etq", "etqh");
 
-        dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("cod"), op2.a("cod"));
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+        dependencias(attr.a("cod"), fact_1.a("cod"), shft.a("cod"), op2.a("op"));
+        calculo(attr.a("cod"), new SemFun() {
+            @Override
+            public Object eval (Atributo... args) {
+                BinaryOperator op = (BinaryOperator) args[2].valor();
+
+                return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(new BinaryOperatorInstruction(op)));
+            }
+        });
 
         dependencias(attr.a("tipo"), fact_1.a("tipo"), op2.a("op"), shft.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -2556,6 +2561,12 @@ public final class Attribution extends Atribucion {
                 return op.getApplyType(type1, type2);
             }
         });
+
+        asigna(fact_1.a("etqh"), attr.a("etqh"));
+
+        asigna(shft.a("etqh"), fact_1.a("etq"));
+
+        asigna(attr.a("etq"), shft.a("etq"));
 
         asigna(fact_1.a("tsh"), attr.a("tsh"));
 
@@ -2575,9 +2586,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[4].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
         });
 
@@ -2634,9 +2645,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[3].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[2]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[2], a(err));
             }
         });
 
@@ -2679,9 +2690,7 @@ public final class Attribution extends Atribucion {
                 Type t1 = (Type) args[0].valor();
                 Type t2 = (Type) args[2].valor();
                 BinaryOperator op = (BinaryOperator) args[1].valor();
-                if (!op.canApply(t1, t2)) {
-                    return new OperatorError(t1, t2, op, 0xFFFFFF, 0xFFFFFF);
-                }
+
                 return op.getApplyType(t1, t2);
             }
         });
@@ -2694,7 +2703,15 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("desig"), a(false));
 
         dependencias(attr.a("cod"), unary.a("cod"), shft_1.a("cod"), op3.a("op"));
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+        calculo(attr.a("cod"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                BinaryOperator op = (BinaryOperator) args[2].valor();
+
+                return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(new BinaryOperatorInstruction(op)));
+            }
+        });
 
         asigna(unary.a("etqh"), attr.a("etqh"));
 
@@ -2713,9 +2730,9 @@ public final class Attribution extends Atribucion {
                 Type type2 = (Type) args[4].valor();
 
                 CompileError err =
-                    op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
         });
 
@@ -2746,8 +2763,6 @@ public final class Attribution extends Atribucion {
 
     // Unary
 
-    // Unary
-
     public TAtributos unary_R1 (TAtributos op4, TAtributos unary_1) {
         regla("Unary -> Op4 Unary");
         TAtributos attr = atributosPara("Unary", "tsh", "tipo", "err", "desig", "cod", "etqh", "etq");
@@ -2766,6 +2781,7 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... attrs) {
                 UnaryOperator op = (UnaryOperator) attrs[1].valor();
+
                 return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new UnaryOperatorInstruction(op)));
             }
         });
@@ -2789,9 +2805,9 @@ public final class Attribution extends Atribucion {
                 UnaryOperator op = (UnaryOperator) args[0].valor();
                 Type type = (Type) args[2].valor();
 
-                CompileError err = op.canApply(type) ? new OperatorError(type, op, 0xFFFFFF, 0xFFFFFF) : null;
+                CompileError err = !op.canApply(type) ? new OperatorError(type, op, 0xFFFFFF, 0xFFFFFF) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[1]);
+                return ConcatErrorsFun.INSTANCE.eval(args[1], a(err));
             }
         });
 
@@ -2841,7 +2857,7 @@ public final class Attribution extends Atribucion {
 
                 CompileError err = Type.canCast(type1, type2) ? new AssignationTypeError(type2, type1, null) : null;
 
-                return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
+                return ConcatErrorsFun.INSTANCE.eval(args[0], a(err));
             }
         });
 
@@ -2862,8 +2878,7 @@ public final class Attribution extends Atribucion {
 
         asigna(attr.a("etq"), paren.a("etq"));
 
-        dependencias(attr.a("cod"), paren.a("cod"));
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+        asigna(attr.a("cod"), paren.a("cod"));
 
         dependencias(attr.a("err"), paren.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -2887,8 +2902,7 @@ public final class Attribution extends Atribucion {
 
         asigna(attr.a("etq"), expr.a("etq"));
 
-        dependencias(attr.a("cod"), expr.a("cod"));
-        calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
+        asigna(attr.a("cod"), expr.a("cod"));
 
         dependencias(attr.a("err"), expr.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
