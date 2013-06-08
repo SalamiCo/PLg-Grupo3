@@ -1,0 +1,14 @@
+@Test para probar los while
+
+program: test20{
+	vars{
+		var integer i;
+	}
+
+	instructions{
+		i = 3;
+		while(i != 3) do
+			out(i);
+		endwhile;
+	}
+}
