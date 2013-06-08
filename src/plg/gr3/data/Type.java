@@ -72,7 +72,7 @@ public abstract class Type {
     }
 
     /** Tipo predefinido para errores en la gramática */
-    public static final Type ERROR = new Type("") {
+    public static final Type ERROR = new Type("<ERROR>") {
 
         @Override
         public boolean isNumeric () {
@@ -92,11 +92,6 @@ public abstract class Type {
         @Override
         public int getSize () {
             return 0;
-        }
-
-        @Override
-        public String toString () {
-            return "<ERROR>";
         }
     };
 
