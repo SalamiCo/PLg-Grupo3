@@ -1065,6 +1065,8 @@ public final class Attribution extends Atribucion {
 
         asigna(desig.a("tsh"), attr.a("tsh"));
 
+        asigna(expr.a("refh"), a(false));
+
         asigna(expr.a("tsh"), attr.a("tsh"));
 
         // Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
@@ -1099,7 +1101,8 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 Type type = (Type) args[2].valor();
 
-                Instruction instr = type.isPrimitive() ? new IndirectStoreInstruction(type) : null;
+                Instruction instr =
+                    type.isPrimitive() ? new IndirectStoreInstruction(type) : new MoveInstruction(type.getSize());
                 return ConcatCodeFun.INSTANCE.eval(args[0], args[1], a(instr));
             }
         });
@@ -1151,6 +1154,8 @@ public final class Attribution extends Atribucion {
 
         asigna(expr.a("tsh"), attr.a("tsh"));
 
+        asigna(expr.a("refh"), a(false));
+
         dependencias(attr.a("err"), expr.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
@@ -1199,6 +1204,8 @@ public final class Attribution extends Atribucion {
 
         asigna(expr.a("tsh"), attr.a("tsh"));
 
+        asigna(expr.a("refh"), a(false));
+
         asigna(insts.a("tsh"), attr.a("tsh"));
 
         asigna(elseIf.a("tsh"), attr.a("tsh"));
@@ -1245,6 +1252,8 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Inst", "etqh", "etq", "tsh", "err", "cod");
 
         asigna(expr.a("tsh"), attr.a("tsh"));
+
+        asigna(expr.a("refh"), a(false));
 
         asigna(insts.a("tsh"), attr.a("tsh"));
 
@@ -1626,6 +1635,29 @@ public final class Attribution extends Atribucion {
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         asigna(expr.a("tsh"), attr.a("tsh"));
+
+        dependencias(expr.a("refh"), attr.a("tsh"), identLex, attr.a("nombresubprogh"));
+        calculo(expr.a("refh"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                SymbolTable table = (SymbolTable) args[0].valor();
+                Lexeme identParamReal = (Lexeme) args[1].valor();
+                Lexeme identSubprog = (Lexeme) args[2].valor();
+
+                List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
+
+                boolean hasParam = false;
+                Parameter paramFormal = null;
+                for (Parameter param : parametros) {
+                    if (identParamReal.getLexeme().equals(param.getName())) {
+                        hasParam = true;
+                        paramFormal = param;
+                    }
+                }
+                return hasParam && paramFormal.isReference();
+            }
+        });
 
         dependencias(
             attr.a("err"), expr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprogh"), expr
@@ -2401,6 +2433,7 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("id"), desig_1.a("id"));
 
         asigna(attr.a("const"), a(false));
+        asigna(attr.a("refh"), a(false));
         asigna(attr.a("valor"), desig_1.a("valor"));
 
         dependencias(attr.a("cod"), desig_1.a("cod"), expr.a("cod"), desig_1.a("tipo"));
@@ -3189,15 +3222,16 @@ public final class Attribution extends Atribucion {
 
         asigna(desig.a("etqh"), attr.a("etqh"));
 
-        dependencias(attr.a("etq"), desig.a("etq"), desig.a("tipo"));
+        dependencias(attr.a("etq"), desig.a("etq"), desig.a("tipo"), attr.a("refh"));
         calculo(attr.a("etq"), new SemFun() {
 
             @Override
             public Object eval (Atributo... args) {
                 Integer etq = (Integer) args[0].valor();
                 Type type = (Type) args[1].valor();
+                Boolean refh = (Boolean) args[2].valor();
 
-                if (type.isPrimitive()) {
+                if (type.isPrimitive() && !refh) {
                     return etq + 1;
                 } else {
                     return etq;
@@ -3205,23 +3239,24 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("cod"), desig.a("cod"), desig.a("tipo"), desig.a("const"), desig.a("valor"));
+        dependencias(attr.a("cod"), desig.a("cod"), desig.a("tipo"), desig.a("const"), desig.a("valor"), attr.a("refh"));
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
                 Type type = (Type) attrs[1].valor();
                 Boolean constant = (Boolean) attrs[2].valor();
                 Value value = (Value) attrs[3].valor();
+                Boolean refh = (Boolean) attrs[4].valor();
 
                 if (type.isPrimitive()) {
                     if (constant) {
                         return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new PushInstruction(value)));
-                    } else {
+                    } else if (refh) {
                         return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction(type)));
                     }
-                } else {
-                    return ConcatCodeFun.INSTANCE.eval(attrs[0]);
                 }
+
+                return ConcatCodeFun.INSTANCE.eval(attrs[0]);
             }
         });
 
