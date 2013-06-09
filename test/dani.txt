@@ -4,17 +4,24 @@ program: test {
 	}
 
 	vars {
-		var (integer,integer) t1;
-		var (integer,integer) t2;
+		var natural i;
+		var natural[SIZE] arr;
+	}
+	
+	subprograms {
+		subprogram: fun(integer* i, integer[SIZE]* arr) {
+			instructions {
+				i = 0;
+				while i < SIZE do
+					arr[i] = i;
+					i = i + 1;
+				endwhile;
+			}
+		}
 	}
 	
 	instructions {
-		t1_0 = 1;
-		t1_1 = 2;
-		
-		t2 = t1;
-		
-		out(t2_0);
-		out(t2_1);
+		out('$');
+		call fun(i=i, arr=arr);
 	}
 }

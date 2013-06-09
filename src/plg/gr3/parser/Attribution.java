@@ -2433,7 +2433,7 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("id"), desig_1.a("id"));
 
         asigna(attr.a("const"), a(false));
-        asigna(attr.a("refh"), a(false));
+        asigna(expr.a("refh"), a(false));
         asigna(attr.a("valor"), desig_1.a("valor"));
 
         dependencias(attr.a("cod"), desig_1.a("cod"), expr.a("cod"), desig_1.a("tipo"));
@@ -3226,7 +3226,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos paren_R2 (TAtributos lit) {
         regla("Paren -> Lit");
-        TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "valor");
+        TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "valor", "refh");
 
         asigna(attr.a("desig"), a(false));
 
@@ -3252,7 +3252,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos paren_R3 (TAtributos desig) {
         regla("Paren -> Desig");
-        TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err");
+        TAtributos attr = atributosPara("Paren", "tsh", "tipo", "desig", "cod", "etqh", "etq", "err", "refh");
 
         asigna(desig.a("tsh"), attr.a("tsh"));
 
@@ -3291,7 +3291,7 @@ public final class Attribution extends Atribucion {
                 if (type.isPrimitive()) {
                     if (constant) {
                         return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new PushInstruction(value)));
-                    } else if (refh) {
+                    } else if (!refh) {
                         return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new IndirectLoadInstruction(type)));
                     }
                 }
