@@ -19,11 +19,11 @@ public final class MoveInstruction extends Instruction {
 
     @Override
     public void execute (VirtualMachine vm) {
-        int from = vm.popValue().toIntegerValue().getValue();
         int to = vm.popValue().toIntegerValue().getValue();
+        int from = vm.popValue().toIntegerValue().getValue();
 
         for (int i = 0; i < size; i++) {
-            vm.setMemoryValue(to, vm.getMemoryValue(from));
+            vm.setMemoryValue(to + i, vm.getMemoryValue(from + i));
         }
     }
 

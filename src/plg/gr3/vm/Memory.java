@@ -1,9 +1,9 @@
 package plg.gr3.vm;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Memoria de la máquina virtual.
@@ -15,21 +15,21 @@ import java.util.Map;
  * @param <T> Tipo del contenido
  */
 public final class Memory<T> {
-    
+
     /** Tamaño de página */
-    private static final int PAGE_SIZE = 1 << 8;
-    
+    private static final int PAGE_SIZE = 1 << 3;
+
     /** Si la memoria se puede escribir */
     private boolean writable;
-    
+
     /** Páginas de la memoria */
     private final Map<Integer, List<T>> pages;
-    
+
     private Memory () {
         writable = true;
-        pages = new HashMap<Integer, List<T>>();
+        pages = new TreeMap<Integer, List<T>>();
     }
-    
+
     /**
      * Devuelve el contenido de la posición <tt>addr</tt>, o <tt>null</tt> si no está definido.
      * 
@@ -40,17 +40,17 @@ public final class Memory<T> {
         if (addr < 0) {
             throw new IllegalArgumentException("addr < 0 (" + addr + ")");
         }
-        
+
         int pageNum = addr / PAGE_SIZE;
         int offset = addr % PAGE_SIZE;
-        
+
         List<T> page = pages.get(pageNum);
         if (page == null) {
             return null;
         }
         return page.get(offset);
     }
-    
+
     /**
      * Establece el contenido de la posición <tt>addr</tt> a <tt>val</tt>.
      * 
@@ -64,24 +64,24 @@ public final class Memory<T> {
         if (!writable) {
             throw new IllegalStateException("Memory is not writable");
         }
-        
+
         int pageNum = addr / PAGE_SIZE;
         int offset = addr % PAGE_SIZE;
-        
+
         if (!pages.containsKey(Integer.valueOf(pageNum))) {
             @SuppressWarnings("unchecked")
             T[] arr = (T[]) new Object[PAGE_SIZE];
             pages.put(Integer.valueOf(pageNum), Arrays.asList(arr));
         }
-        
+
         pages.get(Integer.valueOf(pageNum)).set(offset, val);
     }
-    
+
     /** Borra completamente la memoria */
     public void clear () {
         pages.clear();
     }
-    
+
     /**
      * Crea una memoria de sólo lectura con los contenidos iniciales al comienzo de la misma
      * 
@@ -96,7 +96,7 @@ public final class Memory<T> {
         mem.writable = false;
         return mem;
     }
-    
+
     /**
      * Crea una memoria vacía con posibilidad de escritura
      * 
@@ -105,5 +105,28 @@ public final class Memory<T> {
      */
     public static <T> Memory<T> writable (Class<T> type) {
         return new Memory<T>();
+    }
+
+    @Override
+    public String toString () {
+        StringBuilder sb = new StringBuilder(getClass().getName());
+        sb.append(String.format(": %d pages%n", pages.size()));
+
+        for (Map.Entry<Integer, List<T>> page : pages.entrySet()) {
+            int pageNum = page.getKey();
+            List<T> items = page.getValue();
+
+            sb.append(String.format("[%3X]", pageNum * PAGE_SIZE));
+            for (T item : items) {
+                String str = item == null ? "--" : item.toString();
+                if (str.length() > 8) {
+                    str = str.substring(-8);
+                }
+                sb.append(String.format(" %8s", str));
+            }
+            sb.append('\n');
+        }
+
+        return sb.toString();
     }
 }

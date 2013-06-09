@@ -1,9 +1,26 @@
 program: test {
+	consts {
+		const natural SIZE = 8;
+	}
+
 	vars {
-		var natural[2] arr;
+		var natural i;
+		var natural[SIZE] arr;
+	}
+	
+	subprograms {
+		subprogram: fun(integer[SIZE]* arr) {
+			instructions {
+				i = 0;
+				while i < SIZE do
+					arr[i] = i;
+					i = i + 1;
+				endwhile;
+			}
+		}
 	}
 	
 	instructions {
-	
+		call fun(arr=arr);
 	}
 }
