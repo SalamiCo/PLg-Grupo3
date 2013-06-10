@@ -1210,16 +1210,7 @@ public final class Attribution extends Atribucion {
         asigna(elseIf.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("err"), expr.a("err"), insts.a("err"), elseIf.a("err"));
-        calculo(attr.a("err"), new SemFun() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object eval (Atributo... args) {
-                List<CompileError> exprErr = (List<CompileError>) args[0].valor();
-                List<CompileError> instsErr = (List<CompileError>) args[1].valor();
-                List<CompileError> elseIfErr = (List<CompileError>) args[2].valor();
-                return ConcatErrorsFun.INSTANCE.eval(a(exprErr), a(instsErr), a(elseIfErr));
-            }
-        });
+        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         asigna(expr.a("etqh"), attr.a("etqh"));
 
@@ -1235,10 +1226,13 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
+                Integer instsEtq = (Integer) attrs[3].valor();
+                Integer elseEtq = (Integer) attrs[4].valor();
 
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new BranchInstruction(
-                    (Integer) attrs[3].valor() + 1, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
-                    (Integer) (attrs[4].valor()))), attrs[2]);
+                Instruction code1 = new BranchInstruction(instsEtq + 1, BooleanValue.FALSE);
+                Instruction code2 = new JumpInstruction(elseEtq);
+
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(code1), attrs[1], a(code2), attrs[2]);
             }
 
         });
@@ -1276,10 +1270,13 @@ public final class Attribution extends Atribucion {
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
+                Integer instsEtq = (Integer) attrs[2].valor();
+                Integer attrEtqh = (Integer) attrs[3].valor();
 
-                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new BranchInstruction(
-                    (Integer) attrs[2].valor() + 1, BooleanValue.FALSE)), attrs[1], a(new JumpInstruction(
-                    (Integer) (attrs[3].valor()))));
+                Instruction code1 = new BranchInstruction(instsEtq + 1, BooleanValue.FALSE);
+                Instruction code2 = new JumpInstruction(attrEtqh);
+
+                return ConcatCodeFun.INSTANCE.eval(attrs[0], a(code1), attrs[1], a(code2));
             }
 
         });
@@ -1300,7 +1297,7 @@ public final class Attribution extends Atribucion {
 
         asigna(instCall.a("etqh"), attr.a("etqh"));
 
-        asigna(attr.a("etq"), instCall.a("etqh"));
+        asigna(attr.a("etq"), instCall.a("etq"));
 
         return attr;
     }

@@ -4,24 +4,24 @@ program: test {
 	}
 
 	vars {
-		var natural i;
-		var natural[SIZE] arr;
+		var natural res;
 	}
 	
 	subprograms {
-		subprogram: fun(integer* i, integer[SIZE]* arr) {
+		subprogram: fact(natural n, natural* r) {
 			instructions {
-				i = 0;
-				while i < SIZE do
-					arr[i] = i;
-					i = i + 1;
-				endwhile;
+				out(n);
+				if n == 0 then
+					r = 1;
+				else
+					call fact(n=n-1, r=r);
+				endif;
 			}
 		}
 	}
 	
 	instructions {
-		out('$');
-		call fun(i=i, arr=arr);
+		call fact(n=6, r=res);
+		out(res);
 	}
 }
