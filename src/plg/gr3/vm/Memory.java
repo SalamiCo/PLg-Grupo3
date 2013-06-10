@@ -119,9 +119,6 @@ public final class Memory<T> {
             sb.append(String.format("[%3X]", pageNum * PAGE_SIZE));
             for (T item : items) {
                 String str = item == null ? "--" : item.toString();
-                if (str.length() > 8) {
-                    str = str.substring(str.length() - 8);
-                }
                 sb.append(String.format(" %8s", str));
             }
             sb.append('\n');
