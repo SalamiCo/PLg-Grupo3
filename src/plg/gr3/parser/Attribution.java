@@ -1417,19 +1417,19 @@ public final class Attribution extends Atribucion {
                 }
 
                 int funAddr = table.getIdentifierAddress(ident.getLexeme());
-                NaturalValue retAddrValue = NaturalValue.valueOf(paramsEtq + 1);
+                NaturalValue retAddrValue = NaturalValue.valueOf(paramsEtq + 2);
 
                 // Paso 1: Restructurar los punteros SP y FP
                 // Para ello, siendo SP=M[0] y FP=M[1]:
                 // . M[SP+1] = RETADDR
                 // . M[SP+2] = FP
                 // . SP = SP + 2
-                // . FP = SP + 1
+                // . FP = SP + 1 <-- PERO SE HA DE QUEDAR EN PILA
                 // Lo cual se traduce en
                 // PUSH(RETADDR), LOAD(0), PUSH(1), ADD, STORE-IND,
                 // . LOAD(1), LOAD(0), PUSH(2), ADD, STORE-IND,
                 // . LOAD(0), PUSH(2), ADD, STORE(0),
-                // . LOAD(0), PUSH(1), ADD, STORE(1)
+                // . LOAD(0), PUSH(1), ADD, --No hacemos store aún--
                 // Con esto almacenamos la dir. retorno, actualizamos SP y FP y los dejamos preparados.
                 List<Instruction> code1 =
                     Arrays.asList(
@@ -1447,7 +1447,7 @@ public final class Attribution extends Atribucion {
                         new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
                         // --
                         new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(1)),
-                        new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(1, Type.NATURAL)
+                        new BinaryOperatorInstruction(BinaryOperator.ADDITION)
 
                     );
 
@@ -1457,8 +1457,10 @@ public final class Attribution extends Atribucion {
 
                 // Paso 3: Saltar!
                 // Es decir:
+                // . STORE(1) -- El que nos dejamos antes!
                 // . JUMP(FUNADDR)
-                Instruction code3 = new JumpInstruction(funAddr);
+                List<Instruction> code3 =
+                    Arrays.asList(new StoreInstruction(1, Type.NATURAL), new JumpInstruction(funAddr));
 
                 // Paso 4:
                 // Volvemos de la función, toca deshacer:
@@ -1482,10 +1484,10 @@ public final class Attribution extends Atribucion {
         });
 
         dependencias(srParams.a("etqh"), attr.a("etqh"));
-        calculo(srParams.a("etqh"), new IncrementFun(18));
+        calculo(srParams.a("etqh"), new IncrementFun(17));
 
         dependencias(attr.a("etq"), srParams.a("etq"));
-        calculo(attr.a("etq"), new IncrementFun(10));
+        calculo(attr.a("etq"), new IncrementFun(11));
 
         return attr;
     }
@@ -1770,6 +1772,7 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), attr.a("tsh"), identLex, attr.a("err"), expr.a("etq"), attr.a("nombresubprogh"));
         calculo(attr.a("etq"), new SemFun() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable table = (SymbolTable) args[0].valor();

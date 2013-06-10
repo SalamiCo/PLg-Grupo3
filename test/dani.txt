@@ -5,23 +5,25 @@ program: test {
 
 	vars {
 		var natural res;
+		var natural n;
 	}
 	
 	subprograms {
 		subprogram: fact(natural n, natural* r) {
 			instructions {
-				out(n);
 				if n == 0 then
 					r = 1;
 				else
 					call fact(n=n-1, r=r);
+					r = r*n
 				endif;
 			}
 		}
 	}
 	
 	instructions {
-		call fact(n=6, r=res);
+		in(n);
+		call fact(n=n, r=res);
 		out(res);
 	}
 }
