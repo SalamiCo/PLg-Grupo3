@@ -120,7 +120,7 @@ public final class Memory<T> {
             for (T item : items) {
                 String str = item == null ? "--" : item.toString();
                 if (str.length() > 8) {
-                    str = str.substring(-8);
+                    str = str.substring(str.length() - 8);
                 }
                 sb.append(String.format(" %8s", str));
             }
