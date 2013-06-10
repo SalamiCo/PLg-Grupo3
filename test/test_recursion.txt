@@ -1,0 +1,23 @@
+program: testRecursion {
+	
+	subprograms {
+		subprogram: outRec(natural i) {
+		
+			vars {
+				var natural aux;
+			}
+			
+			instructions {				
+				out(i);
+				if i > 0 then
+					aux = i - 1;
+					call outRec(i=aux);
+				endif;
+			}
+		}
+	}
+	
+	instructions {
+		call outRec(i=9);
+	}
+}
