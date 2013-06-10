@@ -1,0 +1,45 @@
+@ Programa potencia
+program: potencia{
+  
+  tipos {
+    @tresultado: (base,exp,result)
+    tipo (natural,natural,natural) tresultado;   
+  } 
+     
+	vars {
+	var natural base;
+	var natural exp;
+    var tresultado resul;
+  }
+  
+  subprograms {
+
+    subprogram: pot(natural base, natural exp, tresultado * result){
+        vars {
+          var natural i;
+          var natural aux;
+        }  
+        instructions {
+          i=0;
+          aux=1;
+          while i < exp do
+            aux = aux * base;
+            i = i+1     
+          endwhile;
+          result_0 = base;
+          result_1 = exp;
+          result_2 = aux;
+        }
+    }
+    
+  }
+  
+	instructions {
+		in(base);
+		in(exp);
+	    call pot(base=base, exp=exp, result=resul);
+	    out(resul_0);
+	    out(resul_1);
+	    out(resul_2)
+	}
+}

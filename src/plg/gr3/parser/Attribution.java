@@ -3137,7 +3137,7 @@ public final class Attribution extends Atribucion {
 
         asigna(paren.a("refh"), attr.a("refh"));
 
-        dependencias(attr.a("cod"), paren.a("cod"), cast.a("type"));
+        dependencias(attr.a("cod"), paren.a("cod"), cast.a("tipo"));
         calculo(attr.a("cod"), new SemFun() {
             @Override
             public Object eval (Atributo... attrs) {
@@ -3164,10 +3164,10 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 Type type1 = (Type) args[0].valor();
                 Type type2 = (Type) args[2].valor();
+                // FIXME necesito la linea y la columna para el error de casting
+                CompileError err = Type.canCast(type1, type2) ? null : new CastingError(type2, type1, 0, 0);
 
-                CompileError err = Type.canCast(type1, type2) ? new AssignationTypeError(type2, type1, null) : null;
-
-                return ConcatErrorsFun.INSTANCE.eval(args[0], a(err));
+                return ConcatErrorsFun.INSTANCE.eval(args[1], a(err));
             }
         });
 
