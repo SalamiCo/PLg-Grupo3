@@ -1128,14 +1128,13 @@ public final class Attribution extends Atribucion {
 
         dependencias(attr.a("cod"), desig.a("tipo"), desig.a("cod"));
         calculo(attr.a("cod"), new SemFun() {
-            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
                 Type type = (Type) args[0].valor();
-                List<Instruction> code = (List<Instruction>) args[1].valor();
+                // List<Instruction> code = (List<Instruction>) args[1].valor();
 
                 return ConcatCodeFun.INSTANCE.eval(
-                    a(new InputInstruction(type)), a(code), a(new IndirectStoreInstruction(type)));
+                    a(new InputInstruction(type)), args[1], a(new IndirectStoreInstruction(type)));
             }
         });
 
@@ -1663,7 +1662,6 @@ public final class Attribution extends Atribucion {
             attr.a("err"), expr.a("err"), expr.a("tsh"), identLex, attr.a("tsh"), attr.a("nombresubprogh"), expr
                 .a("tipo"), expr.a("desig"), attr.a("listaparamnombresh"));
         calculo(attr.a("err"), new SemFun() {
-            @SuppressWarnings("unchecked")
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable table = (SymbolTable) args[1].valor();
@@ -3153,7 +3151,7 @@ public final class Attribution extends Atribucion {
                 Type tCast = (Type) attrs[0].valor();
                 Type tParen = (Type) attrs[1].valor();
 
-                return Type.canCast(tCast, tParen);
+                return Type.canCast(tCast, tParen) ? tCast : Type.ERROR;
             }
         });
 
