@@ -159,9 +159,8 @@ public final class VirtualMachine {
 
     public Value readValue (Type type) throws IOException {
         writer.write("<INPUT> ");
+        writer.flush();
         String str = reader.readLine();
-        writer.write(str);
-        writer.write('\n');
         writer.flush();
         if (type.equals(Type.NATURAL)) {
             return NaturalValue.valueOf(str);

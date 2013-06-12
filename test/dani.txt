@@ -1,16 +1,33 @@
 program: test {
 
-	consts {
-		const character C = -'c';
-		const integer I = 10.2;
-		const natural N = -3;
-	}
-
 	vars {
-		var natural n;
+		var integer b;
+		var natural e;
+		var integer n;
+	}
+	
+	subprograms {
+		subprogram: pow (integer base, natural exp, integer * result) {
+			
+			instructions {
+				result = 1;
+				while exp > 0 do
+					result = result * base;
+					exp = exp - 1;
+				endwhile;
+			}
+		}
 	}
 	
 	instructions {
-		n = 'n' + '1';
+		out('b');
+		in(b);
+		
+		out('e');
+		in(e);
+		
+		call pow (base = b, exp = e, result = n);
+		out('r');
+		out(n)
 	}
 }
