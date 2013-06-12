@@ -19,9 +19,7 @@ parser code {:
 :}
 
 // Definición de los terminales del lenguaje 
-terminal String IDENT, LITNAT, LITFLOAT, LITCHAR,ASIG;
-
-terminal TRUE, FALSE, PROGRAM,
+terminal String IDENT, LITNAT, LITFLOAT, LITCHAR, ASIG, TRUE, FALSE, PROGRAM,
  SUBPROGRAM, VARS, TIPOS, CONSTS, SUBPROGRAMS, INSTRUCTIONS, VAR, CONST, TIPO,
  IN, OUT, CALL, SWAP1, SWAP2, FLOAT, INTEGER, NATURAL, CHARACTER, BOOLEAN, 
  INT, NAT, CHAR, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDWHILE, 
@@ -333,8 +331,8 @@ Expr ::= Term:term_1 Op0:op0 Term:term_2 {:
 Term ::= Term:term_1 Op1:op1 Fact:fact {:
 	RESULT = attr.term_R1(term_1, op1, fact);
 :}
-	   | Term:term_1 OR Fact:fact {:
-	RESULT = attr.term_R2(term_1, fact);
+	   | Term:term_1 OR:or Fact:fact {:
+	RESULT = attr.term_R2(term_1, fact, new Lexeme(or, orleft, orright));
 :}
        | Fact:fact {:
 	RESULT = attr.term_R3(fact);
@@ -343,8 +341,8 @@ Term ::= Term:term_1 Op1:op1 Fact:fact {:
 Fact ::= Fact:fact_1 Op2:op3 Shft:shft {:
 	RESULT = attr.fact_R1(fact_1, op3, shft);
 :}
-	   | Fact:fact_1 AND Shft:shft {:
-	RESULT = attr.fact_R2(fact_1, shft);
+	   | Fact:fact_1 AND:and Shft:shft {:
+	RESULT = attr.fact_R2(fact_1, shft, new Lexeme(and, andleft, andright));
 :}
        | Shft:shft {:
 	RESULT = attr.fact_R3(shft);
@@ -378,54 +376,54 @@ Paren ::= IPAR Expr:expr FPAR {:
 :};
 
 
-Op0 ::= IGUAL {:
-	RESULT = attr.op0_R1();
+Op0 ::= IGUAL:o {:
+	RESULT = attr.op0_R1(new Lexeme(o, oleft, oright));
 :}
-      | NOIGUAL {:
-	RESULT = attr.op0_R2();
+      | NOIGUAL:o {:
+	RESULT = attr.op0_R2(new Lexeme(o, oleft, oright));
 :}
-      | MEN {:
-	RESULT = attr.op0_R3();
+      | MEN:o {:
+	RESULT = attr.op0_R3(new Lexeme(o, oleft, oright));
 :}
-      | MAY {:
-	RESULT = attr.op0_R4();
+      | MAY:o {:
+	RESULT = attr.op0_R4(new Lexeme(o, oleft, oright));
 :}
-      | MENOIG {:
-	RESULT = attr.op0_R5();
+      | MENOIG:o {:
+	RESULT = attr.op0_R5(new Lexeme(o, oleft, oright));
 :}
-      | MAYOIG {:
-	RESULT = attr.op0_R6();
+      | MAYOIG:o {:
+	RESULT = attr.op0_R6(new Lexeme(o, oleft, oright));
 :};
 
-Op1 ::= MENOS {:
-	RESULT = attr.op1_R1();
+Op1 ::= MENOS:o {:
+	RESULT = attr.op1_R1(new Lexeme(o, oleft, oright));
 :}
-      | MAS {:
-	RESULT = attr.op1_R2();
+      | MAS:o {:
+	RESULT = attr.op1_R2(new Lexeme(o, oleft, oright));
 :};
 
-Op2 ::= MOD {:
-	RESULT = attr.op2_R1();
+Op2 ::= MOD:o {:
+	RESULT = attr.op2_R1(new Lexeme(o, oleft, oright));
 :}
-      | DIV {:
-	RESULT = attr.op2_R2();
+      | DIV:o {:
+	RESULT = attr.op2_R2(new Lexeme(o, oleft, oright));
 :}
-      | MUL {:
-	RESULT = attr.op2_R3();
+      | MUL:o {:
+	RESULT = attr.op2_R3(new Lexeme(o, oleft, oright));
 :};
 
-Op3 ::= LSH {:
-	RESULT = attr.op3_R1();
+Op3 ::= LSH:o {:
+	RESULT = attr.op3_R1(new Lexeme(o, oleft, oright));
 :}
-      | RSH {:
-	RESULT = attr.op3_R2();
+      | RSH:o {:
+	RESULT = attr.op3_R2(new Lexeme(o, oleft, oright));
 :};
 
-Op4 ::= NOT {:
-	RESULT = attr.op4_R1();
+Op4 ::= NOT:o {:
+	RESULT = attr.op4_R1(new Lexeme(o, oleft, oright));
 :}
-      | MENOS {:
-    RESULT = attr.op4_R2();
+      | MENOS:o {:
+    RESULT = attr.op4_R2(new Lexeme(o, oleft, oright));
 :};
 
 

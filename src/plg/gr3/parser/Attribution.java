@@ -785,7 +785,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos cast_R1 (Lexeme lex) {
         regla("Cast -> CHAR");
-        TAtributos attr = atributosPara("Cast", "tipo");
+        TAtributos attr = atributosPara("Cast", "tipo", "lex");
 
         asigna(attr.a("tipo"), a(Type.CHARACTER));
 
@@ -799,27 +799,27 @@ public final class Attribution extends Atribucion {
         TAtributos attr = atributosPara("Cast", "tipo");
 
         asigna(attr.a("tipo"), a(Type.INTEGER));
-        asigna(attr.a("lex"), atributoLexicoPara("CHAR", "lex", lex));
+        asigna(attr.a("lex"), atributoLexicoPara("INT", "lex", lex));
 
         return attr;
     }
 
     public TAtributos cast_R3 (Lexeme lex) {
         regla("Cast -> NAT");
-        TAtributos attr = atributosPara("Cast", "tipo");
+        TAtributos attr = atributosPara("Cast", "tipo", "lex");
 
         asigna(attr.a("tipo"), a(Type.NATURAL));
-        asigna(attr.a("lex"), atributoLexicoPara("CHAR", "lex", lex));
+        asigna(attr.a("lex"), atributoLexicoPara("NAT", "lex", lex));
 
         return attr;
     }
 
     public TAtributos cast_R4 (Lexeme lex) {
         regla("Cast -> FLOAT");
-        TAtributos attr = atributosPara("Cast", "tipo");
+        TAtributos attr = atributosPara("Cast", "tipo", "lex");
 
         asigna(attr.a("tipo"), a(Type.FLOAT));
-        asigna(attr.a("lex"), atributoLexicoPara("CHAR", "lex", lex));
+        asigna(attr.a("lex"), atributoLexicoPara("FLOAT", "lex", lex));
 
         return attr;
     }
@@ -3321,145 +3321,160 @@ public final class Attribution extends Atribucion {
 
     // Op0
 
-    public TAtributos op0_R1 () {
+    public TAtributos op0_R1 (Lexeme lex) {
         regla("Op0 -> IGUAL");
-        TAtributos attr = atributosPara("Op0", "op");
+        TAtributos attr = atributosPara("Op0", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.EQUALS));
+        asigna(attr.a("lex"), atributoLexicoPara("IGUAL", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op0_R2 () {
+    public TAtributos op0_R2 (Lexeme lex) {
         regla("Op0 -> NOIGUAL");
-        TAtributos attr = atributosPara("Op0", "op");
+        TAtributos attr = atributosPara("Op0", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.NOT_EQUALS));
+        asigna(attr.a("lex"), atributoLexicoPara("NOIGUAL", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op0_R3 () {
+    public TAtributos op0_R3 (Lexeme lex) {
         regla("Op0 -> MEN");
-        TAtributos attr = atributosPara("Op0", "op");
+        TAtributos attr = atributosPara("Op0", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.LOWER_THAN));
+        asigna(attr.a("lex"), atributoLexicoPara("MEN", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op0_R4 () {
+    public TAtributos op0_R4 (Lexeme lex) {
         regla("Op0 -> MAY");
-        TAtributos attr = atributosPara("Op0", "op");
+        TAtributos attr = atributosPara("Op0", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.GREATER_THAN));
+        asigna(attr.a("lex"), atributoLexicoPara("MAY", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op0_R5 () {
+    public TAtributos op0_R5 (Lexeme lex) {
         regla("Op0 -> MENOIG");
-        TAtributos attr = atributosPara("Op0", "op");
+        TAtributos attr = atributosPara("Op0", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.LOWER_EQUAL));
+        asigna(attr.a("lex"), atributoLexicoPara("MENOIG", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op0_R6 () {
+    public TAtributos op0_R6 (Lexeme lex) {
         regla("Op0 -> MAYOIG");
-        TAtributos attr = atributosPara("Op0", "op");
+        TAtributos attr = atributosPara("Op0", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.GREATER_EQUALS));
+        asigna(attr.a("lex"), atributoLexicoPara("MAYOIG", "lex", lex));
 
         return attr;
     }
 
     // Op1
 
-    public TAtributos op1_R1 () {
+    public TAtributos op1_R1 (Lexeme lex) {
         regla("Op1 -> MENOS");
-        TAtributos attr = atributosPara("Op1", "op");
+        TAtributos attr = atributosPara("Op1", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.SUBTRACTION));
+        asigna(attr.a("lex"), atributoLexicoPara("MENOS", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op1_R2 () {
+    public TAtributos op1_R2 (Lexeme lex) {
         regla("Op1 -> MAS");
-        TAtributos attr = atributosPara("Op1", "op");
+        TAtributos attr = atributosPara("Op1", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.ADDITION));
+        asigna(attr.a("lex"), atributoLexicoPara("MAS", "lex", lex));
 
         return attr;
     }
 
     // Op2
 
-    public TAtributos op2_R1 () {
+    public TAtributos op2_R1 (Lexeme lex) {
         regla("Op2 -> MOD");
-        TAtributos attr = atributosPara("Op2", "op");
+        TAtributos attr = atributosPara("Op2", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.MODULO));
+        asigna(attr.a("lex"), atributoLexicoPara("MOD", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op2_R2 () {
+    public TAtributos op2_R2 (Lexeme lex) {
         regla("Op2 -> DIV");
-        TAtributos attr = atributosPara("Op2", "op");
+        TAtributos attr = atributosPara("Op2", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.DIVISION));
+        asigna(attr.a("lex"), atributoLexicoPara("DIV", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op2_R3 () {
+    public TAtributos op2_R3 (Lexeme lex) {
         regla("Op2 -> MUL");
-        TAtributos attr = atributosPara("Op2", "op");
+        TAtributos attr = atributosPara("Op2", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.PRODUCT));
+        asigna(attr.a("lex"), atributoLexicoPara("MUL", "lex", lex));
 
         return attr;
     }
 
     // Op3
 
-    public TAtributos op3_R1 () {
+    public TAtributos op3_R1 (Lexeme lex) {
         regla("Op3 -> LSH");
-        TAtributos attr = atributosPara("Op3", "op");
+        TAtributos attr = atributosPara("Op3", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.SHIFT_LEFT));
+        asigna(attr.a("lex"), atributoLexicoPara("LSH", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op3_R2 () {
+    public TAtributos op3_R2 (Lexeme lex) {
         regla("Op3 -> RSH");
-        TAtributos attr = atributosPara("Op3", "op");
+        TAtributos attr = atributosPara("Op3", "op", "lex");
 
         asigna(attr.a("op"), a(BinaryOperator.SHIFT_RIGHT));
+        asigna(attr.a("lex"), atributoLexicoPara("RSH", "lex", lex));
 
         return attr;
     }
 
     // Op4
 
-    public TAtributos op4_R1 () {
+    public TAtributos op4_R1 (Lexeme lex) {
         regla("Op4 -> NOT");
-        TAtributos attr = atributosPara("Op4", "op");
+        TAtributos attr = atributosPara("Op4", "op", "lex");
 
         asigna(attr.a("op"), a(UnaryOperator.NOT));
+        asigna(attr.a("lex"), atributoLexicoPara("NOT", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos op4_R2 () {
+    public TAtributos op4_R2 (Lexeme lex) {
         regla("Op4 -> MENOS");
-        TAtributos attr = atributosPara("Op4", "op");
+        TAtributos attr = atributosPara("Op4", "op", "lex");
 
         asigna(attr.a("op"), a(UnaryOperator.MINUS));
+        asigna(attr.a("lex"), atributoLexicoPara("MENOS", "lex", lex));
 
         return attr;
     }
