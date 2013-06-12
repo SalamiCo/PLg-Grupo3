@@ -116,12 +116,6 @@ public final class Attribution extends Atribucion {
 
         asigna(sVars.a("dirh"), attr.a("dirh"));
 
-//        dependencias(sSubprogs.a("dirh"), sVars.a("dir"));
-//        calculo(sSubprogs.a("dirh"), AsignationFun.INSTANCE);
-
-//        dependencias(sInsts.a("dirh"), sSubprogs.a("dir"));
-//        calculo(sInsts.a("dirh"), AsignationFun.INSTANCE);
-
         // Program.err
         dependencias(attr.a("err"), sConsts.a("err"), sTypes.a("err"), sVars.a("err"), sSubprogs.a("err"), sInsts
             .a("err"));
@@ -2636,7 +2630,9 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), term_2.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
-        dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), op0.a("op"), term_2.a("err"), term_2.a("tipo"));
+        dependencias(
+            attr.a("err"), term_1.a("err"), term_1.a("tipo"), op0.a("op"), term_2.a("err"), term_2.a("tipo"), op0
+                .a("lex"));
         calculo(attr.a("err"), new SemFun() {
 
             @Override
@@ -2644,9 +2640,11 @@ public final class Attribution extends Atribucion {
                 Type type1 = (Type) args[1].valor();
                 BinaryOperator op = (BinaryOperator) args[2].valor();
                 Type type2 = (Type) args[4].valor();
+                Lexeme opLex = (Lexeme) args[5].valor();
 
                 CompileError err =
-                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2)
+                        ? new OperatorError(type1, type2, op, opLex.getLine(), opLex.getColumn()) : null;
 
                 return ConcatErrorsFun.INSTANCE.eval(a(err), args[0], args[3]);
             }
@@ -2725,7 +2723,8 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), fact.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
-        dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), op1.a("op"), fact.a("err"), fact.a("tipo"));
+        dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), op1.a("op"), fact.a("err"), fact.a("tipo"), op1
+            .a("lex"));
         calculo(attr.a("err"), new SemFun() {
 
             @Override
@@ -2733,9 +2732,11 @@ public final class Attribution extends Atribucion {
                 Type type1 = (Type) args[1].valor();
                 BinaryOperator op = (BinaryOperator) args[2].valor();
                 Type type2 = (Type) args[4].valor();
+                Lexeme opLex = (Lexeme) args[5].valor();
 
                 CompileError err =
-                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2)
+                        ? new OperatorError(type1, type2, op, opLex.getLine(), opLex.getColumn()) : null;
 
                 return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
@@ -2744,9 +2745,10 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos term_R2 (TAtributos term_1, TAtributos fact) {
+    public TAtributos term_R2 (TAtributos term_1, TAtributos fact, Lexeme or) {
         regla("Term -> Term OR Fact");
         TAtributos attr = atributosPara("Term", "tipo", "op", "tsh", "desig", "cod", "etq", "etqh", "err", "refh");
+        Atributo orLex = atributoLexicoPara("OR", "lex", or);
 
         dependencias(attr.a("cod"), term_1.a("cod"), fact.a("etq"), fact.a("cod"));
         calculo(attr.a("cod"), new SemFun() {
@@ -2788,7 +2790,7 @@ public final class Attribution extends Atribucion {
 
         asigna(fact.a("refh"), attr.a("refh"));
 
-        dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), fact.a("err"), fact.a("tipo"));
+        dependencias(attr.a("err"), term_1.a("err"), term_1.a("tipo"), fact.a("err"), fact.a("tipo"), orLex);
         calculo(attr.a("err"), new SemFun() {
 
             @Override
@@ -2796,9 +2798,11 @@ public final class Attribution extends Atribucion {
                 Type type1 = (Type) args[1].valor();
                 BinaryOperator op = BinaryOperator.OR;
                 Type type2 = (Type) args[3].valor();
+                Lexeme opLex = (Lexeme) args[4].valor();
 
                 CompileError err =
-                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2)
+                        ? new OperatorError(type1, type2, op, opLex.getLine(), opLex.getColumn()) : null;
 
                 return ConcatErrorsFun.INSTANCE.eval(args[0], args[2], a(err));
             }
@@ -2900,9 +2904,10 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos fact_R2 (TAtributos fact_1, TAtributos shft) {
+    public TAtributos fact_R2 (TAtributos fact_1, TAtributos shft, Lexeme and) {
         regla("Fact -> Fact AND Shft");
         TAtributos attr = atributosPara("Fact", "tipo", "tsh", "desig", "cod", "etq", "err", "etqh", "refh");
+        Atributo andLex = atributoLexicoPara("AND", "lex", and);
 
         dependencias(attr.a("tipo"), fact_1.a("tipo"), shft.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -2943,7 +2948,7 @@ public final class Attribution extends Atribucion {
 
         asigna(attr.a("etq"), shft.a("etq"));
 
-        dependencias(attr.a("err"), fact_1.a("err"), fact_1.a("tipo"), shft.a("err"), shft.a("tipo"));
+        dependencias(attr.a("err"), fact_1.a("err"), fact_1.a("tipo"), shft.a("err"), shft.a("tipo"), andLex);
         calculo(attr.a("err"), new SemFun() {
 
             @Override
@@ -2951,9 +2956,11 @@ public final class Attribution extends Atribucion {
                 Type type1 = (Type) args[1].valor();
                 BinaryOperator op = BinaryOperator.AND;
                 Type type2 = (Type) args[3].valor();
+                Lexeme opLex = (Lexeme) args[4].valor();
 
                 CompileError err =
-                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2)
+                        ? new OperatorError(type1, type2, op, opLex.getLine(), opLex.getColumn()) : null;
 
                 return ConcatErrorsFun.INSTANCE.eval(args[0], args[2], a(err));
             }
@@ -3034,7 +3041,9 @@ public final class Attribution extends Atribucion {
         dependencias(attr.a("etq"), shft_1.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(1));
 
-        dependencias(attr.a("err"), unary.a("err"), unary.a("tipo"), op3.a("op"), shft_1.a("err"), shft_1.a("tipo"));
+        dependencias(
+            attr.a("err"), unary.a("err"), unary.a("tipo"), op3.a("op"), shft_1.a("err"), shft_1.a("tipo"), op3
+                .a("lex"));
         calculo(attr.a("err"), new SemFun() {
 
             @Override
@@ -3042,9 +3051,11 @@ public final class Attribution extends Atribucion {
                 Type type1 = (Type) args[1].valor();
                 BinaryOperator op = (BinaryOperator) args[2].valor();
                 Type type2 = (Type) args[4].valor();
+                Lexeme opLex = (Lexeme) args[5].valor();
 
                 CompileError err =
-                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2)
+                        ? new OperatorError(type1, type2, op, opLex.getLine(), opLex.getColumn()) : null;
 
                 return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
@@ -3115,15 +3126,17 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), op4.a("op"), unary_1.a("err"), unary_1.a("tipo"));
+        dependencias(attr.a("err"), op4.a("op"), unary_1.a("err"), unary_1.a("tipo"), op4.a("lex"));
         calculo(attr.a("err"), new SemFun() {
 
             @Override
             public Object eval (Atributo... args) {
                 UnaryOperator op = (UnaryOperator) args[0].valor();
                 Type type = (Type) args[2].valor();
+                Lexeme opLex = (Lexeme) args[3].valor();
 
-                CompileError err = !op.canApply(type) ? new OperatorError(type, op, 0xFFFFFF, 0xFFFFFF) : null;
+                CompileError err =
+                    !op.canApply(type) ? new OperatorError(type, op, opLex.getLine(), opLex.getColumn()) : null;
 
                 return ConcatErrorsFun.INSTANCE.eval(args[1], a(err));
             }
