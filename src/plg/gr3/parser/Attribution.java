@@ -1300,6 +1300,7 @@ public final class Attribution extends Atribucion {
 
         asigna(instCall.a("tsh"), attr.a("tsh"));
 
+        dependencias(attr.a("err"), instCall.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
 
         dependencias(attr.a("cod"), instCall.a("cod"));
@@ -1383,13 +1384,15 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), srParams.a("err"), srParams.a("tsh"), identLex, srParams.a("nparams"));
+        dependencias(attr.a("err"), srParams.a("err"), srParams.a("tsh"), identLex, srParams.a("nparams"), srParams
+            .a("listaparamnombres"));
         calculo(attr.a("err"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
                 SymbolTable ts = (SymbolTable) args[1].valor();
                 Lexeme ident = (Lexeme) args[2].valor();
                 Integer nparams = (Integer) args[3].valor();
+                List<Lexeme> lparNames = (List<Lexeme>) args[4].valor();
 
                 List<CompileError> errs = new ArrayList<>();
 
@@ -1404,6 +1407,20 @@ public final class Attribution extends Atribucion {
                     // que esta declarado
                     if (nparams.intValue() != numParamsFormales.intValue()) {
                         errs.add(new InvalidNumberOfParametersError(ident, nparams, numParamsFormales));
+                    }
+
+                    // Comprobamos que no se han definido parámetros varias veces
+                    for (int i = 0; i < lparNames.size(); i++) {
+                        Lexeme param = lparNames.get(i);
+
+                        boolean cont = true;
+                        for (int j = i + 1; j < lparNames.size() && cont; j++) {
+                            if (lparNames.get(j).getLexeme().equals(param.getLexeme())) {
+                                errs.add(new DuplicateParameterError(param.getLexeme(), param.getLine(), param
+                                    .getColumn()));
+                                cont = false;
+                            }
+                        }
                     }
                 }
 
@@ -1676,6 +1693,7 @@ public final class Attribution extends Atribucion {
                 SymbolTable table = (SymbolTable) args[1].valor();
                 Lexeme identParamReal = (Lexeme) args[2].valor();
                 Lexeme identSubprog = (Lexeme) args[4].valor();
+                List<Lexeme> lparNames = (List<Lexeme>) args[7].valor();
 
                 List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
                 List<CompileError> errors = new ArrayList<>();
@@ -1708,7 +1726,7 @@ public final class Attribution extends Atribucion {
                     // Comprobamos que la expresion sea un designador
                     boolean esDesig = (boolean) args[6].valor();
                     if (paramFormal.isReference() && !esDesig) {
-                        errors.add(new ExpectedDesignator(
+                        errors.add(new NotADesignatorError(
                             identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()));
                     }
                 }

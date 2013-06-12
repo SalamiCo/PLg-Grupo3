@@ -26,7 +26,7 @@ program: test {
 		out('e');
 		in(e);
 		
-		call pow (base = b, result = n+1, result = n);
+		call pow (base = b, exp = e, result = n);
 		out('r');
 		out(n)
 	}
