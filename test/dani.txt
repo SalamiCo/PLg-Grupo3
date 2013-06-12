@@ -1,29 +1,10 @@
 program: test {
-	consts {
-		const natural SIZE = 8;
-	}
 
 	vars {
-		var natural res;
 		var natural n;
 	}
 	
-	subprograms {
-		subprogram: fact(natural n, natural* r) {
-			instructions {
-				if n == 0 then
-					r = 1;
-				else
-					call fact(n=n-1, r=r);
-					r = r*n
-				endif;
-			}
-		}
-	}
-	
 	instructions {
-		in(n);
-		call fact(n=n, r=res);
-		out(res);
+		n = 'n' + '1';
 	}
 }

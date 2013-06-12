@@ -20,7 +20,7 @@ public class CastingError extends CompileError {
     @Override
     public String getErrorMessage () {
         final String format = "No se puede convertir '%s' al tipo '%s'";
-        return String.format(format, typeCasted, typeCasting);
+        return String.format(format, typeCasting, typeCasted);
     }
 
 }

@@ -260,7 +260,9 @@ public final class Attribution extends Atribucion {
                 Lexeme lex = (Lexeme) args[2].valor();
 
                 if (!left.compatible(right)) {
-                    return new AssignationTypeError(left, right, lex);
+                    if (left != Type.ERROR && right != Type.ERROR) {
+                        return new AssignationTypeError(left, right, lex);
+                    }
                 }
 
                 return ConcatErrorsFun.INSTANCE.eval();
@@ -781,38 +783,43 @@ public final class Attribution extends Atribucion {
 
     // Cast
 
-    public TAtributos cast_R1 () {
+    public TAtributos cast_R1 (Lexeme lex) {
         regla("Cast -> CHAR");
         TAtributos attr = atributosPara("Cast", "tipo");
 
         asigna(attr.a("tipo"), a(Type.CHARACTER));
 
+        asigna(attr.a("lex"), atributoLexicoPara("CHAR", "lex", lex));
+
         return attr;
     }
 
-    public TAtributos cast_R2 () {
+    public TAtributos cast_R2 (Lexeme lex) {
         regla("Cast -> INT");
         TAtributos attr = atributosPara("Cast", "tipo");
 
         asigna(attr.a("tipo"), a(Type.INTEGER));
+        asigna(attr.a("lex"), atributoLexicoPara("CHAR", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos cast_R3 () {
+    public TAtributos cast_R3 (Lexeme lex) {
         regla("Cast -> NAT");
         TAtributos attr = atributosPara("Cast", "tipo");
 
         asigna(attr.a("tipo"), a(Type.NATURAL));
+        asigna(attr.a("lex"), atributoLexicoPara("CHAR", "lex", lex));
 
         return attr;
     }
 
-    public TAtributos cast_R4 () {
+    public TAtributos cast_R4 (Lexeme lex) {
         regla("Cast -> FLOAT");
         TAtributos attr = atributosPara("Cast", "tipo");
 
         asigna(attr.a("tipo"), a(Type.FLOAT));
+        asigna(attr.a("lex"), atributoLexicoPara("CHAR", "lex", lex));
 
         return attr;
     }
@@ -875,7 +882,9 @@ public final class Attribution extends Atribucion {
 
                     Type typeFound = table.getIdentfierType(identName);
                     if (!typeFound.compatible(Type.NATURAL)) {
-                        errs.add(new AssignationTypeError(typeFound, Type.NATURAL, ident));
+                        if (typeFound != Type.ERROR) {
+                            errs.add(new AssignationTypeError(typeFound, Type.NATURAL, ident));
+                        }
                     }
                 }
                 return ConcatErrorsFun.INSTANCE.eval(a(errs));
@@ -1084,7 +1093,9 @@ public final class Attribution extends Atribucion {
                 List<CompileError> errs = new ArrayList<>();
 
                 if (!desigType.compatible(exprType)) {
-                    errs.add(new AssignationTypeError(exprType, desigType, lex));
+                    if (exprType != Type.ERROR && desigType != Type.ERROR) {
+                        errs.add(new AssignationTypeError(exprType, desigType, lex));
+                    }
                 }
 
                 if (isconst) {
@@ -1690,7 +1701,9 @@ public final class Attribution extends Atribucion {
                     Type paramT = paramFormal.getType();
 
                     if (!paramT.compatible(exprT)) {
-                        errors.add(new AssignationTypeError(paramT, exprT, identParamReal));
+                        if (paramT != Type.ERROR && exprT != Type.ERROR) {
+                            errors.add(new AssignationTypeError(paramT, exprT, identParamReal));
+                        }
                     }
 
                     // Comprobamos que la expresion sea un designador
@@ -1700,8 +1713,6 @@ public final class Attribution extends Atribucion {
                             identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()));
                     }
                 }
-
-                // TODO el error de la lista ident ∈ listaparamnombresh. Pero las listas todavia no estan hechas
 
                 return ConcatErrorsFun.INSTANCE.eval(args[0], a(errors));
             }
@@ -1823,7 +1834,7 @@ public final class Attribution extends Atribucion {
                 nombres.add(ident);
                 return nombres;
             }
-        }); // TODO listaparamnombres ++ ident
+        });
 
         return attr;
     }
@@ -2011,7 +2022,6 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // FIXME
         dependencias(attr.a("cod"), sInsts.a("cod"));
         calculo(attr.a("cod"), new SemFun() {
 
@@ -2868,7 +2878,8 @@ public final class Attribution extends Atribucion {
 
         calculo(attr.a("desig"), AndFun.INSTANCE);
 
-        dependencias(attr.a("err"), fact_1.a("err"), fact_1.a("tipo"), op2.a("op"), shft.a("err"), shft.a("tipo"));
+        dependencias(attr.a("err"), fact_1.a("err"), fact_1.a("tipo"), op2.a("op"), shft.a("err"), shft.a("tipo"), op2
+            .a("lex"));
         calculo(attr.a("err"), new SemFun() {
 
             @Override
@@ -2876,9 +2887,11 @@ public final class Attribution extends Atribucion {
                 Type type1 = (Type) args[1].valor();
                 BinaryOperator op = (BinaryOperator) args[2].valor();
                 Type type2 = (Type) args[4].valor();
+                Lexeme opLex = (Lexeme) args[5].valor();
 
                 CompileError err =
-                    !op.canApply(type1, type2) ? new OperatorError(type1, type2, op, 0xFFFFFF, 0xFFFFFF) : null;
+                    !op.canApply(type1, type2)
+                        ? new OperatorError(type1, type2, op, opLex.getLine(), opLex.getColumn()) : null;
 
                 return ConcatErrorsFun.INSTANCE.eval(args[0], args[3], a(err));
             }
@@ -2918,7 +2931,6 @@ public final class Attribution extends Atribucion {
             @Override
             public Object eval (Atributo... attrs) {
                 int shftEtq = (int) attrs[1].valor();
-                // TODO sustituir las funciones por su código
                 return ConcatCodeFun.INSTANCE.eval(attrs[0], a(new DuplicateInstruction()), a(new BranchInstruction(
                     shftEtq, BooleanValue.FALSE)), a(new DropInstruction()), attrs[2]);
             }
@@ -3162,8 +3174,11 @@ public final class Attribution extends Atribucion {
             public Object eval (Atributo... args) {
                 Type type1 = (Type) args[0].valor();
                 Type type2 = (Type) args[2].valor();
-                // FIXME necesito la linea y la columna para el error de casting
-                CompileError err = Type.canCast(type1, type2) ? null : new CastingError(type2, type1, 0, 0);
+                Lexeme castLex = (Lexeme) args[3].valor();
+
+                CompileError err =
+                    Type.canCast(type1, type2) ? null : new CastingError(type2, type1, castLex.getLine(), castLex
+                        .getColumn());
 
                 return ConcatErrorsFun.INSTANCE.eval(args[1], a(err));
             }

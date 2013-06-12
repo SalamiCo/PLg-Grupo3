@@ -159,17 +159,17 @@ TPrim ::= NATURAL {:
 	RESULT = attr.tPrim_R5();
 :};
 
-Cast ::= CHAR {:
-	RESULT = attr.cast_R1();
+Cast ::= CHAR:c {:
+	RESULT = attr.cast_R1(new Lexeme(c, cleft, cright));
 :}
-       | INT {:
-	RESULT = attr.cast_R2();
+       | INT:i {:
+	RESULT = attr.cast_R2(new Lexeme(i, ileft, iright));
 :}
-       | NAT {:
-	RESULT = attr.cast_R3();
+       | NAT:n {:
+	RESULT = attr.cast_R3(new Lexeme(n, nleft, nright));
 :}
-       | FLOAT {:
-	RESULT = attr.cast_R4();
+       | FLOAT:f {:
+	RESULT = attr.cast_R4(new Lexeme(f, fleft, fright));
 :};
 
 
