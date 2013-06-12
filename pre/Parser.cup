@@ -79,8 +79,8 @@ Const ::= CONST TPrim:tPrim IDENT:ident ASIG ConstLit:lit {:
 ConstLit ::= Lit:lit {:
 	RESULT = attr.constLit_R1(lit);
 :}
-		| MENOS Lit:lit {:
-	RESULT = attr.constLit_R2(lit);
+		| MENOS:m Lit:lit {:
+	RESULT = attr.constLit_R2(lit, new Lexeme(m, mleft, mright));
 :};
 
 

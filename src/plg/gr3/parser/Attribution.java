@@ -161,7 +161,7 @@ public final class Attribution extends Atribucion {
 
         asigna(cons.a("tsh"), consts_1.a("ts"));
 
-        dependencias(attr.a("ts"), cons.a("ts"), cons.a("id"), cons.a("valor"), cons.a("tipo"));
+        dependencias(attr.a("ts"), cons.a("ts"), cons.a("id"), cons.a("valor"), cons.a("tipo"), attr.a("err"));
         calculo(attr.a("ts"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
@@ -207,7 +207,7 @@ public final class Attribution extends Atribucion {
                 Value value = (Value) args[2].valor();
                 Type type = (Type) args[3].valor();
 
-                if (ident != null) {
+                if (ident != null && type != Type.ERROR && value != null) {
                     table.putConstant(ident.getLexeme(), type, value);
                 }
 
@@ -245,7 +245,7 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("valor"), constLit.a("valor"));
 
         // Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
-        dependencias(attr.a("err"), tPrim.a("tipo"), constLit.a("tipo"), lexIdent);
+        dependencias(attr.a("err"), tPrim.a("tipo"), constLit.a("tipo"), lexIdent, constLit.a("err"));
         calculo(attr.a("err"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
@@ -253,13 +253,15 @@ public final class Attribution extends Atribucion {
                 Type right = (Type) args[1].valor();
                 Lexeme lex = (Lexeme) args[2].valor();
 
+                List<CompileError> errs = new ArrayList<>();
+
                 if (!left.compatible(right)) {
                     if (left != Type.ERROR && right != Type.ERROR) {
-                        return new AssignationTypeError(left, right, lex);
+                        errs.add(new AssignationTypeError(right, left, lex));
                     }
                 }
 
-                return ConcatErrorsFun.INSTANCE.eval();
+                return ConcatErrorsFun.INSTANCE.eval(args[3], a(errs));
             }
         });
 
@@ -294,9 +296,10 @@ public final class Attribution extends Atribucion {
         return attr;
     }
 
-    public TAtributos constLit_R2 (TAtributos lit) {
+    public TAtributos constLit_R2 (TAtributos lit, Lexeme menos) {
         regla("ConstLit -> MENOS Lit");
         TAtributos attr = atributosPara("ConstLit", "tipo", "valor", "err");
+        Atributo menosLex = atributoLexicoPara("MENOS", "lex", menos);
 
         dependencias(attr.a("tipo"), lit.a("tipo"));
         calculo(attr.a("tipo"), new SemFun() {
@@ -320,13 +323,15 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), lit.a("tipo"));
+        dependencias(attr.a("err"), lit.a("tipo"), menosLex);
         calculo(attr.a("err"), new SemFun() {
             @Override
             public Object eval (Atributo... args) {
                 Type type = (Type) args[0].valor();
+                Lexeme menosLex = (Lexeme) args[1].valor();
 
-                return type.isNumeric() ? null : new OperatorError(type, UnaryOperator.MINUS, 0xFFFFFF, 0xFFFFFF);
+                return type.isNumeric() ? null : new OperatorError(
+                    type, UnaryOperator.MINUS, menosLex.getLine(), menosLex.getColumn());
             }
         });
 

@@ -1,5 +1,11 @@
 program: test {
 
+	consts {
+		const character C = -'c';
+		const integer I = 10.2;
+		const natural N = -3;
+	}
+
 	vars {
 		var natural n;
 	}
