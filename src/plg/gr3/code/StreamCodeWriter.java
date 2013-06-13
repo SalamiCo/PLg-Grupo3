@@ -39,7 +39,10 @@ public final class StreamCodeWriter extends CodeWriter {
         if (!inhibited) {
             try {
                 // Escribimos la instrucción
-                if (inst instanceof BinaryOperatorInstruction) {
+                if (inst instanceof CommentedInstruction) {
+                    write(((CommentedInstruction) inst).getOriginalInstruction());
+
+                } else if (inst instanceof BinaryOperatorInstruction) {
                     writeBinaryOp((BinaryOperatorInstruction) inst);
 
                 } else if (inst instanceof UnaryOperatorInstruction) {
@@ -95,6 +98,8 @@ public final class StreamCodeWriter extends CodeWriter {
 
                 } else if (inst instanceof DropInstruction) {
                     writeDrop((DropInstruction) inst);
+                } else if (inst instanceof RangeCheckInstruction) {
+                    writeRange((RangeCheckInstruction) inst);
 
                 } else {
                     throw new IllegalArgumentException("Unknown instruction: " + inst.getClass());
@@ -104,6 +109,11 @@ public final class StreamCodeWriter extends CodeWriter {
                 throw new RuntimeException(exc);
             }
         }
+    }
+
+    private void writeRange (RangeCheckInstruction inst) throws IOException {
+        stream.writeByte(Instruction.OPCODE_RANGE);
+        stream.writeInt(inst.getSize());
     }
 
     private void writeDrop (DropInstruction inst) throws IOException {

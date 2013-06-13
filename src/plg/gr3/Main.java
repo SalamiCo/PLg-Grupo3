@@ -26,6 +26,7 @@ import plg.gr3.parser.Lexer;
 import plg.gr3.parser.Parser;
 import plg.gr3.parser.SymbolTable;
 import plg.gr3.vm.VirtualMachine;
+import plg.gr3.vm.instr.CommentedInstruction;
 import plg.gr3.vm.instr.Instruction;
 import es.ucm.fdi.plg.evlib.Atributo;
 import es.ucm.fdi.plg.evlib.TAtributos;
@@ -167,6 +168,9 @@ public final class Main {
                     if (debug) {
                         int pos = 0;
                         for (Instruction instr : code) {
+                            if (instr instanceof CommentedInstruction) {
+                                System.out.printf(" -- %s%n", ((CommentedInstruction) instr).getComment());
+                            }
                             System.out.printf("%3X  %s%n", pos++, instr);
                         }
                     }

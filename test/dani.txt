@@ -1,33 +1,25 @@
 program: test {
 
 	vars {
-		var integer b;
-		var natural e;
-		var integer n;
+		var (natural,natural) t;
+		var natural[8] a;
 	}
 	
 	subprograms {
-		subprogram: pow (integer base, natural exp, integer * result) {
+		subprogram: pow (natural i, natural j) {
 			
 			instructions {
-				result = 1;
-				while exp > 0 do
-					result = result * base;
-					exp = exp - 1;
-				endwhile;
+				out(i);
+				out(j);
 			}
 		}
 	}
 	
 	instructions {
-		out('b');
-		in(b);
+	
+		t_0 = 0;
+		t_1 = 1;
 		
-		out('e');
-		in(e);
-		
-		call pow (base = b, result = n+1, result = n);
-		out('r');
-		out(n)
+		call pow (j = t_1, i = t_0);
 	}
 }

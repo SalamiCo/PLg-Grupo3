@@ -17,15 +17,19 @@ public final class Parameter {
 
     private final boolean reference;
 
+    private final int offset;
+
     /**
      * @param name Normbre del parámetros
      * @param type Tipo del parámetro
      * @param reference Si se trata de un parámetro por referencia
+     * @param dir
      */
-    public Parameter (String name, Type type, boolean reference) {
+    public Parameter (String name, Type type, boolean reference, int offset) {
         this.name = Objects.requireNonNull(name, "name");
         this.type = Objects.requireNonNull(type, "type");
         this.reference = reference;
+        this.offset = offset;
     }
 
     /** @return Nombre del parámetro */
@@ -41,6 +45,11 @@ public final class Parameter {
     /** @return Si se trata de un parámetro por referencia */
     public boolean isReference () {
         return reference;
+    }
+
+    /** @return Posición de memoria relativa del parámetro */
+    public int getOffset () {
+        return offset;
     }
 
     @Override

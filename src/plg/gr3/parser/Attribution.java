@@ -1444,37 +1444,31 @@ public final class Attribution extends Atribucion {
                 }
 
                 int funAddr = table.getIdentifierAddress(ident.getLexeme());
-                NaturalValue retAddrValue = NaturalValue.valueOf(paramsEtq + 2);
+                NaturalValue retAddrValue = NaturalValue.valueOf(paramsEtq + 7);
 
                 // Paso 1: Restructurar los punteros SP y FP
                 // Para ello, siendo SP=M[0] y FP=M[1]:
-                // . M[SP+1] = RETADDR
-                // . M[SP+2] = FP
+                // . M[SP+1] = RETURNADDR
+                // . M[SP+3] = FP <-- Usamos esto como base para los parámetros
                 // . SP = SP + 2
-                // . FP = SP + 1 <-- PERO SE HA DE QUEDAR EN PILA
                 // Lo cual se traduce en
                 // PUSH(RETADDR), LOAD(0), PUSH(1), ADD, STORE-IND,
                 // . LOAD(1), LOAD(0), PUSH(2), ADD, STORE-IND,
-                // . LOAD(0), PUSH(2), ADD, STORE(0),
-                // . LOAD(0), PUSH(1), ADD, --No hacemos store aún--
+                // . LOAD(0), PUSH(3), ADD, STORE(0),
                 // Con esto almacenamos la dir. retorno, actualizamos SP y FP y los dejamos preparados.
                 List<Instruction> code1 =
                     Arrays.asList(
-                        new PushInstruction(retAddrValue), new LoadInstruction(0, Type.NATURAL),
-                        new PushInstruction(NaturalValue.valueOf(1)),
+                        new PushInstruction(retAddrValue), new LoadInstruction(0, Type.NATURAL), new PushInstruction(
+                            NaturalValue.valueOf(1)),
                         new BinaryOperatorInstruction(BinaryOperator.ADDITION),
                         new IndirectStoreInstruction(Type.NATURAL),
                         // --
                         new LoadInstruction(1, Type.NATURAL), new LoadInstruction(0, Type.NATURAL),
                         new PushInstruction(NaturalValue.valueOf(2)), new BinaryOperatorInstruction(
-                            BinaryOperator.ADDITION),
-                        new IndirectStoreInstruction(Type.NATURAL),
+                            BinaryOperator.ADDITION), new IndirectStoreInstruction(Type.NATURAL),
                         // --
-                        new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(2)),
-                        new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
-                        // --
-                        new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(1)),
-                        new BinaryOperatorInstruction(BinaryOperator.ADDITION)
+                        new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(3)),
+                        new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL)
 
                     );
 
@@ -1482,12 +1476,26 @@ public final class Attribution extends Atribucion {
                 // Esto, por suerte, lohace SRParams y compañía. Preguntar allí.
                 Atributo code2 = args[0];
 
+                List<Parameter> params = table.getIdentifierParams(ident.getLexeme());
+                int totalParamSize = 0;
+                for (Parameter param : params) {
+                    totalParamSize += param.getType().getSize();
+                }
+
                 // Paso 3: Saltar!
                 // Es decir:
-                // . STORE(1) -- El que nos dejamos antes!
+                // . LOAD(0), STORE(1)
+                // . LOAD(0), PUSH(<tamaño-total-parametros> - 1), ADD, STORE(0)
                 // . JUMP(FUNADDR)
                 List<Instruction> code3 =
-                    Arrays.asList(new StoreInstruction(1, Type.NATURAL), new JumpInstruction(funAddr));
+                    Arrays.asList(
+                        new LoadInstruction(0, Type.NATURAL), new StoreInstruction(1, Type.NATURAL),
+                        // --
+                        new LoadInstruction(0, Type.NATURAL),
+                        new PushInstruction(NaturalValue.valueOf(totalParamSize - 1)), new BinaryOperatorInstruction(
+                            BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
+                        // --
+                        new JumpInstruction(funAddr));
 
                 // Paso 4:
                 // Volvemos de la función, toca deshacer:
@@ -1511,10 +1519,10 @@ public final class Attribution extends Atribucion {
         });
 
         dependencias(srParams.a("etqh"), attr.a("etqh"));
-        calculo(srParams.a("etqh"), new IncrementFun(17));
+        calculo(srParams.a("etqh"), new IncrementFun(14));
 
         dependencias(attr.a("etq"), srParams.a("etq"));
-        calculo(attr.a("etq"), new IncrementFun(11));
+        calculo(attr.a("etq"), new IncrementFun(16));
 
         return attr;
     }
@@ -1764,30 +1772,25 @@ public final class Attribution extends Atribucion {
 
                 if (param.isReference()) {
                     code =
-                        Arrays.asList(
-                            new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(1)),
-                            new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(
-                                0, Type.NATURAL),
-                            // --
-                            new LoadInstruction(0, Type.NATURAL), new IndirectStoreInstruction(Type.NATURAL));
+                        Arrays.asList(new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue
+                            .valueOf(param.getOffset())), new BinaryOperatorInstruction(BinaryOperator.ADDITION),
+                        // --
+                        new IndirectStoreInstruction(Type.NATURAL));
 
                 } else {
                     if (!type.isPrimitive()) {
                         code =
-                            Arrays.asList(
-                                new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(1)),
-                                new BinaryOperatorInstruction(BinaryOperator.ADDITION), new LoadInstruction(
-                                    0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(type.getSize())),
-                                new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(
-                                    0, Type.NATURAL), new MoveInstruction(type.getSize()));
+                            Arrays.asList(new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue
+                                .valueOf(param.getOffset())), new BinaryOperatorInstruction(BinaryOperator.ADDITION),
+                            // --
+                            new MoveInstruction(type.getSize()));
 
                     } else {
                         code =
-                            Arrays.asList(
-                                new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(1)),
-                                new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(
-                                    0, Type.NATURAL), new LoadInstruction(0, Type.NATURAL),
-                                new IndirectStoreInstruction(Type.NATURAL));
+                            Arrays.asList(new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue
+                                .valueOf(param.getOffset())), new BinaryOperatorInstruction(BinaryOperator.ADDITION),
+                            // --
+                            new IndirectStoreInstruction(Type.NATURAL));
                     }
                 }
 
@@ -1824,12 +1827,12 @@ public final class Attribution extends Atribucion {
                 Type type = param.getType();
 
                 if (param.isReference()) {
-                    return etq + 6;
+                    return etq + 4;
                 } else {
                     if (!type.isPrimitive()) {
-                        return etq + 8;
+                        return etq + 4;
                     } else {
-                        return etq + 6;
+                        return etq + 4;
                     }
                 }
 
@@ -2257,15 +2260,16 @@ public final class Attribution extends Atribucion {
 
         asigna(attr.a("tipo"), typeDesc.a("tipo"));
 
-        dependencias(attr.a("param"), typeDesc.a("tipo"), identLex);
+        dependencias(attr.a("param"), typeDesc.a("tipo"), identLex, attr.a("dirh"));
         calculo(attr.a("param"), new SemFun() {
 
             @Override
             public Object eval (Atributo... args) {
                 Type type = (Type) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
+                Integer dir = (Integer) args[2].valor();
 
-                return new Parameter(ident.getLexeme(), type, false);
+                return new Parameter(ident.getLexeme(), type, false, dir);
             }
         });
 
@@ -2289,15 +2293,16 @@ public final class Attribution extends Atribucion {
 
         asigna(attr.a("tipo"), typeDesc.a("tipo"));
 
-        dependencias(attr.a("param"), typeDesc.a("tipo"), identLex);
+        dependencias(attr.a("param"), typeDesc.a("tipo"), identLex, attr.a("dirh"));
         calculo(attr.a("param"), new SemFun() {
 
             @Override
             public Object eval (Atributo... args) {
                 Type type = (Type) args[0].valor();
                 Lexeme ident = (Lexeme) args[1].valor();
+                Integer dir = (Integer) args[2].valor();
 
-                return new Parameter(ident.getLexeme(), type, true);
+                return new Parameter(ident.getLexeme(), type, true, dir);
             }
         });
         return attr;
@@ -2471,9 +2476,12 @@ public final class Attribution extends Atribucion {
 
                     Value tam = new IntegerValue(atype.getBaseType().getSize());
 
-                    return ConcatCodeFun.INSTANCE.eval(
-                        attrs[0], attrs[1], a(new PushInstruction(tam)), a(new BinaryOperatorInstruction(
-                            BinaryOperator.PRODUCT)), a(new BinaryOperatorInstruction(BinaryOperator.ADDITION)));
+                    List<Instruction> code =
+                        Arrays.asList(
+                            new RangeCheckInstruction(atype.getLength()), new PushInstruction(tam),
+                            new BinaryOperatorInstruction(BinaryOperator.PRODUCT), new BinaryOperatorInstruction(
+                                BinaryOperator.ADDITION));
+                    return ConcatCodeFun.INSTANCE.eval(attrs[0], attrs[1], a(code));
                 }
 
                 return ConcatCodeFun.INSTANCE.eval();
@@ -2518,7 +2526,7 @@ public final class Attribution extends Atribucion {
         asigna(desig_1.a("tsh"), attr.a("tsh"));
 
         dependencias(attr.a("etq"), expr.a("etq"));
-        calculo(attr.a("etq"), new IncrementFun(3));
+        calculo(attr.a("etq"), new IncrementFun(4));
 
         dependencias(attr.a("const"), a(false));
         calculo(attr.a("etqh"), AssignationFun.INSTANCE);

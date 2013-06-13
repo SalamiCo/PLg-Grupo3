@@ -131,6 +131,9 @@ public class StreamCodeReader extends CodeReader implements Closeable {
             } else if (byteRead == Instruction.OPCODE_DROP) {
                 return new DropInstruction();
 
+            } else if (byteRead == Instruction.OPCODE_RANGE) {
+                return new RangeCheckInstruction(stream.readInt());
+
             } else {
                 // El código de operador no se reconoce
                 throw new IOException("Formato de bytecode inválido");

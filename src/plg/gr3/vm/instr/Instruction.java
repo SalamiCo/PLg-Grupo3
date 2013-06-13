@@ -79,6 +79,9 @@ public abstract class Instruction {
     /** Opcode de la instrucción drop */
     public static final int OPCODE_DROP = 0b0100_0110;
 
+    /** Opcode de la instrucción range */
+    public static final int OPCODE_RANGE = 0b0100_0111;
+
     /**
      * Devuelve una instrucción de operación que usa el operador dado. Dependiendo del tipo del parámetro, el tipo
      * concreto del valor devuelto será el correspondiente, permitiéndonos crear una instrucción paracualquier operador,
