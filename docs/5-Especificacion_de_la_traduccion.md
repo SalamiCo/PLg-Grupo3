@@ -20,8 +20,6 @@
 
  * S2: Flag de swap2. Si tiene valor 1 intercambia multiplicación por división y viceversa.
 
- * Reg: Registro auxiliar para apila-ind y desapila-ind
-
 ### 5.1.2 Comportamiento interno
 
 Pseudocódigo del algoritmo de su ejecución:
