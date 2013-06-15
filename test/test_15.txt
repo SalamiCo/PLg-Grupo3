@@ -11,20 +11,19 @@ program: test15 {
 
 	subprograms {
         subprogram: factorial(integer x, integer acumulado){ 
-            instructions {
-                vars {
+            vars {
                     var integer uno;
-                } 
-
+            } 
+            instructions {
                 uno= 1;
-                if (x = 0) then
+                if (x == 0) then
                     out(uno);
                 else
-                    if(x = 1) then 
+                    if(x == 1) then 
                         out (acumulado);
                     else
-                        acumulado = x * a;
-                        factorial(acumulado = acumulado , x = x-1);
+                        acumulado = x * acumulado;
+                         call factorial(acumulado = acumulado , x = x-1);
                     endif;
                 endif;
             }

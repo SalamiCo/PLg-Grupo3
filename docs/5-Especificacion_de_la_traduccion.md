@@ -60,7 +60,7 @@ apila-ind
 
 mueve(nCeldas)
 >para i ← 0 hasta nCeldas-1 hacer<br/>
->	Mem[Pila[CPila-1]+i] ← Mem[Pila[CPila]+i]<br/>
+>	Mem[Pila[CPila]+i] ← Mem[Pila[CPila-1]+i]<br/>
 >CPila ← Cpila - 2<br/>
 >CProg ← CProg + 1<br/>
 
@@ -241,6 +241,9 @@ swap2
 >si S2 = 1: S2 ← 0<br/>
 
 #### Otras operaciones
+
+range(size)
+>si Pila[CPila] < 0 || Pila[CPila] >= size: P ← 1<br/>
 
 stop
 >P ← 1<br/>

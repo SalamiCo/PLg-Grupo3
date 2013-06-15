@@ -53,5 +53,6 @@ program: test24 {
         out(matrizC[0][1]);
         out(matrizC[1][0]);
         out(matrizC[1][1]);
+
     }
 }

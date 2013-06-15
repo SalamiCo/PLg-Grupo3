@@ -7,23 +7,22 @@ program: test13{
   } 
    
   vars {
-    var array[5] x;
-    var (int, boolean) y;
-    var natural W;
+    var integer[5] x;
+    var (integer, boolean) y;
+    var natural w;
     var tmatriz matriz;
   }
 
   
 
 	subprograms {
-    subprogram: pruebas(integer var1, float var2, integer var3, integer var4, boolean var5){ 
+    subprogram: pruebas(integer var1, float var2, integer var3, float var4, boolean var5){ 
+        vars {
+              var float var6;
+        } 
         instructions {
-           vars {
-              var float var;
-            } 
-
-            var = var1 + var2;
-            out(var);
+            var6 = var1 + var2;
+            out(var6);
         }
     }
 
@@ -31,12 +30,12 @@ program: test13{
     
 	instructions {
      x[3] = 3;
-     y_1 = 2;
-     y_2 = true;
+     y_0 = 2;
+     y_1 = true;
      w = 1; 
-     matriz[0][4];
+     matriz[0][0]= 4.3;
 
 
-     call pruebas(var4 = matriz[0][4], var2 = y_1, var3 = w, var1 = x[3], var5 = y_2);
+     call pruebas(var4 = matriz[0][0], var2 = y_0, var3 = w, var1 = x[3], var5 = y_1);
 	}
 }
