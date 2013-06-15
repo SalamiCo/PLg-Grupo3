@@ -169,7 +169,7 @@ public final class Main {
                         int pos = 0;
                         for (Instruction instr : code) {
                             if (instr instanceof CommentedInstruction) {
-                                System.out.printf(" -- %s%n", ((CommentedInstruction) instr).getComment());
+                                System.out.printf(" --  %s%n", ((CommentedInstruction) instr).getComment());
                             }
                             System.out.printf("%3X  %s%n", pos++, instr);
                         }
