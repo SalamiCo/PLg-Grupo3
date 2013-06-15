@@ -154,7 +154,7 @@
 
     Expr → Term Op0 Term | Term
     Term → Term Op1 Fact | Term or Fact | Fact
-    Fact → Fact Op2 Shft | Fact and Shft |Shft
+    Fact → Fact Op2 Shft | Fact and Shft | Shft
     Shft → Unary Op3 Shft | Unary
     Unary → Op4 Unary | lpar Cast rpar Paren | Paren
     Paren → lpar Expr rpar | Lit | Desig
@@ -300,8 +300,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SVars.tsh = STypes.ts
         SVars.dirh = SProgram.dirh
         SSubprogs.tsh = SVars.ts
-        SSubprogs.dirh = SVars.dir
-        SInsts.tsh = SVars.ts
+        SInsts.tsh = SSubprogs.ts
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
@@ -333,9 +332,11 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     ConstLit → Lit
         ConstLit.valor = Lit.valor
+        ConstLit.tipo = Lit.tipo
 
     ConstLit → menos Lit
-        ConstList.valor = -(Lit.valor)
+        ConstLit.valor = -(Lit.valor)
+        ConstLit.tipo = -(Lit.tipo)
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
@@ -356,10 +357,11 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     Type → tipo TypeDesc ident 
         Type.ts = Type.tsh
+        TypeDesc.tsh = Type.tsh
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
-        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)> //TODO mirar como añadir el tamaño al tipo
+        Type.tipo = TypeDesc.tipo
 
     Type → ɛ
         Type.ts = Type.tsh
@@ -394,33 +396,92 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Var.id = ident.lex
         Var.clase = Var
         Var.nivel = global
-        Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
-                   si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
+        Var.tipo = TypeDesc.tipo
+        TypeDesc.tsh = Var.tsh
 
     Var → ɛ
         Var.ts = Var.tsh
         Var.dir = Var.dirh
 
+    TypeDesc → TPrim
+        TypeDesc.tipo = TPrim.tipo
+
+    TypeDesc → TArray
+        TypeDesc.tipo = TArray.tipo
+        TArray.tsh = TypeDesc.tsh
+
+    TypeDesc → TTupla
+        TypeDesc.tipo = TTupla.tipo
+        TTupla.tsh = TypeDesc.tsh
+
+    TypeDesc → ident
+        TypeDesc.tipo = ident.lex
+
+    TPrim → natural
+        TPrim.tipo = natural
+    
+    TPrim → integer
+        TPrim.tipo = integer
+
+    TPrim → float
+        TPrim.tipo = float
+
+    TPrim → boolean
+        TPrim.tipo = boolean
+        
+    TPrim → character
+        TPrim.tipo = character
+
+    TArray → TypeDesc icorchete ident fcorchete
+        TypeDesc.tsh = TArray.tsh
+        TArray.tsh = TypeDesc.tsh
+
+    TArray → TypeDesc icorchete litnat fcorchete
+        TypeDesc.tsh = TArray.tsh
+        TArray.tsh = TypeDesc.tsh
+
+    TTupla → ipar Tupla fpar
+        Tupla.tsh = TTupla.tsh
+        TTupla.tipo = Tupla.tipo
+
+    TTupla → ipar fpar
+
+    Tupla → TypeDesc coma Tupla
+        TypeDesc.tsh = Tupla0.tsh
+        Tupla1.tsh = Tupla0.tsh
+        Tupla0.tipo = TypeDesc.tipo || Tupla1.tipo
+
+    Tupla → TypeDesc
+        TypeDesc.tsh = Tupla.tsh
+        Tupla.tipo = TypeDesc.tipo
+        
+
     SSubprogs → subprograms illave Subprogs fllave 
         Subprogs.tsh = SSubprogs.tsh
+        SSbprogs.ts = Subprog.ts
 
     SSubprogs → subprograms illave fllave 
+        SSubprogs.tsh = Subprog.tsh
 
     SSubprogs → ɛ
+        SSubprogs.tsh = Subprog.tsh
 
     Subprogs → Subprogs Subprog
         Subprogs1.tsh =  Subprogs0.tsh
-        Subprog.tsh = Subprogs0.tsh   
+        Subprog.tsh = Subprogs0.tsh 
+        Subprogs0.ts = Subprog.ts  
 
     Subprogs → Subprog
         Subprog.tsh = Subprogs.tsh
+        Subprogs.ts = Subprog.ts
 
     Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
         SFParams.dirh = 0
-        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , <TODO>))
         SVars.tsh = SFParams.ts
         SVars.dirh = SFParams.dir
         SInsts.tsh = SVars.ts
+        Subprog.ts = Subprog.tsh
 
     SFParams → FParams 
         FParams.tsh = SFParams.tsh
