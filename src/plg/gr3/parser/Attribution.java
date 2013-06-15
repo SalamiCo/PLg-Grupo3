@@ -76,7 +76,7 @@ public final class Attribution extends Atribucion {
                 code.set(0, Instruction.comment(code.get(0), "Main program"));
 
                 NaturalValue natSP = NaturalValue.valueOf(stackAddr - 1);
-                NaturalValue natBase = NaturalValue.valueOf(stackAddr);
+                NaturalValue natBase = NaturalValue.valueOf(0);
 
                 List<Instruction> initStack =
                     Arrays.asList(
