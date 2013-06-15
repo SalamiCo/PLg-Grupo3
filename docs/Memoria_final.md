@@ -853,7 +853,7 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
-        Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)> //TODO mirar como añadir el tamaño al tipo
+        Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:?, Type.id)>
 
     Type → ɛ
         Type.ts = Type.tsh
