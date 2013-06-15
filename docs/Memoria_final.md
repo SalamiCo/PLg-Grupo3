@@ -553,12 +553,12 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         LitBool.valor = false
         Lit.tipo = boolean
 
-    LitNum → litNat
-        LitNum.valor = stringToNat(litnat)
+    LitNum → litnat
+        LitNum.valor = stringToNat(litnat.lex)
         LitNum.tipo = natural
 
-    LitNum → litFloat
-        LitNum.valor = stringToFloat(litfloat)
+    LitNum → litfloat
+        LitNum.valor = stringToFloat(litfloat.lex)
         LitNum.tipo = float
 
 
@@ -1251,12 +1251,9 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         Lit.tipo = char 
 
     LitNum → litnat 
-        LitNum.tipo = natural 
+        LitNum.tipo = natural
 
-    LitNum → menos litnat 
-        LitNum.tipo = integer
-
-    LitNum → litfloat | menos litfloat 
+    LitNum → litfloat
         LitNum.tipo = float
 
 #### Notas Marina
