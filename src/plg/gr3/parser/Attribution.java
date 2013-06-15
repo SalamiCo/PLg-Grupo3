@@ -1428,8 +1428,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("cod"), srParams.a("cod"), attr.a("tsh"), identLex, srParams.a("etq"), srParams
-            .a("varstam"));
+        dependencias(attr.a("cod"), srParams.a("cod"), attr.a("tsh"), identLex, srParams.a("etq"));
         calculo(attr.a("cod"), new SemFun() {
 
             @Override
@@ -1538,10 +1537,9 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog",
-                "nombresubprogh", "listaparamnombresh", "listaparamnombres", "varstam");
+                "nombresubprogh", "listaparamnombresh", "listaparamnombres");
 
         asigna(rParams.a("tsh"), attr.a("tsh"));
-        asigna(attr.a("varstam"), rParams.a("varstam"));
 
         dependencias(attr.a("err"), rParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1571,10 +1569,9 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams", "listaparamnombres",
-                "listaparamnombresh", "nombresubprog", "nombresubprogh", "tsh", "varstam");
+                "listaparamnombresh", "nombresubprog", "nombresubprogh", "tsh");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
-        asigna(attr.a("varstam"), a(0));
 
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
@@ -1594,23 +1591,11 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "RParams", "tsh", "err", "cod", "nparamsh", "nparams", "nombresubprogh", "etqh", "etq",
-                "listaparamnombresh", "listaparamnombres", "varstam");
+                "listaparamnombresh", "listaparamnombres");
 
         asigna(rParams_1.a("tsh"), attr.a("tsh"));
 
         asigna(rParam.a("tsh"), attr.a("tsh"));
-
-        dependencias(attr.a("varstam"), rParams_1.a("varstam"), rParam.a("varstam"));
-        calculo(attr.a("varstam"), new SemFun() {
-
-            @Override
-            public Object eval (Atributo... args) {
-                Integer tam1 = (Integer) args[0].valor();
-                Integer tam2 = (Integer) args[1].valor();
-
-                return tam1 + tam2;
-            }
-        });
 
         dependencias(attr.a("err"), rParams_1.a("err"), rParam.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1648,10 +1633,9 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "RParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh",
-                "listaparamnombresh", "listaparamnombres", "varstam");
+                "listaparamnombresh", "listaparamnombres");
 
         asigna(rParam.a("tsh"), attr.a("tsh"));
-        asigna(attr.a("varstam"), rParam.a("varstam"));
 
         dependencias(attr.a("cod"), rParam.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
@@ -1683,20 +1667,10 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog", "nombresubprogh",
-                "tipo", "desig", "err", "listaparamnombres", "listaparamnombresh", "varstam");
+                "tipo", "desig", "err", "listaparamnombres", "listaparamnombresh");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         asigna(expr.a("tsh"), attr.a("tsh"));
-
-        dependencias(attr.a("varstam"), expr.a("tipo"));
-        calculo(attr.a("varstam"), new SemFun() {
-
-            @Override
-            public Object eval (Atributo... args) {
-                Type t = (Type) args[0].valor();
-                return t.getSize();
-            }
-        });
 
         dependencias(expr.a("refh"), attr.a("tsh"), identLex, attr.a("nombresubprogh"));
         calculo(expr.a("refh"), new SemFun() {
@@ -1764,7 +1738,7 @@ public final class Attribution extends Atribucion {
 
                         if (!paramT.compatible(exprT)) {
                             if (paramT != Type.ERROR && exprT != Type.ERROR) {
-                                errors.add(new AssignationTypeError(paramT, exprT, identParamReal));
+                                errors.add(new AssignationTypeError(exprT, paramT, identParamReal));
                             }
                         }
 

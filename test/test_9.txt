@@ -30,8 +30,8 @@ program: test9{
         z1 = (int) z;
 
         call outvariable(c = x);
-        call outvariable(c = y);
-        call outvariable(c = z);
+        call outvariable(c = y1);
+        call outvariable(c = z1);
 
 
 	}
