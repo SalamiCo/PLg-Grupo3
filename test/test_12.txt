@@ -5,7 +5,8 @@ program: test12{
     vars {
     var integer[5] x;
     var float y;
-    var natural W;
+    var integer z;
+    var natural w;
   }
 
 	subprograms {
@@ -24,6 +25,7 @@ program: test12{
 	instructions {
      x[3] = 3;
      y = 2.3;
+     z = -1;
      w = 1;
     
 
