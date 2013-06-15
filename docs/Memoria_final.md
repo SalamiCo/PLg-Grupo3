@@ -477,21 +477,23 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
         SFParams.dirh = 0
-        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , <TODO>))
+        SFParams.tsh = CreaTS(Subprog.ts)
         SVars.tsh = SFParams.ts
         SVars.dirh = SFParams.dir
         SInsts.tsh = SVars.ts
-        Subprog.ts = Subprog.tsh
+        Subprog.ts = añade(Subprog.tsh, ident, subprog, global, ? , <dir:Subprog.etqh, params:SFParams.params>)
 
     SFParams → FParams 
         FParams.tsh = SFParams.tsh
         SFParams.ts = FParams.ts
         FParams.dirh = SFParams.dirh
         SFParams.dir = FParams.dir
+        SFParams.params = FParams.params
 
     SFParams → ɛ
         SFParams.ts = SFParams.tsh
         SFParams.dir = SFParams.dirh
+        SFParams.params = []
 
     FParams → FParams coma FParam 
         FParams1.tsh = FParams0.tsh
@@ -500,12 +502,14 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.dirh = FParams1.dirh
         FParams0.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id) 
         FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+        FParams0.params = FParams1.params ++ FParam.params
 
     FParams → FParam
         FParam.dirh = FParams.dirh
         FParam.tsh = FParams.tsh
         FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
         FParams.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id)
+        FParams.params = FParap.params
 
     FParam → TypeDesc ident 
         FParam.ts = FParam.tsh
@@ -515,6 +519,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo== TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+        FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:falso, despl:DParam.dirh>]
 
     FParam → TypeDesc mul ident
         FParam.ts = FParam.tsh
@@ -524,6 +529,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: 1>} )
+        FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh>]
 
     TTupla → ipar Tupla fpar
         Tupla.tsh = TTupla.tsh
