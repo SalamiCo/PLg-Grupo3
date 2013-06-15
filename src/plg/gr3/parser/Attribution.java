@@ -3242,7 +3242,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), cast.a("tipo"), paren.a("err"), paren.a("tipo"));
+        dependencias(attr.a("err"), cast.a("tipo"), paren.a("err"), paren.a("tipo"), cast.a("lex"));
         calculo(attr.a("err"), new SemFun() {
 
             @Override
