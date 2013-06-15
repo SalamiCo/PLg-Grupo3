@@ -1274,11 +1274,6 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
     LitNum → litfloat | menos litfloat 
         LitNum.tipo = float
 
-#### Notas Marina
-
-- En el enunciado pone "En las expresiones básicas, se substituye el uso de variables por el de  designadores (es decir, donde en las expresiones de la versión anterior se podía utilizar una variable, ahora es posible utilizar un designador). " Algunas definiciones que hay en el 4.2 han de cambiar en consecuentas
-- El identificador "ident" ha de existir y ha de ser una constante o un natural. 
-
 
 # 5. Especificación de la traducción
 
