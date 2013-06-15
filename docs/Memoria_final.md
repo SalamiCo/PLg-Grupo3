@@ -515,6 +515,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo== TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+        TypeDesc.tsh = FParam.tsh
 
     FParam → TypeDesc mul ident
         FParam.ts = FParam.tsh
@@ -524,6 +525,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: 1>} )
+        TypeDesc.tsh = FParam.tsh
 
     TTupla → ipar Tupla fpar
         Tupla.tsh = TTupla.tsh
@@ -542,24 +544,31 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     Lit → LitBool 
         Lit.valor = LitBool.valor
+        Lit.tipo = LitBool.tipo
 
     Lit → LitNum
         Lit.valor = LitNum.valor
+        Lit.tipo = LitNum.tipo
 
     Lit → litChar
         Lit.valor = stringToChar(litchar)
+        Lit.tipo = character
 
     LitBool → true 
         LitBool.valor = true
+        Litbool.tipo = boolean
 
     LitBool → false
         LitBool.valor = false
+        Lit.tipo = boolean
 
     LitNum → litNat
         LitNum.valor = stringToNat(litnat)
+        LitNum.tipo = natural
 
     LitNum → litFloat
         LitNum.valor = stringToFloat(litfloat)
+        LitNum.tipo = float
 
 # 4. Especificación de las restricciones contextuales 
 
