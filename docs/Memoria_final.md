@@ -1929,14 +1929,14 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = const_R2($1);}
 
     Const ::= CONST TPrim IDENT ASIG ConstLit
-        {$$ = const_R1($1, $3.lex, $5);}
+        {$$ = const_R1($2, $3.lex, $5);}
     Const ::= 
         {$$ = const_R2();}
 
     ConstLit ::= Lit
         {$$ = constLit_R1($1);}
     ConstLit ::= MENOS Lit
-        {$$ = constLit_R1($1);}
+        {$$ = constLit_R1($2);}
 
     STypes ::= TIPOS ILLAVE Types FLLAVE
         {$$ = sTypes_R1($3);}
@@ -1958,13 +1958,13 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
     SVars ::=
         {$$ = sVars_R2();}
 
-    Vars ::= Vars:vars_1 PYC Var
+    Vars ::= Vars PYC Var
         {$$ = vars_R1($1, $3);}
     Vars ::=
         {$$ = vars_R2($1);}
 
     Var ::= VAR TypeDesc IDENT
-        {$$ = var_R1($1, $2.lex);}
+        {$$ = var_R1($2, $3.lex);}
     Var ::=
         {$$ = var_R2();}
 
@@ -2015,7 +2015,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
     SInsts ::= INSTRUCTIONS ILLAVE Insts FLLAVE
         {$$ = sInsts_R1($3);}
 
-    Insts ::= InstsPYC Inst
+    Insts ::= Insts PYC Inst
         {$$ = insts_R1($1, $3);}
     Insts ::= Inst
         {$$ = insts_R2($1);}
