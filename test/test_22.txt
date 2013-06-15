@@ -1,6 +1,6 @@
 @programa para progar los booleanos
 
-program: test5{
+program: test22{
 
 	vars {
     var boolean b;
@@ -8,7 +8,7 @@ program: test5{
     
 	instructions {
     b = (true and false) and false;
-
+	out(b);
 }
 
 }

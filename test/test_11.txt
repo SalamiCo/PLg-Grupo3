@@ -5,7 +5,7 @@ program: test11{
     vars {
     var integer x;
     var float y;
-    var natural W;
+    var natural w;
     var integer z;
   }
 

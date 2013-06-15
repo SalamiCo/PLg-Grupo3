@@ -1495,7 +1495,7 @@ public final class Attribution extends Atribucion {
                         new LoadInstruction(0, Type.NATURAL), new StoreInstruction(1, Type.NATURAL),
                         // --
                         new LoadInstruction(0, Type.NATURAL),
-                        new PushInstruction(NaturalValue.valueOf(totalParamSize - 1)), new BinaryOperatorInstruction(
+                        new PushInstruction(IntegerValue.valueOf(totalParamSize - 1)), new BinaryOperatorInstruction(
                             BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
                         // --
                         new JumpInstruction(funAddr));
@@ -2605,7 +2605,7 @@ public final class Attribution extends Atribucion {
                     int nat = Integer.parseInt(litNat.getLexeme());
                     List<Type> subtypes = ttype.getSubtypes();
 
-                    if (nat > subtypes.size()) {
+                    if (nat >= subtypes.size()) {
                         return Type.ERROR;
                     } else {
                         return subtypes.get(nat);
