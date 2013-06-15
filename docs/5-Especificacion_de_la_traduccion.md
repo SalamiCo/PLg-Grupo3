@@ -58,6 +58,11 @@ apila-ind
 >Pila[CPila] ← Mem[Pila[CPila]]<br/>
 >CProg ← CProg + 1<br/>
 
+apila-ret
+>Pila[Cpila] ← CProg <br/>
+>Cpila ← CPila +1 <br/>
+>CProg ← Cprog + 1 <br/>
+
 mueve(nCeldas)
 >para i ← 0 hasta nCeldas-1 hacer<br/>
 >	Mem[Pila[CPila]+i] ← Mem[Pila[CPila-1]+i]<br/>
@@ -383,7 +388,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 	InstCall → call ident lpar SRParams rpar
 		InstCall.cod = 
 					//Reestructuramos los punteros CP y BASE
-					apila(direccion de retorno) || apila-dir(0) || apila(1) || mas || desapila-ind || apiladir(1) || apila-dir(0) || apila(2) || mas || desapila-ind || apila-dir(0) || apila(3) || suma || desapila-dir(0)||
+					apila-ret || apila-dir(0) || apila(1) || mas || desapila-ind || apiladir(1) || apila-dir(0) || apila(2) || mas || desapila-ind || apila-dir(0) || apila(3) || suma || desapila-dir(0)||
 					//Paso de parámetros
 					SRParams.cod||
 					// Saltar al subprograma
