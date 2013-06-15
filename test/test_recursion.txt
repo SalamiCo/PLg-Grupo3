@@ -18,6 +18,6 @@ program: testRecursion {
 	}
 	
 	instructions {
-		call outRec(i=9);
+		call outRec(i=2);
 	}
 }

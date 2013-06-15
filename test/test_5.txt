@@ -21,7 +21,7 @@ program: test5{
         if (true or false) then
          	out (uno);
         else 
-        	out (2);
+        	out (dos);
         endif; 
 
         if (true and false) then
@@ -30,13 +30,13 @@ program: test5{
 
         else 
 
-        	out(4);
+        	out(cuatro);
 
         endif;
 
         if (true or false and true) then
 
-        	out(5);
+        	out(cinco);
 
         endif;
 

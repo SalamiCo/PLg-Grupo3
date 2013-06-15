@@ -60,7 +60,7 @@ apila-ind
 
 mueve(nCeldas)
 >para i ← 0 hasta nCeldas-1 hacer<br/>
->	Mem[Pila[CPila-1]+i] ← Mem[Pila[CPila]+i]<br/>
+>	Mem[Pila[CPila]+i] ← Mem[Pila[CPila-1]+i]<br/>
 >CPila ← Cpila - 2<br/>
 >CProg ← CProg + 1<br/>
 
@@ -242,6 +242,9 @@ swap2
 
 #### Otras operaciones
 
+range(size)
+>si Pila[CPila] < 0 || Pila[CPila] >= size: P ← 1<br/>
+
 stop
 >P ← 1<br/>
 
@@ -265,8 +268,8 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 ## 5.4 Gramática de atributos
 
 	Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-		Program.cod =  ir_a(parchea(?,SSubprogs.etq)) || SSubprogs || SInsts.cod || stop 
-		SSubprogs.etqh = 1 
+		Program.cod =  ir_a(SSubprogs.etq) || SSubprogs || SInsts.cod || stop 
+		SSubprogs.etqh = 5 /* es 5 por inicializaciones de la pila. */
 		SInsts.etqh = SSubprogs.etq
 
 	SSubprogs → subprograms illave Subprogs fllave 
@@ -294,16 +297,10 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Subprogs.etq = Subprog.etq
 
 	Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
-		Subprog.cod = SInsts.cod 
-					//Restaurar la cima de la pila 
-						|| apila_dir(1) || apila(3) ||  menos || desapila_dir(0)
-					//Restaurar la base
-						|| apila_dir(1) || apila_ind || desapila(1) || desapila
-					// cargar la direccion de retorno 
-						apila_dir(0) || apila(1) || mas || apila_ind || ir_ind 
-
+		Subprog.cod = SInsts.cod || apila_dir(1) || apila(2) || menos 
+					|| apila_ind || ir_ind
 		SInsts.etqh = Subprog.etqh 
-		Subprog.etq = SInsts.etq + 3
+		Subprog.etq = SInsts.etq + 5
 
 	SInsts → instructions illave Insts fllave
 		SInsts.cod = Insts.cod
@@ -322,13 +319,14 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Insts.etq = Inst.etq
 	 
 	Inst → Desig asig Expr
-		Inst.cod = Expr.cod || Desig.cod || desapila-ind
+		Inst.cod = Expr.cod || Desig.cod || si esPrimitivo(Desig.tipo) entonces desapila-ind 
+					sino mueve(tamTipo(Desig.tipo,Desig.tsh)) 
 		Expr.etqh = Inst.etqh
 		Desig.etqh = Expr.etq
 		Inst.etq = Desig.etq + 1 
 
 	Inst → in ipar Desig fpar
-		Inst.cod = in(Desig.type) || desapila-dir(Desig.dir) 
+		Inst.cod = in(Desig.type) ||Desig.cod|| desapila-ind 
 		Desig.etqh = Inst.etq + 1 
 		Inst.etq = Desig.etq + 1
 
@@ -346,7 +344,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Inst.etq = Inst.etqh +1 
 
 	Inst → if Expr then Insts ElseIf
-		Inst.cod = Expr.cod || ir_f(Insts.etq + 2) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
+		Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
 		Expr.etqh = Inst.etqh
 		Insts.etqh = Expr.etq + 1
 		ElseIf.etqh = Insts.etq + 1
@@ -422,7 +420,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		RParams.nparams = RParam.nparams
 
 	RParam → ident asig Expr
-		RParam.cod = apila_dir(0) || apila(1) || mas  || copia || apila(RParams.nparamsh) || suma || Expr.cod 
+		RParam.cod = apila_dir(0) || apila(RParams.nparams) || mas  || copia || apila(RParams.nparamsh) || suma || Expr.cod 
 					si (RParam.tsh[ident.lex].clase == pvalor) 
 						 || mueve(numCeldas(Expr.type.tamaño))
 					si no si (RParam.tsh[ident.lex].clase == pvariable) 

@@ -168,8 +168,9 @@ public final class Main {
                     if (debug) {
                         int pos = 0;
                         for (Instruction instr : code) {
-                            if (instr instanceof CommentedInstruction) {
-                                System.out.printf(" -- %s%n", ((CommentedInstruction) instr).getComment());
+                            while (instr instanceof CommentedInstruction) {
+                                System.out.printf(" --  %s%n", ((CommentedInstruction) instr).getComment());
+                                instr = ((CommentedInstruction) instr).getOriginalInstruction();
                             }
                             System.out.printf("%3X  %s%n", pos++, instr);
                         }
@@ -220,7 +221,7 @@ public final class Main {
             Debugger.INSTANCE.debug("Ejecutando...");
             while (!vm.isStopped()) {
                 int pc = vm.getProgramCounter();
-                Debugger.INSTANCE.debug("Instruction: %d => %s", pc, vm.getInstruction(pc));
+                Debugger.INSTANCE.debug("Instruction: %X => %s", pc, vm.getInstruction(pc));
 
                 vm.step();
 

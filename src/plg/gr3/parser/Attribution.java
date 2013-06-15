@@ -67,8 +67,11 @@ public final class Attribution extends Atribucion {
                 Integer jump = (Integer) attrs[0].valor();
                 Integer stackAddr = (Integer) attrs[3].valor();
 
+                List<Instruction> code = new ArrayList<>((List<Instruction>) attrs[2].valor());
+                code.set(0, Instruction.comment(code.get(0), "Main program"));
+
                 NaturalValue natSP = NaturalValue.valueOf(stackAddr - 1);
-                NaturalValue natBase = NaturalValue.valueOf(stackAddr);
+                NaturalValue natBase = NaturalValue.valueOf(0);
 
                 List<Instruction> initStack =
                     Arrays.asList(
@@ -76,7 +79,7 @@ public final class Attribution extends Atribucion {
                         new PushInstruction(natBase), new StoreInstruction(1, Type.NATURAL));
 
                 return ConcatCodeFun.INSTANCE.eval(
-                    a(initStack), a(new JumpInstruction(jump)), attrs[1], attrs[2], a(new StopInstruction()));
+                    a(initStack), a(new JumpInstruction(jump)), attrs[1], a(code), a(new StopInstruction()));
             }
         });
 
@@ -709,7 +712,7 @@ public final class Attribution extends Atribucion {
 
                 } else {
 
-                    ClassDec cd = table.getIdentfierClassDec(ident.getLexeme());
+                    ClassDec cd = table.getIdentifierClassDec(ident.getLexeme());
                     if (cd != ClassDec.TYPE) {
                         errs.add(new BadIdentifierClassError(
                             ident.getLexeme(), cd, ClassDec.TYPE, ident.getLine(), ident.getColumn()));
@@ -785,7 +788,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos cast_R2 (Lexeme lex) {
         regla("Cast -> INT");
-        TAtributos attr = atributosPara("Cast", "tipo");
+        TAtributos attr = atributosPara("Cast", "tipo", "lex");
 
         asigna(attr.a("tipo"), a(Type.INTEGER));
         asigna(attr.a("lex"), atributoLexicoPara("INT", "lex", lex));
@@ -834,7 +837,7 @@ public final class Attribution extends Atribucion {
                 if (ident != null && type != Type.ERROR) {
                     String identStr = ident.getLexeme();
 
-                    if (table.hasIdentifier(identStr) && table.getIdentfierClassDec(identStr) == ClassDec.CONSTANT
+                    if (table.hasIdentifier(identStr) && table.getIdentifierClassDec(identStr) == ClassDec.CONSTANT
                         && table.getIdentfierType(identStr).compatible(Type.NATURAL))
                     {
                         NaturalValue val = table.getIdentifierValue(identStr, NaturalValue.class);
@@ -863,7 +866,7 @@ public final class Attribution extends Atribucion {
 
                 } else {
 
-                    ClassDec cd = table.getIdentfierClassDec(identName);
+                    ClassDec cd = table.getIdentifierClassDec(identName);
                     if (cd != ClassDec.CONSTANT) {
                         errs.add(new BadIdentifierClassError(identName, cd, ClassDec.CONSTANT, ident.getLine(), ident
                             .getColumn()));
@@ -1428,7 +1431,7 @@ public final class Attribution extends Atribucion {
                 Integer paramsEtq = (Integer) args[3].valor();
 
                 if (!table.hasIdentifier(ident.getLexeme())
-                    || table.getIdentfierClassDec(ident.getLexeme()) != ClassDec.SUBPROGRAM)
+                    || table.getIdentifierClassDec(ident.getLexeme()) != ClassDec.SUBPROGRAM)
                 {
                     return ConcatCodeFun.INSTANCE.eval();
                 }
@@ -1439,17 +1442,18 @@ public final class Attribution extends Atribucion {
                 // Paso 1: Restructurar los punteros SP y FP
                 // Para ello, siendo SP=M[0] y FP=M[1]:
                 // . M[SP+1] = RETURNADDR
-                // . M[SP+3] = FP <-- Usamos esto como base para los parámetros
-                // . SP = SP + 2
+                // . M[SP+2] = FP <-- Usamos esto como base para los parámetros
+
+                // . SP = SP + 3
                 // Lo cual se traduce en
-                // PUSH(RETADDR), LOAD(0), PUSH(1), ADD, STORE-IND,
+                // . PUSH(RETADDR), LOAD(0), PUSH(1), ADD, STORE-IND,
                 // . LOAD(1), LOAD(0), PUSH(2), ADD, STORE-IND,
                 // . LOAD(0), PUSH(3), ADD, STORE(0),
                 // Con esto almacenamos la dir. retorno, actualizamos SP y FP y los dejamos preparados.
                 List<Instruction> code1 =
                     Arrays.asList(
-                        new PushInstruction(retAddrValue), new LoadInstruction(0, Type.NATURAL), new PushInstruction(
-                            NaturalValue.valueOf(1)),
+                        Instruction.comment(new PushInstruction(retAddrValue), "Subprogram call " + ident.getLexeme()),
+                        new LoadInstruction(0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(1)),
                         new BinaryOperatorInstruction(BinaryOperator.ADDITION),
                         new IndirectStoreInstruction(Type.NATURAL),
                         // --
@@ -1482,7 +1486,7 @@ public final class Attribution extends Atribucion {
                         new LoadInstruction(0, Type.NATURAL), new StoreInstruction(1, Type.NATURAL),
                         // --
                         new LoadInstruction(0, Type.NATURAL),
-                        new PushInstruction(NaturalValue.valueOf(totalParamSize - 1)), new BinaryOperatorInstruction(
+                        new PushInstruction(IntegerValue.valueOf(totalParamSize - 1)), new BinaryOperatorInstruction(
                             BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
                         // --
                         new JumpInstruction(funAddr));
@@ -1668,17 +1672,21 @@ public final class Attribution extends Atribucion {
                 Lexeme identParamReal = (Lexeme) args[1].valor();
                 Lexeme identSubprog = (Lexeme) args[2].valor();
 
-                List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
+                if (table.hasIdentifier(identSubprog.getLexeme())) {
+                    List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
 
-                boolean hasParam = false;
-                Parameter paramFormal = null;
-                for (Parameter param : parametros) {
-                    if (identParamReal.getLexeme().equals(param.getName())) {
-                        hasParam = true;
-                        paramFormal = param;
+                    boolean hasParam = false;
+                    Parameter paramFormal = null;
+                    for (Parameter param : parametros) {
+                        if (identParamReal.getLexeme().equals(param.getName())) {
+                            hasParam = true;
+                            paramFormal = param;
+                        }
                     }
+                    return hasParam && paramFormal.isReference();
+                } else {
+                    return false;
                 }
-                return hasParam && paramFormal.isReference();
             }
         });
 
@@ -1693,39 +1701,44 @@ public final class Attribution extends Atribucion {
                 Lexeme identSubprog = (Lexeme) args[4].valor();
                 List<Lexeme> lparNames = (List<Lexeme>) args[7].valor();
 
-                List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
                 List<CompileError> errors = new ArrayList<>();
 
-                // Comprobamos que el identificador del parámetro real esté declarado como parámetro en la TS
-                boolean hasParam = false;
-                Parameter paramFormal = null;
-                for (Parameter param : parametros) {
-                    if (identParamReal.getLexeme().equals(param.getName())) {
-                        hasParam = true;
-                        paramFormal = param;
-                    }
-                }
-                if (!hasParam) {
-                    errors.add(new UndefinedIdentifierError(
-                        identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()));
-                }
+                if (table.hasIdentifier(identSubprog.getLexeme())) {
 
-                // Comprobamos que el tipo del parámetro real se pueda asignar al tipo del parámetro formal declarado.
-                if (paramFormal != null) {
-                    Type exprT = (Type) args[5].valor();
-                    Type paramT = paramFormal.getType();
+                    List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
 
-                    if (!paramT.compatible(exprT)) {
-                        if (paramT != Type.ERROR && exprT != Type.ERROR) {
-                            errors.add(new AssignationTypeError(paramT, exprT, identParamReal));
+                    // Comprobamos que el identificador del parámetro real esté declarado como parámetro en la TS
+                    boolean hasParam = false;
+                    Parameter paramFormal = null;
+                    for (Parameter param : parametros) {
+                        if (identParamReal.getLexeme().equals(param.getName())) {
+                            hasParam = true;
+                            paramFormal = param;
                         }
                     }
-
-                    // Comprobamos que la expresion sea un designador
-                    boolean esDesig = (boolean) args[6].valor();
-                    if (paramFormal.isReference() && !esDesig) {
-                        errors.add(new NotADesignatorError(
+                    if (!hasParam) {
+                        errors.add(new UndefinedIdentifierError(
                             identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()));
+                    }
+
+                    // Comprobamos que el tipo del parámetro real se pueda asignar al tipo del parámetro formal
+// declarado.
+                    if (paramFormal != null) {
+                        Type exprT = (Type) args[5].valor();
+                        Type paramT = paramFormal.getType();
+
+                        if (!paramT.compatible(exprT)) {
+                            if (paramT != Type.ERROR && exprT != Type.ERROR) {
+                                errors.add(new AssignationTypeError(exprT, paramT, identParamReal));
+                            }
+                        }
+
+                        // Comprobamos que la expresion sea un designador
+                        boolean esDesig = (boolean) args[6].valor();
+                        if (paramFormal.isReference() && !esDesig) {
+                            errors.add(new NotADesignatorError(
+                                identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()));
+                        }
                     }
                 }
 
@@ -1744,7 +1757,9 @@ public final class Attribution extends Atribucion {
                 List<CompileError> errs = (List<CompileError>) args[2].valor();
                 Lexeme subName = (Lexeme) args[4].valor();
 
-                if (!errs.isEmpty()) {
+                if (!errs.isEmpty() || !table.hasIdentifier(subName.getLexeme())
+                    || table.getIdentifierClassDec(subName.getLexeme()) != ClassDec.SUBPROGRAM)
+                {
                     return ConcatCodeFun.INSTANCE.eval();
                 }
 
@@ -1784,6 +1799,8 @@ public final class Attribution extends Atribucion {
                     }
                 }
 
+                code.set(0, Instruction.comment(code.get(0), "Argument '" + ident.getLexeme() + "'"));
+
                 return ConcatCodeFun.INSTANCE.eval(args[3], a(code));
             }
         });
@@ -1802,7 +1819,9 @@ public final class Attribution extends Atribucion {
                 Integer etq = (Integer) args[3].valor();
                 Lexeme subName = (Lexeme) args[4].valor();
 
-                if (!errs.isEmpty()) {
+                if (!errs.isEmpty() || !table.hasIdentifier(subName.getLexeme())
+                    || table.getIdentifierClassDec(subName.getLexeme()) != ClassDec.SUBPROGRAM)
+                {
                     return 0;
                 }
 
@@ -2032,24 +2051,36 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("cod"), sInsts.a("cod"));
+        dependencias(attr.a("cod"), sInsts.a("cod"), sVars.a("dir"));
         calculo(attr.a("cod"), new SemFun() {
 
             @Override
             public Object eval (Atributo... args) {
+                int varsSize = (Integer) args[1].valor();
+
+                // SP = SP + <tamaño-vars>
+                // uséase
+                // LOAD(0), PUSH(<tamaño-vars>), ADD, STORE(0)
+                List<Instruction> code1 =
+                    Arrays.asList(
+                        Instruction.comment(new LoadInstruction(0, Type.NATURAL), "Subprogram definition"),
+                        new PushInstruction(NaturalValue.valueOf(varsSize)), new BinaryOperatorInstruction(
+                            BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL));
+
                 // . JUMP-IND(M[FP-2])
                 // Es decir:
                 // . LOAD(1), PUSH(2), SUB, LOAD-IND, RETURN
-                List<Instruction> code =
+                List<Instruction> code2 =
                     Arrays.asList(
                         new LoadInstruction(1, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(2)),
                         new BinaryOperatorInstruction(BinaryOperator.SUBTRACTION), new IndirectLoadInstruction(
                             Type.NATURAL), new ReturnInstruction());
-                return ConcatCodeFun.INSTANCE.eval(args[0], a(code));
+                return ConcatCodeFun.INSTANCE.eval(a(code1), args[0], a(code2));
             }
         });
 
-        asigna(sInsts.a("etqh"), attr.a("etqh"));
+        dependencias(sInsts.a("etqh"), attr.a("etqh"));
+        calculo(sInsts.a("etqh"), new IncrementFun(4));
 
         dependencias(attr.a("etq"), sInsts.a("etq"));
         calculo(attr.a("etq"), new IncrementFun(5));
@@ -2316,7 +2347,7 @@ public final class Attribution extends Atribucion {
                 Lexeme ident = (Lexeme) args[1].valor();
 
                 return table.hasIdentifier(ident.getLexeme())
-                       && table.getIdentfierClassDec(ident.getLexeme()) == ClassDec.CONSTANT;
+                       && table.getIdentifierClassDec(ident.getLexeme()) == ClassDec.CONSTANT;
             }
         });
 
@@ -2329,7 +2360,7 @@ public final class Attribution extends Atribucion {
                 Lexeme ident = (Lexeme) args[1].valor();
 
                 if (table.hasIdentifier(ident.getLexeme())
-                    && table.getIdentfierClassDec(ident.getLexeme()) == ClassDec.CONSTANT)
+                    && table.getIdentifierClassDec(ident.getLexeme()) == ClassDec.CONSTANT)
                 {
                     return table.getIdentifierValue(ident.getLexeme());
                 }
@@ -2365,7 +2396,7 @@ public final class Attribution extends Atribucion {
                     errs.add(new UndefinedIdentifierError(ident.getLexeme(), ident.getLine(), ident.getColumn()));
 
                 } else {
-                    ClassDec cdec = table.getIdentfierClassDec(ident.getLexeme());
+                    ClassDec cdec = table.getIdentifierClassDec(ident.getLexeme());
                     if (cdec == ClassDec.TYPE || cdec == ClassDec.SUBPROGRAM) {
                         errs.add(new BadIdentifierClassError(ident.getLexeme(), cdec, ClassDec.VARIABLE, 0, 0));
                     }
@@ -2385,7 +2416,7 @@ public final class Attribution extends Atribucion {
 
                 if (table.hasIdentifier(lexeme.getLexeme())) {
                     Scope scope = table.getIdentfierScope(lexeme.getLexeme());
-                    ClassDec cdec = table.getIdentfierClassDec(lexeme.getLexeme());
+                    ClassDec cdec = table.getIdentifierClassDec(lexeme.getLexeme());
 
                     if (scope == Scope.GLOBAL) {
                         if (cdec == ClassDec.VARIABLE) {
@@ -2417,7 +2448,7 @@ public final class Attribution extends Atribucion {
 
                 if (table.hasIdentifier(lexeme.getLexeme())) {
                     Scope scope = table.getIdentfierScope(lexeme.getLexeme());
-                    ClassDec cdec = table.getIdentfierClassDec(lexeme.getLexeme());
+                    ClassDec cdec = table.getIdentifierClassDec(lexeme.getLexeme());
 
                     NaturalValue dirVal = NaturalValue.valueOf(table.getIdentifierAddress(lexeme.getLexeme()));
                     if (scope == Scope.GLOBAL) {
@@ -2565,7 +2596,7 @@ public final class Attribution extends Atribucion {
                     int nat = Integer.parseInt(litNat.getLexeme());
                     List<Type> subtypes = ttype.getSubtypes();
 
-                    if (nat > subtypes.size()) {
+                    if (nat >= subtypes.size()) {
                         return Type.ERROR;
                     } else {
                         return subtypes.get(nat);
@@ -3201,7 +3232,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), cast.a("tipo"), paren.a("err"), paren.a("tipo"));
+        dependencias(attr.a("err"), cast.a("tipo"), paren.a("err"), paren.a("tipo"), cast.a("lex"));
         calculo(attr.a("err"), new SemFun() {
 
             @Override

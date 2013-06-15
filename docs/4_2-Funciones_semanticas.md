@@ -127,6 +127,12 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que los dos t
     parametrosNoRepetidos(TS ts, String id)
         Dado el nombre de un identificador de un subprograma "id" comprobamos que no hay dos identificadores de parámetros en la cabecera con el mismo nombre.   
 
+### esPrimitivo
+	esPrimitivo(Ctipo c)
+		Dado un tipo te dice si es un tipo primitivo.
+		
+### tamTipo(Ctipo c, TS ts)
+		Dado un tipo te devuelve e tamaño mirandolo en la tabla de simbolos.
 
 #### Nota: 
 En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.

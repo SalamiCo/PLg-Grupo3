@@ -256,7 +256,7 @@ public final class SymbolTable implements Iterable<Map.Entry<String, Row>> {
      * @param ident Identificador a consultar
      * @return Tipo del identificador
      */
-    public ClassDec getIdentfierClassDec (String ident) {
+    public ClassDec getIdentifierClassDec (String ident) {
         return getRow(ident).getClassDec();
     }
 

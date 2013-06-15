@@ -8,15 +8,15 @@ program: test10{
   }
 
 	subprograms {
-    subprogram: aumentar_var_valor(integer var){ 
+    subprogram: aumentarvalor(integer p){ 
         instructions {
-            var = var + 1;
+            p = p + 1;
         }
     }
 
-    subprogram: aumentar_var_referencia(integer *  var){ 
+    subprogram: aumentarreferencia(integer *  r){ 
         instructions {
-            var = var + 1; 
+            r = r + 1; 
         }
     }
 
@@ -27,8 +27,8 @@ program: test10{
         y = 1;
         x = 1;
 
-     call aumentar_var_referencia(var = x);
-     call aumentar_var_referencia(var = y);
+     call aumentarvalor(p = x);
+     call aumentarreferencia(r = y);
      out(x);
      out(y);
 

@@ -147,4 +147,8 @@ public abstract class Instruction {
 
     @Override
     public abstract String toString ();
+
+    public static Instruction comment (Instruction instruction, String string) {
+        return new CommentedInstruction(instruction, string);
+    }
 }

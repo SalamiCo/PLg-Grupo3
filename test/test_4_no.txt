@@ -1,4 +1,4 @@
-@ha de fallar
+@ha de fallar: x no esta definido
 
 program: test4{
 
