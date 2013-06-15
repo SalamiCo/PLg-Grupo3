@@ -1450,10 +1450,10 @@ public final class Attribution extends Atribucion {
                 // Paso 1: Restructurar los punteros SP y FP
                 // Para ello, siendo SP=M[0] y FP=M[1]:
                 // . M[SP+1] = RETURNADDR
-                // . M[SP+3] = FP <-- Usamos esto como base para los parámetros
-                // . SP = SP + 2
+                // . M[SP+2] = FP
+                // . SP = SP + 3
                 // Lo cual se traduce en
-                // PUSH(RETADDR), LOAD(0), PUSH(1), ADD, STORE-IND,
+                // . PUSH(RETADDR), LOAD(0), PUSH(1), ADD, STORE-IND,
                 // . LOAD(1), LOAD(0), PUSH(2), ADD, STORE-IND,
                 // . LOAD(0), PUSH(3), ADD, STORE(0),
                 // Con esto almacenamos la dir. retorno, actualizamos SP y FP y los dejamos preparados.
@@ -1484,20 +1484,18 @@ public final class Attribution extends Atribucion {
                     totalParamSize += param.getType().getSize();
                 }
 
-                int totalVarsSize = (Integer) args[4].valor();
-
                 // Paso 3: Saltar!
                 // Es decir:
                 // . LOAD(0), STORE(1)
-                // . LOAD(0), PUSH(<tamaño-total-parametros-y-vars> - 1), ADD, STORE(0)
+                // . LOAD(0), PUSH(<tamaño-total-parametros> - 1), ADD, STORE(0)
                 // . JUMP(FUNADDR)
                 List<Instruction> code3 =
                     Arrays.asList(
                         new LoadInstruction(0, Type.NATURAL), new StoreInstruction(1, Type.NATURAL),
                         // --
                         new LoadInstruction(0, Type.NATURAL),
-                        new PushInstruction(NaturalValue.valueOf(totalParamSize + totalVarsSize - 1)),
-                        new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
+                        new PushInstruction(NaturalValue.valueOf(totalParamSize - 1)), new BinaryOperatorInstruction(
+                            BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
                         // --
                         new JumpInstruction(funAddr));
 
@@ -2082,27 +2080,38 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("cod"), sInsts.a("cod"));
+        dependencias(attr.a("cod"), sInsts.a("cod"), sVars.a("dir"));
         calculo(attr.a("cod"), new SemFun() {
 
             @Override
             public Object eval (Atributo... args) {
+                int varsSize = (Integer) args[1].valor();
+
+                // SP = SP + <tamaño-vars>
+                // uséase
+                // LOAD(0), PUSH(<tamaño-vars>), ADD, STORE(0)
+                List<Instruction> code1 =
+                    Arrays.asList(
+                        Instruction.comment(new LoadInstruction(0, Type.NATURAL), "Subprogram definition"),
+                        new PushInstruction(NaturalValue.valueOf(varsSize)), new BinaryOperatorInstruction(
+                            BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL));
+
                 // . JUMP-IND(M[FP-2])
                 // Es decir:
                 // . LOAD(1), PUSH(2), SUB, LOAD-IND, RETURN
-                List<Instruction> code =
+                List<Instruction> code2 =
                     Arrays.asList(
                         new LoadInstruction(1, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(2)),
                         new BinaryOperatorInstruction(BinaryOperator.SUBTRACTION), new IndirectLoadInstruction(
                             Type.NATURAL), new ReturnInstruction());
-                return ConcatCodeFun.INSTANCE.eval(args[0], a(code));
+                return ConcatCodeFun.INSTANCE.eval(a(code1), args[0], a(code2));
             }
         });
 
         asigna(sInsts.a("etqh"), attr.a("etqh"));
 
         dependencias(attr.a("etq"), sInsts.a("etq"));
-        calculo(attr.a("etq"), new IncrementFun(5));
+        calculo(attr.a("etq"), new IncrementFun(9));
 
         dependencias(attr.a("ts"), attr.a("tsh"), identLex, sfParams.a("params"), attr.a("etqh"));
         calculo(attr.a("ts"), new SemFun() {
