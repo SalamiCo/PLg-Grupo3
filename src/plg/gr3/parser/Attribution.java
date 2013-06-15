@@ -795,7 +795,7 @@ public final class Attribution extends Atribucion {
 
     public TAtributos cast_R2 (Lexeme lex) {
         regla("Cast -> INT");
-        TAtributos attr = atributosPara("Cast", "tipo");
+        TAtributos attr = atributosPara("Cast", "tipo", "lex");
 
         asigna(attr.a("tipo"), a(Type.INTEGER));
         asigna(attr.a("lex"), atributoLexicoPara("INT", "lex", lex));
