@@ -154,7 +154,7 @@
 
     Expr → Term Op0 Term | Term
     Term → Term Op1 Fact | Term or Fact | Fact
-    Fact → Fact Op2 Shft | Fact and Shft |Shft
+    Fact → Fact Op2 Shft | Fact and Shft | Shft
     Shft → Unary Op3 Shft | Unary
     Unary → Op4 Unary | lpar Cast rpar Paren | Paren
     Paren → lpar Expr rpar | Lit | Desig
@@ -300,8 +300,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SVars.tsh = STypes.ts
         SVars.dirh = SProgram.dirh
         SSubprogs.tsh = SVars.ts
-        SSubprogs.dirh = SVars.dir
-        SInsts.tsh = SVars.ts
+        SInsts.tsh = SSubprogs.ts
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
@@ -333,9 +332,11 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     ConstLit → Lit
         ConstLit.valor = Lit.valor
+        ConstLit.tipo = Lit.tipo
 
     ConstLit → menos Lit
-        ConstList.valor = -(Lit.valor)
+        ConstLit.valor = -(Lit.valor)
+        ConstLit.tipo = -(Lit.tipo)
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
@@ -356,10 +357,11 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     Type → tipo TypeDesc ident 
         Type.ts = Type.tsh
+        TypeDesc.tsh = Type.tsh
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
-        Type.tipo = <t:TypeDesc.type, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc), Type.id)> //TODO mirar como añadir el tamaño al tipo
+        Type.tipo = TypeDesc.tipo
 
     Type → ɛ
         Type.ts = Type.tsh
@@ -394,43 +396,104 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Var.id = ident.lex
         Var.clase = Var
         Var.nivel = global
-        Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
-                   si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
+        Var.tipo = TypeDesc.tipo
+        TypeDesc.tsh = Var.tsh
 
     Var → ɛ
         Var.ts = Var.tsh
         Var.dir = Var.dirh
 
+    TypeDesc → TPrim
+        TypeDesc.tipo = TPrim.tipo
+
+    TypeDesc → TArray
+        TypeDesc.tipo = TArray.tipo
+        TArray.tsh = TypeDesc.tsh
+
+    TypeDesc → TTupla
+        TypeDesc.tipo = TTupla.tipo
+        TTupla.tsh = TypeDesc.tsh
+
+    TypeDesc → ident
+        TypeDesc.tipo = ident.lex
+
+    TPrim → natural
+        TPrim.tipo = natural
+    
+    TPrim → integer
+        TPrim.tipo = integer
+
+    TPrim → float
+        TPrim.tipo = float
+
+    TPrim → boolean
+        TPrim.tipo = boolean
+        
+    TPrim → character
+        TPrim.tipo = character
+
+    TArray → TypeDesc icorchete ident fcorchete
+        TypeDesc.tsh = TArray.tsh
+        TArray.tsh = TypeDesc.tsh
+
+    TArray → TypeDesc icorchete litnat fcorchete
+        TypeDesc.tsh = TArray.tsh
+        TArray.tsh = TypeDesc.tsh
+
+    TTupla → ipar Tupla fpar
+        Tupla.tsh = TTupla.tsh
+        TTupla.tipo = Tupla.tipo
+
+    TTupla → ipar fpar
+
+    Tupla → TypeDesc coma Tupla
+        TypeDesc.tsh = Tupla0.tsh
+        Tupla1.tsh = Tupla0.tsh
+        Tupla0.tipo = TypeDesc.tipo || Tupla1.tipo
+
+    Tupla → TypeDesc
+        TypeDesc.tsh = Tupla.tsh
+        Tupla.tipo = TypeDesc.tipo
+        
+
     SSubprogs → subprograms illave Subprogs fllave 
         Subprogs.tsh = SSubprogs.tsh
+        SSbprogs.ts = Subprog.ts
 
     SSubprogs → subprograms illave fllave 
+        SSubprogs.tsh = Subprog.tsh
 
     SSubprogs → ɛ
+        SSubprogs.tsh = Subprog.tsh
 
     Subprogs → Subprogs Subprog
         Subprogs1.tsh =  Subprogs0.tsh
-        Subprog.tsh = Subprogs0.tsh   
+        Subprog.tsh = Subprogs0.tsh 
+        Subprogs0.ts = Subprog.ts  
 
     Subprogs → Subprog
         Subprog.tsh = Subprogs.tsh
+        Subprogs.ts = Subprog.ts
 
     Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
         SFParams.dirh = 0
-        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        SFParams.tsh = CreaTS(Subprog.ts)
         SVars.tsh = SFParams.ts
         SVars.dirh = SFParams.dir
         SInsts.tsh = SVars.ts
+        Subprog.ts = añade(Subprog.tsh, ident, subprog, global, ? , <dir:Subprog.etqh, params:SFParams.params>)
 
     SFParams → FParams 
         FParams.tsh = SFParams.tsh
         SFParams.ts = FParams.ts
         FParams.dirh = SFParams.dirh
         SFParams.dir = FParams.dir
+        SFParams.params = FParams.params
 
     SFParams → ɛ
         SFParams.ts = SFParams.tsh
         SFParams.dir = SFParams.dirh
+        SFParams.params = []
 
     FParams → FParams coma FParam 
         FParams1.tsh = FParams0.tsh
@@ -439,12 +502,14 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.dirh = FParams1.dirh
         FParams0.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id) 
         FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+        FParams0.params = FParams1.params ++ FParam.params
 
     FParams → FParam
         FParam.dirh = FParams.dirh
         FParam.tsh = FParams.tsh
         FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
         FParams.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id)
+        FParams.params = FParap.params
 
     FParam → TypeDesc ident 
         FParam.ts = FParam.tsh
@@ -454,6 +519,8 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo== TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+        FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:falso, despl:DParam.dirh>]
+        TypeDesc.tsh = FParam.tsh
 
     FParam → TypeDesc mul ident
         FParam.ts = FParam.tsh
@@ -463,6 +530,8 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: 1>} )
+        FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh>]
+        TypeDesc.tsh = FParam.tsh
 
     TTupla → ipar Tupla fpar
         Tupla.tsh = TTupla.tsh
@@ -481,24 +550,31 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     Lit → LitBool 
         Lit.valor = LitBool.valor
+        Lit.tipo = LitBool.tipo
 
     Lit → LitNum
         Lit.valor = LitNum.valor
+        Lit.tipo = LitNum.tipo
 
     Lit → litChar
         Lit.valor = stringToChar(litchar)
+        Lit.tipo = character
 
     LitBool → true 
         LitBool.valor = true
+        Litbool.tipo = boolean
 
     LitBool → false
         LitBool.valor = false
+        Lit.tipo = boolean
 
     LitNum → litNat
         LitNum.valor = stringToNat(litnat)
+        LitNum.tipo = natural
 
     LitNum → litFloat
         LitNum.valor = stringToFloat(litfloat)
+        LitNum.tipo = float
 
 # 4. Especificación de las restricciones contextuales 
 
@@ -2202,19 +2278,21 @@ Esta es la librería EvLib modificada para solventar algunos problemas que hemos
 
 ### plg.gr3
 
-Contiene los dos main de la aplicación y una clase Util con ciertas utilidades para la aplicación.
+Contiene el main de la aplicación y una clase Util con ciertas utilidades para la aplicación.
 
 
 ### plg.gr3.code
 
-Contiene todas las clases de lectura y escritura de código. Su base son las clases abstractas Code-Reader y CodeWriter, de las que existen implementaciones para leer y cargar de fichero, así como una implementación de CodeWriter que permite la escritura directa en una lista.
+Contiene todas las clases de lectura y escritura de código. Su base son las clases abstractas CodeReader y CodeWriter, de las que existen implementaciones para leer y cargar de fichero, así como una implementación de CodeWriter que permite la escritura directa en una lista.
 
 
 ### plg.gr3.data
 
 Contiene todo lo relacionado con la gestión de datos, es decir: los tipos, los valores del lenguaje y los operadores.
-La clase Type representa los tipos de nuestro lenguaje. Esta clase es similar a un enumerado, cuyos valores pueden crearse en tiempo de ejecución. Puesto que lo que diferencia a los tipos es su nombre, nunca habrá dos instancias de la clase Type con el mismo nombre. Con esto conseguimos evitar los problemas que conllevaría tener una segunda instancia de un tipo nativo (por ejemplo, integer) creado con el constructor, puesto que no tendría bien definido el código del tipo.
-Los operadores se representan mediante las clases BinaryOperator y UnaryOperator, que implementan la interfaz Operator por cuestiones de comodidad.
+La clase Type representa los tipos de nuestro lenguaje. Existe una instancia de esta clase para cada tipo primitivo y para el tipo error, así como dossubclases TupleType y ArrayType para representar arrays y tuplas, respectivamente.
+
+Los operadores se representan mediante las clases BinaryOperator y UnaryOperator, que implementan una interfaz Operator por cuestiones de comodidad en su manejo.
+
 Los valores de nuestro lenguaje vienen representados usando las subclases de la clase abstracta Value, los cuales envuelven los tipos primitivos de Java, añadiendo la restricción a los naturales de que sólo se pueden usar valores positivos.
 
 
@@ -2240,7 +2318,7 @@ Errores en tiempo de compilación, con base en la clase abstracta CompileError. 
 
 ### plg.gr3.parser
 
-Contiene el analizador sintáctico y todas las clase que necesita. Su contenido se limita a la definición del analizador como tal en la clase Parser, la definición de la tabla de símbolos en SymbolTable y la clase Attributes representar los atributos de la gramática.
+Contiene el analizador sintáctico y todas las clase que necesita. Parte de este paquete as autogerada por CUP y JFlex. Además, incluye la definición de la tabla de símbolos, así como del descriptor de las funciones de atribución (Attribution) y de algunas clases útiles.
 
 
 ### plg.gr3.parser.semfun
@@ -2255,4 +2333,16 @@ Definición de la máquina virtual en la clase VirtualMachine, que mantiene el e
 
 ### plg.gr3.vm.instr
 
-Contiene las definiciones de instrucciones, todas ellas descendientes de una clase abstracta Instruction. Este paquete es el que implementa la ejecución de código, mediante Instruc-tion#execute(VirtualMachine), método abstracto que todas las instrucciones deben implementar.
+Contiene las definiciones de instrucciones, todas ellas descendientes de una clase abstracta Instruction. Este paquete es el que implementa la ejecución de código, mediante Instruction#execute(VirtualMachine), método abstracto que todas las instrucciones deben implementar.
+
+
+## 13.2 Otras notas
+
+### Ejecución del programa
+
+El programa principal es un único main, incluído en laclase `plg.gr3.Main`.
+Para su uso se implementan dos comandos, `compile` y `run`. Ambos comandos pueden modificarse usando los sufijos `.v` y `.vv`, lo que hará que se muestren mensajes dedepuración en mayor medida y, en el caso de `run.vv`, permitirá la ejecución en modo traza, parándose tras cada instrucción.
+
+El comando `compile` tiene dos argumentos: El fichero fuente y el fichero destino. Este comando compilará el programa pasado como fuente y volcará el *bytecode* resultante en el fichero destino. En modo depuración (`compile.v`), imprimirá alguna información útil de depuración, así como el código generado. En modo traza (`compile.vv`), mostrará además la salida de EvLib.
+
+El comando `run` tiene un único argumento: El fichero con el *bytecode* a ejecutar. Este comando ejecutará el programa, imprimiendo detalles como la pila y la memoria en el caso de modo depuración (`run.v`) y parándose tras cada instrucción en el modo traza (`run.vv`).

@@ -59,11 +59,6 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        // Program.err
-        dependencias(attr.a("err"), sConsts.a("err"), sTypes.a("err"), sVars.a("err"), sSubprogs.a("err"), sInsts
-            .a("err"));
-        calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
-
         // Program.cod
         dependencias(attr.a("cod"), sSubprogs.a("etq"), sSubprogs.a("cod"), sInsts.a("cod"), sVars.a("dir"));
         calculo(attr.a("cod"), new SemFun() {
@@ -347,8 +342,6 @@ public final class Attribution extends Atribucion {
         regla("STypes -> TIPOS ILLAVE Types FLLAVE");
         TAtributos attr = atributosPara("STypes", "tsh", "dirh", "ts", "dir", "err");
 
-        asigna(attr.a("tsh"), types.a("tsh"));
-
         asigna(types.a("tsh"), attr.a("tsh"));
 
         asigna(attr.a("ts"), types.a("ts"));
@@ -450,10 +443,6 @@ public final class Attribution extends Atribucion {
         asigna(attr.a("id"), lexIdent);
 
         asigna(attr.a("tipo"), typeDesc.a("tipo"));
-        // Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(obtieneCTipo(TypeDesc),
-        // Type.id)>
-
-        calculo(attr.a("tipo"), AssignationFun.INSTANCE);
 
         return attr;
     }
@@ -642,6 +631,7 @@ public final class Attribution extends Atribucion {
     public TAtributos var_R2 () {
         regla("Var -> $");
         TAtributos attr = atributosPara("Var", "ts", "tsh", "err", "id", "nivel", "tipo");
+
         asigna(attr.a("ts"), attr.a("tsh"));
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
