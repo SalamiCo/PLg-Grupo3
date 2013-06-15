@@ -336,7 +336,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     ConstLit → menos Lit
         ConstLit.valor = -(Lit.valor)
-        ConstLit.tipo = -(Lit.tipo)
+        ConstLit.tipo = opUnario(menos, Lit.tipo)
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
