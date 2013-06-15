@@ -2111,7 +2111,73 @@ En la operación castNat, hemos creado la operación en la máquina virtual (nat
 
 
 
+# 12 Formato de representación del código P
 
+La máquina pila funciona mediante la carga de un fichero binario que define las instrucciones del código. Dicho código binario (*bytecode*) no contiene información de la tabla de símbolos o la memoria: únicamente instrucciones.
+
+Las instrucciones vienen determinadas por un único byte, opcionalmente seguido de operandos. El tipo de un operando viene dado por la instrucción. Los operandos pueden ser:
+
+| Tipo  | Valor |
+|------:|:------|
+| type  | Un único byte que representa un tipo (ver tabla de tipos)
+| nat   | Cuatro bytes que representan un entero de 31 bits sin signo
+| int   | Cuatro bytes que representan un entero de 32 bits con signo
+| float | Cuatro bytes que representan un flotante en IEEE 754 binary single precision
+| char  | Dos bytes que representan un caracter unicode UTF-16
+| bool  | Un byte que representa un booleano (0=false, 1=true)
+
+Las instrucciones que requieren un valor literal utilizan un sufijo dentro del propio código de operación en lugar de un argumento de tipo. tanto los argumentos de tipo como dichos sufijos siguen la siguiente tabla:
+
+| Código | Tipo |
+|-------:|:-----|
+| 000    | natural
+| 001    | integer
+| 010    | float
+| 011    | character
+| 100    | boolean
+
+Con todo esto, podemos empezar a definir instrucciones:
+
+| Código    | Operandos | Instrucción |
+|----------:|:---------:|:------------|
+| 0000 0000 | -         | suma (+)
+| 0000 0001 | -         | resta (-)
+| 0000 0010 | -         | mul (*)
+| 0000 0011 | -         | div (/)
+| 0000 0100 | -         | mod (%)
+| 0000 0101 | -         | igual (==)
+| 0000 0110 | -         | no-igual (!=)
+| 0000 0111 | -         | menor (<)
+| 0000 1000 | -         | menor-o-igual (<=)
+| 0000 1001 | -         | mayor (>)
+| 0000 1010 | -         | mayor-o-igual (>=)
+| 0000 1011 | -         | and
+| 0000 1100 | -         | or
+| 0000 1101 | -         | despl izq (<<)
+| 0000 1110 | -         | despl dcha (>>)
+| 0000 1111 | -         | opuesto (- unario)
+| 0001 0000 | -         | negación (not)
+| 0010 0TTT | valor     | apila(valor). *T* es el tipo de *valor*
+| 0010 1TTT | -         | in. *T* es el tipo pedido
+| 0011 0TTT | -         | cast(T). *T* es el tipo del casting
+| 0011 1000 | tipo, dir | apila-dir(tipo, dir). Tipo es un parámetro *type*, dir esun *nat*.
+| 0011 1001 | tipo, dir | desapila-dir(tipo, dir). Tipo es un parámetro *type*, dir esun *nat*.
+| 0011 1010 | tipo      | apila-ind(tipo). Tipo es un *type*
+| 0011 1011 | tipo      | desapila-ind(tipo). Tipo es un *tipo*
+| 0011 1100 | -         | output.
+| 0011 1101 | -         | stop.
+| 0011 1110 | -         | swap1.
+| 0011 1111 | -         | swap2.
+| 0100 0000 | -         | ir-a
+| 0100 0001 | -         | ir-f
+| 0100 0010 | -         | ir-v
+| 0100 0011 | -         | ir-ind
+| 0100 0100 | -         | copia
+| 0100 0101 | tam       | mover(tam). Tam es un *nat*
+| 0100 0110 | -         | desapila.
+| 0100 0111 | tam       | rango(tam). Tam es un *nat*
+
+Los códigos no definidos en la tabla no corresponden a ninguna instrucción.
 
 # 13 Notas sobre la implementación
 
