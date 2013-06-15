@@ -1449,8 +1449,8 @@ public final class Attribution extends Atribucion {
                 // Paso 1: Restructurar los punteros SP y FP
                 // Para ello, siendo SP=M[0] y FP=M[1]:
                 // . M[SP+1] = RETURNADDR
-                // . M[SP+3] = FP <-- Usamos esto como base para los parámetros
-                // . SP = SP + 2
+                // . M[SP+2] = FP <-- Usamos esto como base para los parámetros
+                // . SP = SP + 3
                 // Lo cual se traduce en
                 // PUSH(RETADDR), LOAD(0), PUSH(1), ADD, STORE-IND,
                 // . LOAD(1), LOAD(0), PUSH(2), ADD, STORE-IND,
