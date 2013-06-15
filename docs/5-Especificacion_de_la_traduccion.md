@@ -264,6 +264,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
  * op: Enumerado que nos dice cuál es el operador utilizado.
  * etq: Contador de instrucciones. Cuenta instucciones de la máquina a pila generadas. 
  * etqh: Contador de instrucciones heredado.  
+ * refh: Atributo que indica si la expresión no tiene que generar el apila-ind para cargar el valor. Si la expresión es un parámetro por referencia refh vale true. Si no, vale false.  
 
 ## 5.4 Gramática de atributos
 
@@ -297,8 +298,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Subprogs.etq = Subprog.etq
 
 	Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
-		Subprog.cod = SInsts.cod || apila_dir(1) || apila(2) || menos 
-					|| apila_ind || ir_ind
+		Subprog.cod = apila-dir(0) || apila(SVars.dir) || mas || desapila-dir(0) ||
+					SInsts.cod || 
+					apila_dir(1) || apila(2) || menos || apila_ind || ir_ind
 		SInsts.etqh = Subprog.etqh 
 		Subprog.etq = SInsts.etq + 5
 
@@ -324,6 +326,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Expr.etqh = Inst.etqh
 		Desig.etqh = Expr.etq
 		Inst.etq = Desig.etq + 1 
+		Expr.refh = false
 
 	Inst → in ipar Desig fpar
 		Inst.cod = in(Desig.type) ||Desig.cod|| desapila-ind 
@@ -334,6 +337,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Inst.cod = Expr.cod || out
 		Expr.etqh = Inst.etqh
 		Inst.etq = Expr.etqh + 1 
+		Expr.refh = false
 
 	Inst → swap1 ipar fpar
 		Inst.cod = swap1
@@ -349,12 +353,14 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Insts.etqh = Expr.etq + 1
 		ElseIf.etqh = Insts.etq + 1
 		Inst.etq = ElseIf.etq
+		Expr.refh = false
 
 	Inst → while Expr do Insts endwhile
 		Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Inst.etqh)
 		Expr.etqh = Inst.etqh 
 		Insts.etqh = Expr.etq + 1
 		Inst.etq = Insts + 1 
+		Expr.refh = false
 
 	Inst → InstCall
 		Inst.cod = IsntCall.cod
@@ -376,20 +382,18 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 	InstCall → call ident lpar SRParams rpar
 		InstCall.cod = 
-		// Salvar el registro base
-			apila_dir(0) || apila(2) || mas || apila_dir(0) || desapila_ind
-		// Modifica la cima de la pila
-			apila_dir(0) || apila(2) || mas || desapila_dir(0)
-			|| SRParams || desapila
-		// Modificar la base
-			apila_dir(0) || apila(3) || mas || desapila_dir(1)
-		//Salvar el contador del programa actual
-			apila_dir(1) || apila(2) || menos || desapila-ret //TODO mirar si hay que sumar 1 o dos
-			|| ir_a(SRParams.tsh[ident.lex].dir)
+					//Reestructuramos los punteros CP y BASE
+					apila(direccion de retorno) || apila-dir(0) || apila(1) || mas || desapila-ind || apiladir(1) || apila-dir(0) || apila(2) || mas || desapila-ind || apila-dir(0) || apila(3) || suma || desapila-dir(0)||
+					//Paso de parámetros
+					SRParams.cod||
+					// Saltar al subprograma
+					apila-dir(0) || desapila-dir(1) || apila-dir(0) || apila(tamParametros(InstCall.tsh, ident)) || mas || desapila-dir(0) || ir-ind ||
+					//Al volver del subprograma devolver los punteros CP y BASE a su sitio
+					apila-dir(1) || apila(3) || menos || desapila-dir(0) || apila-dir(1) || apila(1) || menos || apila-ind || desapila-dir(1)
 
 		SRParams.nparams = 0
-		SRParams.etqh = InstCall.etqh + 13 
-		InstCall.etq = SRParams.etq + 6
+		SRParams.etqh = InstCall.etqh + 14 
+		InstCall.etq = SRParams.etq + 16
 
 	SRParams → RParams 
 		SRParams.cod = RParams.cod
@@ -420,15 +424,18 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		RParams.nparams = RParam.nparams
 
 	RParam → ident asig Expr
-		RParam.cod = apila_dir(0) || apila(RParams.nparams) || mas  || copia || apila(RParams.nparamsh) || suma || Expr.cod 
-					si (RParam.tsh[ident.lex].clase == pvalor) 
-						 || mueve(numCeldas(Expr.type.tamaño))
-					si no si (RParam.tsh[ident.lex].clase == pvariable) 
-						|| desapila_ind
+		RParam.cod = Expr.cod || apila_dir(0) || apila(RParams.	nparams) || mas   
+					si (RParam.tsh[ident.lex].clase == pvariable)
+						|| desapila-ind
+					sino si (esPrimitivo(RParam.tsh[ident.lex].tipo)
+							|| desapila-ind
+						sino // es un tipo compuesto
+							|| mueve(tamTipo(RParam.tsh[ident.lex].tipo, Rparam.tsh))
 
 		RParam.nparams = RParams.nparamsh + 1 
-		Expr.etqh = RParam.etqh + 6 
-		RParam.etq = Expr.etq + 1 
+		Expr.etqh = RParam.etqh 
+		RParam.etq = Expr.etq + 4 
+		Expr.refh = RParam.tsh[ident.lex] == pvariable 
 
 	Desig → ident
 		Desig.cod = si (Desig.tsh[ident.lex].nivel == global) entonces 
@@ -436,7 +443,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 						Desig.etq = Desig.etq + 1 
 
 					si no // el nivel el local
-						si (Desig.tsh[ident.lex].clase == var) entonces 
+						si (Desig.tsh[ident.lex].clase == var || Desig.tsh[ident.lex].clase == pvalor) entonces 
 							apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas
 							Desig.etq = Desig.etq + 3 
 
@@ -445,10 +452,11 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 							Desig.etq = Desig.etq + 4 
 
 	Desig → Desig icorchete Expr fcorchete
-		Desig0.cod = Desig1.cod || Expr.cod || apila(tamTipo(Desig1.type)) || mul || mas
+		Desig0.cod = Desig1.cod || Expr.cod || range(tamTipo(Desig1.type)) || apila(tamTipo(Desig1.type)) || mul || mas
 		Desig1.etqh = Desig0.etqh 
 		Expr.etqh = Desig1.etq
 		Desig0.etq = Expr.etq + 3  
+		Expr.refh = false
 
 	Desig → Desig barrabaja litnat		
 		Desig0.cod = Desig1.cod || apila(desplTupla(litnat.lex, Desig1.type)) || mas
@@ -460,83 +468,112 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 		Term1.etqh = Expr.etqh 
 		Term2.etqh = Term1.etq
 		Expr.etq = Term2.etq + 1  
+		Term0.refh = Expr.refh
+		Term1.refh = Expr.refh
 
 	Expr → Term
 		Expr.cod = Term.cod
 		Term.etqh = Expr.etqh
 		Expr.etq = Term.etq
+		Term.refh = Expr.refh
 
 	Term → Term Op1 Fact
 		Term0.cod = Term1.cod || Fact.cod || Op1.op
 		Term1.etqh = Term0.etqh 
 		Fact.etqh = Term1.etq
 		Term0.etq = Fact.etq + 1 
+		Term1.refh = Term0.refh 
+		Fact.refh = Term0.refh
 
 	Term → Term or Fact
 		Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
 		Term1.etqh = Term0.etqh 
 		Fact.etqh = Term1.etq + 3 
 		Term0.etq = Fact.etq  
+		Expr.refh = false
+		Term1.refh = Term0.refh
+		Fact.refh = Term0.refh
 
 	Term → Fact
 		Term.cod = Fact.cod
 		Fact.etqh = Term.etqh
 		Term.etq = Fact.etq
+		Fact.refh = Term.refh
 
 	Fact → Fact Op2 Shft
 		Fact0.cod = Fact1.cod || Shft.cod || Op2.op
 		Fact1.etqh = Fact0.etqh 
 		Shft.etqh = Fact1.etq 
 		Term0.etq = Shft.etq + 1 
+		Fact1.refh = Fact0.refh
+		Shft.refh = Fact0.refh
 
 	Fact → Fact and Shft
 		Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
 		Fact1.etqh = = Fact0.etqh
 		Shft.etqh = Fact1.etq + 3
 		Fact0.etq = Shft.etq 
+		Fact1.refh = Fact0.refh
+		Shft.refh = Fact0.refh
 
 	Fact → Shft
 		Fact.cod = Shft.cod
 		Shft.etqh = Fact.etqh
 		Fact.etq = Shft.etq
+		Shft.refh = Fact.refh
 
 	Shft → Unary Op3 Shft
 		Shft0.cod = Unary.cod || Shft1.cod || Op3.op
 		Unary.etqh = Shft0.etqh 
 		Shft1.etqh = Unary.etq 
 		Shft0.etq = Shft1.etq + 1 
+		Unary.refh = Shft0.refh
+		Shft1.refh = Shft0.refh
 
 	Shft → Unary
 		Shft.cod = Unary.cod
 		Unary.etqh = Shft.eqth
 		Shft.etq = Unary.etq
+		Unary.refh = Shft.refh
 
 	Unary → Op4 Unary
 		Unary0.cod = Unary1.cod || Op4.op
 		Unary1.etqh = Unary0.eqth
 		Unary0.eqt = Unary1.etq + 1 
+		Unary1.refh = Unary0.refh
 
 	Unary → lpar Cast rpar Paren
 		Unary.cod = Paren.cod || Cast.type
 		Paren.etqh = Unary.eqth 
 		Unary.etq = Paren.eqt + 1 
+		Paren.refh = Unary.refh
 
 	Unary → Paren
 		Unary.cod = Paren.cod
 		Paren.eqth = Unary.etqh
 		Unary.etq = Paren.etq
+		Paren.refh = Unary.refh
 
 	Paren → lpar Expr rpar
 		Paren.cod = Expr.cod
 		Expr.etqh = Paren.eqth
 		Paren.etq = Expr.etq
+		Expr.tsh = Paren.tsh
 
 	Paren → Lit
 		Paren.cod = apila(Lit.valor)
 		Paren.etq = Paren.etqh + 1
 
 	Paren → Desig
-		Paren.cod = Desig.cod || apila-ind
+		Paren.cod = Desig.cod || 
+					si (esPrimitivo(Desig.tipo) && Desig.tsh[Desig.lex].clase == constante)
+						apila(Desig.tsh[Desig.lex].valor)
+						Desig.etq = Desig.etq + 1
+					fsi
+					si (esPrimitivo(Desig.tipo) && !Paren.refh)
+						apila-ind
+						Desig.etq = Desig.etq + 1
+					fsi
 		Desig.etqh = Paren.etqh 
 		Paren.etq = Desig.etq + 1 
 
