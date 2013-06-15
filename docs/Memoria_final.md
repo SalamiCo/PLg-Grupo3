@@ -449,7 +449,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Tupla → TypeDesc coma Tupla
         TypeDesc.tsh = Tupla0.tsh
         Tupla1.tsh = Tupla0.tsh
-        Tupla0.tipo = TypeDesc.tipo || Tupla1.tipo
+        Tupla0.tipo = TypeDesc.tipo ++ Tupla1.tipo
 
     Tupla → TypeDesc
         TypeDesc.tsh = Tupla.tsh
@@ -532,21 +532,6 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
                    si no {<t:ref, id:FParam.id, tam: 1>} )
         FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh>]
         TypeDesc.tsh = FParam.tsh
-
-    TTupla → ipar Tupla fpar
-        Tupla.tsh = TTupla.tsh
-        TTupla.tipo = Tupla.tipo
-
-    TTupla → ipar fpar
-
-    Tupla → TypeDesc coma Tupla
-        TypeDesc.tsh = Tupla0.tsh
-        Tupla1.tsh = Tupla0.tsh
-        Tupla.tipo = TypeDesc.tipo ++ Tupla.tipo
-
-    Tupla → TypeDesc
-        TypeDesc.tsh = Tupla.tsh
-        Tupla.tipo = TypeDesc.tipo
 
     Lit → LitBool 
         Lit.valor = LitBool.valor
@@ -841,7 +826,7 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         ConstLit.tipo = Lit.tipo
 
     ConstLit → menos Lit
-        ConstLit.tipo = Lit.tipo
+        ConstLit.tipo = -(Lit.tipo)
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
@@ -2200,6 +2185,35 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 11 Descripción de las funciones de atribución
 
 
 
