@@ -622,6 +622,3 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 	Op4 → menos
 		Op4.op = menos
 
-#### Nota:
-
-- Resulta que el codigo de Desig -> Ident está mal. No tiene en cuenta si es una constante. Hay que hacer un apaño y explicar el apaño en algún punto de la memoria. 
