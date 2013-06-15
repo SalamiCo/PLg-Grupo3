@@ -1678,17 +1678,21 @@ public final class Attribution extends Atribucion {
                 Lexeme identParamReal = (Lexeme) args[1].valor();
                 Lexeme identSubprog = (Lexeme) args[2].valor();
 
-                List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
+                if (table.hasIdentifier(identSubprog.getLexeme())) {
+                    List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
 
-                boolean hasParam = false;
-                Parameter paramFormal = null;
-                for (Parameter param : parametros) {
-                    if (identParamReal.getLexeme().equals(param.getName())) {
-                        hasParam = true;
-                        paramFormal = param;
+                    boolean hasParam = false;
+                    Parameter paramFormal = null;
+                    for (Parameter param : parametros) {
+                        if (identParamReal.getLexeme().equals(param.getName())) {
+                            hasParam = true;
+                            paramFormal = param;
+                        }
                     }
+                    return hasParam && paramFormal.isReference();
+                } else {
+                    return false;
                 }
-                return hasParam && paramFormal.isReference();
             }
         });
 
@@ -1703,39 +1707,44 @@ public final class Attribution extends Atribucion {
                 Lexeme identSubprog = (Lexeme) args[4].valor();
                 List<Lexeme> lparNames = (List<Lexeme>) args[7].valor();
 
-                List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
                 List<CompileError> errors = new ArrayList<>();
 
-                // Comprobamos que el identificador del parámetro real esté declarado como parámetro en la TS
-                boolean hasParam = false;
-                Parameter paramFormal = null;
-                for (Parameter param : parametros) {
-                    if (identParamReal.getLexeme().equals(param.getName())) {
-                        hasParam = true;
-                        paramFormal = param;
-                    }
-                }
-                if (!hasParam) {
-                    errors.add(new UndefinedIdentifierError(
-                        identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()));
-                }
+                if (table.hasIdentifier(identSubprog.getLexeme())) {
 
-                // Comprobamos que el tipo del parámetro real se pueda asignar al tipo del parámetro formal declarado.
-                if (paramFormal != null) {
-                    Type exprT = (Type) args[5].valor();
-                    Type paramT = paramFormal.getType();
+                    List<Parameter> parametros = table.getIdentifierParams(identSubprog.getLexeme());
 
-                    if (!paramT.compatible(exprT)) {
-                        if (paramT != Type.ERROR && exprT != Type.ERROR) {
-                            errors.add(new AssignationTypeError(paramT, exprT, identParamReal));
+                    // Comprobamos que el identificador del parámetro real esté declarado como parámetro en la TS
+                    boolean hasParam = false;
+                    Parameter paramFormal = null;
+                    for (Parameter param : parametros) {
+                        if (identParamReal.getLexeme().equals(param.getName())) {
+                            hasParam = true;
+                            paramFormal = param;
                         }
                     }
-
-                    // Comprobamos que la expresion sea un designador
-                    boolean esDesig = (boolean) args[6].valor();
-                    if (paramFormal.isReference() && !esDesig) {
-                        errors.add(new NotADesignatorError(
+                    if (!hasParam) {
+                        errors.add(new UndefinedIdentifierError(
                             identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()));
+                    }
+
+                    // Comprobamos que el tipo del parámetro real se pueda asignar al tipo del parámetro formal
+// declarado.
+                    if (paramFormal != null) {
+                        Type exprT = (Type) args[5].valor();
+                        Type paramT = paramFormal.getType();
+
+                        if (!paramT.compatible(exprT)) {
+                            if (paramT != Type.ERROR && exprT != Type.ERROR) {
+                                errors.add(new AssignationTypeError(paramT, exprT, identParamReal));
+                            }
+                        }
+
+                        // Comprobamos que la expresion sea un designador
+                        boolean esDesig = (boolean) args[6].valor();
+                        if (paramFormal.isReference() && !esDesig) {
+                            errors.add(new NotADesignatorError(
+                                identParamReal.getLexeme(), identParamReal.getLine(), identParamReal.getColumn()));
+                        }
                     }
                 }
 
@@ -1754,7 +1763,7 @@ public final class Attribution extends Atribucion {
                 List<CompileError> errs = (List<CompileError>) args[2].valor();
                 Lexeme subName = (Lexeme) args[4].valor();
 
-                if (!errs.isEmpty()) {
+                if (!errs.isEmpty() || !table.hasIdentifier(ident.getLexeme())) {
                     return ConcatCodeFun.INSTANCE.eval();
                 }
 
@@ -1812,7 +1821,7 @@ public final class Attribution extends Atribucion {
                 Integer etq = (Integer) args[3].valor();
                 Lexeme subName = (Lexeme) args[4].valor();
 
-                if (!errs.isEmpty()) {
+                if (!errs.isEmpty() || !table.hasIdentifier(ident.getLexeme())) {
                     return 0;
                 }
 
