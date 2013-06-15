@@ -3,7 +3,7 @@
 program: test16{
 
     consts {
-        const integer numero2=1;
+        const integer numero2 = 1;
     } 
 
     vars{
@@ -11,8 +11,7 @@ program: test16{
         var float numfloat;
         var natural numnat;
         var character letra;
-        var encontrado;
-        const integer numero2:=1;
+        var boolean encontrado;
     }
 
     @prueba de asignaciones correctas con castings automaticos
@@ -26,7 +25,7 @@ program: test16{
         numfloat=numfloat+numero;
         out(numfloat);
         numfloat=numfloat-numnat;
-        out(numflat);
+        out(numfloat);
         out(numero);
         numero=numero*numnat;
         out(numero);

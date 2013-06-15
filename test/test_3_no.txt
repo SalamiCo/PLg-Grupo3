@@ -1,16 +1,12 @@
-@Programa pensado para fallar. 
+@Programa pensado para fallar. El tipo tmatriz no se ha definido
 
 program: test3{
 
 	vars {
-        var integer y;
-        var integer y;
-        var natural n;
-        var matriz tmatriz;
+        var tmatriz matriz;
     }
     
 	instructions {
-        x = c;
-        out (x);
+        out(matriz);
 	}
 }

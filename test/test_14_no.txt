@@ -1,9 +1,8 @@
 @El programa debería fallar en lo siguiente:
 @ - params_repetidos tiene dos parámetros repetidos declarados 
-@ - se llama a un subprograma, llamado, que no está declarado.
+@ - se llama a un subprograma que no está declarado.
 @ - se llama a pruebas la primera vez con un número erróneo de parámetros 
 @ -  llama a pruebas la segunda vez con parámetros repetidos.
-@ - cualquier otra cosa que se me pase. 
 
 program: test14{
 
@@ -12,32 +11,30 @@ program: test14{
   } 
    
   vars {
-    var array[5] x;
-    var (int, boolean) y;
+    var integer[5] x;
+    var (integer, boolean) y;
     var natural W;
     var tmatriz matriz;
   }
   
     subprograms {
-        subprogram: params_repetidos(integer var1, float var1) { 
+        subprogram: paramsrepetidos(integer var1, float var1) { 
+            vars {
+                  var float var3;
+            } 
             instructions {
-               vars {
-                  var float var;
-                } 
-
-                var = var1 + var2;
-                out(var);
+                var3 = var1 + var2;
+                out(var3);
             }
         }
 
         subprogram: pruebas(integer var1, float var2, integer var3, boolean var4, boolean var5) { 
+            vars {
+                  var float var6;
+            } 
             instructions {
-                vars {
-                  var float var;
-                } 
-
-                var = var1 + var2;
-                out(var);
+            	var6 = var1 + var2;
+                out(var6);
             }
         }
     }
@@ -47,11 +44,11 @@ program: test14{
         y_1 = 2;
         y_2 = true;
         w = 1; 
-        matriz[0][4];
+        matriz[0][4] = 8;
 
 
         call pruebas(var4 = matriz[0][4], var2 = y_1, var3 = w, var1 = x[3]);
-        call pruebas(var4 = true, var2 = y_1, var3 = w, var1 = x[3], , var5 = y_2, , var5 = y_2);
+        call pruebas(var4 = true, var2 = y_1, var3 = w, var1 = x[3], var5 = y_2, var6 = y_2);
         call llamada();
 	}
 }
