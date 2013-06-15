@@ -826,7 +826,7 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         ConstLit.tipo = Lit.tipo
 
     ConstLit → menos Lit
-        ConstLit.tipo = -(Lit.tipo)
+        ConstLit.tipo = opUnario(menos, Lit.tipo)
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
