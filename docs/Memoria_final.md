@@ -576,7 +576,8 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         LitNum.valor = stringToFloat(litfloat)
         LitNum.tipo = float
 
-# 4. Especificación de las restricciones contextuales 
+
+    . Especificación de las restricciones contextuales 
 
 
 ## 4.1 Descripción informal de las restricciones contextuales
@@ -586,7 +587,7 @@ Enumeración y descripción de las restricciones contextuales extraídas directa
 
 ### 4.1.1 Sobre declaraciones
 
-* Las variables, constantes y tipos que se usen en la sección de instrucciones o en la sección de subprogramas habrán debido de ser convenientemente declaradas en su correspondiente sección.
+* Las variables, constantes y tipos que se usen en la sección de instrucciones o en la sección de subprogramas habrán debido de ser convenientemente declarados en su correspondiente sección.
 * No se pueden declarar dos variables, constantes o tipos con el mismo identificador.
 
 
@@ -650,19 +651,19 @@ A continuación, describimos las funciones semánticas adicionales utilizadas en
     casting (Type tipoCast, Type tipoOrg) : Type
         Dados dos tipos diferentes comprobamos si podemos hacer el casting: [ (tipoCast) tipoOrg ] Si podemos, devolvemos el tipoCast resultante de hacer el casting, y si no podemos, devolvemos terr. Describimos el comportamiento de la función en la siguiente tabla.
 
-|    TipoCast     |         TipoOrg           | Tipo devuelto |
-|:---------------:|:-------------------------:|:-------------:|
-|  natural        | natural                   | natural       |
-|  natural        | character                 | natural       |
-|  natural        | cualquier otro tipo       | terr          |
-|  boolean        | -                         | terr          |
-| character       | character                 | character     |
-| character       | natural                   | character     |
-| character       | cualquier otro tipo       | terr          |
-|  integer        | boolean                   | terr          |
-|  integer        | tipo númerico o character | integer       |
-|   float         | boolean                   | terr          |
-|   float         | tipo númerico o character | terr          |
+|   TipoCast    |         TipoOrg           | Tipo devuelto |
+|:-------------:|:-------------------------:|:-------------:|
+|    natural    | natural                   | natural       |
+|    natural    | character                 | natural       |
+|    natural    | cualquier otro tipo       | terr          |
+|    boolean    | -                         | terr          |
+|   character   | character                 | character     |
+|   character   | natural                   | character     |
+|   character   | cualquier otro tipo       | terr          |
+|    integer    | boolean                   | terr          |
+|    integer    | tipo númerico o character | integer       |
+|     float     | boolean                   | terr          |
+|     float     | tipo númerico o character | terr          |
 
 Nota: cualquier casting en el que esté involucrado un tipo construido da como tipo devuelto 'terr'.
 
@@ -753,6 +754,10 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que los dos t
     existe(TS ts, String is, nivel) : Boolean
         Indica si el identificador existe en la tabla de símbolos en el nivel inidicado. 
 
+#### añadirSubprograma
+    añadirSubprograma(TS ts, String ident, CCampo params, Integer address) : void
+        Añade a la tabla de símbolos el subprograma definido por los argumentos.
+
 #### numParametros
     numParametros(TS ts, String id) : Integer
         Devuelve el número de parámetros que tiene el subprograma con el identificador id. Si el subprograma no está en la tabla del símbolos devuelve terr.
@@ -762,8 +767,12 @@ Nota: En el caso de los tipos construidos, devolverá true siempre que los dos t
         Comprueba si el parámetro idparam está declarado en el subprograma idsubprog. Si no está declarado el identificador, o el subprograma no existe devuelve terr
 
 #### compatible
-    compatible(CTipo, CTipo) : Boolean
+    compatible(CTipo tipo1, CTipo tipo2) : Boolean
         Dados dos tipos nos indica si son campatibles entre ellos       
+
+#### getOffset
+    getOffset(Integer numElems) : Integer
+        Devuelve la posición del elemento dado dentro de la tupla.
 
 #### parametrosNoRepetidos
     parametrosNoRepetidos(TS ts, String id)
@@ -779,8 +788,8 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
 * **ts:** tabla de símbolos. Se crea en la parte de declaraciones.
 * **tsh:** tabla de símbolos heredada. Se hereda en la parte de instrucciones.
 * **err:** atributo que indica si se ha detectado algún error. Es un atributo de tipo booleano.
-* **nparams:** contador que cuenta cuántos parámetros se han pasado en la llamada (call) a un subprograma
-* **nombresubprog:** lleva el identificador el subprograma. Se usa para las restricciones contextuales en el paso de parámetros a funciones
+* **nparams:** contador que cuenta cuántos parámetros se han pasado en la llamada (call) a un subprograma.
+* **nombresubprog:** lleva el identificador el subprograma. Se usa para las restricciones contextuales en el paso de parámetros a funciones.
 * **listaparamnombres:** lleva una lista con los nombres de los parámetros que han sido introducidos en una llamada a función. 
 
 ## 4.4 Gramática de atributos
@@ -821,8 +830,7 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         Const.nivel = global
         Const.tipo = <t:TPrim.tipo, tam:1>
 
-        // TODO
-        // añadir valor aquí
+        Const.valor = ConstLit.valor
         Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
 
     Const → ɛ
@@ -1929,14 +1937,14 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = const_R2($1);}
 
     Const ::= CONST TPrim IDENT ASIG ConstLit
-        {$$ = const_R1($1, $3.lex, $5);}
+        {$$ = const_R1($2, $3.lex, $5);}
     Const ::= 
         {$$ = const_R2();}
 
     ConstLit ::= Lit
         {$$ = constLit_R1($1);}
     ConstLit ::= MENOS Lit
-        {$$ = constLit_R1($1);}
+        {$$ = constLit_R1($2);}
 
     STypes ::= TIPOS ILLAVE Types FLLAVE
         {$$ = sTypes_R1($3);}
@@ -1958,13 +1966,13 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
     SVars ::=
         {$$ = sVars_R2();}
 
-    Vars ::= Vars:vars_1 PYC Var
+    Vars ::= Vars PYC Var
         {$$ = vars_R1($1, $3);}
     Vars ::=
         {$$ = vars_R2($1);}
 
     Var ::= VAR TypeDesc IDENT
-        {$$ = var_R1($1, $2.lex);}
+        {$$ = var_R1($2, $3.lex);}
     Var ::=
         {$$ = var_R2();}
 
@@ -2015,7 +2023,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
     SInsts ::= INSTRUCTIONS ILLAVE Insts FLLAVE
         {$$ = sInsts_R1($3);}
 
-    Insts ::= InstsPYC Inst
+    Insts ::= Insts PYC Inst
         {$$ = insts_R1($1, $3);}
     Insts ::= Inst
         {$$ = insts_R2($1);}
