@@ -336,7 +336,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
 
     ConstLit → menos Lit
         ConstLit.valor = -(Lit.valor)
-        ConstLit.tipo = -(Lit.tipo)
+        ConstLit.tipo = opUnario(menos, Lit.tipo)
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
@@ -449,7 +449,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
     Tupla → TypeDesc coma Tupla
         TypeDesc.tsh = Tupla0.tsh
         Tupla1.tsh = Tupla0.tsh
-        Tupla0.tipo = TypeDesc.tipo || Tupla1.tipo
+        Tupla0.tipo = TypeDesc.tipo ++ Tupla1.tipo
 
     Tupla → TypeDesc
         TypeDesc.tsh = Tupla.tsh
@@ -533,21 +533,6 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh>]
         TypeDesc.tsh = FParam.tsh
 
-    TTupla → ipar Tupla fpar
-        Tupla.tsh = TTupla.tsh
-        TTupla.tipo = Tupla.tipo
-
-    TTupla → ipar fpar
-
-    Tupla → TypeDesc coma Tupla
-        TypeDesc.tsh = Tupla0.tsh
-        Tupla1.tsh = Tupla0.tsh
-        Tupla.tipo = TypeDesc.tipo ++ Tupla.tipo
-
-    Tupla → TypeDesc
-        TypeDesc.tsh = Tupla.tsh
-        Tupla.tipo = TypeDesc.tipo
-
     Lit → LitBool 
         Lit.valor = LitBool.valor
         Lit.tipo = LitBool.tipo
@@ -568,12 +553,12 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         LitBool.valor = false
         Lit.tipo = boolean
 
-    LitNum → litNat
-        LitNum.valor = stringToNat(litnat)
+    LitNum → litnat
+        LitNum.valor = stringToNat(litnat.lex)
         LitNum.tipo = natural
 
-    LitNum → litFloat
-        LitNum.valor = stringToFloat(litfloat)
+    LitNum → litfloat
+        LitNum.valor = stringToFloat(litfloat.lex)
         LitNum.tipo = float
 
 
@@ -841,7 +826,7 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         ConstLit.tipo = Lit.tipo
 
     ConstLit → menos Lit
-        ConstLit.tipo = Lit.tipo
+        ConstLit.tipo = opUnario(menos, Lit.tipo)
 
     STypes → tipos illave Types fllave 
         Types.tsh = STypes.tsh
@@ -1266,12 +1251,9 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         Lit.tipo = char 
 
     LitNum → litnat 
-        LitNum.tipo = natural 
+        LitNum.tipo = natural
 
-    LitNum → menos litnat 
-        LitNum.tipo = integer
-
-    LitNum → litfloat | menos litfloat 
+    LitNum → litfloat
         LitNum.tipo = float
 
 
@@ -2195,6 +2177,35 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 11 Descripción de las funciones de atribución
 
 
 
