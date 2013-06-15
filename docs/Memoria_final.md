@@ -519,11 +519,8 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo== TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
-<<<<<<< HEAD
         FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:falso, despl:DParam.dirh>]
-=======
         TypeDesc.tsh = FParam.tsh
->>>>>>> 3d55f0264dfa64225bbbc00ce96cedbcc4eebd83
 
     FParam → TypeDesc mul ident
         FParam.ts = FParam.tsh
@@ -533,11 +530,8 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         FParam.nivel = local
         FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
                    si no {<t:ref, id:FParam.id, tam: 1>} )
-<<<<<<< HEAD
         FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh>]
-=======
         TypeDesc.tsh = FParam.tsh
->>>>>>> 3d55f0264dfa64225bbbc00ce96cedbcc4eebd83
 
     TTupla → ipar Tupla fpar
         Tupla.tsh = TTupla.tsh
@@ -2272,19 +2266,21 @@ Esta es la librería EvLib modificada para solventar algunos problemas que hemos
 
 ### plg.gr3
 
-Contiene los dos main de la aplicación y una clase Util con ciertas utilidades para la aplicación.
+Contiene el main de la aplicación y una clase Util con ciertas utilidades para la aplicación.
 
 
 ### plg.gr3.code
 
-Contiene todas las clases de lectura y escritura de código. Su base son las clases abstractas Code-Reader y CodeWriter, de las que existen implementaciones para leer y cargar de fichero, así como una implementación de CodeWriter que permite la escritura directa en una lista.
+Contiene todas las clases de lectura y escritura de código. Su base son las clases abstractas CodeReader y CodeWriter, de las que existen implementaciones para leer y cargar de fichero, así como una implementación de CodeWriter que permite la escritura directa en una lista.
 
 
 ### plg.gr3.data
 
 Contiene todo lo relacionado con la gestión de datos, es decir: los tipos, los valores del lenguaje y los operadores.
-La clase Type representa los tipos de nuestro lenguaje. Esta clase es similar a un enumerado, cuyos valores pueden crearse en tiempo de ejecución. Puesto que lo que diferencia a los tipos es su nombre, nunca habrá dos instancias de la clase Type con el mismo nombre. Con esto conseguimos evitar los problemas que conllevaría tener una segunda instancia de un tipo nativo (por ejemplo, integer) creado con el constructor, puesto que no tendría bien definido el código del tipo.
-Los operadores se representan mediante las clases BinaryOperator y UnaryOperator, que implementan la interfaz Operator por cuestiones de comodidad.
+La clase Type representa los tipos de nuestro lenguaje. Existe una instancia de esta clase para cada tipo primitivo y para el tipo error, así como dossubclases TupleType y ArrayType para representar arrays y tuplas, respectivamente.
+
+Los operadores se representan mediante las clases BinaryOperator y UnaryOperator, que implementan una interfaz Operator por cuestiones de comodidad en su manejo.
+
 Los valores de nuestro lenguaje vienen representados usando las subclases de la clase abstracta Value, los cuales envuelven los tipos primitivos de Java, añadiendo la restricción a los naturales de que sólo se pueden usar valores positivos.
 
 
@@ -2310,7 +2306,7 @@ Errores en tiempo de compilación, con base en la clase abstracta CompileError. 
 
 ### plg.gr3.parser
 
-Contiene el analizador sintáctico y todas las clase que necesita. Su contenido se limita a la definición del analizador como tal en la clase Parser, la definición de la tabla de símbolos en SymbolTable y la clase Attributes representar los atributos de la gramática.
+Contiene el analizador sintáctico y todas las clase que necesita. Parte de este paquete as autogerada por CUP y JFlex. Además, incluye la definición de la tabla de símbolos, así como del descriptor de las funciones de atribución (Attribution) y de algunas clases útiles.
 
 
 ### plg.gr3.parser.semfun
@@ -2325,4 +2321,16 @@ Definición de la máquina virtual en la clase VirtualMachine, que mantiene el e
 
 ### plg.gr3.vm.instr
 
-Contiene las definiciones de instrucciones, todas ellas descendientes de una clase abstracta Instruction. Este paquete es el que implementa la ejecución de código, mediante Instruc-tion#execute(VirtualMachine), método abstracto que todas las instrucciones deben implementar.
+Contiene las definiciones de instrucciones, todas ellas descendientes de una clase abstracta Instruction. Este paquete es el que implementa la ejecución de código, mediante Instruction#execute(VirtualMachine), método abstracto que todas las instrucciones deben implementar.
+
+
+## 13.2 Otras notas
+
+### Ejecución del programa
+
+El programa principal es un único main, incluído en laclase `plg.gr3.Main`.
+Para su uso se implementan dos comandos, `compile` y `run`. Ambos comandos pueden modificarse usando los sufijos `.v` y `.vv`, lo que hará que se muestren mensajes dedepuración en mayor medida y, en el caso de `run.vv`, permitirá la ejecución en modo traza, parándose tras cada instrucción.
+
+El comando `compile` tiene dos argumentos: El fichero fuente y el fichero destino. Este comando compilará el programa pasado como fuente y volcará el *bytecode* resultante en el fichero destino. En modo depuración (`compile.v`), imprimirá alguna información útil de depuración, así como el código generado. En modo traza (`compile.vv`), mostrará además la salida de EvLib.
+
+El comando `run` tiene un único argumento: El fichero con el *bytecode* a ejecutar. Este comando ejecutará el programa, imprimiendo detalles como la pila y la memoria en el caso de modo depuración (`run.v`) y parándose tras cada instrucción en el modo traza (`run.vv`).
