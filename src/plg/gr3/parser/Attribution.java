@@ -1428,7 +1428,8 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("cod"), srParams.a("cod"), attr.a("tsh"), identLex, srParams.a("etq"));
+        dependencias(attr.a("cod"), srParams.a("cod"), attr.a("tsh"), identLex, srParams.a("etq"), srParams
+            .a("varstam"));
         calculo(attr.a("cod"), new SemFun() {
 
             @Override
@@ -1458,8 +1459,9 @@ public final class Attribution extends Atribucion {
                 // Con esto almacenamos la dir. retorno, actualizamos SP y FP y los dejamos preparados.
                 List<Instruction> code1 =
                     Arrays.asList(
-                        new PushInstruction(retAddrValue), new LoadInstruction(0, Type.NATURAL), new PushInstruction(
-                            NaturalValue.valueOf(1)),
+                        Instruction.comment(new PushInstruction(retAddrValue), "Subprogram call: '" + ident.getLexeme()
+                                                                               + "'"), new LoadInstruction(
+                            0, Type.NATURAL), new PushInstruction(NaturalValue.valueOf(1)),
                         new BinaryOperatorInstruction(BinaryOperator.ADDITION),
                         new IndirectStoreInstruction(Type.NATURAL),
                         // --
@@ -1482,18 +1484,20 @@ public final class Attribution extends Atribucion {
                     totalParamSize += param.getType().getSize();
                 }
 
+                int totalVarsSize = (Integer) args[4].valor();
+
                 // Paso 3: Saltar!
                 // Es decir:
                 // . LOAD(0), STORE(1)
-                // . LOAD(0), PUSH(<tamaño-total-parametros> - 1), ADD, STORE(0)
+                // . LOAD(0), PUSH(<tamaño-total-parametros-y-vars> - 1), ADD, STORE(0)
                 // . JUMP(FUNADDR)
                 List<Instruction> code3 =
                     Arrays.asList(
                         new LoadInstruction(0, Type.NATURAL), new StoreInstruction(1, Type.NATURAL),
                         // --
                         new LoadInstruction(0, Type.NATURAL),
-                        new PushInstruction(NaturalValue.valueOf(totalParamSize - 1)), new BinaryOperatorInstruction(
-                            BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
+                        new PushInstruction(NaturalValue.valueOf(totalParamSize + totalVarsSize - 1)),
+                        new BinaryOperatorInstruction(BinaryOperator.ADDITION), new StoreInstruction(0, Type.NATURAL),
                         // --
                         new JumpInstruction(funAddr));
 
@@ -1534,9 +1538,10 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog",
-                "nombresubprogh", "listaparamnombresh", "listaparamnombres");
+                "nombresubprogh", "listaparamnombresh", "listaparamnombres", "varstam");
 
         asigna(rParams.a("tsh"), attr.a("tsh"));
+        asigna(attr.a("varstam"), rParams.a("varstam"));
 
         dependencias(attr.a("err"), rParams.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1566,9 +1571,10 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "SRParams", "err", "cod", "etqh", "etq", "nparamsh", "nparams", "listaparamnombres",
-                "listaparamnombresh", "nombresubprog", "nombresubprogh", "tsh");
+                "listaparamnombresh", "nombresubprog", "nombresubprogh", "tsh", "varstam");
 
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
+        asigna(attr.a("varstam"), a(0));
 
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
 
@@ -1588,11 +1594,23 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "RParams", "tsh", "err", "cod", "nparamsh", "nparams", "nombresubprogh", "etqh", "etq",
-                "listaparamnombresh", "listaparamnombres");
+                "listaparamnombresh", "listaparamnombres", "varstam");
 
         asigna(rParams_1.a("tsh"), attr.a("tsh"));
 
         asigna(rParam.a("tsh"), attr.a("tsh"));
+
+        dependencias(attr.a("varstam"), rParams_1.a("varstam"), rParam.a("varstam"));
+        calculo(attr.a("varstam"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Integer tam1 = (Integer) args[0].valor();
+                Integer tam2 = (Integer) args[1].valor();
+
+                return tam1 + tam2;
+            }
+        });
 
         dependencias(attr.a("err"), rParams_1.a("err"), rParam.a("err"));
         calculo(attr.a("err"), ConcatErrorsFun.INSTANCE);
@@ -1630,9 +1648,10 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "RParams", "tsh", "err", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprogh",
-                "listaparamnombresh", "listaparamnombres");
+                "listaparamnombresh", "listaparamnombres", "varstam");
 
         asigna(rParam.a("tsh"), attr.a("tsh"));
+        asigna(attr.a("varstam"), rParam.a("varstam"));
 
         dependencias(attr.a("cod"), rParam.a("cod"));
         calculo(attr.a("cod"), ConcatCodeFun.INSTANCE);
@@ -1664,10 +1683,20 @@ public final class Attribution extends Atribucion {
         TAtributos attr =
             atributosPara(
                 "RParam", "tsh", "cod", "etq", "etqh", "nparams", "nparamsh", "nombresubprog", "nombresubprogh",
-                "tipo", "desig", "err", "listaparamnombres", "listaparamnombresh");
+                "tipo", "desig", "err", "listaparamnombres", "listaparamnombresh", "varstam");
         Atributo identLex = atributoLexicoPara("IDENT", "lex", ident);
 
         asigna(expr.a("tsh"), attr.a("tsh"));
+
+        dependencias(attr.a("varstam"), expr.a("tipo"));
+        calculo(attr.a("varstam"), new SemFun() {
+
+            @Override
+            public Object eval (Atributo... args) {
+                Type t = (Type) args[0].valor();
+                return t.getSize();
+            }
+        });
 
         dependencias(expr.a("refh"), attr.a("tsh"), identLex, attr.a("nombresubprogh"));
         calculo(expr.a("refh"), new SemFun() {
@@ -1802,6 +1831,8 @@ public final class Attribution extends Atribucion {
                             new IndirectStoreInstruction(Type.NATURAL));
                     }
                 }
+
+                code.set(0, Instruction.comment(code.get(0), "Argument '" + ident.getLexeme() + "'"));
 
                 return ConcatCodeFun.INSTANCE.eval(args[3], a(code));
             }
@@ -3220,7 +3251,7 @@ public final class Attribution extends Atribucion {
             }
         });
 
-        dependencias(attr.a("err"), cast.a("tipo"), paren.a("err"), paren.a("tipo"));
+        dependencias(attr.a("err"), cast.a("tipo"), paren.a("err"), paren.a("tipo"), cast.a("lex"));
         calculo(attr.a("err"), new SemFun() {
 
             @Override
