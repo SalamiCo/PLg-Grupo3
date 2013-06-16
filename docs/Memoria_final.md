@@ -301,6 +301,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SVars.dirh = SProgram.dirh
         SSubprogs.tsh = SVars.ts
         SInsts.tsh = SSubprogs.ts
+        SVars.nivelh = global
 
     SConsts → const illave Consts fllave 
         Consts.tsh = SConsts.tsh
@@ -361,7 +362,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
-        Type.tipo = TypeDesc.tipo
+         Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(TypeDesc.tipo, Var.tsh ), Type.id)>
 
     Type → ɛ
         Type.ts = Type.tsh
@@ -383,20 +384,24 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         Var.dirh = Vars1.dir
         Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
         Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
+        Vars1.nivelh = Vars0.nivelh
+        Var.nivelh = Vars0.nivelh
 
     Vars → Var
         Var.tsh = Vars.tsh
         Var.dirh = Vars.dirh
         Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
         Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
+        Var.nivelh = Vars.nivelh
 
     Var → var TypeDesc ident 
         Var.ts = Var.tsh
         Var.dir = Var.dirh
         Var.id = ident.lex
         Var.clase = Var
-        Var.nivel = global
-        Var.tipo = TypeDesc.tipo
+        Var.nivel = Var.nivelh
+        Var.tipo = si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
+                   si no {<id:Var.id, t:ref, TypeDesc.tipo tam: desplazamiento(TypeDesc.tipo, Var.tsh )>} 
         TypeDesc.tsh = Var.tsh
 
     Var → ɛ
@@ -482,6 +487,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         SVars.dirh = SFParams.dir
         SInsts.tsh = SVars.ts
         Subprog.ts = añade(Subprog.tsh, ident, subprog, global, ? , <dir:Subprog.etqh, params:SFParams.params>)
+        SVars.nivelh = local
 
     SFParams → FParams 
         FParams.tsh = SFParams.tsh
@@ -562,7 +568,7 @@ La tabla de símbolos comienda a guardar las declaraciones a partir de la direcc
         LitNum.tipo = float
 
 
-    . Especificación de las restricciones contextuales 
+# 4. Especificación de las restricciones contextuales 
 
 
 ## 4.1 Descripción informal de las restricciones contextuales
@@ -853,7 +859,7 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         Type.id = ident.lex
         Type.clase = Tipo
         Type.nivel = global
-        Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:?, Type.id)>
+        Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(TypeDesc.tipo, Var.tsh ), Type.id)>
 
     Type → ɛ
         Type.ts = Type.tsh
@@ -884,9 +890,8 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         Var.id = ident.lex
         Var.clase = Var
         Var.nivel = global
-        Var.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
-                   si no {<t:ref, id:Var.id, tam: desplazamiento(TypeDesc.tipo, Var.id)>} )
-
+        Var.tipo = si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
+                   si no {<id:Var.id, t:ref, TypeDesc.tipo, tam: desplazamiento(TypeDesc.tipo, Var.tsh )>} 
     Var → ɛ
         Var.ts = Var.tsh
         Var.err = false
@@ -910,7 +915,7 @@ En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devol
         Subprogs.err = Subprog.err
 
     Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
-        SFParams.tsh = CreaTS(añade(ident, subprog, global, ? , TODO))
+        SFParams.tsh = CreaTS(Subprog.tsh)
         SVars.tsh = SFParams.ts
         SInsts.tsh = SVars.ts
         Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨ parametrosNoRepetidos(SParams.ts, ident)
@@ -2220,8 +2225,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
             Program.err = SConsts.err ∨ STypes.err ∨ SVars.err ∨ SSubprogs.err ∨ SInsts.err
             SInsts.tsh = SSubprogs.ts
             Program.cod =  ir_a(SSubprogs.etq) || SSubprogs || SInsts.cod || stop 
-            SSubprogs.etqh = 5 /* es 5 por inicializaciones de la pila. */
-            SInsts.etqh = SSubprogs.etq   
+            SSubprogs.etqh = 5 
+            SInsts.etqh = SSubprogs.etq 
+            SVars.nivelh = global  
     }
 
     Funcion sConsts_R1{
@@ -2244,7 +2250,6 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         Consts → Consts pyc Const
             Consts1.tsh = Consts0.tsh
             Const.tsh = Consts1.ts
-            //TODO con las ?
             Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
             Consts.err = existe(Const.ts, Const.id)
     }
@@ -2330,8 +2335,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
             Type.id = ident.lex
             Type.clase = Tipo
             Type.nivel = global
-            //TODO no son iguales la 3 y la 4
-            Type.tipo = TypeDesc.tipo 
+            Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(TypeDesc.tipo, Var.tsh ), Type.id)>
     }
 
     Funcion type_R2{
@@ -2349,6 +2353,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
             SVars.ts = Vars.ts
             SVars.dir = Vars.dir
             SVars.err = Vars.err
+            Vars.nivelh = SVars.nivelh
     }
 
     Funcion sVars_R2{
@@ -2369,6 +2374,8 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
             Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
             Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
             Vars0.err = existe(Var.ts, Var.id, Var.nivel)
+            Vars1.nivelh = Vars0.nivelh
+            Var.nivelh = Vars0.nivelh
     }
 
     Funcion vars_R2{
@@ -2379,6 +2386,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
             Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
             Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
             Vars.err = existe(Var.ts, Var.id, Var.nivel)
+            Var.nivelh = Vars.nivelh
     }
 
     Funcion var_R1{
@@ -2388,9 +2396,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
             Var.dir = Var.dirh
             Var.id = ident.lex
             Var.clase = Var
-            Var.nivel = global
-            //TODO lo mismo no son iguales
-            Var.tipo = TypeDesc.tipo
+            Var.nivel = nivelh
+            Var.tipo = si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
+                   si no {<id:Var.id, t:ref, TypeDesc.tipo tam: desplazamiento(TypeDesc.tipo, Var.tsh )>} 
             TypeDesc.tsh = Var.tsh
     }
 
@@ -2700,8 +2708,6 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
         SRParams → RParams
             RParams.tsh = SRParams.tsh
-            RParams.nparamsh = SRParams.nparamsh
-            SRParams.nparams = RParams.nparams
             RParams.nombresubprogh = SRParams.nombresubprogh
             RParams.listaparamnombresh = SRParams.listaparamnombresh
             SRParams.err = RParams.err
@@ -2728,10 +2734,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         RParams → RParams coma RParam
             RParams1.tsh = RParams0.tsh
             RParam.tsh = RParams0.tsh
-            RParams0.err = RParams1.err ∨ Rparam.err
-            RParams1.nparamsh = RParams0.nparamsh
-            RParam.nparamsh = RParams1.nparams
-            RParams.nparams = RParam.nparams   
+            RParams0.err = RParams1.err ∨ Rparam.err  
             RParams1.nombresubprogh = RParams0.nombresubprogh
             RParam.nombresubprogh = RParams0.nombresubprogh 
             RParams1.listaparamnombresh = RParams0.listaparamnombresh
@@ -2749,8 +2752,6 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
         RParams → RParam
             RParam.tsh = RParams.tsh
-            RParam.nparamsh = RParams.nparamsh
-            RParams.nparams = RParam.nparams
             RParam.nombresubprogh = RParams.nombresubprogh
             RParam.listaparamnombresh = RParams.listaparamnombresh
             RParams.listaparamnombres = RParam.listaparamnombres
@@ -2766,7 +2767,6 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
         RParam → ident asig Expr
             Expr.tsh = RParam.tsh
-            RParam.nparams = RParams.nparamsh + 1  
             RParam.listaparamnombres = RParam.listaparamnombresh ++ ident 
             RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
             ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig ∨ (ident ∈ listaparamnombresh)
@@ -2839,7 +2839,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
 
         Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
             SFParams.dirh = 0
-            SFParams.tsh = CreaTS(Subprog.ts)
+            SFParams.tsh = CreaTS(Subprog.tsh)
             SVars.tsh = SFParams.ts
             SVars.dirh = SFParams.dir
             SInsts.tsh = SVars.ts
@@ -2850,6 +2850,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
                         apila_dir(1) || apila(2) || menos || apila_ind || ir_ind
             SInsts.etqh = Subprog.etqh 
             Subprog.etq = SInsts.etq + 5
+            SVars.nivelh = local
     }
 
     Funcion sfParams_R1{
@@ -3271,10 +3272,10 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
     }  
 
 
-       ///TODO cual d elas gramaticas  coger la de la 3.2 o 4.2 creo q es esta pero no estoy seguro
     Funcion lit_R1{
 
-        Lit → LitBool 
+        Lit → LitBool {
+
             Lit.valor = LitBool.valor
             Lit.tipo = LitBool.tipo
     }
