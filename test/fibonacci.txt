@@ -1,0 +1,47 @@
+@ Programa de fibonacci recursivo
+program: fibonacci{
+
+  consts {
+    const natural N=7;
+  } 
+  
+  tipos {
+    @tresultado = (n, fib(n))
+    tipo (natural, natural) tresultado;   
+  } 
+     
+  vars {
+    var tresultado resul;
+    var natural i;
+  }
+
+  subprograms { 
+    subprogram: fib(natural n, natural *f) {
+      vars{
+        var natural f1;
+        var natural f2;
+      }
+      instructions {
+        if (n == 0) then f = 0; endif;
+        if (n == 1) then f = 1; endif;
+        if (n >= 2) then
+	        call fib(n=n-1, f=f1);
+	        call fib(n=n-2, f=f2);
+	        f = f1 + f2;
+        endif;
+      } 
+    }
+  }
+  
+  instructions {
+    i = 0;
+  	while i <= N do
+	    resul_0 = i;
+	    call fib(n=resul_0, f=resul_1);
+	    @out(resul_0);
+	    out(resul_1);
+	    i = i + 1;
+	endwhile;
+  }
+
+}
