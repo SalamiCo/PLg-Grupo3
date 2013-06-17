@@ -1,3 +1,15 @@
+# PLg Grupo 3 (2012-2013)
+
+## Miembros del grupo
+
++ Marina Bezares Álvarez
++ Daniel Escoz Solana
++ Antonio Irízar López
++ Raúl Marcos Lorenzo
++ Pedro Morgado Alarcón
++ Arturo Pareja García
+
+
 # 1. Definición léxica
 
 #### Formación de literales e identificadores
