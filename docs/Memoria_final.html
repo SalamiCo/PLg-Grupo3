@@ -1,0 +1,4231 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:5000/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Grip</title>
+  
+  
+  <link rel="stylesheet" href="https://a248.e.akamai.net/assets.github.com/assets/github-81b13ea53b1680d36f84ba58001e4a489c3f99d2.css">
+  
+  <link rel="stylesheet" href="https://a248.e.akamai.net/assets.github.com/assets/github2-8b9943a538de5ba2343c96854d47c48eb6f2da5d.css">
+  
+  <style>
+    .previewPage {
+      margin: 64px auto;
+      width: 920px;
+    }
+  </style>
+
+  
+<style type="text/css">@media print { #feedlyMiniIcon { display: none; } }</style><style type="text/css"></style></head>
+<body>
+  <div class="page">
+    
+  <div class="previewPage">
+    <div id="readme" class="announce md">
+      <article class="markdown-body entry-content">
+        <h1>
+<a name="1-definicin-lxica" class="anchor" href="http://localhost:5000/#1-definicin-lxica"><span class="octicon octicon-link"></span></a>1. Definición léxica</h1>
+
+<h4>
+<a name="formacin-de-literales-e-identificadores" class="anchor" href="http://localhost:5000/#formacin-de-literales-e-identificadores"><span class="octicon octicon-link"></span></a>Formación de literales e identificadores</h4>
+
+<pre><code>litnat ≡ _dign0 (_dig)* | "0"
+litfloat ≡ litnat _partedec (_parteexp)? | litnat _parteexp
+litchar ≡ "'"_alfanum1"'"
+ident ≡ _min (_alfanum1)*
+true ≡ "true"
+false ≡ "false"
+</code></pre>
+
+<h4>
+<a name="palabras-reservadas" class="anchor" href="http://localhost:5000/#palabras-reservadas"><span class="octicon octicon-link"></span></a>Palabras reservadas</h4>
+
+<pre><code>program ≡ "program:" 
+subprograms ≡ "subprograms"
+subprogram ≡ "subprogram:"
+varconsts ≡ "vars-consts" 
+instructions ≡ "instructions" 
+var ≡ "var" 
+const ≡ "const" 
+float ≡ "float" 
+integer ≡ "integer" 
+int ≡ "int" 
+boolean ≡ "boolean" 
+natural ≡ "natural" 
+nat ≡ "nat" 
+character ≡ "character" 
+char ≡ "char" 
+in ≡ "in" 
+out ≡ "out" 
+swap1 ≡ "swap1" 
+swap2 ≡ "swap2"
+call ≡ "call"
+</code></pre>
+
+<h4>
+<a name="smbolos-y-operadores" class="anchor" href="http://localhost:5000/#smbolos-y-operadores"><span class="octicon octicon-link"></span></a>Símbolos y operadores</h4>
+
+<pre><code>asig ≡ "=" 
+lpar ≡ "(" 
+rpar ≡ ")" 
+illave ≡ "{" 
+fllave ≡ "}" 
+pyc ≡ ";" 
+men ≡ "&lt;" 
+menoig ≡ "&lt;=" 
+may ≡ "&gt;" 
+mayoig ≡ "&gt;=" 
+igual ≡ "=="
+noigual ≡ "!=" 
+mas ≡ "+" 
+menos ≡ "-" 
+mul ≡ "*" 
+div ≡ "/" 
+mod ≡ "%" 
+and ≡ "and" 
+or ≡ "or" 
+not ≡ "not" 
+lsh ≡ "&lt;&lt;" 
+rsh ≡ "&gt;&gt;"
+coma ≡ ","
+barrabaja ≡ "_"
+</code></pre>
+
+<h4>
+<a name="expresiones-auxiliares" class="anchor" href="http://localhost:5000/#expresiones-auxiliares"><span class="octicon octicon-link"></span></a>Expresiones auxiliares</h4>
+
+<pre><code>_min ≡ ['a'-'z'] 
+_may ≡ ['A'-'Z'] 
+_letra ≡ _min | _may 
+_dig ≡ ['0'-'9'] 
+_dign0 ≡ ['1'-'9'] 
+_alfanum1 ≡ _letra | _dig 
+_partedec ≡ "." ((_dig)*_dign0 | "0") 
+_parteexp ≡ ("e" | "E") "-"? litnat 
+fin ≡ &lt;end-of-file&gt;
+</code></pre>
+
+<h1>
+<a name="2-definicin-sintctica-del-lenguaje" class="anchor" href="http://localhost:5000/#2-definicin-sintctica-del-lenguaje"><span class="octicon octicon-link"></span></a>2. Definición sintáctica del lenguaje</h1>
+
+<h2>
+<a name="21-descripcin-de-los-operadores" class="anchor" href="http://localhost:5000/#21-descripcin-de-los-operadores"><span class="octicon octicon-link"></span></a>2.1 Descripción de los operadores</h2>
+
+<table>
+<tbody><tr>
+<th align="center">Operador</th>
+<th align="center">Prioridad</th>
+<th align="center">Aridad</th>
+<th align="center">Asociatividad</th>
+</tr>
+<tr>
+<td align="center">Igualdad (==)</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">Ninguna</td>
+</tr>
+<tr>
+<td align="center">Desigualdadd (!=)</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">Ninguna</td>
+</tr>
+<tr>
+<td align="center">Menor que (&lt;)</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">Ninguna</td>
+</tr>
+<tr>
+<td align="center">Menor o igual (&lt;=)</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">Ninguna</td>
+</tr>
+<tr>
+<td align="center">Mayor que (&gt;)</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">Ninguna</td>
+</tr>
+<tr>
+<td align="center">Mayor o igual (&gt;=)</td>
+<td align="center">0</td>
+<td align="center">2</td>
+<td align="center">Ninguna</td>
+</tr>
+<tr>
+<td align="center">Suma (+)</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">Izquierdas</td>
+</tr>
+<tr>
+<td align="center">Resta (-)</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">Izquierdas</td>
+</tr>
+<tr>
+<td align="center">Disyunción lógica (or)</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">Izquierdas</td>
+</tr>
+<tr>
+<td align="center">Multiplicación (*)</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">Izquierdas</td>
+</tr>
+<tr>
+<td align="center">División (/)</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">Izquierdas</td>
+</tr>
+<tr>
+<td align="center">Módulo (%)</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">Izquierdas</td>
+</tr>
+<tr>
+<td align="center">Conjunción (%)</td>
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">Izquierdas</td>
+</tr>
+<tr>
+<td align="center">Despl. Izquierda (&lt;&lt;)</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">Derechas</td>
+</tr>
+<tr>
+<td align="center">Despl. Derecha (&gt;&gt;)</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">Derechas</td>
+</tr>
+<tr>
+<td align="center">Negación aritmética (-)</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">Sí</td>
+</tr>
+<tr>
+<td align="center">Negación lógica (not)</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">No</td>
+</tr>
+<tr>
+<td align="center">Conversión</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">No</td>
+</tr>
+</tbody></table><h2>
+<a name="22-formalizacin-de-la-sintaxis" class="anchor" href="http://localhost:5000/#22-formalizacin-de-la-sintaxis"><span class="octicon octicon-link"></span></a>2.2 Formalización de la sintaxis</h2>
+
+<pre><code>Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+
+SConsts → consts illave Consts fllave | ɛ
+Consts → Consts pyc Const | Const
+Const → const TPrim ident asig ConstLit | ɛ
+
+ConstLit → Lit | menos Lit
+
+STypes → tipos illave Types fllave | ɛ
+Types → Types pyc Type | Type
+Type → tipo TypeDesc ident | ɛ
+
+SVars → vars illave Vars fllave | ɛ
+Vars → Vars pyc Var | Var
+Var → var TypeDesc ident | ɛ
+
+SSubprogs → subprograms illave Subprogs fllave | subprograms illave fllave | ɛ
+Subprogs → Subprogs Subprog | Subprog
+Subprog → subprogram ident ipar SParams fpar illave SVars SInsts fllave
+
+SFParams → FParams | ɛ
+FParams → FParams coma FParam | FParam
+FParam → TypeDesc ident | TypeDesc mul ident
+
+TypeDesc → TPrim | TArray | TTupla | ident
+
+TPrim → natural | integer | float | boolean | character
+Cast → char | int | nat | float
+
+TArray → TypeDesc icorchete ident fcorchete | TypeDesc icorchete litnat fcorchete
+
+TTupla → ipar Tupla fpar | ipar fpar
+Tupla → TypeDesc coma Tupla | TypeDesc
+
+SInsts → instructions illave Insts fllave
+Insts → Insts pyc Inst | Inst
+Inst → Desig asig Expr
+     | in ipar Desig fpar
+     | out ipar Expr fpar
+     | swap1 ipar fpar
+     | swap2 ipar fpar
+     | if Expr then Insts ElseIf
+     | while Expr do Insts endwhile
+     | InstCall
+     | ɛ
+ElseIf → else Insts endif | endif
+InstCall → call ident lpar SRParams rpar
+
+SRParams → RParams | ɛ
+RParams → RParams coma RParam | RParam
+RParam → ident asig Expr
+
+Desig → ident | Desig icorchete Expr fcorchete | Desig barrabaja litnat
+
+Expr → Term Op0 Term | Term
+Term → Term Op1 Fact | Term or Fact | Fact
+Fact → Fact Op2 Shft | Fact and Shft | Shft
+Shft → Unary Op3 Shft | Unary
+Unary → Op4 Unary | lpar Cast rpar Paren | Paren
+Paren → lpar Expr rpar | Lit | Desig
+
+Op0 → igual | noigual | men | may | menoig | mayoig
+Op1 →  menos | mas
+Op2 →  mod | div | mul
+Op3 → lsh | rsh
+Op4 → not | menos
+
+Lit → LitBool | LitNum | litchar
+LitBool → true | false
+LitNum → litnat | litfloat
+</code></pre>
+
+<h1>
+<a name="3-estructura-y-construccin-de-la-tabla-de-smbolos" class="anchor" href="http://localhost:5000/#3-estructura-y-construccin-de-la-tabla-de-smbolos"><span class="octicon octicon-link"></span></a>3. Estructura y construcción de la tabla de símbolos</h1>
+
+<h2>
+<a name="31-estructura-de-la-tabla-de-smbolos" class="anchor" href="http://localhost:5000/#31-estructura-de-la-tabla-de-smbolos"><span class="octicon octicon-link"></span></a>3.1 Estructura de la tabla de símbolos</h2>
+
+<p><strong>id:</strong> Si es un tipo construido es el nombre del tipo. Si es una variables o una constante es el identificador. </p>
+
+<p><strong>clase:</strong> Indica si es la declaración de un tipo construido, una variable, una constante, un subprograma, un parámetro por valor o un parámetro por referencia.</p>
+
+<p><strong>nivel:</strong> Indica si la variable es de nivel <code>global</code>, en el programa principal o bien de nivel <code>local</code> si la variable es de un subprograma</p>
+
+<p><strong>dir:</strong> Dirección de memoria asignada. Solo para variables y constantes no para tipos construidos. </p>
+
+<p><strong>tipo:</strong> Almacena los conjuntos de propiedades con la información necesaria del tipo.</p>
+
+<p><strong>valor:</strong> Si es una constante, almacena su valor. Si no, es indefinido.</p>
+
+<h2>
+<a name="32-construccin-de-la-tabla-de-smbolos" class="anchor" href="http://localhost:5000/#32-construccin-de-la-tabla-de-smbolos"><span class="octicon octicon-link"></span></a>3.2 Construcción de la tabla de símbolos</h2>
+
+<h3>
+<a name="321-funciones-semnticas" class="anchor" href="http://localhost:5000/#321-funciones-semnticas"><span class="octicon octicon-link"></span></a>3.2.1 Funciones semánticas</h3>
+
+<p>creaTS() : TS</p>
+
+<blockquote>
+<p>Crea una tabla de símbolos vacía. </p>
+</blockquote>
+
+<p>creaTS(ts:TS) : TS</p>
+
+<blockquote>
+<p>Dada una tabla de símbolos crea otra tabla de símbolos que contiene toda la información de la tabla recibida por parámetro. Esta constructora se usa para las tablas de símbolos de los subprogramas</p>
+</blockquote>
+
+<p>añade(ts:TS, id:String, clase:String, nivel:String, dir:Int, tipo:CTipo, valor:?) : TS</p>
+
+<blockquote>
+<p>Añade a la tabla de símbolos el nuevo tipo construido, una variable o una constante. CTipo es el conjunto de propiedades con la información necesaria del tipo. Está explicado más adelante.</p>
+</blockquote>
+
+<p>campo?(ts:TS, campos:CCampo, id:String) : Boolean</p>
+
+<blockquote>
+<p>Devuelve true cuando la lista de campos de Campo contenga campo id. </p>
+</blockquote>
+
+<p>desplazamiento(tipo:CTipo, id:String) : Integer</p>
+
+<blockquote>
+<p>Devuelve el tamaño que ocupa en memoria el identificador id. Si no hay un identificador con ese nombre devuelve terr</p>
+</blockquote>
+
+<p>existeID(ts:TS, id:String) : Boolean</p>
+
+<blockquote>
+<p>Dada una tabla de símbolos y el campo id de un identificador, indica si el identificador existe en la tabla de símbolos (sensible a mayúsculas y minúsculas), es decir, si ha sido previamente declarado.</p>
+</blockquote>
+
+<p>obtieneCtipo(typeDesc:TypeDesc) : CTipo</p>
+
+<blockquote>
+<p>Dado un descriptor de tipos devuelve el CTipo asociado</p>
+</blockquote>
+
+<p>obtieneTipoString(ident:String) : String</p>
+
+<blockquote>
+<p>Dado un identificador, devuelve su tipo en un String.</p>
+</blockquote>
+
+<p>stringToNat(v:String) : Natural </p>
+
+<blockquote>
+<p>Convierte el atributo pasado como string a un valor natural.</p>
+</blockquote>
+
+<p>stringToFloat(v:String) : Float </p>
+
+<blockquote>
+<p>Convierte el atributo pasado como string a un valor decimal.</p>
+</blockquote>
+
+<p>stringToChar(v:String) : Character </p>
+
+<blockquote>
+<p>Convierte el atributo pasado como string a un carácter</p>
+</blockquote>
+
+<h4>
+<a name="ctipo" class="anchor" href="http://localhost:5000/#ctipo"><span class="octicon octicon-link"></span></a>CTipo</h4>
+
+<p>CTipo es el conjunto de propiedades con la información necesaria del tipo. CTipo guarda información diferente dependiendo de si es un tipo construido, un array, una tupla, una variable de todo lo anterior dicho o bien una variable o constante de tipo básico. </p>
+
+<h5>
+<a name="ctipo-en-tipos-construidos" class="anchor" href="http://localhost:5000/#ctipo-en-tipos-construidos"><span class="octicon octicon-link"></span></a>CTipo en tipos construidos</h5>
+
+<p>Cuando la tabla de símbolos guarda un tipo construido, el campo tipo guarda la siguiente información.</p>
+
+<pre><code>&lt;id:String, t:reg, tipo:Ctipo, tam:int&gt;
+</code></pre>
+
+<h5>
+<a name="ctipo-en-arrays" class="anchor" href="http://localhost:5000/#ctipo-en-arrays"><span class="octicon octicon-link"></span></a>CTipo en arrays</h5>
+
+<p>Cuando la tabla de símbolos guarda un array, el campo tipo guarda la siguiente información. </p>
+
+<pre><code>&lt;id:String, t:array, nelems:int, tbase:Ctipo, tam:int&gt;
+</code></pre>
+
+<h5>
+<a name="ctipo-en-tuplas" class="anchor" href="http://localhost:5000/#ctipo-en-tuplas"><span class="octicon octicon-link"></span></a>Ctipo en tuplas</h5>
+
+<p>Cuando la tabla de símbolos guarda un array el campotipo guarda la siguiente información.  </p>
+
+<pre><code>&lt;id:String, t:tupla, nelems:int, campos:CCampos, tam:int&gt;
+</code></pre>
+
+<p>Donde <code>campos</code> es una lista de elementos de la forma:</p>
+
+<pre><code>&lt;id:int, tipo:CTipo&gt;
+</code></pre>
+
+<h5>
+<a name="ctipo-en-variables-cuando-guardan-una-referencia-a-otro-tipo" class="anchor" href="http://localhost:5000/#ctipo-en-variables-cuando-guardan-una-referencia-a-otro-tipo"><span class="octicon octicon-link"></span></a>Ctipo en variables cuando guardan una referencia a otro tipo</h5>
+
+<p>Cuando la tabla de símbolos guarda una variable, con una referencia a otro tipo, el campo tipo guarda la siguiente información. </p>
+
+<pre><code>&lt;id:String, t:ref, id:String, tam:int&gt;
+</code></pre>
+
+<h5>
+<a name="ctipo-en-constantes-y-variables-que-guardan-un-tipo-primitivo" class="anchor" href="http://localhost:5000/#ctipo-en-constantes-y-variables-que-guardan-un-tipo-primitivo"><span class="octicon octicon-link"></span></a>Ctipo en constantes y variables que guardan un tipo primitivo</h5>
+
+<p>Cuando la tabla de símbolos guarda una constante o, una variable con tipos primitivos, el campo tipo guarda la siguiente información. </p>
+
+<pre><code>&lt;t:int, tam:1&gt; 
+&lt;t:nat, tam:1&gt;
+&lt;t:float, tam:1&gt;
+&lt;t:bool, tam:1&gt;
+&lt;t:char, tam:1&gt;
+</code></pre>
+
+<h5>
+<a name="ctipo-en-subprogramas" class="anchor" href="http://localhost:5000/#ctipo-en-subprogramas"><span class="octicon octicon-link"></span></a>Ctipo en subprogramas</h5>
+
+<p>Cuando la tabla de símbolos guarda la cabecera de un subprograma, el campo tipo guarda la siguiente información.</p>
+
+<pre><code>&lt;id:String, t:subprog, params[...]&gt;
+</code></pre>
+
+<p>La lista <code>params</code> guarda los parámetros de entrada que recibe el subprograma. Se distinguen entre los parámetros que son por valor o los que son por referencia. El campo idparam es el string que identifica el parámetro al hacer la llamada al subprograma.  </p>
+
+<pre><code>&lt;tipo:CTipo, modo:valor, idparam:String&gt;
+&lt;tipo:CTipo, modo:variable, idparam:String&gt;
+</code></pre>
+
+<h3>
+<a name="322-atributos-semnticos" class="anchor" href="http://localhost:5000/#322-atributos-semnticos"><span class="octicon octicon-link"></span></a>3.2.2 Atributos semánticos</h3>
+
+<p><strong>ts:</strong> tabla de símbolos sintetizada</p>
+
+<p><strong>id:</strong> nombre del identificador</p>
+
+<p><strong>clase:</strong> Indica si es la declaración de un tipo construido, una variable, una constante, un subprograma, un parámetro por valor o un parámetro por referencia.</p>
+
+<p><strong>nivel</strong> Indica si el identificador es de ámbito global o local</p>
+
+<p><strong>dir:</strong> Dirección de memoria. Dónde se guarda la variable o la constante</p>
+
+<p><strong>tipo</strong> Almacena los conjuntos de propiedades con la información necesaria del tipo</p>
+
+<p><strong>valor:</strong> Si es una constante, almacena su valor. Si no, es indefinido.</p>
+
+<h3>
+<a name="323-gramticas-de-atributos" class="anchor" href="http://localhost:5000/#323-gramticas-de-atributos"><span class="octicon octicon-link"></span></a>3.2.3 Gramáticas de atributos</h3>
+
+<p>A continuación se detalla la construcción de los atributos relevantes para la creación de la tabla de símbolos. Otros atributos, como la tabla de símbolos heredada (que tan solo se propaga) o el tipo y el valor de las expresiones se detallarán más adelante en sus correspondientes secciones.</p>
+
+<p>La tabla de símbolos comienda a guardar las declaraciones a partir de la dirección 0 de memoria. Ya que la dirección 0 está reservada para la <code>cima de la pila</code> y la dirección 1 para la <code>base</code>. La base apunta al inicio de los datos del procedimiento actualmente activo. </p>
+
+<pre><code>Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+    Program.tsh = creaTS()
+    Program.dirh = 2
+    SConsts.tsh = Program.tsh
+    STypes.tsh = SConsts.ts
+    SVars.tsh = STypes.ts
+    SVars.dirh = SProgram.dirh
+    SSubprogs.tsh = SVars.ts
+    SInsts.tsh = SSubprogs.ts
+    SVars.nivelh = global
+
+SConsts → const illave Consts fllave 
+    Consts.tsh = SConsts.tsh
+    SConsts.ts = Consts.ts
+
+SConsts → ɛ
+    SConsts.ts = SConsts.tsh
+
+Consts → Consts pyc Const
+    Consts1.tsh = Consts0.tsh
+    Const.tsh = Consts1.ts
+    Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
+
+Consts → Const
+    Const.tsh = Consts.tsh
+    Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
+
+
+Const → const TPrim ident asig ConstLit 
+    Const.ts = Const.tsh
+    Const.id = ident.lex
+    Const.clase = const
+    Const.nivel = global
+    Const.tipo = &lt;t:TPrim.tipo, tam:1&gt;
+    Const.valor = ConstLit.valor
+
+Const → ɛ
+    Const.ts = Const.tsh
+
+ConstLit → Lit
+    ConstLit.valor = Lit.valor
+    ConstLit.tipo = Lit.tipo
+
+ConstLit → menos Lit
+    ConstLit.valor = -(Lit.valor)
+    ConstLit.tipo = opUnario(menos, Lit.tipo)
+
+STypes → tipos illave Types fllave 
+    Types.tsh = STypes.tsh
+    STypes.ts = Types.ts 
+
+STypes → ɛ
+    STypes.ts = STypes.tsh
+
+Types → Types pyc Type 
+    Types1.tsh = Types0.tsh
+    Type.tsh = Types1.ts
+    Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
+
+Types → Type
+    Type.tsh = Types.tsh
+    Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
+
+
+Type → tipo TypeDesc ident 
+    Type.ts = Type.tsh
+    TypeDesc.tsh = Type.tsh
+    Type.id = ident.lex
+    Type.clase = Tipo
+    Type.nivel = global
+     Type.tipo = &lt;t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(TypeDesc.tipo, Var.tsh ), Type.id)&gt;
+
+Type → ɛ
+    Type.ts = Type.tsh
+
+SVars → vars illave Vars fllave 
+    Vars.tsh = SVars.tsh
+    Vars.dirh = SVars.dirh
+    SVars.ts = Vars.ts
+    SVars.dir = Vars.dir
+
+SVars → ɛ
+    SVars.ts = SVars.tsh
+    SVars.dir = SVars.dirh
+
+Vars → Vars pyc Var 
+    Vars1.tsh = Vars0.tsh
+    Vars1.dirh = Vars0.dirh
+    Var.tsh = Vars1.ts
+    Var.dirh = Vars1.dir
+    Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
+    Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
+    Vars1.nivelh = Vars0.nivelh
+    Var.nivelh = Vars0.nivelh
+
+Vars → Var
+    Var.tsh = Vars.tsh
+    Var.dirh = Vars.dirh
+    Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
+    Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
+    Var.nivelh = Vars.nivelh
+
+Var → var TypeDesc ident 
+    Var.ts = Var.tsh
+    Var.dir = Var.dirh
+    Var.id = ident.lex
+    Var.clase = Var
+    Var.nivel = Var.nivelh
+    Var.tipo = si (TypeDesc.tipo == TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+               si no {&lt;id:Var.id, t:ref, TypeDesc.tipo tam: desplazamiento(TypeDesc.tipo, Var.tsh )&gt;} 
+    TypeDesc.tsh = Var.tsh
+
+Var → ɛ
+    Var.ts = Var.tsh
+    Var.dir = Var.dirh
+
+TypeDesc → TPrim
+    TypeDesc.tipo = TPrim.tipo
+
+TypeDesc → TArray
+    TypeDesc.tipo = TArray.tipo
+    TArray.tsh = TypeDesc.tsh
+
+TypeDesc → TTupla
+    TypeDesc.tipo = TTupla.tipo
+    TTupla.tsh = TypeDesc.tsh
+
+TypeDesc → ident
+    TypeDesc.tipo = ident.lex
+
+TPrim → natural
+    TPrim.tipo = natural
+
+TPrim → integer
+    TPrim.tipo = integer
+
+TPrim → float
+    TPrim.tipo = float
+
+TPrim → boolean
+    TPrim.tipo = boolean
+
+TPrim → character
+    TPrim.tipo = character
+
+TArray → TypeDesc icorchete ident fcorchete
+    TypeDesc.tsh = TArray.tsh
+    TArray.tsh = TypeDesc.tsh
+
+TArray → TypeDesc icorchete litnat fcorchete
+    TypeDesc.tsh = TArray.tsh
+    TArray.tsh = TypeDesc.tsh
+
+TTupla → ipar Tupla fpar
+    Tupla.tsh = TTupla.tsh
+    TTupla.tipo = Tupla.tipo
+
+TTupla → ipar fpar
+
+Tupla → TypeDesc coma Tupla
+    TypeDesc.tsh = Tupla0.tsh
+    Tupla1.tsh = Tupla0.tsh
+    Tupla0.tipo = TypeDesc.tipo ++ Tupla1.tipo
+
+Tupla → TypeDesc
+    TypeDesc.tsh = Tupla.tsh
+    Tupla.tipo = TypeDesc.tipo
+
+
+SSubprogs → subprograms illave Subprogs fllave 
+    Subprogs.tsh = SSubprogs.tsh
+    SSbprogs.ts = Subprog.ts
+
+SSubprogs → subprograms illave fllave 
+    SSubprogs.tsh = Subprog.tsh
+
+SSubprogs → ɛ
+    SSubprogs.tsh = Subprog.tsh
+
+Subprogs → Subprogs Subprog
+    Subprogs1.tsh =  Subprogs0.tsh
+    Subprog.tsh = Subprogs0.tsh 
+    Subprogs0.ts = Subprog.ts  
+
+Subprogs → Subprog
+    Subprog.tsh = Subprogs.tsh
+    Subprogs.ts = Subprog.ts
+
+Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
+    SFParams.dirh = 0
+    SFParams.tsh = CreaTS(Subprog.ts)
+    SVars.tsh = SFParams.ts
+    SVars.dirh = SFParams.dir
+    SInsts.tsh = SVars.ts
+    Subprog.ts = añade(Subprog.tsh, ident, subprog, global, ? , &lt;dir:Subprog.etqh, params:SFParams.params&gt;)
+    SVars.nivelh = local
+
+SFParams → FParams 
+    FParams.tsh = SFParams.tsh
+    SFParams.ts = FParams.ts
+    FParams.dirh = SFParams.dirh
+    SFParams.dir = FParams.dir
+    SFParams.params = FParams.params
+
+SFParams → ɛ
+    SFParams.ts = SFParams.tsh
+    SFParams.dir = SFParams.dirh
+    SFParams.params = []
+
+FParams → FParams coma FParam 
+    FParams1.tsh = FParams0.tsh
+    FParams1.dirh = FParams0.dirh
+    FParam.tsh = FParams1.tsh
+    FParam.dirh = FParams1.dirh
+    FParams0.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id) 
+    FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+    FParams0.params = FParams1.params ++ FParam.params
+
+FParams → FParam
+    FParam.dirh = FParams.dirh
+    FParam.tsh = FParams.tsh
+    FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+    FParams.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id)
+    FParams.params = FParap.params
+
+FParam → TypeDesc ident 
+    FParam.ts = FParam.tsh
+    FParam.dir = FParam.dirh 
+    Fparam.id = ident.lex
+    FParam.clase = pvalor
+    FParam.nivel = local
+    FParam.tipo = (si (TypeDesc.tipo== TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+               si no {&lt;t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)&gt;} )
+    FParam.params = [&lt;id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:falso, despl:DParam.dirh&gt;]
+    TypeDesc.tsh = FParam.tsh
+
+FParam → TypeDesc mul ident
+    FParam.ts = FParam.tsh
+    FParam.dir =  FParam.dirh 
+    Fparam.id = ident.lex
+    FParam.clase = pvariable
+    FParam.nivel = local
+    FParam.tipo = (si (TypeDesc.tipo == TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+               si no {&lt;t:ref, id:FParam.id, tam: 1&gt;} )
+    FParam.params = [&lt;id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh&gt;]
+    TypeDesc.tsh = FParam.tsh
+
+Lit → LitBool 
+    Lit.valor = LitBool.valor
+    Lit.tipo = LitBool.tipo
+
+Lit → LitNum
+    Lit.valor = LitNum.valor
+    Lit.tipo = LitNum.tipo
+
+Lit → litChar
+    Lit.valor = stringToChar(litchar)
+    Lit.tipo = character
+
+LitBool → true 
+    LitBool.valor = true
+    Litbool.tipo = boolean
+
+LitBool → false
+    LitBool.valor = false
+    Lit.tipo = boolean
+
+LitNum → litnat
+    LitNum.valor = stringToNat(litnat.lex)
+    LitNum.tipo = natural
+
+LitNum → litfloat
+    LitNum.valor = stringToFloat(litfloat.lex)
+    LitNum.tipo = float
+</code></pre>
+
+<h1>
+<a name="4-especificacin-de-las-restricciones-contextuales" class="anchor" href="http://localhost:5000/#4-especificacin-de-las-restricciones-contextuales"><span class="octicon octicon-link"></span></a>4. Especificación de las restricciones contextuales</h1>
+
+<h2>
+<a name="41-descripcin-informal-de-las-restricciones-contextuales" class="anchor" href="http://localhost:5000/#41-descripcin-informal-de-las-restricciones-contextuales"><span class="octicon octicon-link"></span></a>4.1 Descripción informal de las restricciones contextuales</h2>
+
+<p>Enumeración y descripción de las restricciones contextuales extraídas directamente del enunciado.</p>
+
+<h3>
+<a name="411-sobre-declaraciones" class="anchor" href="http://localhost:5000/#411-sobre-declaraciones"><span class="octicon octicon-link"></span></a>4.1.1 Sobre declaraciones</h3>
+
+<ul>
+<li>Las variables, constantes y tipos que se usen en la sección de instrucciones o en la sección de subprogramas habrán debido de ser convenientemente declarados en su correspondiente sección.</li>
+<li>No se pueden declarar dos variables, constantes o tipos con el mismo identificador.</li>
+</ul><h3>
+<a name="412-sobre-instrucciones-de-asignacin" class="anchor" href="http://localhost:5000/#412-sobre-instrucciones-de-asignacin"><span class="octicon octicon-link"></span></a>4.1.2 Sobre instrucciones de asignación</h3>
+
+<p>Una instrucción de asignación debe cumplir además estas condiciones:</p>
+
+<ul>
+<li>La variable en la parte izquierda debe haber sido declarada.</li>
+<li>No se pueden asignar o hacer instrucciones in a constantes.</li>
+<li>A una variable de tipo real es posible asignarle un valor real, entero o natural (produciéndose automáticamente la correspondiente conversión), pero no un carácter, booleano o tipo construido.</li>
+<li>A una variable de tipo entero es posible asignarle un valor entero o natural (produciéndose automáticamente la correspondiente conversión), pero no un valor real, carácter, boolean o tipo construido.</li>
+<li>A una variable de tipo natural únicamente es posible asignarle un valor natural.</li>
+<li>A una variable de tipo carácter únicamente es posible asignarle un valor de tipo carácter.</li>
+<li>A una variable de tipo booleano únicamente es posible asignarle un valor de tipo booleano.</li>
+<li>A una variable de tipo construido únicamente es posible asignarle un valor de ese mismo tipo construido.</li>
+</ul><h3>
+<a name="413-sobre-comparaciones" class="anchor" href="http://localhost:5000/#413-sobre-comparaciones"><span class="octicon octicon-link"></span></a>4.1.3. Sobre comparaciones</h3>
+
+<p>No se puede comparar naturales con caracteres, ni enteros con caracteres, ni reales con caracteres, ni booleanos con caracteres. Tampoco se puede comparar naturales con booleanos, ni enteros con booleanos, ni reales con booleanos, ni caracteres con booleanos.</p>
+
+<h3>
+<a name="414-sobre-operadores" class="anchor" href="http://localhost:5000/#414-sobre-operadores"><span class="octicon octicon-link"></span></a>4.1.4. Sobre operadores</h3>
+
+<ul>
+<li>Los operadores +, -, *, / sólo operan con valores numéricos. No podemos aplicarlos ni a los caracteres, ni a los booleanos ni a los tipos construidos.</li>
+<li>En la operación módulo % el primer operando puede ser entero o natural, pero el segundo operando sólo puede ser natural. El resultado de a % b será el resto de la división de a entre b. El tipo del resultado será el mismo que el del primer operando.</li>
+<li>Los operadores lógicos ‘or’, ‘and’, ‘not’ sólo operan sobre valores booleanos. No podemos aplicarlos ni a los numéricos, ni a los caracteres ni a los tipos construidos.</li>
+<li>Los operadores &lt;&lt; y &gt;&gt; sólo operan con valores numéricos naturales.</li>
+</ul><h3>
+<a name="415-sobre-operadores-de-conversin" class="anchor" href="http://localhost:5000/#415-sobre-operadores-de-conversin"><span class="octicon octicon-link"></span></a>4.1.5. Sobre operadores de conversión</h3>
+
+<ul>
+<li>
+<strong>(float)</strong> puede ser aplicado a cualquier tipo excepto al tipo booleano y a los tipos construidos.</li>
+<li>
+<strong>(int)</strong> puede ser aplicado a cualquier tipo excepto al tipo booleano y a los tipos construidos.</li>
+<li>
+<strong>(nat)</strong> puede ser aplicado al tipo natural y al tipo carácter. No admite operandos reales, enteros, booleanos o de tipos construidos.</li>
+<li>
+<strong>(char)</strong> puede ser aplicado al tipo carácter y al tipo natural. No admite operandos reales, enteros, booleanos o de tipos construidos.</li>
+</ul><h3>
+<a name="416-sobre-los-subprogramas" class="anchor" href="http://localhost:5000/#416-sobre-los-subprogramas"><span class="octicon octicon-link"></span></a>4.1.6 Sobre los subprogramas</h3>
+
+<h4>
+<a name="sobre-la-invocacin-de-subprogramas" class="anchor" href="http://localhost:5000/#sobre-la-invocacin-de-subprogramas"><span class="octicon octicon-link"></span></a>Sobre la invocación de subprogramas</h4>
+
+<ul>
+<li>No se puede invocar a un subprograma que no esté previamente declarado</li>
+<li>Hay que comprobar que los parámetros reales con los que se invoca al subprograma son correctos. Es decir, comprobar que:
+
+<ul>
+<li>Se invoque con el mismo número de parámetros que el declarado en la cabecera del subprograma. </li>
+<li>Que cada parámetro se invoque con un identificador que haya sido declarado en la cabecera. </li>
+<li>Que no haya dos parámetros reales invocados con el mismo identificador</li>
+<li>Comprobar que, cuando pasamos un parámetro por referencia, sea un designador. </li>
+<li>Que los parámetros que pasamos estén previamente declarados en la table de símbolos </li>
+<li>Que los parámetros reales que pasemos sean compatibles con el tipo del parámetros formal declarado en la cabecera de la función. </li>
+</ul>
+</li>
+</ul><h4>
+<a name="sobre-la-declaracin-de-subprogramas-hay-que-comprobar" class="anchor" href="http://localhost:5000/#sobre-la-declaracin-de-subprogramas-hay-que-comprobar"><span class="octicon octicon-link"></span></a>Sobre la declaración de subprogramas hay que comprobar</h4>
+
+<ul>
+<li>Que no declaremos dos parámetros formales de entrada, con el mismo identificador. </li>
+<li>Que no haya un subprograma declarado previamente con el mismo identificador. </li>
+</ul><h2>
+<a name="42-funciones-semnticas" class="anchor" href="http://localhost:5000/#42-funciones-semnticas"><span class="octicon octicon-link"></span></a>4.2 Funciones semánticas</h2>
+
+<p>A continuación, describimos las funciones semánticas adicionales utilizadas en la descripción.</p>
+
+<h4>
+<a name="casting" class="anchor" href="http://localhost:5000/#casting"><span class="octicon octicon-link"></span></a>casting</h4>
+
+<pre><code>casting (Type tipoCast, Type tipoOrg) : Type
+    Dados dos tipos diferentes comprobamos si podemos hacer el casting: [ (tipoCast) tipoOrg ] Si podemos, devolvemos el tipoCast resultante de hacer el casting, y si no podemos, devolvemos terr. Describimos el comportamiento de la función en la siguiente tabla.
+</code></pre>
+
+<table>
+<tbody><tr>
+<th align="center">TipoCast</th>
+<th align="center">TipoOrg</th>
+<th align="center">Tipo devuelto</th>
+</tr>
+<tr>
+<td align="center">natural</td>
+<td align="center">natural</td>
+<td align="center">natural</td>
+</tr>
+<tr>
+<td align="center">natural</td>
+<td align="center">character</td>
+<td align="center">natural</td>
+</tr>
+<tr>
+<td align="center">natural</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">-</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">character</td>
+<td align="center">character</td>
+<td align="center">character</td>
+</tr>
+<tr>
+<td align="center">character</td>
+<td align="center">natural</td>
+<td align="center">character</td>
+</tr>
+<tr>
+<td align="center">character</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">integer</td>
+<td align="center">boolean</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">integer</td>
+<td align="center">tipo númerico o character</td>
+<td align="center">integer</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">boolean</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">tipo númerico o character</td>
+<td align="center">terr</td>
+</tr>
+</tbody></table><p>Nota: cualquier casting en el que esté involucrado un tipo construido da como tipo devuelto 'terr'.</p>
+
+<h4>
+<a name="unario" class="anchor" href="http://localhost:5000/#unario"><span class="octicon octicon-link"></span></a>unario</h4>
+
+<pre><code>unario(Type OpUnario, Type tipoUnario) : Type
+    Dado un operador unario y el tipo al que es aplicado comprobamos si se puede aplicar. Por ejemplo, no podemos aplicar a un booleano el operador “-”. Tampoco podemos aplicar a un entero el operador “not”. En esos casos devuelve terr. Si aplicamos el operador “-” a un tipo nat devolvemos el tipo integer.
+</code></pre>
+
+<table>
+<tbody><tr>
+<th align="center">OpUnario</th>
+<th align="center">tipoUnario</th>
+<th align="center">Tipo devuelto</th>
+</tr>
+<tr>
+<td align="center">"-"</td>
+<td align="center">natural</td>
+<td align="center">integer</td>
+</tr>
+<tr>
+<td align="center">"-"</td>
+<td align="center">integer</td>
+<td align="center">integer</td>
+</tr>
+<tr>
+<td align="center">"-"</td>
+<td align="center">float</td>
+<td align="center">float</td>
+</tr>
+<tr>
+<td align="center">"-"</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">not</td>
+<td align="center">boolean</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">not</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">terr</td>
+</tr>
+</tbody></table><p>Nota: no se puede aplicar ningún operador unario a ningún tipo construido.</p>
+
+<h4>
+<a name="tipofunc" class="anchor" href="http://localhost:5000/#tipofunc"><span class="octicon octicon-link"></span></a>tipoFunc</h4>
+
+<pre><code>tipoFunc(Type tipo1, Operator op, Type tipo2) : Type
+    Dados dos tipos diferentes y un operador comprobamos que los tipos puedan aplicar el operador. Devolvemos el tipo correspondiente al aplicar el operador. Si el operador no puede ser aplicado entonces devolvemos terr.
+</code></pre>
+
+<p>Si pusiésemos todas las posibilidades la tabla resultante quedaría muy extensa. Para simplificar, se pondrán dos tablas. En la primera, se pondrán los operadores conmutativos. Es decir, aquellos que se comportan igual sean los tipos asignados al primer parámetro de la función o al segundo. En la segunda se pondrán los operadores no conmutativos. En los que importa quién sea el tipo1 y el tipo2.</p>
+
+<p>También para que se vea mejor, dentro de las tablas, separaremos los tipos de operadores. Operadores conmutativos:</p>
+
+<table>
+<tbody><tr>
+<th align="center">Tipo1</th>
+<th align="center">Op</th>
+<th align="center">Tipo2</th>
+<th align="center">Tipo devuelto</th>
+</tr>
+<tr>
+<td align="center">tipo numérico</td>
+<td align="center">cualquier op. de comparación</td>
+<td align="center">tipo numérico</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">cualquier op. de comparación</td>
+<td align="center">boolean</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">character</td>
+<td align="center">cualquier op. de comparación</td>
+<td align="center">character</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">cualquier op. aritmética</td>
+<td align="center">-</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">character</td>
+<td align="center">cualquier op. aritmética</td>
+<td align="center">-</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">cualquier op. aritmética</td>
+<td align="center">cualquier tipo numérico</td>
+<td align="center">float</td>
+</tr>
+<tr>
+<td align="center">integer</td>
+<td align="center">cualquier op. aritmética</td>
+<td align="center">integer o natural</td>
+<td align="center">integer</td>
+</tr>
+<tr>
+<td align="center">natural</td>
+<td align="center">cualquier op. aritmética</td>
+<td align="center">natural</td>
+<td align="center">natural</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">cualquier op. lógica</td>
+<td align="center">boolean</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">cualquier otro tipo</td>
+<td align="center">cualquier op. lógica</td>
+<td align="center">-</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">natural</td>
+<td align="center">"&lt;&lt;"</td>
+<td align="center">natural</td>
+<td align="center">natural</td>
+</tr>
+<tr>
+<td align="center">natural</td>
+<td align="center">"&gt;&gt;"</td>
+<td align="center">natural</td>
+<td align="center">natural</td>
+</tr>
+<tr>
+<td align="center">tipo no natural</td>
+<td align="center">"&lt;&lt;"</td>
+<td align="center">-</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">-</td>
+<td align="center">"&lt;&lt;"</td>
+<td align="center">tipo no natural</td>
+<td align="center">terr</td>
+</tr>
+</tbody></table><p>Nota: el tipo devuelto de aplicar cualquier tipo de operador a un tipo construido es 'terr'.</p>
+
+<p>Operadores no conmutativos:</p>
+
+<table>
+<tbody><tr>
+<th align="center">Tipo1</th>
+<th align="center">Op</th>
+<th align="center">Tipo2</th>
+<th align="center">Tipo devuelto</th>
+</tr>
+<tr>
+<td align="center">integer o natural</td>
+<td align="center">"%"</td>
+<td align="center">natural</td>
+<td align="center">natural</td>
+</tr>
+<tr>
+<td align="center">-</td>
+<td align="center">"%"</td>
+<td align="center">tipo no natural</td>
+<td align="center">terr</td>
+</tr>
+<tr>
+<td align="center">ni integer ni natural</td>
+<td align="center">"%"</td>
+<td align="center">-</td>
+<td align="center">terr</td>
+</tr>
+</tbody></table><h4>
+<a name="asignacinvlida" class="anchor" href="http://localhost:5000/#asignacinvlida"><span class="octicon octicon-link"></span></a>asignaciónVálida</h4>
+
+<pre><code>asignaciónVálida(Type tipoDesig, Type tipoExp) : Boolean
+    Dado un tipo de un designador y un tipo de una expresión, comprueba si ambos son tipos compatibles. Por ejemplo, no podemos asignar a un designador de tipo char una expresión booleana. Si la asignación es incorrecta devolvemos false, si no devolvemos true.
+</code></pre>
+
+<p>Para que se vea mejor, dentro de las tablas, separaremos los tipos posibles de tipoDesig.</p>
+
+<table>
+<tbody><tr>
+<th align="center">TipoDesig</th>
+<th align="center">TipoExp</th>
+<th align="center">Tipo devuelto</th>
+</tr>
+<tr>
+<td align="center">natural</td>
+<td align="center">natural</td>
+<td align="center">true</td>
+</tr>
+<tr>
+<td align="center">natural</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">integer</td>
+<td align="center">natural</td>
+<td align="center">true</td>
+</tr>
+<tr>
+<td align="center">integer</td>
+<td align="center">integer</td>
+<td align="center">true</td>
+</tr>
+<tr>
+<td align="center">integer</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">tipo numérico</td>
+<td align="center">true</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">boolean</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">character</td>
+<td align="center">character</td>
+<td align="center">true</td>
+</tr>
+<tr>
+<td align="center">character</td>
+<td align="center">cualquier otro tipo</td>
+<td align="center">false</td>
+</tr>
+</tbody></table><p>Nota: En el caso de los tipos construidos, devolverá true siempre que los dos tipos sean compatibles, y false en c.o.c. Dos tipos se consideran compatibles cuando el tipo de sus componentes es el mismo y, en el caso de los arrays, su tamaño es el mismo.</p>
+
+<h4>
+<a name="esvariable" class="anchor" href="http://localhost:5000/#esvariable"><span class="octicon octicon-link"></span></a>esVariable</h4>
+
+<pre><code>esVariable(TS ts, String id) : Boolean
+    Indica si el ident dado, representado por su id, es una variable o una constante. Si devuelve true quiere decir que el ident es una variable, si devuelve false quiere decir que el identificador es una constante.
+</code></pre>
+
+<h4>
+<a name="existe" class="anchor" href="http://localhost:5000/#existe"><span class="octicon octicon-link"></span></a>existe</h4>
+
+<pre><code>existe(TS ts, String id) : Boolean
+    Indica si el identificador existe en la tabla de símbolos
+
+existe(TS ts, String is, nivel) : Boolean
+    Indica si el identificador existe en la tabla de símbolos en el nivel inidicado. 
+</code></pre>
+
+<h4>
+<a name="aadirsubprograma" class="anchor" href="http://localhost:5000/#aadirsubprograma"><span class="octicon octicon-link"></span></a>añadirSubprograma</h4>
+
+<pre><code>añadirSubprograma(TS ts, String ident, CCampo params, Integer address) : void
+    Añade a la tabla de símbolos el subprograma definido por los argumentos.
+</code></pre>
+
+<h4>
+<a name="numparametros" class="anchor" href="http://localhost:5000/#numparametros"><span class="octicon octicon-link"></span></a>numParametros</h4>
+
+<pre><code>numParametros(TS ts, String id) : Integer
+    Devuelve el número de parámetros que tiene el subprograma con el identificador id. Si el subprograma no está en la tabla del símbolos devuelve terr.
+</code></pre>
+
+<h4>
+<a name="estadeclarado" class="anchor" href="http://localhost:5000/#estadeclarado"><span class="octicon octicon-link"></span></a>estaDeclarado</h4>
+
+<pre><code>estaDeclarado(TS ts, String idparam, String idsubprog) : Boolean
+    Comprueba si el parámetro idparam está declarado en el subprograma idsubprog. Si no está declarado el identificador, o el subprograma no existe devuelve terr
+</code></pre>
+
+<h4>
+<a name="compatible" class="anchor" href="http://localhost:5000/#compatible"><span class="octicon octicon-link"></span></a>compatible</h4>
+
+<pre><code>compatible(CTipo tipo1, CTipo tipo2) : Boolean
+    Dados dos tipos nos indica si son campatibles entre ellos       
+</code></pre>
+
+<h4>
+<a name="getoffset" class="anchor" href="http://localhost:5000/#getoffset"><span class="octicon octicon-link"></span></a>getOffset</h4>
+
+<pre><code>getOffset(Integer numElems) : Integer
+    Devuelve la posición del elemento dado dentro de la tupla.
+</code></pre>
+
+<h4>
+<a name="parametrosnorepetidos" class="anchor" href="http://localhost:5000/#parametrosnorepetidos"><span class="octicon octicon-link"></span></a>parametrosNoRepetidos</h4>
+
+<pre><code>parametrosNoRepetidos(TS ts, String id)
+    Dado el nombre de un identificador de un subprograma "id" comprobamos que no hay dos identificadores de parámetros en la cabecera con el mismo nombre.   
+</code></pre>
+
+<h5>
+<a name="nota" class="anchor" href="http://localhost:5000/#nota"><span class="octicon octicon-link"></span></a>Nota:</h5>
+
+<p>En todas las funciones, si alguno de los tipos de entrada es el tipo terr, devolvemos siempre terr.</p>
+
+<h2>
+<a name="43-atributos-semnticos" class="anchor" href="http://localhost:5000/#43-atributos-semnticos"><span class="octicon octicon-link"></span></a>4.3 Atributos semánticos</h2>
+
+<ul>
+<li>
+<strong>op:</strong> atributo que indica cuál es el operador usado.</li>
+<li>
+<strong>ts:</strong> tabla de símbolos. Se crea en la parte de declaraciones.</li>
+<li>
+<strong>tsh:</strong> tabla de símbolos heredada. Se hereda en la parte de instrucciones.</li>
+<li>
+<strong>err:</strong> atributo que indica si se ha detectado algún error. Es un atributo de tipo booleano.</li>
+<li>
+<strong>nparams:</strong> contador que cuenta cuántos parámetros se han pasado en la llamada (call) a un subprograma.</li>
+<li>
+<strong>nombresubprog:</strong> lleva el identificador el subprograma. Se usa para las restricciones contextuales en el paso de parámetros a funciones.</li>
+<li>
+<strong>listaparamnombres:</strong> lleva una lista con los nombres de los parámetros que han sido introducidos en una llamada a función. </li>
+</ul><h2>
+<a name="44-gramtica-de-atributos" class="anchor" href="http://localhost:5000/#44-gramtica-de-atributos"><span class="octicon octicon-link"></span></a>4.4 Gramática de atributos</h2>
+
+<pre><code>Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+    Program.tsh = creaTS()
+    SConsts.tsh = Program.tsh
+    STypes.tsh = SConsts.ts
+    SVars.tsh = STypes.ts
+    SSubprogs.tsh = SVars.ts
+    SInsts.tsh = SVars.ts
+    Program.err = SConsts.err ∨ STypes.err ∨ SVars.err ∨ SSubprogs.err ∨ SInsts.err
+
+SConsts → const illave Consts fllave 
+    Consts.tsh = SConsts.tsh
+    SConsts.ts = Consts.ts
+    SConsts.err = Consts.err
+
+SConsts → ɛ
+    SConsts.ts = SConsts.tsh
+    SConsts.err = false
+
+Consts → Consts pyc Const
+    Consts1.tsh = Consts0.tsh
+    Const.tsh = Consts1.ts
+    Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Conts0.dir, Const.tipo)
+    Consts.err = existe(Const.ts, Const.id)
+
+Consts → Const
+    Const.tsh = Consts.tsh
+    Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, Const.dir, Const.tipo)
+    Consts.err = existe(Const.ts, Const.id)
+
+Const → const TPrim ident asig ConstLit 
+    Const.ts = Const.tsh
+    Const.id = ident.lex
+    Const.clase = const
+    Const.nivel = global
+    Const.tipo = &lt;t:TPrim.tipo, tam:1&gt;
+
+    Const.valor = ConstLit.valor
+    Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
+
+Const → ɛ
+    Const.ts = Const.tsh
+    Const.err = false
+
+ConstLit → Lit
+    ConstLit.tipo = Lit.tipo
+
+ConstLit → menos Lit
+    ConstLit.tipo = opUnario(menos, Lit.tipo)
+
+STypes → tipos illave Types fllave 
+    Types.tsh = STypes.tsh
+    STypes.ts = Types.ts
+    STypes.err = Types.err
+
+STypes → ɛ
+    STypes.ts = STypes.tsh
+    STypes.err = false
+
+Types → Types pyc Type 
+    Types1.tsh = Types0.tsh
+    Type.tsh = Types1.ts
+    Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, Types0.dir, Type.tipo)
+    Types0.err = existe(Types1.ts, Type.id)
+
+Types → Type
+    Type.tsh = Types.tsh
+    Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, Type.dir, Type.tipo)
+    Types.err = existe(Type.ts, Type.id)
+
+Type → tipo TypeDesc ident 
+    Type.ts = Type.tsh
+    Type.id = ident.lex
+    Type.clase = Tipo
+    Type.nivel = global
+    Type.tipo = &lt;t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(TypeDesc.tipo, Var.tsh ), Type.id)&gt;
+
+Type → ɛ
+    Type.ts = Type.tsh
+    Type.err = false
+
+SVars → vars illave Vars fllave 
+    Vars.tsh = SVars.tsh
+    SVars.ts = Vars.ts
+    SVars.err = Vars.err
+
+SVars → ɛ
+    SVars.ts = SVars.tsh
+    SVars.err = false
+
+Vars → Vars pyc Var 
+    Vars1.tsh = Vars0.tsh
+    Var.tsh = Vars1.ts
+    Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
+    Vars0.err = existe(Var.ts, Var.id, Var.nivel)
+
+Vars → Var
+    Var.tsh = Vars.tsh
+    Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
+    Vars.err = existe(Var.ts, Var.id, Var.nivel)
+
+Var → var TypeDesc ident 
+    Var.ts = Var.tsh
+    Var.id = ident.lex
+    Var.clase = Var
+    Var.nivel = global
+    Var.tipo = si (TypeDesc.tipo == TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+               si no {&lt;id:Var.id, t:ref, TypeDesc.tipo, tam: desplazamiento(TypeDesc.tipo, Var.tsh )&gt;} 
+Var → ɛ
+    Var.ts = Var.tsh
+    Var.err = false
+
+SSubprogs → subprograms illave Subprogs fllave 
+    Subprogs.tsh = SSubprogs.tsh
+    SSubprogs.err = Subprogrs.err
+
+SSubprogs → subprograms illave fllave 
+
+SSubprogs → ɛ
+    SSubprogs.err = false
+
+Subprogs → Subprogs Subprog
+    Subprogs1.tsh = Subprogs0.tsh
+    Subprog.tsh = Subprogs0.tsh
+    Subprogs0.err = Subprogs1.err ∨ Subprog.err
+
+Subprogs → Subprog
+    Subprog.tsh = Subprogs.tsh
+    Subprogs.err = Subprog.err
+
+Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
+    SFParams.tsh = CreaTS(Subprog.tsh)
+    SVars.tsh = SFParams.ts
+    SInsts.tsh = SVars.ts
+    Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨ parametrosNoRepetidos(SParams.ts, ident)
+
+SFParams → FParams 
+    FParams.tsh = SFParams.tsh
+    SFParams.ts = FParams.ts
+    SFParams.dir = FParams.dir
+    SFParams.err = FParams.err
+
+SFParams → ɛ
+    SFParams.ts = SFParams.tsh
+    SFParams.err = false
+
+FParams → FParams coma FParam 
+    FParams1.tsh = FParams0.tsh
+    FParam.tsh = FParams1.tsh
+    FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+    FParams0.err = existe(FParam.ts, FParam.id, FParam.nivel)
+
+FParams → FParam
+    FParam.tsh = FParams.tsh
+    FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+    FParams.err = existe(FParam.ts, FParam.id, FParam.nivel)
+
+FParam → TypeDesc ident 
+    FParam.ts = FParam.tsh
+    Fparam.id = ident.lex
+    FParam.clase = pvalor
+    FParam.nivel = local
+    FParam.tipo = (si (TypeDesc.tipo== TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+               si no {&lt;t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)&gt;} )
+
+FParam → TypeDesc mul ident
+    FParam.ts = FParam.tsh
+    Fparam.id = ident.lex
+    FParam.clase = pvariable
+    FParam.nivel = local
+    FParam.tipo = (si (TypeDesc.tipo == TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+               si no {&lt;t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)&gt;} )
+
+TypeDesc → TPrim
+
+TypeDesc → TArray
+    TArray.tsh = TypeDesc.tsh
+    TypeDesc.err = TArray.err
+
+TypeDesc → TTupla 
+    TTupla.tsh = TypeDesc.tsh
+    TypeDesc.err = TTupla.err
+
+TypeDesc → ident
+    TypeDesc.err = ¬existe(TypeDesc.tsh, ident.lex) ∨ TypeDesc.tsh[ident].clase != tipo
+
+TPrim → natural | integer | float | boolean | character
+Cast → char | int | nat | float
+
+TArray → TypeDesc icorchete ident fcorchete
+    TypeDesc.tsh = TArray.tsh
+    TArray.err = ¬existe(TArray.tsh, ident.lex) ∨ obtieneTipoString(ident) != nat ∨ TArray.tsh[ident].clase != constante
+
+TArray → TypeDesc icorchete litnat fcorchete
+    TypeDesc.tsh = TArray.tsh
+
+TTupla → ipar Tupla fpar
+    Tupla.tsh = TTupla.tsh
+    TTupla.err = Tupla.err
+
+TTupla → ipar fpar
+    TTupla.err = false
+
+Tupla → TypeDesc coma Tupla
+    TypeDesc.tsh = Tupla0.tsh
+    Tupla1.tsh = Tupla0.tsh
+    Tupla0.err = TypeDesc.err ∨ Tupla1.err
+
+Tupla → TypeDesc
+    TypeDesc.tsh = Tupla.tsh
+    Tupla.err = TypeDesc.err
+
+SInsts → instructions illave Insts fllave
+    Insts.tsh = SInsts.tsh
+    SInsts.err = Insts.err
+
+Insts → Insts pyc Inst
+    Insts1.tsh = Insts0.tsh
+    Inst.tsh = Insts0.tsh
+    Insts0.err = Insts1.err ∨ Inst.err
+
+Insts → Inst
+    Inst.tsh = Insts.tsh
+    Insts.err = Inst.err
+
+Inst → Desig asig Expr
+    Desig.tsh = Inst.tsh
+    Expr.tsh = Inst.tsh
+    Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
+
+Inst → in ipar Desig fpar
+    Desig.tsh = Inst.tsh
+    Inst.err = Desig.err
+
+Inst → out ipar Expr fpar
+    Expr.tsh = Inst.tsh
+    Inst.err = Expr.err
+
+Inst → swap1 ipar fpar
+    Inst.err = false
+
+Inst → swap2 ipar fpar
+    Inst.err = false
+
+Inst → if Expr then Insts ElseIf
+    Expr.tsh = Inst.tsh
+    Insts1.tsh = Inst0.tsh
+    ElseIf.tsh = Inst.tsh
+    Inst.err = Expr.err ∨ Insts.err ∨ ElseIf.err
+
+Inst → while Expr do Insts endwhile
+    Expr.tsh = Inst.tsh
+    Insts.tsh = Inst.tsh
+    Inst.err = Expr.err ∨ Insts.err
+
+Inst → InstCall
+    InstCall.tsh = Inst.tsh
+    Inst.err = InstCall.err
+
+Inst → ɛ
+    Inst.err = false
+
+ElseIf → else Insts endif
+    Insts.tsh = ElseIf.tsh
+    ElseIf.err = Insts.err
+
+ElseIf → endif
+    ElseIf.err = false
+
+InstCall → call ident lpar SRParams rpar
+    SRParams.tsh = InstCall.tsh
+    SRParams.nparams = 0
+    SRParams.nombresubprogh = ident.lex
+    SRParmas.listaparamnombresh = []
+    InstCall.err = SRParams.err ∨ ¬existe(SRParams.tsh, ident.lex) ∨ SRParams.nparams != numParametros(SRParams.tsh, ident.lex) 
+
+SRParams → RParams
+    RParams.tsh = SRParams.tsh
+    RParams.nparamsh = SRParams.nparamsh
+    SRParams.nparams = RParams.nparams
+    RParams.nombresubprogh = SRParams.nombresubprogh
+    RParams.listaparamnombresh = SRParams.listaparamnombresh
+    SRParams.err = RParams.err
+
+SRParams → ɛ
+    SRParams.err = false
+    SRParams.nparams = SRParams.nparamsh
+    SRParams.listaparamnombres = SRParams.listaparamnombresh
+
+RParams → RParams coma RParam
+    RParams1.tsh = RParams0.tsh
+    RParam.tsh = RParams0.tsh
+    RParams0.err = RParams1.err ∨ Rparam.err
+    RParams1.nparamsh = RParams0.nparamsh
+    RParam.nparamsh = RParams1.nparams
+    RParams.nparams = RParam.nparams   
+    RParams1.nombresubprogh = RParams0.nombresubprogh
+    RParam.nombresubprogh = RParams0.nombresubprogh 
+    RParams1.listaparamnombresh = RParams0.listaparamnombresh
+    RParam.listaparamnombresh = RParams1.listaparamnombres  
+
+RParams → RParam
+    RParam.tsh = RParams.tsh
+    RParam.nparamsh = RParams.nparamsh
+    RParams.nparams = RParam.nparams
+    RParam.nombresubprogh = RParams.nombresubprogh
+    RParam.listaparamnombresh = RParams.listaparamnombresh
+    RParams.listaparamnombres = RParam.listaparamnombres
+    RParams.err = RParam.err
+
+RParam → ident asig Expr
+    Expr.tsh = RParam.tsh
+    RParam.nparams = RParams.nparamsh + 1  
+    RParam.listaparamnombres = RParam.listaparamnombresh ++ ident 
+    RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
+    ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig ∨ (ident ∈ listaparamnombresh)
+
+Desig → ident
+    Desig.tipo = Desig.tsh[ident.lex].tipo
+    Desig.err = ¬existe(Desig.tsh, ident.lex) ∨ ¬esVariable(Desig.tsh, ident.lex)
+
+Desig → Desig icorchete Expr fcorchete
+    Desig0.tipo = Desig1.tipo
+    Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
+
+Desig → Desig barrabaja litnat
+    Desig0.tipo = Desig1.tipo
+    Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
+
+Expr → Term Op0 Term
+    Expr.desig = false
+    Expr.tipo = tipoFunc(Term0.tipo, Op0.op, Term1.tipo)
+    Term0.tsh = Expr.tsh
+    Term1.tsh = Expr.tsh
+    Expr.desig = false
+
+Expr → Term
+    Expr.tipo = Term.tipo
+    Term.tsh = Expr.tsh
+    Expr.desig = false
+    Expr.desig = Term.desig
+
+Term → Term Op1 Fact 
+    Term0.tipo = tipoFunc(Term1.tipo, Op1.op, Fact.tipo)
+    Term1.tsh = Term0.tsh
+    Fact.tsh = Term0.tsh
+    Term0.desig = false
+
+Term → Term or Fact
+    Term0.tipo = tipoFunc(Term1.tipo, or, Fact.tipo)
+    Term1.tsh = Term0.tsh
+    Fact.tsh = Term0.tsh
+    Term0.desig = false
+
+Term → Fact
+    Term.tipo = Fact.tipo
+    Fact.tsh = Term.tsh
+    Term.desig = Fact.desig
+
+Fact → Fact Op2 Shft
+    Fact0.tipo = tipoFunc(Fact1.tipo, Op2.op, Shft.tipo) 
+    Fact1.tsh = Fact0.tsh
+    Shft.tsh = Fact0.tsh
+    Fact0.desig = false
+
+Fact → Fact and Shft
+    Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
+    Fact1.tsh = Fact0.tsh
+    Shft.tsh = Fact0.tsh
+    Fact0.desig = false
+
+Fact → Shft
+    Fact.tipo = Shft.tipo
+    Shft.tsh = Fact.tsh
+    Fact.desig = Shft.desig 
+
+Shft → Unary Op3 Shft
+    Shft0.tipo = tipoFunc(Unary.tipo, Op3.op, Shft.tipo) 
+    Unary.tsh = Shft0.tsh
+    Shft1.tsh = Shft0.tsh
+    Shft0.desig = false
+
+Shft → Unary
+    Shft.tipo = Unary.tipo
+    Unary.tsh = Shft.tsh
+    Shft.desig = Unary.desig
+
+Unary → Op4 Unary
+    Unary0.tipo = opUnario(Op4.op, Unary1.tipo)
+    Unary1.tsh = Unary0.tsh
+    Unary0.desig = false
+
+Unary → lpar Cast rpar Paren 
+    Unary.tipo = casting(Cast.tipo, Paren.tipo)
+    Paren.tsh = Unary.tsh
+    Unary.desig = false
+
+Unary → Paren
+    Unary.tipo = Paren.tipo
+    Paren.tsh = Unary.tsh
+    Unary.desig = Paren.desig
+
+Paren → lpar Expr rpar 
+    Paren.tipo = Expr.tipo
+    Expr.tsh = Paren.tsh
+    Paren.desig = false
+
+Paren → Lit 
+    Parent.tipo = Lit.tipo
+    Lit.tsh = Paren.tsh
+    Paren.desig = false
+    Paren.err = false
+
+Paren → Desig
+    Paren.desig = true
+    Paren.err = Desig.err
+
+Op0 → igual
+    Op0.op = igual
+
+Op0 → noigual 
+    Op0.op = noigual 
+
+Op0 → men 
+    Op0.op = men 
+
+Op0 → may 
+    Op0.op = may 
+
+Op0 → menoig 
+    Op0.op = menoig 
+
+Op0 → mayoig 
+    Op0.op = mayoig
+
+Op1 → menos
+    Op1.op = menos
+
+Op1 → mas
+    Op1.op = mas
+
+Op2 → mod
+    Op2.op = mod
+
+Op2 → div
+    Op2.op = div
+
+Op2 → mul
+    Op2.op = mul
+
+Op3 → lsh
+    Op3.op = lsh
+
+Op3 → rsh
+    Op3.op = rsh
+
+Op4 → not
+    Op4.op = not
+
+Op4 → menos
+    Op4.op = menos
+
+Lit → LitBool 
+    Lit.tipo = boolean 
+
+Lit → LitNum 
+    Lit.tipo = LitNum.tipo
+
+Lit → litchar 
+    Lit.tipo = char 
+
+LitNum → litnat 
+    LitNum.tipo = natural
+
+LitNum → litfloat
+    LitNum.tipo = float
+</code></pre>
+
+<h1>
+<a name="5-especificacin-de-la-traduccin" class="anchor" href="http://localhost:5000/#5-especificacin-de-la-traduccin"><span class="octicon octicon-link"></span></a>5. Especificación de la traducción</h1>
+
+<h2>
+<a name="51-lenguaje-objeto-y-mquina-virtual" class="anchor" href="http://localhost:5000/#51-lenguaje-objeto-y-mquina-virtual"><span class="octicon octicon-link"></span></a>5.1 Lenguaje objeto y máquina virtual</h2>
+
+<h3>
+<a name="511-arquitectura" class="anchor" href="http://localhost:5000/#511-arquitectura"><span class="octicon octicon-link"></span></a>5.1.1 Arquitectura</h3>
+
+<ul>
+<li><p>Mem: Memoria principal con celdas direccionables con datos. Los datos de la memoria no incluyen información sobre de qué tipo son, las instrucciones sí.</p></li>
+<li><p>Prog: Memoria de programa con celdas direccionables con instrucciones.</p></li>
+<li><p>CProg: Contador de programa con un registro para la dirección de la instrucción actualmente en ejecución</p></li>
+<li><p>Pila: Pila de datos con celdas direccionables con datos. No se incluye información sobre el tipo.</p></li>
+<li><p>CPila: Cima de la pila de datos con un registro para la dirección del dato situado actualmente en la cima de la pila.</p></li>
+<li><p>P: Flag de parada que detiene la ejecución si tiene valor 1.</p></li>
+<li><p>S1: Flag de swap1. Si tiene valor 1 intercambia suma por resta y viceversa.</p></li>
+<li><p>S2: Flag de swap2. Si tiene valor 1 intercambia multiplicación por división y viceversa.</p></li>
+</ul><h3>
+<a name="512-comportamiento-interno" class="anchor" href="http://localhost:5000/#512-comportamiento-interno"><span class="octicon octicon-link"></span></a>5.1.2 Comportamiento interno</h3>
+
+<p>Pseudocódigo del algoritmo de su ejecución:</p>
+
+<blockquote>
+<p>CPila ← -1<br>
+CProg ← 0<br>
+S1 ← 0<br>
+S2 ← 0<br>
+P ← 0<br>
+mientras P = 0<br>
+   ejecutar Prog[CProg]<br>
+fmientras<br></p>
+</blockquote>
+
+<ul>
+<li><p>Mem[dirección]: Dato de una celda de memoria principal localizado a través de una dirección.</p></li>
+<li><p>Prog[dirección]: Instrucción de una celda de memoria de programa localizado a través de una dirección.</p></li>
+</ul><p>La dirección -1 en CPila indica que la pila está vacía.</p>
+
+<h3>
+<a name="513-repertorio-de-instrucciones" class="anchor" href="http://localhost:5000/#513-repertorio-de-instrucciones"><span class="octicon octicon-link"></span></a>5.1.3 Repertorio de instrucciones</h3>
+
+<h4>
+<a name="operaciones-con-la-pila" class="anchor" href="http://localhost:5000/#operaciones-con-la-pila"><span class="octicon octicon-link"></span></a>Operaciones con la Pila:</h4>
+
+<p>apila(valor)</p>
+
+<blockquote>
+<p>CPila ← CPila + 1<br>
+Pila[CPila] ← valor<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>apila-dir(dirección)</p>
+
+<blockquote>
+<p>CPila ← CPila + 1<br>
+Pila[CPila] ← Mem[dirección]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>apila-ind</p>
+
+<blockquote>
+<p>Pila[CPila] ← Mem[Pila[CPila]]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>apila-ret</p>
+
+<blockquote>
+<p>Pila[Cpila] ← CProg <br>
+Cpila ← CPila +1 <br>
+CProg ← Cprog + 1 <br></p>
+</blockquote>
+
+<p>mueve(nCeldas)</p>
+
+<blockquote>
+<p>para i ← 0 hasta nCeldas-1 hacer<br>
+  Mem[Pila[CPila]+i] ← Mem[Pila[CPila-1]+i]<br>
+CPila ← Cpila - 2<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>Nota: Si la dirección de memoria no ha sido cargada previamente con datos usando la siguiente instrucción (desapila-dir), esta instrucción dará un error de ejecución.</p>
+
+<p>ir_ind</p>
+
+<blockquote>
+<p>CprogPila[CPila]<br>
+Cpila←Cpila-1<br></p>
+</blockquote>
+
+<p>desapila-dir(dirección)</p>
+
+<blockquote>
+<p>Mem[dirección] ← Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>desapila-ind</p>
+
+<blockquote>
+<p>Mem[Pila[CPila]] ← Pila[CPila-1]<br>
+CPila ← CPila - 2<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>desapila-ret</p>
+
+<blockquote>
+<p>Mem[Pila[Cpila]] ← CProg <br>
+Cpila ← CPila -1 <br>
+CProg ← Cprog + 1 <br></p>
+</blockquote>
+
+<p>copia</p>
+
+<blockquote>
+<p>CPila ← CPila + 1<br>
+Pila[CPila] ← Pila[CPila-1]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<h4>
+<a name="saltos" class="anchor" href="http://localhost:5000/#saltos"><span class="octicon octicon-link"></span></a>Saltos</h4>
+
+<p>ir-a(direccion)</p>
+
+<blockquote>
+<p>CProg ← direccion<br></p>
+</blockquote>
+
+<p>ir-v(direccion)</p>
+
+<blockquote>
+<p>si Pila[CPila]: CProg ← direccion<br>
+si no: CProg ← CProg + 1<br>
+CPila ← CPila-1<br></p>
+</blockquote>
+
+<p>ir-f(direccion)</p>
+
+<blockquote>
+<p>si Pila[CPila]: CProg ← CProg + 1<br>
+si no: CProg ← direccion<br>
+CPila ← CPila-1<br></p>
+</blockquote>
+
+<h4>
+<a name="operaciones-aritmticas" class="anchor" href="http://localhost:5000/#operaciones-aritmticas"><span class="octicon octicon-link"></span></a>Operaciones aritméticas</h4>
+
+<p>mas</p>
+
+<blockquote>
+<p>si S1 = 0: Pila[CPila - 1] ← Pila[CPila - 1] + Pila[CPila]<br>
+si S1 = 1: Pila[CPila - 1] ← Pila[CPila - 1]  - Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>menos (binario)</p>
+
+<blockquote>
+<p>si S1 = 0: Pila[CPila - 1] ← Pila[CPila - 1] - Pila[CPila]<br>
+si S1 = 1: Pila[CPila - 1] ← Pila[CPila - 1] + Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>mul</p>
+
+<blockquote>
+<p>si S2 = 0: Pila[CPila - 1] ← Pila[CPila - 1] * Pila[CPila]<br>
+si S2 = 1: Pila[CPila - 1] ← Pila[CPila - 1] / Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>div</p>
+
+<blockquote>
+<p>si S2 = 0: Pila[CPila - 1] ← Pila[CPila - 1] / Pila[CPila]<br>
+si S2 = 1: Pila[CPila - 1] ← Pila[CPila - 1] * Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>mod</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] % Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>menos (unario)</p>
+
+<blockquote>
+<p>Pila[CPila] ← - Pila[CPila]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<h4>
+<a name="operaciones-de-desplazamiento" class="anchor" href="http://localhost:5000/#operaciones-de-desplazamiento"><span class="octicon octicon-link"></span></a>Operaciones de desplazamiento</h4>
+
+<p>lsh</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] &lt;&lt; Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>rsh</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] &gt;&gt; Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<h4>
+<a name="operaciones-de-comparacin" class="anchor" href="http://localhost:5000/#operaciones-de-comparacin"><span class="octicon octicon-link"></span></a>Operaciones de comparación</h4>
+
+<p>igual</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] == Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>noigual</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] != Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>may</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] &gt; Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>men</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] &lt; Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>mayoig</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] &gt;= Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CPoprog + 1<br></p>
+</blockquote>
+
+<p>menoig</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] &lt;= Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<h4>
+<a name="operaciones-lgicas" class="anchor" href="http://localhost:5000/#operaciones-lgicas"><span class="octicon octicon-link"></span></a>Operaciones lógicas</h4>
+
+<p>and</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] &amp;&amp; Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>or</p>
+
+<blockquote>
+<p>Pila[CPila - 1] ← Pila[CPila - 1] || Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>not</p>
+
+<blockquote>
+<p>Pila[CPila] ← ! Pila[CPila]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<h4>
+<a name="operaciones-de-conversin" class="anchor" href="http://localhost:5000/#operaciones-de-conversin"><span class="octicon octicon-link"></span></a>Operaciones de conversión</h4>
+
+<p>castFloat</p>
+
+<blockquote>
+<p>Pila[CPila] ← (float) Pila[CPila]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>castInt</p>
+
+<blockquote>
+<p>Pila[CPila] ← (int) Pila[CPila]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>castNat</p>
+
+<blockquote>
+<p>Pila[CPila] ← (nat) Pila[CPila]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>castChar</p>
+
+<blockquote>
+<p>Pila[CPila] ← (char) Pila[CPila]<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<h4>
+<a name="operaciones-de-entrada-salida" class="anchor" href="http://localhost:5000/#operaciones-de-entrada-salida"><span class="octicon octicon-link"></span></a>Operaciones de Entrada-Salida</h4>
+
+<p>in(type)</p>
+
+<blockquote>
+<p>CPila ← CPila + 1<br>
+Pila[CPila] ← Leer un valor de tipo type de BufferIN<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<p>out</p>
+
+<blockquote>
+<p>Escribir en BufferOUT ← Pila[CPila]<br>
+CPila ← CPila - 1<br>
+CProg ← CProg + 1<br></p>
+</blockquote>
+
+<h4>
+<a name="operaciones-de-intercambio" class="anchor" href="http://localhost:5000/#operaciones-de-intercambio"><span class="octicon octicon-link"></span></a>Operaciones de intercambio</h4>
+
+<p>swap1</p>
+
+<blockquote>
+<p>si S1 = 0: S1 ← 1<br>
+si S1 = 1: S1 ← 0<br></p>
+</blockquote>
+
+<p>swap2</p>
+
+<blockquote>
+<p>si S2 = 0: S2 ← 1<br>
+si S2 = 1: S2 ← 0<br></p>
+</blockquote>
+
+<h4>
+<a name="otras-operaciones" class="anchor" href="http://localhost:5000/#otras-operaciones"><span class="octicon octicon-link"></span></a>Otras operaciones</h4>
+
+<p>range(size)</p>
+
+<blockquote>
+<p>si Pila[CPila] &lt; 0 || Pila[CPila] &gt;= size: P ← 1<br></p>
+</blockquote>
+
+<p>stop</p>
+
+<blockquote>
+<p>P ← 1<br></p>
+</blockquote>
+
+<p>Consideraciones sobre “Repertorio de instrucciones”</p>
+
+<p>En la operación castNat, hemos creado la operación en la máquina virtual (nat), que no está predefinida en Java, pero cuyo comportamiento está definido en las tablas correspondientes a los tipos definidos.</p>
+
+<h2>
+<a name="52-funciones-semnticas" class="anchor" href="http://localhost:5000/#52-funciones-semnticas"><span class="octicon octicon-link"></span></a>5.2 Funciones semánticas</h2>
+
+<p>tamTipo(CTipo): dado un registro de tipo, devuelve el tamaño del tipo
+desplTupla(indice, CTipo): dado un registro de tipo y un indice, devuelve el offset hasta el indice (incluido)
+numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.</p>
+
+<h2>
+<a name="53-atributos-semnticos" class="anchor" href="http://localhost:5000/#53-atributos-semnticos"><span class="octicon octicon-link"></span></a>5.3 Atributos semánticos</h2>
+
+<ul>
+<li>cod: Atributo sintetizado de generación de código.</li>
+<li>op: Enumerado que nos dice cuál es el operador utilizado.</li>
+<li>etq: Contador de instrucciones. Cuenta instucciones de la máquina a pila generadas. </li>
+<li>etqh: Contador de instrucciones heredado.<br>
+</li>
+<li>refh: Atributo que indica si la expresión no tiene que generar el apila-ind para cargar el valor. Si la expresión es un parámetro por referencia refh vale true. Si no, vale false.<br>
+</li>
+</ul><h2>
+<a name="54-gramtica-de-atributos" class="anchor" href="http://localhost:5000/#54-gramtica-de-atributos"><span class="octicon octicon-link"></span></a>5.4 Gramática de atributos</h2>
+
+<pre><code>Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
+    Program.cod =  ir_a(SSubprogs.etq) || SSubprogs || SInsts.cod || stop 
+    SSubprogs.etqh = 5 /* es 5 por inicializaciones de la pila. */
+    SInsts.etqh = SSubprogs.etq
+
+SSubprogs → subprograms illave Subprogs fllave 
+    SSubprogs.cod = Subprogs.cod
+    Subprogs.etqh = SSubprogs.etqh
+    SSubprogs.etq = Subprogs.etq
+
+SSubprogs → subprograms illave fllave 
+    SSubprogs.cod = [] 
+    SSubprogs.etq = SSubprogs.etqh
+
+SSubprogs → ɛ
+    SSubprogs.cod = []
+    SSubprogs.etq = SSubprogs.etqh
+
+Subprogs → Subprogs Subprog 
+    Subprogs0.cod  = Subprogs1.cod || Subprog.cod
+    Subprogs1.etqh = Subprogs0.etqh
+    Subprog.etqh   = Subprogs1.etq 
+    Subprogs0.etq  = Subprog.etq
+
+Subprogs → Subprog
+    Subprogs.cod = Subprog.cod
+    Subprog.etqh = Subprogs.etqh
+    Subprogs.etq = Subprog.etq
+
+Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
+    Subprog.cod = apila-dir(0) || apila(SVars.dir) || mas || desapila-dir(0) ||
+                SInsts.cod || 
+                apila_dir(1) || apila(2) || menos || apila_ind || ir_ind
+    SInsts.etqh = Subprog.etqh 
+    Subprog.etq = SInsts.etq + 5
+
+SInsts → instructions illave Insts fllave
+    SInsts.cod = Insts.cod
+    Insts.etqh = SInsts.etqh
+    SInsts.etq = Insts.etq
+
+Insts → Insts pyc Inst 
+    Insts0.cod = Insts1.cod || Inst.cod
+    Insts1.etqh = Insts0.etqh
+    Inst.etqh = Insts1.etq
+    Insts0.etq = Inst.etq
+
+Insts → Inst
+    Insts.cod = Inst.cod
+    Inst.etqh = Insts.etqh
+    Insts.etq = Inst.etq
+
+Inst → Desig asig Expr
+    Inst.cod = Expr.cod || Desig.cod || si esPrimitivo(Desig.tipo) entonces desapila-ind 
+                sino mueve(tamTipo(Desig.tipo,Desig.tsh)) 
+    Expr.etqh = Inst.etqh
+    Desig.etqh = Expr.etq
+    Inst.etq = Desig.etq + 1 
+    Expr.refh = false
+
+Inst → in ipar Desig fpar
+    Inst.cod = in(Desig.type) ||Desig.cod|| desapila-ind 
+    Desig.etqh = Inst.etq + 1 
+    Inst.etq = Desig.etq + 1
+
+Inst → out ipar Expr fpar
+    Inst.cod = Expr.cod || out
+    Expr.etqh = Inst.etqh
+    Inst.etq = Expr.etqh + 1 
+    Expr.refh = false
+
+Inst → swap1 ipar fpar
+    Inst.cod = swap1
+    Inst.etq = Inst.etqh + 1 
+
+Inst → swap2 ipar fpar
+    Inst.cod = swap2
+    Inst.etq = Inst.etqh +1 
+
+Inst → if Expr then Insts ElseIf
+    Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
+    Expr.etqh = Inst.etqh
+    Insts.etqh = Expr.etq + 1
+    ElseIf.etqh = Insts.etq + 1
+    Inst.etq = ElseIf.etq
+    Expr.refh = false
+
+Inst → while Expr do Insts endwhile
+    Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Inst.etqh)
+    Expr.etqh = Inst.etqh 
+    Insts.etqh = Expr.etq + 1
+    Inst.etq = Insts + 1 
+    Expr.refh = false
+
+Inst → InstCall
+    Inst.cod = IsntCall.cod
+    InstCall.etqh = Inst.etqh
+    Inst.etq = InstCall.etq
+
+Inst → ɛ
+    Inst.cod = []
+    Inst.etq = Inst.etqh
+
+ElseIf → else Insts endif 
+    ElseIf.cod = Inst.cod
+    Insts.etqh = ElseIf.etqh
+    ElseIf.etq = Insts.etq
+
+ElseIf → endif
+    ElseIf.cod = []
+    ElseIf.etq = ElseIf.etqh
+
+InstCall → call ident lpar SRParams rpar
+    InstCall.cod = 
+                //Reestructuramos los punteros CP y BASE
+                apila-ret || apila-dir(0) || apila(1) || mas || desapila-ind || apiladir(1) || apila-dir(0) || apila(2) || mas || desapila-ind || apila-dir(0) || apila(3) || suma || desapila-dir(0)||
+                //Paso de parámetros
+                SRParams.cod||
+                // Saltar al subprograma
+                apila-dir(0) || desapila-dir(1) || apila-dir(0) || apila(tamParametros(InstCall.tsh, ident)) || mas || desapila-dir(0) || ir-ind ||
+                //Al volver del subprograma devolver los punteros CP y BASE a su sitio
+                apila-dir(1) || apila(3) || menos || desapila-dir(0) || apila-dir(1) || apila(1) || menos || apila-ind || desapila-dir(1)
+
+    SRParams.nparams = 0
+    SRParams.etqh = InstCall.etqh + 14 
+    InstCall.etq = SRParams.etq + 16
+
+SRParams → RParams 
+    SRParams.cod = RParams.cod
+    RParams.etqh = SRParams.etqh
+    SRParams.etq = RParams.etq 
+    RParams.nparamsh = SRParams.nparamsh
+    SRParams.nparams = RParams.nparams
+
+SRParams → ɛ
+    SRParams.cod = []
+    SRParms.etq = SRParams.etqh
+    SRParams.nparams = SRParams.nparamsh
+
+RParams → RParams coma RParam 
+    RParams0.cod = RParams1.cod || RParam.cod
+    RParams1.etqh = RParams0.etqh
+    RParam.etqh = RParams1.etq
+    RParams.etq = RParam.etq  
+    RParams1.nparamsh = RParams0.nparamsh
+    RParam.nparamsh = RParams1.nparams
+    RParams.nparams = RParam.nparams 
+
+RParams → RParam 
+    RParams.cod = RParam.cod
+    RParam.etqh = RParams.etqh
+    RParams.etq = RParam.etq
+    RParam.nparamsh = RParams.nparamsh
+    RParams.nparams = RParam.nparams
+
+RParam → ident asig Expr
+    RParam.cod = Expr.cod || apila_dir(0) || apila(RParams. nparams) || mas   
+                si (RParam.tsh[ident.lex].clase == pvariable)
+                    || desapila-ind
+                sino si (esPrimitivo(RParam.tsh[ident.lex].tipo)
+                        || desapila-ind
+                    sino // es un tipo compuesto
+                        || mueve(tamTipo(RParam.tsh[ident.lex].tipo, Rparam.tsh))
+
+    RParam.nparams = RParams.nparamsh + 1 
+    Expr.etqh = RParam.etqh 
+    RParam.etq = Expr.etq + 4 
+    Expr.refh = RParam.tsh[ident.lex] == pvariable 
+
+Desig → ident
+    Desig.cod = si (Desig.tsh[ident.lex].nivel == global) entonces 
+                    apila(Desig.tsh[ident.lex].dir)
+                    Desig.etq = Desig.etq + 1 
+
+                si no // el nivel el local
+                    si (Desig.tsh[ident.lex].clase == var || Desig.tsh[ident.lex].clase == pvalor) entonces 
+                        apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas
+                        Desig.etq = Desig.etq + 3 
+
+                    si no si (Desig.tsh[ident.lex].clase == pvariable ) 
+                        apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas || apila_ind 
+                        Desig.etq = Desig.etq + 4 
+
+Desig → Desig icorchete Expr fcorchete
+    Desig0.cod = Desig1.cod || Expr.cod || range(tamTipo(Desig1.type)) || apila(tamTipo(Desig1.type)) || mul || mas
+    Desig1.etqh = Desig0.etqh 
+    Expr.etqh = Desig1.etq
+    Desig0.etq = Expr.etq + 3  
+    Expr.refh = false
+
+Desig → Desig barrabaja litnat      
+    Desig0.cod = Desig1.cod || apila(desplTupla(litnat.lex, Desig1.type)) || mas
+    Desig1.etqh = Desig0.etqh
+    Desig0.etq = Desgi1.etq + 2 
+
+Expr → Term Op0 Term
+    Expr0.cod = Term1.cod || Term2.cod || Op0.op
+    Term1.etqh = Expr.etqh 
+    Term2.etqh = Term1.etq
+    Expr.etq = Term2.etq + 1  
+    Term0.refh = Expr.refh
+    Term1.refh = Expr.refh
+
+Expr → Term
+    Expr.cod = Term.cod
+    Term.etqh = Expr.etqh
+    Expr.etq = Term.etq
+    Term.refh = Expr.refh
+
+Term → Term Op1 Fact
+    Term0.cod = Term1.cod || Fact.cod || Op1.op
+    Term1.etqh = Term0.etqh 
+    Fact.etqh = Term1.etq
+    Term0.etq = Fact.etq + 1 
+    Term1.refh = Term0.refh 
+    Fact.refh = Term0.refh
+
+Term → Term or Fact
+    Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
+    Term1.etqh = Term0.etqh 
+    Fact.etqh = Term1.etq + 3 
+    Term0.etq = Fact.etq  
+    Expr.refh = false
+    Term1.refh = Term0.refh
+    Fact.refh = Term0.refh
+
+Term → Fact
+    Term.cod = Fact.cod
+    Fact.etqh = Term.etqh
+    Term.etq = Fact.etq
+    Fact.refh = Term.refh
+
+Fact → Fact Op2 Shft
+    Fact0.cod = Fact1.cod || Shft.cod || Op2.op
+    Fact1.etqh = Fact0.etqh 
+    Shft.etqh = Fact1.etq 
+    Term0.etq = Shft.etq + 1 
+    Fact1.refh = Fact0.refh
+    Shft.refh = Fact0.refh
+
+Fact → Fact and Shft
+    Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+    Fact1.etqh = = Fact0.etqh
+    Shft.etqh = Fact1.etq + 3
+    Fact0.etq = Shft.etq 
+    Fact1.refh = Fact0.refh
+    Shft.refh = Fact0.refh
+
+Fact → Shft
+    Fact.cod = Shft.cod
+    Shft.etqh = Fact.etqh
+    Fact.etq = Shft.etq
+    Shft.refh = Fact.refh
+
+Shft → Unary Op3 Shft
+    Shft0.cod = Unary.cod || Shft1.cod || Op3.op
+    Unary.etqh = Shft0.etqh 
+    Shft1.etqh = Unary.etq 
+    Shft0.etq = Shft1.etq + 1 
+    Unary.refh = Shft0.refh
+    Shft1.refh = Shft0.refh
+
+Shft → Unary
+    Shft.cod = Unary.cod
+    Unary.etqh = Shft.eqth
+    Shft.etq = Unary.etq
+    Unary.refh = Shft.refh
+
+Unary → Op4 Unary
+    Unary0.cod = Unary1.cod || Op4.op
+    Unary1.etqh = Unary0.eqth
+    Unary0.eqt = Unary1.etq + 1 
+    Unary1.refh = Unary0.refh
+
+Unary → lpar Cast rpar Paren
+    Unary.cod = Paren.cod || Cast.type
+    Paren.etqh = Unary.eqth 
+    Unary.etq = Paren.eqt + 1 
+    Paren.refh = Unary.refh
+
+Unary → Paren
+    Unary.cod = Paren.cod
+    Paren.eqth = Unary.etqh
+    Unary.etq = Paren.etq
+    Paren.refh = Unary.refh
+
+Paren → lpar Expr rpar
+    Paren.cod = Expr.cod
+    Expr.etqh = Paren.eqth
+    Paren.etq = Expr.etq
+    Expr.tsh = Paren.tsh
+
+Paren → Lit
+    Paren.cod = apila(Lit.valor)
+    Paren.etq = Paren.etqh + 1
+
+Paren → Desig
+    Paren.cod = Desig.cod || 
+                si (esPrimitivo(Desig.tipo) &amp;&amp; Desig.tsh[Desig.lex].clase == constante)
+                    apila(Desig.tsh[Desig.lex].valor)
+                    Desig.etq = Desig.etq + 1
+                fsi
+                si (esPrimitivo(Desig.tipo) &amp;&amp; !Paren.refh)
+                    apila-ind
+                    Desig.etq = Desig.etq + 1
+                fsi
+    Desig.etqh = Paren.etqh 
+    Paren.etq = Desig.etq + 1 
+
+Cast → char
+    Cast.type = char
+Cast → int
+    Cast.type = int
+Cast → nat
+    Cast.type = nat
+Cast → float
+    Cast.type = float
+
+Op0 → igual
+    Op0.op = igual
+Op0 → noigual
+    Op0.op = noigual
+Op0 → men
+    Op0.op = men
+Op0 → may
+    Op0.op = may
+Op0 → menoig
+    Op0.op = menoig
+Op0 → mayoig
+    Op0.op = mayoig
+Op1 → menos
+    Op1.op = menos
+Op1 → mas
+    Op1.op = mas
+Op2 → mod
+    Op2.op = mod
+Op2 → div
+    Op2.op = div
+Op2 → mul
+    Op2.op = mul
+Op3 → lsh
+    Op3.op = lsh
+Op3 → rsh
+    Op3.op = rsh
+Op4 → not
+    Op4.op = not
+Op4 → menos
+    Op4.op = menos
+</code></pre>
+
+<h1>
+<a name="10-esquema-de-traduccin-para-la-construccin-de-grafos-de-dependencias" class="anchor" href="http://localhost:5000/#10-esquema-de-traduccin-para-la-construccin-de-grafos-de-dependencias"><span class="octicon octicon-link"></span></a>10 Esquema de traducción para la construcción de grafos de dependencias</h1>
+
+<pre><code>Program ::= PROGRAM IDENT ILLAVE SConsts STypes SVars SSubprogs SInsts FLLAVE
+    {$$ = program_R1($4, $5, $6, $7, $8);}
+
+SConsts ::= CONSTS ILLAVE Consts FLLAVE
+    {$$ = sConsts_R1($3);}
+SConsts ::=
+    {$$ = sConsts_R1();}
+
+Consts ::= Consts PYC Const
+    {consts_R1($1, $3);}
+Consts ::= Const
+    {$$ = const_R2($1);}
+
+Const ::= CONST TPrim IDENT ASIG ConstLit
+    {$$ = const_R1($2, $3, $5);}
+Const ::= 
+    {$$ = const_R2();}
+
+ConstLit ::= Lit
+    {$$ = constLit_R1($1);}
+ConstLit ::= MENOS Lit
+    {$$ = constLit_R1($2);}
+
+STypes ::= TIPOS ILLAVE Types FLLAVE
+    {$$ = sTypes_R1($3);}
+STypes ::= 
+    {$$ = sTypes_R2();}
+
+Types ::= Types PYC Type
+    {$$ = types_R1($1, $3);}
+Types ::= Type
+    {$$ = types_R2($1);}
+
+Type ::= TIPO TypeDesc IDENT
+    {$$ = type_R1($2, $3);}
+Type ::=
+    {$$ = type_R2();}
+
+SVars ::= VARS ILLAVE Vars FLLAVE
+    {$$ = sVars_R1($3);}
+SVars ::=
+    {$$ = sVars_R2();}
+
+Vars ::= Vars PYC Var
+    {$$ = vars_R1($1, $3);}
+Vars ::=
+    {$$ = vars_R2($1);}
+
+Var ::= VAR TypeDesc IDENT
+    {$$ = var_R1($2, $3);}
+Var ::=
+    {$$ = var_R2();}
+
+TypeDesc ::= TPrim
+    {$$ = typeDesc_R1($1);}
+TypeDesc ::= TArray
+    {$$ = typeDesc_R2($1);}
+TypeDesc ::= TTupla
+    {$$ = typeDesc_R3($1);}
+TypeDesc ::= IDENT
+    {$$ = typeDesc_R4($1);}
+
+TPrim ::= NATURAL
+    {$$ = tPrim_R1();}
+TPrim ::= INTEGER
+    {$$ = tPrim_R2();}
+TPrim ::= FLOAT
+    {$$ = tPrim_R3();}
+TPrim ::= BOOLEAN
+    {$$ = tPrim_R4();}
+TPrim ::= CHARACTER
+    {$$ = tPrim_R5();}
+
+Cast ::= CHAR
+    {$$ = cast_R1();}
+Cast ::= INT
+    {$$ = cast_R2();}
+Cast ::= NAT
+    {$$ = cast_R3();}
+Cast ::= FLOAT
+    {$$ = cast_R4();}
+
+TArray ::= TypeDesc ICORCHETE IDENT FCORCHETE
+    {$$ = tArray_R1($1, $3);}
+TArray ::= TypeDesc ICORCHETE LITNAT FCORCHETE
+    {$$ = tArray_R2($1, $3);}
+
+TTupla ::= IPAR Tupla FPAR
+    {$$ = tTupla_R1($2);}
+TTupla ::= IPAR FPAR
+    {$$ = tTupla_R2();}
+
+Tupla ::= TypeDesc COMA Tupla
+    {$$ = tupla_R1($1, $3);}
+Tupla ::= TypeDesc
+    {$$ = tupla_R2($1);}
+
+SInsts ::= INSTRUCTIONS ILLAVE Insts FLLAVE
+    {$$ = sInsts_R1($3);}
+
+Insts ::= Insts PYC Inst
+    {$$ = insts_R1($1, $3);}
+Insts ::= Inst
+    {$$ = insts_R2($1);}
+
+Inst ::= Desig ASIG Expr
+    {$$ = inst_R1($1, $3, $2);}
+Inst ::= IN PAR Desig FPAR
+    {$$ = inst_R2($3);}
+Inst ::= OUT IPAR Expr FPAR
+    {$$ = inst_R3($3);}
+Inst ::= SWAP1 IPAR FPAR
+    {$$ = inst_R4();}
+Inst ::= SWAP2 IPAR FPAR
+    {$$ = inst_R5();}
+Inst ::= IF Expr THEN Insts ElseIf
+    {$$ = inst_R6($2, $4, $5);}
+Inst ::= WHILE Expr DO Insts ENDWHILE
+    {$$ = inst_R7($2, $4);}
+Inst ::= InstCall
+    {$$ = inst_R8($1);}
+Inst ::=
+    {$$ = inst_R9();}
+
+ElseIf ::= ELSE Insts ENDIF
+    {$$ = elseIf_R1($2);}
+ElseIf ::= ENDIF
+    {$$ = elseIf_R2();}
+
+InstCall ::= CALL IDENT IPAR SRParams FPAR
+    {$$ = instCall_R1($2, $4);}
+
+SRParams ::= RParams
+    {$$ = srParams_R1($1);}
+SRParams ::=
+    {$$ = srParams_R2();}
+
+RParams ::= RParams COMA RParam
+    {$$ = rParams_R1($1, $3);}
+RParams ::= RParam
+    {$$ = rParams_R2($1);}
+
+RParam ::= IDENT ASIG Expr
+    {$$ = rParam_R1($1, $3);}
+
+SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs FLLAVE
+    {$$ = sSubprogs_R1($3);}
+SSubprogs ::= SUBPROGRAMS ILLAVE FLLAVE
+    {$$ = sSubprogs_R2();}
+SSubprogs ::=
+    {$$ = sSubprogs_R3();}
+
+Subprogs ::= Subprogs Subprog
+    {$$ = subprogs_R1($1, $2);}
+Subprogs ::= Subprog
+    {$$ = subprogs_R2($1);}
+
+Subprog ::= SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE
+    {$$ = subprog_R1($2, $4, $7, $8);}
+
+SFParams ::= FParams 
+    {$$ = sfParams_R1($1);}
+SFParams ::= 
+    {$$ = sfParams_R2();}
+
+FParams ::= FParams COMA FParam 
+    {$$ = fParams_R1($1, $3);}
+FParams ::= FParam 
+    {$$ = fParams_R2($1);}
+
+FParam ::= TypeDesc IDENT 
+    {$$ = fParam_R1($1, $2);}
+FParam ::= TypeDesc MUL IDENT 
+    {$$ = fParam_R2($1, $3);}
+
+Desig ::= IDENT 
+    {$$ = desig_R1($1)));}
+Desig ::= Desig ICORCHETE Expr FCORCHETE 
+    {$$ = desig_R2($1, $3);}
+Desig ::= Desig BARRABAJA LITNAT 
+    {$$ = desig_R3($1, $3);}
+
+Expr ::= Term Op0 Term 
+    {$$ = expr_R1($1, $2, $3);}
+Expr ::= Term 
+    {$$ = expr_R2($1);}
+
+Term ::= Term Op1 Fact 
+    {$$ = term_R1($1, $2, $3);}
+Term ::= Term OR Fact 
+    {$$ = term_R2($1, $3);}
+Term ::= Fact 
+    {$$ = term_R3($1);}
+
+Fact ::= Fact Op2 Shft 
+    {$$ = fact_R1($1, $2, $3);}
+Fact ::= Fact AND Shft 
+    {$$ = fact_R2($1, $3);}
+Fact ::= Shft 
+    {$$ = fact_R3($1);}
+
+Shft ::= Unary Op3 Shft 
+    {$$ = shft_R1($1, $2, $3);}
+Shft ::= Unary 
+    {$$ = shft_R2($1);}
+
+Unary ::= Op4 Unary 
+    {$$ = unary_R1($1, $2);}
+Unary ::= IPAR Cast FPAR Paren 
+    {$$ = unary_R2($2, $4);}
+Unary ::= Paren 
+    {$$ = unary_R3($1);}
+
+Paren ::= IPAR Expr FPAR 
+    {$$ = paren_R1($2);}
+Paren ::= Lit 
+    {$$ = paren_R2($1);}
+Paren ::= Desig 
+    {$$ = paren_R3($1);}
+
+Op0 ::= IGUAL 
+    {$$ = op0_R1();}
+Op0 ::= NOIGUAL 
+    {$$ = op0_R2();}
+Op0 ::= MEN 
+    {$$ = op0_R3();}
+Op0 ::= MAY 
+    {$$ = op0_R4();}
+Op0 ::= MENOIG 
+    {$$ = op0_R5();}
+Op0 ::= MAYOIG 
+    {$$ = op0_R6();}
+
+Op1 ::= MENOS 
+    {$$ = op1_R1();}
+Op1 ::= MAS 
+    {$$ = op1_R2();}
+
+Op2 ::= MOD 
+    {$$ = op2_R1();}
+Op2 ::= DIV 
+    {$$ = op2_R2();}
+Op2 ::= MUL 
+    {$$ = op2_R3();}
+
+Op3 ::= LSH 
+    {$$ = op3_R1();}
+Op3 ::= RSH 
+    {$$ = op3_R2();}
+
+Op4 ::= NOT 
+    {$$ = op4_R1();}
+Op4 ::= MENOS 
+    {$$ = op4_R2();}
+
+Lit ::= LitBool 
+    {$$ = lit_R1($1);}
+Lit ::= LitNum 
+    {$$ = lit_R2($1);}
+Lit ::= LITCHAR 
+    {$$ = lit_R3($1));}
+
+LitBool ::= TRUE 
+    {$$ = litBool_R1();}
+LitBool ::= FALSE 
+    {$$ = litBool_R2();}
+
+LitNum ::= LITNAT 
+    {$$ = litNum_R1($1);}
+LitNum ::= LITFLOAT 
+    {$$ = litNum_R2($1);}
+</code></pre>
+
+<h1>
+<a name="11-descripcin-de-las-funciones-de-atribucin" class="anchor" href="http://localhost:5000/#11-descripcin-de-las-funciones-de-atribucin"><span class="octicon octicon-link"></span></a>11 Descripción de las funciones de atribución</h1>
+
+<pre><code>funcion program_R1 (SConsts, STypes, SVars, SSubprogs, SInsts) {
+    Program.tsh = creaTS()
+    Program.dirh = 2
+    SConsts.tsh = Program.tsh
+    STypes.tsh = SConsts.ts
+    SVars.tsh = STypes.ts
+    SVars.dirh = SProgram.dirh
+    SSubprogs.tsh = SVars.ts     
+    Program.err = SConsts.err ∨ STypes.err ∨ SVars.err ∨ SSubprogs.err ∨ SInsts.err
+    SInsts.tsh = SSubprogs.ts
+    Program.cod =  ir_a(SSubprogs.etq) || SSubprogs || SInsts.cod || stop 
+    SSubprogs.etqh = 5 
+    SInsts.etqh = SSubprogs.etq 
+    SVars.nivelh = global
+
+    return Program
+}
+
+funcion sConsts_R1 (Consts) {
+    Consts.tsh = SConsts.tsh
+    SConsts.ts = Consts.ts
+    SConsts.err = Consts.err
+
+    return SConsts
+}
+
+funcion sConsts_R2 () {
+    SConsts.ts = SConsts.tsh
+    SConsts.err = false
+
+    return SConsts
+}
+
+funcion consts_R1 (Consts1, Const) {
+    Consts1.tsh = Consts0.tsh
+    Const.tsh = Consts1.ts
+    Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
+    Consts.err = existe(Const.ts, Const.id)
+
+    return Consts0
+}
+
+funcion consts_R2 (Const) {
+    Const.tsh = Consts.tsh
+    Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
+    Consts.err = existe(Const.ts, Const.id)
+
+    return Const
+}
+
+funcion const_R1 (TPrim, ident, ConstLit) {
+    Const.ts = Const.tsh
+    Const.id = ident.lex
+    Const.clase = const
+    Const.nivel = global
+    Const.tipo = &lt;t:TPrim.tipo, tam:1&gt;
+    Const.valor = ConstLit.valor
+    Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
+
+    return Const
+}
+
+funcion const_R2 () {
+    Const.ts = Const.tsh
+    Const.err = false
+
+    return Const
+}
+
+funcion constLit_R1 (Lit) {
+    ConstLit.valor = Lit.valor
+    ConstLit.tipo = Lit.tipo
+
+    return ConstLit
+}
+
+funcion constLit_R2 (Lit) {
+    ConstLit.valor = -(Lit.valor)
+    ConstLit.tipo = opUnario(menos, Lit.tipo)
+
+    return ConstLit
+}
+
+funcion sTypes_R1 (Types) {
+    Types.tsh = STypes.tsh
+    STypes.ts = Types.ts 
+    STypes.err = Types.err
+
+    return STypes
+}
+
+funcion sTypes_R2 () {
+    STypes.ts = STypes.tsh
+    STypes.err = false
+
+    return STypes
+}
+
+funcion types_R1 (Types1, Type) {
+    Types1.tsh = Types0.tsh
+    Type.tsh = Types1.ts
+    Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
+    Types0.err = existe(Types1.ts, Type.id)
+
+    return Types0
+}
+
+funcion types_R2 (Type) {
+    Type.tsh = Types.tsh
+    Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
+    Types.err = existe(Type.ts, Type.id)
+
+    return Types
+}
+
+funcion type_R1 (TypeDesc, ident) {
+    Type.ts = Type.tsh
+    TypeDesc.tsh = Type.tsh
+    Type.id = ident.lex
+    Type.clase = Tipo
+    Type.nivel = global
+    Type.tipo = &lt;t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(TypeDesc.tipo, Var.tsh ), Type.id)&gt;
+
+    return Type
+}
+
+funcion type_R2 () {
+    Type.ts = Type.tsh
+    Type.err = false
+
+    return Type
+}
+
+funcion sVars_R1 (Vars) {
+    Vars.tsh = SVars.tsh
+    Vars.dirh = SVars.dirh
+    SVars.ts = Vars.ts
+    SVars.dir = Vars.dir
+    SVars.err = Vars.err
+    Vars.nivelh = SVars.nivelh
+
+    return SVars
+}
+
+funcion sVars_R2 () {
+    SVars.ts = SVars.tsh
+    SVars.dir = SVars.dirh
+    SVars.err = false
+
+    return SVars
+}
+
+funcion vars_R1 (Vars1, Var) {
+    Vars1.tsh = Vars0.tsh
+    Vars1.dirh = Vars0.dirh
+    Var.tsh = Vars1.ts
+    Var.dirh = Vars1.dir
+    Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
+    Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
+    Vars0.err = existe(Var.ts, Var.id, Var.nivel)
+    Vars1.nivelh = Vars0.nivelh
+    Var.nivelh = Vars0.nivelh
+
+    return Vars0
+}
+
+funcion vars_R2 (Var) {
+    Var.tsh = Vars.tsh
+    Var.dirh = Vars.dirh
+    Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
+    Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
+    Vars.err = existe(Var.ts, Var.id, Var.nivel)
+    Var.nivelh = Vars.nivelh
+
+    return Vars
+}
+
+funcion var_R1 (TypeDesc, ident) {
+    Var.ts = Var.tsh
+    Var.dir = Var.dirh
+    Var.id = ident.lex
+    Var.clase = Var
+    Var.nivel = nivelh
+    Var.tipo = si (TypeDesc.tipo == TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+           si no {&lt;id:Var.id, t:ref, TypeDesc.tipo tam: desplazamiento(TypeDesc.tipo, Var.tsh )&gt;} 
+    TypeDesc.tsh = Var.tsh
+
+    return Var
+}
+
+funcion var_R2 () {
+    Var.ts = Var.tsh
+    Var.dir = Var.dirh
+    Var.err = false
+
+    return Var
+}
+
+funcion typeDesc_R1 (TPrim) {
+    TypeDesc.tipo = TPrim.tipo
+
+    return TypeDesc
+}
+
+funcion typeDesc_R2 (TArray) {
+    TypeDesc.tipo = TArray.tipo
+    TArray.tsh = TypeDesc.tsh
+    TypeDesc.err = TArray.err
+
+    return TypeDesc
+}
+
+funcion typeDesc_R3 (TTupla) {
+    TypeDesc.tipo = TTupla.tipo
+    TTupla.tsh = TypeDesc.tsh
+    TypeDesc.err = TTupla.err
+
+    TypeDesc
+}
+
+funcion typeDesc_R4 (ident) {
+    TypeDesc.tipo = ident.lex
+    TypeDesc.err = ¬existe(TypeDesc.tsh, ident.lex) ∨ TypeDesc.tsh[ident].clase != tipo
+
+    return TypeDesc
+}
+
+funcion tPrim_R1 () {
+    TPrim.tipo = natural
+
+    return TPrim
+}
+
+funcion tPrim_R2 () {
+    TPrim.tipo = integer
+
+    return TPrim
+}
+
+funcion tPrim_R3 () {
+    TPrim.tipo = float
+
+    return TPrim
+}
+
+funcion tPrim_R4 () {
+    TPrim.tipo = boolean
+
+    return TPrim
+}
+
+funcion tPrim_R5 () {
+    TPrim.tipo = character
+
+    return TPrim
+}
+
+funcion cast_R1 () {
+    Cast.type = char
+
+    return Cast
+}
+
+funcion cast_R2 () {
+    Cast.type = int
+
+    return Cast
+}
+
+funcion cast_R3 () {
+    Cast.type = nat
+
+    return Cast
+}
+
+funcion cast_R4 () {
+    Cast.type = float
+
+    return Cast
+}
+
+funcion tArray_R1 (TypeDesc, ident) {
+    TypeDesc.tsh = TArray.tsh
+    TArray.tsh = TypeDesc.tsh
+    TArray.err = ¬existe(TArray.tsh, ident.lex) ∨ obtieneTipoString(ident) != nat ∨ TArray.tsh[ident].clase != constante
+
+    return TArray
+}
+
+funcion tArray_R2 (TypeDesc, litnat) {
+    TypeDesc.tsh = TArray.tsh
+    TArray.tsh = TypeDesc.tsh
+
+    return TArray
+}
+
+funcion tTupla_R1 (Tupla) {
+    Tupla.tsh = TTupla.tsh
+    TTupla.tipo = Tupla.tipo
+    TTupla.err = Tupla.err
+
+    return TTupla
+}
+
+funcion tTupla_R2 () {
+    TTupla.err = false
+
+    return TTupla
+}
+
+funcion tupla_R1 (TypeDesc, Tupla1) {
+    TypeDesc.tsh = Tupla0.tsh
+    Tupla1.tsh = Tupla0.tsh
+    Tupla0.tipo = TypeDesc.tipo ++ Tupla1.tipo
+    Tupla0.err = TypeDesc.err ∨ Tupla1.err
+
+    return Tupla0
+}
+
+funcion tupla_R2 (TypeDesc) {
+    TypeDesc.tsh = Tupla.tsh
+    Tupla.tipo = TypeDesc.tipo
+    Tupla.err = TypeDesc.err
+
+    return Tupla
+}
+
+funcion sInsts_R1 (Insts) {
+    Insts.tsh = SInsts.tsh
+    SInsts.err = Insts.err
+    SInsts.cod = Insts.cod
+    Insts.etqh = SInsts.etqh
+    SInsts.etq = Insts.etq
+
+    return SInsts
+}
+
+funcion insts_R1 (Insts1, Inst) {
+    Insts1.tsh = Insts0.tsh
+    Inst.tsh = Insts0.tsh
+    Insts0.err = Insts1.err ∨ Inst.err
+    Insts0.cod = Insts1.cod || Inst.cod
+    Insts1.etqh = Insts0.etqh
+    Inst.etqh = Insts1.etq
+    Insts0.etq = Inst.etq
+
+    return Insts0
+}
+
+funcion insts_R2 (Inst) {
+    Inst.tsh = Insts.tsh
+    Insts.err = Inst.err
+    Insts.cod = Inst.cod
+    Inst.etqh = Insts.etqh
+    Insts.etq = Inst.etq
+
+    return Insts
+}
+
+funcion inst_R1 (Desig, Expr) {
+    Desig.tsh = Inst.tsh
+    Expr.tsh = Inst.tsh
+    Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
+    Inst.cod = Expr.cod || Desig.cod || si esPrimitivo(Desig.tipo) entonces desapila-ind 
+                sino mueve(tamTipo(Desig.tipo,Desig.tsh)) 
+    Expr.etqh = Inst.etqh
+    Desig.etqh = Expr.etq
+    Inst.etq = Desig.etq + 1 
+    Expr.refh = false
+
+    return Inst
+}
+
+funcion inst_R2 (Desig) {
+    Desig.tsh = Inst.tsh
+    Inst.err = Desig.err
+    Inst.cod = in(Desig.type) ||Desig.cod|| desapila-ind 
+    Desig.etqh = Inst.etq + 1 
+    Inst.etq = Desig.etq + 1
+
+    return Inst
+}
+
+funcion inst_R3 (Expr) {
+    Expr.tsh = Inst.tsh
+    Inst.err = Expr.err
+    Inst.cod = Expr.cod || out
+    Expr.etqh = Inst.etqh
+    Inst.etq = Expr.etqh + 1 
+    Expr.refh = false
+
+    return Inst
+}
+
+funcion inst_R4 () {
+    Inst.err = false
+    Inst.cod = swap1
+    Inst.etq = Inst.etqh + 1
+
+    return Inst
+}
+
+funcion inst_R5 () {
+    Inst.err = false
+    Inst.cod = swap2
+    Inst.etq = Inst.etqh + 1
+
+    return Inst
+}
+
+funcion inst_R6 (Expr, Insts, ElseIf) {
+    Expr.tsh = Inst.tsh
+    Insts1.tsh = Inst0.tsh
+    ElseIf.tsh = Inst.tsh
+    Inst.err = Expr.err ∨ Insts.err ∨ ElseIf.err
+    Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
+    Expr.etqh = Inst.etqh
+    Insts.etqh = Expr.etq + 1
+    ElseIf.etqh = Insts.etq + 1
+    Inst.etq = ElseIf.etq
+    Expr.refh = false
+
+    return Inst
+}
+
+funcion inst_R7 (Expr, Insts) {
+    Expr.tsh = Inst.tsh
+    Insts.tsh = Inst.tsh
+    Inst.err = Expr.err ∨ Insts.err
+    Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Inst.etqh)
+    Expr.etqh = Inst.etqh 
+    Insts.etqh = Expr.etq + 1
+    Inst.etq = Insts + 1 
+    Expr.refh = false
+
+    return Inst
+}
+
+funcion inst_R8 (InstCall) {
+    InstCall.tsh = Inst.tsh
+    Inst.err = InstCall.err
+    Inst.cod = IsntCall.cod
+    InstCall.etqh = Inst.etqh
+    Inst.etq = InstCall.etq
+
+    return Inst
+}
+
+funcion inst_R9 () {
+    Inst.err = false
+    Inst.cod = []
+    Inst.etq = Inst.etqh
+
+    return Inst
+}
+
+funcion elseIf_R1 (Insts) {
+    Insts.tsh = ElseIf.tsh
+    ElseIf.err = Insts.err
+    ElseIf.cod = Inst.cod
+    Insts.etqh = ElseIf.etqh
+    ElseIf.etq = Insts.etq
+
+    return ElseIf
+}
+
+funcion elseIf_R2 () {
+    ElseIf.err = false
+    ElseIf.cod = []
+    ElseIf.etq = ElseIf.etqh
+
+    return ElseIf
+}
+
+funcion instCall_R1 (ident, SRParams) {
+    SRParams.tsh = InstCall.tsh
+    SRParams.nparams = 0
+    SRParams.nombresubprogh = ident.lex
+    SRParmas.listaparamnombresh = []
+    InstCall.err = SRParams.err ∨ ¬existe(SRParams.tsh, ident.lex) ∨ SRParams.nparams != numParametros(SRParams.tsh, ident.lex) 
+    InstCall.cod = 
+                //Reestructuramos los punteros CP y BASE
+                apila-ret || apila-dir(0) || apila(1) || mas || desapila-ind || apiladir(1) || apila-dir(0) || apila(2) || mas || desapila-ind || apila-dir(0) || apila(3) || suma || desapila-dir(0)||
+                //Paso de parámetros
+                SRParams.cod||
+                // Saltar al subprograma
+                apila-dir(0) || desapila-dir(1) || apila-dir(0) || apila(tamParametros(InstCall.tsh, ident)) || mas || desapila-dir(0) || ir-ind ||
+                //Al volver del subprograma devolver los punteros CP y BASE a su sitio
+                apila-dir(1) || apila(3) || menos || desapila-dir(0) || apila-dir(1) || apila(1) || menos || apila-ind || desapila-dir(1)
+
+    SRParams.nparams = 0
+    SRParams.etqh = InstCall.etqh + 14 
+    InstCall.etq = SRParams.etq + 16
+
+    return InstCall
+}
+
+funcion srParams_R1 (RParams) {
+    RParams.tsh = SRParams.tsh
+    RParams.nombresubprogh = SRParams.nombresubprogh
+    RParams.listaparamnombresh = SRParams.listaparamnombresh
+    SRParams.err = RParams.err
+    SRParams.cod = RParams.cod
+    RParams.etqh = SRParams.etqh
+    SRParams.etq = RParams.etq 
+    RParams.nparamsh = SRParams.nparamsh
+    SRParams.nparams = RParams.nparams
+
+    return SRParams
+}
+
+funcion srParams_R2 () {
+    SRParams.err = false
+    SRParams.nparams = SRParams.nparamsh
+    SRParams.listaparamnombres = SRParams.listaparamnombresh
+    SRParams.cod = []
+    SRParms.etq = SRParams.etqh
+    SRParams.nparams = SRParams.nparamsh
+
+    return SRParams
+}
+
+funcion rParams_R1 (RParams1, RParam) {
+    RParams1.tsh = RParams0.tsh
+    RParam.tsh = RParams0.tsh
+    RParams0.err = RParams1.err ∨ Rparam.err  
+    RParams1.nombresubprogh = RParams0.nombresubprogh
+    RParam.nombresubprogh = RParams0.nombresubprogh 
+    RParams1.listaparamnombresh = RParams0.listaparamnombresh
+    RParam.listaparamnombresh = RParams1.listaparamnombres  
+    RParams0.cod = RParams1.cod || RParam.cod
+    RParams1.etqh = RParams0.etqh
+    RParam.etqh = RParams1.etq
+    RParams.etq = RParam.etq  
+    RParams1.nparamsh = RParams0.nparamsh
+    RParam.nparamsh = RParams1.nparams
+    RParams.nparams = RParam.nparams
+
+    return RParams0
+}
+
+funcion rParams_R2 (RParam) {
+    RParam.tsh = RParams.tsh
+    RParam.nombresubprogh = RParams.nombresubprogh
+    RParam.listaparamnombresh = RParams.listaparamnombresh
+    RParams.listaparamnombres = RParam.listaparamnombres
+    RParams.err = RParam.err
+    RParams.cod = RParam.cod
+    RParam.etqh = RParams.etqh
+    RParams.etq = RParam.etq
+    RParam.nparamsh = RParams.nparamsh
+    RParams.nparams = RParam.nparams
+
+    return RParams
+}
+
+funcion rParam_R1 (ident, Expr) {
+    Expr.tsh = RParam.tsh
+    RParam.listaparamnombres = RParam.listaparamnombresh ++ ident 
+    RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
+    ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig ∨ (ident ∈ listaparamnombresh)
+    RParam.cod = Expr.cod || apila_dir(0) || apila(RParams. nparams) || mas   
+                si (RParam.tsh[ident.lex].clase == pvariable)
+                    || desapila-ind
+                sino si (esPrimitivo(RParam.tsh[ident.lex].tipo)
+                        || desapila-ind
+                    sino // es un tipo compuesto
+                        || mueve(tamTipo(RParam.tsh[ident.lex].tipo, Rparam.tsh))
+    RParam.nparams = RParams.nparamsh + 1 
+    Expr.etqh = RParam.etqh 
+    RParam.etq = Expr.etq + 4 
+    Expr.refh = RParam.tsh[ident.lex] == pvariable 
+
+    return RParam
+}
+
+funcion sSubprogs_R1 (Subprogs) {
+    Subprogs.tsh = SSubprogs.tsh
+    SSbprogs.ts = Subprog.ts
+    SSubprogs.err = Subprogrs.err
+    SSubprogs.cod = Subprogs.cod
+    Subprogs.etqh = SSubprogs.etqh
+    SSubprogs.etq = Subprogs.etq
+
+    return SSubprogs
+}
+
+funcion sSubprogs_R2 () {
+    SSubprogs.tsh = Subprog.tsh
+    SSubprogs.cod = [] 
+    SSubprogs.etq = SSubprogs.etqh
+
+    return SSubprogs
+}
+
+funcion sSubprogs_R3 () {
+    SSubprogs.tsh = Subprog.tsh
+    SSubprogs.err = false
+    SSubprogs.cod = []
+    SSubprogs.etq = SSubprogs.etqh
+
+    return SSubprogs
+}
+
+funcion subprogs_R1 (Subprogs1, Subprog) {
+    Subprogs1.tsh =  Subprogs0.tsh
+    Subprog.tsh = Subprogs0.tsh 
+    Subprogs0.ts = Subprog.ts  
+    Subprogs0.err = Subprogs1.err ∨ Subprog.err
+    Subprogs0.cod  = Subprogs1.cod || Subprog.cod
+    Subprogs1.etqh = Subprogs0.etqh
+    Subprog.etqh   = Subprogs1.etq 
+    Subprogs0.etq  = Subprog.etq
+
+    return Subprogs0
+}
+
+funcion subprogs_R2 (Subprog) {
+    Subprog.tsh = Subprogs.tsh
+    Subprogs.ts = Subprog.ts
+    Subprogs.err = Subprog.err
+    Subprogs.cod = Subprog.cod
+    Subprog.etqh = Subprogs.etqh
+    Subprogs.etq = Subprog.etq
+
+    return Subprogs
+}
+
+funcion subprog_R1 (ident, SFParams, SVars, SInsts) {
+    SFParams.dirh = 0
+    SFParams.tsh = CreaTS(Subprog.tsh)
+    SVars.tsh = SFParams.ts
+    SVars.dirh = SFParams.dir
+    SInsts.tsh = SVars.ts
+    Subprog.ts = añade(Subprog.tsh, ident, subprog, global, ? , &lt;dir:Subprog.etqh, params:SFParams.params&gt;)
+    Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨ parametrosNoRepetidos(SParams.ts, ident)
+    Subprog.cod = apila-dir(0) || apila(SVars.dir) || mas || desapila-dir(0) ||
+                SInsts.cod || 
+                apila_dir(1) || apila(2) || menos || apila_ind || ir_ind
+    SInsts.etqh = Subprog.etqh 
+    Subprog.etq = SInsts.etq + 5
+    SVars.nivelh = local
+
+    return Subprog
+}
+
+funcion sfParams_R1 (FParams) {
+    FParams.tsh = SFParams.tsh
+    SFParams.ts = FParams.ts
+    FParams.dirh = SFParams.dirh
+    SFParams.dir = FParams.dir
+    SFParams.params = FParams.params
+    SFParams.err = FParams.err
+
+    return SFParams
+}
+
+funcion sfParams_R2 () {
+    SFParams.ts = SFParams.tsh
+    SFParams.dir = SFParams.dirh
+    SFParams.params = []
+    SFParams.err = false
+
+    return SFParams
+}
+
+funcion fParams_R1 (FParams, FParam) {
+    FParams1.tsh = FParams0.tsh
+    FParams1.dirh = FParams0.dirh
+    FParam.tsh = FParams1.tsh
+    FParam.dirh = FParams1.dirh
+    FParams0.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id) 
+    FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+    FParams0.params = FParams1.params ++ FParam.params
+    FParams0.err = existe(FParam.ts, FParam.id, FParam.nivel)
+
+    return FParams
+}
+
+funcion fParams_R2 (FParam) {
+    FParam.dirh = FParams.dirh
+    FParam.tsh = FParams.tsh
+    FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+    FParams.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id)
+    FParams.params = FParap.params
+    FParams.err = existe(FParam.ts, FParam.id, FParam.nivel)
+
+    return FParams
+}
+
+funcion fParam_R1 (TypeDesc) {
+    FParam.ts = FParam.tsh
+    FParam.dir = FParam.dirh 
+    Fparam.id = ident.lex
+    FParam.clase = pvalor
+    FParam.nivel = local
+    FParam.tipo = (si (TypeDesc.tipo== TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+               si no {&lt;t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)&gt;} )
+    FParam.params = [&lt;id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:falso, despl:DParam.dirh&gt;]
+    TypeDesc.tsh = FParam.tsh
+
+    return FParam
+}
+
+funcion fParam_R2 (TypeDesc, ident) {
+    FParam.ts = FParam.tsh
+    FParam.dir =  FParam.dirh 
+    Fparam.id = ident.lex
+    FParam.clase = pvariable
+    FParam.nivel = local
+    FParam.tipo = (si (TypeDesc.tipo == TPrim) {&lt;t:TypeDesc.tipo, tam:1&gt;}
+               si no {&lt;t:ref, id:FParam.id, tam: 1&gt;} )
+    FParam.params = [&lt;id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh&gt;]
+    TypeDesc.tsh = FParam.tsh
+
+    return FParam
+}
+
+funcion desig_R1 (ident) {
+    Desig.tipo = Desig.tsh[ident.lex].tipo
+    Desig.err = ¬existe(Desig.tsh, ident.lex) ∨ ¬esVariable(Desig.tsh, ident.lex)
+    Desig.cod = si (Desig.tsh[ident.lex].nivel == global) entonces 
+                    apila(Desig.tsh[ident.lex].dir)
+                    Desig.etq = Desig.etq + 1 
+
+                si no // el nivel el local
+                    si (Desig.tsh[ident.lex].clase == var || Desig.tsh[ident.lex].clase == pvalor) entonces 
+                        apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas
+                        Desig.etq = Desig.etq + 3 
+
+                    si no si (Desig.tsh[ident.lex].clase == pvariable ) 
+                        apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas || apila_ind 
+                        Desig.etq = Desig.etq + 4 
+
+    return Desig
+}
+
+funcion desig_R2 (Desig1, Expr) {
+    Desig0.tipo = Desig1.tipo
+    Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
+    Desig0.cod = Desig1.cod || Expr.cod || range(tamTipo(Desig1.type)) || apila(tamTipo(Desig1.type)) || mul || mas
+    Desig1.etqh = Desig0.etqh 
+    Expr.etqh = Desig1.etq
+    Desig0.etq = Expr.etq + 3  
+    Expr.refh = false
+
+    return Desig0
+}
+
+funcion desig_R3 (Desig, litnat) {
+    Desig0.tipo = Desig1.tipo
+    Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
+    Desig0.cod = Desig1.cod || apila(desplTupla(litnat.lex, Desig1.type)) || mas
+    Desig1.etqh = Desig0.etqh
+    Desig0.etq = Desgi1.etq + 2
+
+    return Desig0
+}
+
+funcion expr_R1 (Term0, Op0, Term1) {
+    Expr.desig = false
+    Expr.tipo = tipoFunc(Term0.tipo, Op0.op, Term1.tipo)
+    Term0.tsh = Expr.tsh
+    Term1.tsh = Expr.tsh
+    Expr.desig = false
+    Expr0.cod = Term1.cod || Term2.cod || Op0.op
+    Term1.etqh = Expr.etqh 
+    Term2.etqh = Term1.etq
+    Expr.etq = Term2.etq + 1  
+    Term0.refh = Expr.refh
+    Term1.refh = Expr.refh
+
+    return Expr
+}
+
+funcion expr_R2 (Term) {
+    Expr.tipo = Term.tipo
+    Term.tsh = Expr.tsh
+    Expr.desig = false
+    Expr.desig = Term.desig
+    Expr.cod = Term.cod
+    Term.etqh = Expr.etqh
+    Expr.etq = Term.etq
+    Term.refh = Expr.refh
+
+    return Expr
+}
+
+funcion term_R1 (Term1, Op1, Fact) {
+    Term0.tipo = tipoFunc(Term1.tipo, Op1.op, Fact.tipo)
+    Term1.tsh = Term0.tsh
+    Fact.tsh = Term0.tsh
+    Term0.desig = false
+    Term0.cod = Term1.cod || Fact.cod || Op1.op
+    Term1.etqh = Term0.etqh 
+    Fact.etqh = Term1.etq
+    Term0.etq = Fact.etq + 1 
+    Term1.refh = Term0.refh 
+    Fact.refh = Term0.refh
+
+    return Term0
+}
+
+funcion term_R2 (Term1, Fact) {
+    Term0.tipo = tipoFunc(Term1.tipo, or, Fact.tipo)
+    Term1.tsh = Term0.tsh
+    Fact.tsh = Term0.tsh
+    Term0.desig = false
+    Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
+    Term1.etqh = Term0.etqh 
+    Fact.etqh = Term1.etq + 3 
+    Term0.etq = Fact.etq  
+    Expr.refh = false
+    Term1.refh = Term0.refh
+    Fact.refh = Term0.refh
+
+    return Term0
+}
+
+funcion term_R3 (Fact) {
+    Term.tipo = Fact.tipo
+    Fact.tsh = Term.tsh
+    Term.desig = Fact.desig
+    Term.cod = Fact.cod
+    Fact.etqh = Term.etqh
+    Term.etq = Fact.etq
+    Fact.refh = Term.refh
+
+    return Term
+}
+
+funcion fact_R1 (Fact1, Op2, Shft) {
+    Fact0.tipo = tipoFunc(Fact1.tipo, Op2.op, Shft.tipo) 
+    Fact1.tsh = Fact0.tsh
+    Shft.tsh = Fact0.tsh
+    Fact0.desig = false
+    Fact0.cod = Fact1.cod || Shft.cod || Op2.op
+    Fact1.etqh = Fact0.etqh 
+    Shft.etqh = Fact1.etq 
+    Term0.etq = Shft.etq + 1 
+    Fact1.refh = Fact0.refh
+    Shft.refh = Fact0.refh
+
+    return Fact0
+}
+
+funcion fact_R2 (Fact1, Shft) {
+    Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
+    Fact1.tsh = Fact0.tsh
+    Shft.tsh = Fact0.tsh
+    Fact0.desig = false
+    Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+    Fact1.etqh = = Fact0.etqh
+    Shft.etqh = Fact1.etq + 3
+    Fact0.etq = Shft.etq 
+    Fact1.refh = Fact0.refh
+    Shft.refh = Fact0.refh
+
+    return Fact0
+}
+
+funcion fact_R3 (Shft) {
+    Fact.tipo = Shft.tipo
+    Shft.tsh = Fact.tsh
+    Fact.desig = Shft.desig 
+    Fact.cod = Shft.cod
+    Shft.etqh = Fact.etqh
+    Fact.etq = Shft.etq
+    Shft.refh = Fact.refh
+
+    return Fact
+}
+
+funcion shft_R1 (Unary, Op3, Shft1) {
+    Shft0.tipo = tipoFunc(Unary.tipo, Op3.op, Shft.tipo) 
+    Unary.tsh = Shft0.tsh
+    Shft1.tsh = Shft0.tsh
+    Shft0.desig = false
+    Shft0.cod = Unary.cod || Shft1.cod || Op3.op
+    Unary.etqh = Shft0.etqh 
+    Shft1.etqh = Unary.etq 
+    Shft0.etq = Shft1.etq + 1 
+    Unary.refh = Shft0.refh
+    Shft1.refh = Shft0.refh
+
+    return Shft0
+}
+
+funcion shft_R2 (Unary) {
+    Shft.tipo = Unary.tipo
+    Unary.tsh = Shft.tsh
+    Shft.desig = Unary.desig
+    Shft.cod = Unary.cod
+    Unary.etqh = Shft.eqth
+    Shft.etq = Unary.etq
+    Unary.refh = Shft.refh
+
+    return Shft
+}
+
+funcion unary_R1 (Op4, Unary1) {
+    Unary0.tipo = opUnario(Op4.op, Unary1.tipo)
+    Unary1.tsh = Unary0.tsh
+    Unary0.desig = false
+    Unary0.cod = Unary1.cod || Op4.op
+    Unary1.etqh = Unary0.eqth
+    Unary0.eqt = Unary1.etq + 1 
+    Unary1.refh = Unary0.refh
+
+    return Unary0
+}
+
+funcion unary_R2 (Cast, Paren) {
+    Unary.tipo = casting(Cast.tipo, Paren.tipo)
+    Paren.tsh = Unary.tsh
+    Unary.desig = false
+    Unary.cod = Paren.cod || Cast.type
+    Paren.etqh = Unary.eqth 
+    Unary.etq = Paren.eqt + 1 
+    Paren.refh = Unary.refh
+
+    return Unary
+}
+
+funcion unary_R3 (Paren) {
+    Unary.tipo = Paren.tipo
+    Paren.tsh = Unary.tsh
+    Unary.desig = Paren.desig
+    Unary.cod = Paren.cod
+    Paren.eqth = Unary.etqh
+    Unary.etq = Paren.etq
+    Paren.refh = Unary.refh
+
+    return Unary
+}
+
+funcion paren_R1 (Expr) {
+    Paren.tipo = Expr.tipo
+    Expr.tsh = Paren.tsh
+    Paren.desig = false
+    Paren.cod = Expr.cod
+    Expr.etqh = Paren.eqth
+    Paren.etq = Expr.etq
+    Expr.tsh = Paren.tsh
+
+    return Expr
+}
+
+funcion paren_R2 (Lit) {
+    Parent.tipo = Lit.tipo
+    Lit.tsh = Paren.tsh
+    Paren.desig = false
+    Paren.err = false
+    Paren.cod = apila(Lit.valor)
+    Paren.etq = Paren.etqh + 1
+
+    return Paren
+}
+
+funcion paren_R3 (Desig) {
+    Paren.desig = true
+    Paren.err = Desig.err
+    Paren.cod = Desig.cod || 
+                si (esPrimitivo(Desig.tipo) &amp;&amp; Desig.tsh[Desig.lex].clase == constante)
+                    apila(Desig.tsh[Desig.lex].valor)
+                    Desig.etq = Desig.etq + 1
+                fsi
+                si (esPrimitivo(Desig.tipo) &amp;&amp; !Paren.refh)
+                    apila-ind
+                    Desig.etq = Desig.etq + 1
+                fsi
+    Desig.etqh = Paren.etqh 
+    Paren.etq = Desig.etq + 1 
+
+    return Paren
+}
+
+funcion op0_R1 () {
+    Op0.op = igual
+
+    return Op0
+}
+
+funcion op0_R2 () {
+    Op0.op = noigual 
+
+    return Op0
+}
+
+funcion op0_R3 () {
+    Op0.op = men 
+
+    return Op0
+}
+
+funcion op0_R4 () {
+    Op0.op = may 
+
+    return Op0
+}
+
+funcion op0_R5 () {
+    Op0.op = menoig 
+
+    return Op0
+}
+
+funcion op0_R6 () {
+    Op0.op = mayoig
+
+    return Op0
+}
+
+funcion op1_R1 () {
+    Op1.op = menos
+
+    return Op1
+}
+
+funcion op1_R2 () {
+    Op1.op = mas
+
+    return Op1
+}
+
+funcion op2_R1 () {
+    Op2.op = mod
+
+    return Op2
+}
+
+funcion op2_R2 () {
+    Op2.op = div
+
+    return Op2
+}
+
+funcion op2_R3 () {
+    Op2.op = mul
+
+    return Op2
+}
+
+funcion op3_R1 () {
+    Op3.op = lsh
+
+    return Op3
+}
+
+funcion op3_R2 () {
+    Op3.op = rsh
+
+    return Op3
+}
+
+funcion op4_R1 () {
+    Op4.op = not
+
+    return Op4
+}
+
+funcion op4_R2 () {
+    Op4.op = menos
+
+    return Op4
+}  
+
+
+funcion lit_R1 (LitBool) {
+    Lit.valor = LitBool.valor
+    Lit.tipo = LitBool.tipo
+
+    return Lit
+}
+
+funcion lit_R2 (LitNum) {
+    Lit.valor = LitNum.valor
+    Lit.tipo = LitNum.tipo
+
+    return Lit
+}
+
+funcion lit_R3 (litchar) {
+    Lit.valor = stringToChar(litchar)
+    Lit.tipo = character
+
+    return Lit
+}
+
+funcion litBool_R1 () {
+    LitBool.valor = true
+    LitBool.tipo = boolean
+
+    return LitBool
+}
+
+funcion litBool_R2 () {
+    LitBool.valor = false
+    Lit.tipo = boolean
+
+    return LitBool
+}
+
+funcion litNum_R1 (litnat) {
+    LitNum.valor = stringToNat(litnat)
+    LitNum.tipo = natural
+
+    return LitNum
+}
+
+funcion litNum_R2 (litfloat) {
+    LitNum.valor = stringToFloat(litfloat)
+    LitNum.tipo = float
+
+    return LitNum
+}
+</code></pre>
+
+<h1>
+<a name="12-formato-de-representacin-del-cdigo-p" class="anchor" href="http://localhost:5000/#12-formato-de-representacin-del-cdigo-p"><span class="octicon octicon-link"></span></a>12 Formato de representación del código P</h1>
+
+<p>La máquina pila funciona mediante la carga de un fichero binario que define las instrucciones del código. Dicho código binario (*bytecode*) no contiene información de la tabla de símbolos o la memoria: únicamente instrucciones.</p>
+
+<p>Las instrucciones vienen determinadas por un único byte, opcionalmente seguido de operandos. El tipo de un operando viene dado por la instrucción. Los operandos pueden ser:</p>
+
+<table>
+<tbody><tr>
+<th align="right">Tipo</th>
+<th align="left">Valor</th>
+</tr>
+<tr>
+<td align="right">type</td>
+<td align="left">Un único byte que representa un tipo (ver tabla de tipos)</td>
+</tr>
+<tr>
+<td align="right">nat</td>
+<td align="left">Cuatro bytes que representan un entero de 31 bits sin signo</td>
+</tr>
+<tr>
+<td align="right">int</td>
+<td align="left">Cuatro bytes que representan un entero de 32 bits con signo</td>
+</tr>
+<tr>
+<td align="right">float</td>
+<td align="left">Cuatro bytes que representan un flotante en IEEE 754 binary single precision</td>
+</tr>
+<tr>
+<td align="right">char</td>
+<td align="left">Dos bytes que representan un caracter unicode UTF-16</td>
+</tr>
+<tr>
+<td align="right">bool</td>
+<td align="left">Un byte que representa un booleano (0=false, 1=true)</td>
+</tr>
+</tbody></table><p>Las instrucciones que requieren un valor literal utilizan un sufijo dentro del propio código de operación en lugar de un argumento de tipo. tanto los argumentos de tipo como dichos sufijos siguen la siguiente tabla:</p>
+
+<table>
+<tbody><tr>
+<th align="right">Código</th>
+<th align="left">Tipo</th>
+</tr>
+<tr>
+<td align="right">000</td>
+<td align="left">natural</td>
+</tr>
+<tr>
+<td align="right">001</td>
+<td align="left">integer</td>
+</tr>
+<tr>
+<td align="right">010</td>
+<td align="left">float</td>
+</tr>
+<tr>
+<td align="right">011</td>
+<td align="left">character</td>
+</tr>
+<tr>
+<td align="right">100</td>
+<td align="left">boolean</td>
+</tr>
+</tbody></table><p>Con todo esto, podemos empezar a definir instrucciones:</p>
+
+<table>
+<tbody><tr>
+<th align="right">Código</th>
+<th align="center">Operandos</th>
+<th align="left">Instrucción</th>
+</tr>
+<tr>
+<td align="right">0000 0000</td>
+<td align="center">-</td>
+<td align="left">suma (+)</td>
+</tr>
+<tr>
+<td align="right">0000 0001</td>
+<td align="center">-</td>
+<td align="left">resta (-)</td>
+</tr>
+<tr>
+<td align="right">0000 0010</td>
+<td align="center">-</td>
+<td align="left">mul (*)</td>
+</tr>
+<tr>
+<td align="right">0000 0011</td>
+<td align="center">-</td>
+<td align="left">div (/)</td>
+</tr>
+<tr>
+<td align="right">0000 0100</td>
+<td align="center">-</td>
+<td align="left">mod (%)</td>
+</tr>
+<tr>
+<td align="right">0000 0101</td>
+<td align="center">-</td>
+<td align="left">igual (==)</td>
+</tr>
+<tr>
+<td align="right">0000 0110</td>
+<td align="center">-</td>
+<td align="left">no-igual (!=)</td>
+</tr>
+<tr>
+<td align="right">0000 0111</td>
+<td align="center">-</td>
+<td align="left">menor (&lt;)</td>
+</tr>
+<tr>
+<td align="right">0000 1000</td>
+<td align="center">-</td>
+<td align="left">menor-o-igual (&lt;=)</td>
+</tr>
+<tr>
+<td align="right">0000 1001</td>
+<td align="center">-</td>
+<td align="left">mayor (&gt;)</td>
+</tr>
+<tr>
+<td align="right">0000 1010</td>
+<td align="center">-</td>
+<td align="left">mayor-o-igual (&gt;=)</td>
+</tr>
+<tr>
+<td align="right">0000 1011</td>
+<td align="center">-</td>
+<td align="left">and</td>
+</tr>
+<tr>
+<td align="right">0000 1100</td>
+<td align="center">-</td>
+<td align="left">or</td>
+</tr>
+<tr>
+<td align="right">0000 1101</td>
+<td align="center">-</td>
+<td align="left">despl izq (&lt;&lt;)</td>
+</tr>
+<tr>
+<td align="right">0000 1110</td>
+<td align="center">-</td>
+<td align="left">despl dcha (&gt;&gt;)</td>
+</tr>
+<tr>
+<td align="right">0000 1111</td>
+<td align="center">-</td>
+<td align="left">opuesto (- unario)</td>
+</tr>
+<tr>
+<td align="right">0001 0000</td>
+<td align="center">-</td>
+<td align="left">negación (not)</td>
+</tr>
+<tr>
+<td align="right">0010 0TTT</td>
+<td align="center">valor</td>
+<td align="left">apila(valor). <em>T</em> es el tipo de <em>valor</em>
+</td>
+</tr>
+<tr>
+<td align="right">0010 1TTT</td>
+<td align="center">-</td>
+<td align="left">in. <em>T</em> es el tipo pedido</td>
+</tr>
+<tr>
+<td align="right">0011 0TTT</td>
+<td align="center">-</td>
+<td align="left">cast(T). <em>T</em> es el tipo del casting</td>
+</tr>
+<tr>
+<td align="right">0011 1000</td>
+<td align="center">tipo, dir</td>
+<td align="left">apila-dir(tipo, dir). Tipo es un parámetro <em>type</em>, dir esun <em>nat</em>.</td>
+</tr>
+<tr>
+<td align="right">0011 1001</td>
+<td align="center">tipo, dir</td>
+<td align="left">desapila-dir(tipo, dir). Tipo es un parámetro <em>type</em>, dir esun <em>nat</em>.</td>
+</tr>
+<tr>
+<td align="right">0011 1010</td>
+<td align="center">tipo</td>
+<td align="left">apila-ind(tipo). Tipo es un <em>type</em>
+</td>
+</tr>
+<tr>
+<td align="right">0011 1011</td>
+<td align="center">tipo</td>
+<td align="left">desapila-ind(tipo). Tipo es un <em>tipo</em>
+</td>
+</tr>
+<tr>
+<td align="right">0011 1100</td>
+<td align="center">-</td>
+<td align="left">output.</td>
+</tr>
+<tr>
+<td align="right">0011 1101</td>
+<td align="center">-</td>
+<td align="left">stop.</td>
+</tr>
+<tr>
+<td align="right">0011 1110</td>
+<td align="center">-</td>
+<td align="left">swap1.</td>
+</tr>
+<tr>
+<td align="right">0011 1111</td>
+<td align="center">-</td>
+<td align="left">swap2.</td>
+</tr>
+<tr>
+<td align="right">0100 0000</td>
+<td align="center">-</td>
+<td align="left">ir-a</td>
+</tr>
+<tr>
+<td align="right">0100 0001</td>
+<td align="center">-</td>
+<td align="left">ir-f</td>
+</tr>
+<tr>
+<td align="right">0100 0010</td>
+<td align="center">-</td>
+<td align="left">ir-v</td>
+</tr>
+<tr>
+<td align="right">0100 0011</td>
+<td align="center">-</td>
+<td align="left">ir-ind</td>
+</tr>
+<tr>
+<td align="right">0100 0100</td>
+<td align="center">-</td>
+<td align="left">copia</td>
+</tr>
+<tr>
+<td align="right">0100 0101</td>
+<td align="center">tam</td>
+<td align="left">mover(tam). Tam es un <em>nat</em>
+</td>
+</tr>
+<tr>
+<td align="right">0100 0110</td>
+<td align="center">-</td>
+<td align="left">desapila.</td>
+</tr>
+<tr>
+<td align="right">0100 0111</td>
+<td align="center">tam</td>
+<td align="left">rango(tam). Tam es un <em>nat</em>
+</td>
+</tr>
+</tbody></table><p>Los códigos no definidos en la tabla no corresponden a ninguna instrucción.</p>
+
+<h1>
+<a name="13-notas-sobre-la-implementacin" class="anchor" href="http://localhost:5000/#13-notas-sobre-la-implementacin"><span class="octicon octicon-link"></span></a>13 Notas sobre la implementación</h1>
+
+<h2>
+<a name="131-descripcin-de-archivos" class="anchor" href="http://localhost:5000/#131-descripcin-de-archivos"><span class="octicon octicon-link"></span></a>13.1 Descripción de archivos</h2>
+
+<h3>
+<a name="esucmfdiplgevlib" class="anchor" href="http://localhost:5000/#esucmfdiplgevlib"><span class="octicon octicon-link"></span></a>es.ucm.fdi.plg.evlib</h3>
+
+<p>Esta es la librería EvLib modificada para solventar algunos problemas que hemos tenido durante el desarrollo de la práctica.</p>
+
+<h3>
+<a name="plggr3" class="anchor" href="http://localhost:5000/#plggr3"><span class="octicon octicon-link"></span></a>plg.gr3</h3>
+
+<p>Contiene el main de la aplicación y una clase Util con ciertas utilidades para la aplicación.</p>
+
+<h3>
+<a name="plggr3code" class="anchor" href="http://localhost:5000/#plggr3code"><span class="octicon octicon-link"></span></a>plg.gr3.code</h3>
+
+<p>Contiene todas las clases de lectura y escritura de código. Su base son las clases abstractas CodeReader y CodeWriter, de las que existen implementaciones para leer y cargar de fichero, así como una implementación de CodeWriter que permite la escritura directa en una lista.</p>
+
+<h3>
+<a name="plggr3data" class="anchor" href="http://localhost:5000/#plggr3data"><span class="octicon octicon-link"></span></a>plg.gr3.data</h3>
+
+<p>Contiene todo lo relacionado con la gestión de datos, es decir: los tipos, los valores del lenguaje y los operadores.
+La clase Type representa los tipos de nuestro lenguaje. Existe una instancia de esta clase para cada tipo primitivo y para el tipo error, así como dossubclases TupleType y ArrayType para representar arrays y tuplas, respectivamente.</p>
+
+<p>Los operadores se representan mediante las clases BinaryOperator y UnaryOperator, que implementan una interfaz Operator por cuestiones de comodidad en su manejo.</p>
+
+<p>Los valores de nuestro lenguaje vienen representados usando las subclases de la clase abstracta Value, los cuales envuelven los tipos primitivos de Java, añadiendo la restricción a los naturales de que sólo se pueden usar valores positivos.</p>
+
+<h3>
+<a name="plggr3debug" class="anchor" href="http://localhost:5000/#plggr3debug"><span class="octicon octicon-link"></span></a>plg.gr3.debug</h3>
+
+<p>Paquete de depuración que incluye utilidades para escribir por consola errores y mensajes, indicando en ellos línea y columna (para compilación) o número de instrucción (para ejecución).</p>
+
+<h3>
+<a name="plggr3errors" class="anchor" href="http://localhost:5000/#plggr3errors"><span class="octicon octicon-link"></span></a>plg.gr3.errors</h3>
+
+<p>Paquete base para la representación de errores. Sólo incluye una clase abstracta Error, superclase de los errores de ejecución y compilación.</p>
+
+<h3>
+<a name="plggr3errorsruntime" class="anchor" href="http://localhost:5000/#plggr3errorsruntime"><span class="octicon octicon-link"></span></a>plg.gr3.errors.runtime</h3>
+
+<p>Errores en tiempo de ejecución, con base en la clase abstracta RuntimeError. Los errores de ejecución se dan en una posición del programa e instrucción concretas, lo cual queda reflejado con los atributos. Las subclases de esta clase abstracta incluidas en este paquete son los tipos de errores que podemos tener en ejecución.</p>
+
+<h3>
+<a name="plggr3errorscompile" class="anchor" href="http://localhost:5000/#plggr3errorscompile"><span class="octicon octicon-link"></span></a>plg.gr3.errors.compile</h3>
+
+<p>Errores en tiempo de compilación, con base en la clase abstracta CompileError. Los errores de compila-ción se dan en una posición del fichero fuente, incluyendo línea y columna, lo cual queda reflejado con los atributos. Las subclases de esta clase abstracta incluidas en este paquete son los tipos de errores que podemos tener en compilación.</p>
+
+<h3>
+<a name="plggr3parser" class="anchor" href="http://localhost:5000/#plggr3parser"><span class="octicon octicon-link"></span></a>plg.gr3.parser</h3>
+
+<p>Contiene el analizador sintáctico y todas las clase que necesita. Parte de este paquete as autogerada por CUP y JFlex. Además, incluye la definición de la tabla de símbolos, así como del descriptor de las funciones de atribución (Attribution) y de algunas clases útiles.</p>
+
+<h3>
+<a name="plggr3parsersemfun" class="anchor" href="http://localhost:5000/#plggr3parsersemfun"><span class="octicon octicon-link"></span></a>plg.gr3.parser.semfun</h3>
+
+<p>Contiene algunas funciones semánticas que se han reutilizado en la clase Attribution.</p>
+
+<h3>
+<a name="plggr3vm" class="anchor" href="http://localhost:5000/#plggr3vm"><span class="octicon octicon-link"></span></a>plg.gr3.vm</h3>
+
+<p>Definición de la máquina virtual en la clase VirtualMachine, que mantiene el estado de la máquina virtual y define métodos para que pueda manipularse externamente.</p>
+
+<h3>
+<a name="plggr3vminstr" class="anchor" href="http://localhost:5000/#plggr3vminstr"><span class="octicon octicon-link"></span></a>plg.gr3.vm.instr</h3>
+
+<p>Contiene las definiciones de instrucciones, todas ellas descendientes de una clase abstracta Instruction. Este paquete es el que implementa la ejecución de código, mediante Instruction#execute(VirtualMachine), método abstracto que todas las instrucciones deben implementar.</p>
+
+<h2>
+<a name="132-otras-notas" class="anchor" href="http://localhost:5000/#132-otras-notas"><span class="octicon octicon-link"></span></a>13.2 Otras notas</h2>
+
+<h3>
+<a name="ejecucin-del-programa" class="anchor" href="http://localhost:5000/#ejecucin-del-programa"><span class="octicon octicon-link"></span></a>Ejecución del programa</h3>
+
+<p>El programa principal es un único main, incluído en laclase <code>plg.gr3.Main</code>.
+Para su uso se implementan dos comandos, <code>compile</code> y <code>run</code>. Ambos comandos pueden modificarse usando los sufijos <code>.v</code> y <code>.vv</code>, lo que hará que se muestren mensajes dedepuración en mayor medida y, en el caso de <code>run.vv</code>, permitirá la ejecución en modo traza, parándose tras cada instrucción.</p>
+
+<p>El comando <code>compile</code> tiene dos argumentos: El fichero fuente y el fichero destino. Este comando compilará el programa pasado como fuente y volcará el <em>bytecode</em> resultante en el fichero destino. En modo depuración (<code>compile.v</code>), imprimirá alguna información útil de depuración, así como el código generado. En modo traza (<code>compile.vv</code>), mostrará además la salida de EvLib.</p>
+
+<p>El comando <code>run</code> tiene un único argumento: El fichero con el <em>bytecode</em> a ejecutar. Este comando ejecutará el programa, imprimiendo detalles como la pila y la memoria en el caso de modo depuración (<code>run.v</code>) y parándose tras cada instrucción en el modo traza (<code>run.vv</code>).</p>
+      </article>
+    </div>
+  </div>
+  
+  <div>&nbsp;</div>
+
+  </div>
+  
+
+<img id="feedlyMiniIcon" title="feedly mini" width="36" height="36" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKTWlDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVN3WJP3Fj7f92UPVkLY8LGXbIEAIiOsCMgQWaIQkgBhhBASQMWFiApWFBURnEhVxILVCkidiOKgKLhnQYqIWotVXDjuH9yntX167+3t+9f7vOec5/zOec8PgBESJpHmomoAOVKFPDrYH49PSMTJvYACFUjgBCAQ5svCZwXFAADwA3l4fnSwP/wBr28AAgBw1S4kEsfh/4O6UCZXACCRAOAiEucLAZBSAMguVMgUAMgYALBTs2QKAJQAAGx5fEIiAKoNAOz0ST4FANipk9wXANiiHKkIAI0BAJkoRyQCQLsAYFWBUiwCwMIAoKxAIi4EwK4BgFm2MkcCgL0FAHaOWJAPQGAAgJlCLMwAIDgCAEMeE80DIEwDoDDSv+CpX3CFuEgBAMDLlc2XS9IzFLiV0Bp38vDg4iHiwmyxQmEXKRBmCeQinJebIxNI5wNMzgwAABr50cH+OD+Q5+bk4eZm52zv9MWi/mvwbyI+IfHf/ryMAgQAEE7P79pf5eXWA3DHAbB1v2upWwDaVgBo3/ldM9sJoFoK0Hr5i3k4/EAenqFQyDwdHAoLC+0lYqG9MOOLPv8z4W/gi372/EAe/tt68ABxmkCZrcCjg/1xYW52rlKO58sEQjFu9+cj/seFf/2OKdHiNLFcLBWK8ViJuFAiTcd5uVKRRCHJleIS6X8y8R+W/QmTdw0ArIZPwE62B7XLbMB+7gECiw5Y0nYAQH7zLYwaC5EAEGc0Mnn3AACTv/mPQCsBAM2XpOMAALzoGFyolBdMxggAAESggSqwQQcMwRSswA6cwR28wBcCYQZEQAwkwDwQQgbkgBwKoRiWQRlUwDrYBLWwAxqgEZrhELTBMTgN5+ASXIHrcBcGYBiewhi8hgkEQcgIE2EhOogRYo7YIs4IF5mOBCJhSDSSgKQg6YgUUSLFyHKkAqlCapFdSCPyLXIUOY1cQPqQ28ggMor8irxHMZSBslED1AJ1QLmoHxqKxqBz0XQ0D12AlqJr0Rq0Hj2AtqKn0UvodXQAfYqOY4DRMQ5mjNlhXIyHRWCJWBomxxZj5Vg1Vo81Yx1YN3YVG8CeYe8IJAKLgBPsCF6EEMJsgpCQR1hMWEOoJewjtBK6CFcJg4Qxwicik6hPtCV6EvnEeGI6sZBYRqwm7iEeIZ4lXicOE1+TSCQOyZLkTgohJZAySQtJa0jbSC2kU6Q+0hBpnEwm65Btyd7kCLKArCCXkbeQD5BPkvvJw+S3FDrFiOJMCaIkUqSUEko1ZT/lBKWfMkKZoKpRzame1AiqiDqfWkltoHZQL1OHqRM0dZolzZsWQ8ukLaPV0JppZ2n3aC/pdLoJ3YMeRZfQl9Jr6Afp5+mD9HcMDYYNg8dIYigZaxl7GacYtxkvmUymBdOXmchUMNcyG5lnmA+Yb1VYKvYqfBWRyhKVOpVWlX6V56pUVXNVP9V5qgtUq1UPq15WfaZGVbNQ46kJ1Bar1akdVbupNq7OUndSj1DPUV+jvl/9gvpjDbKGhUaghkijVGO3xhmNIRbGMmXxWELWclYD6yxrmE1iW7L57Ex2Bfsbdi97TFNDc6pmrGaRZp3mcc0BDsax4PA52ZxKziHODc57LQMtPy2x1mqtZq1+rTfaetq+2mLtcu0W7eva73VwnUCdLJ31Om0693UJuja6UbqFutt1z+o+02PreekJ9cr1Dund0Uf1bfSj9Rfq79bv0R83MDQINpAZbDE4Y/DMkGPoa5hpuNHwhOGoEctoupHEaKPRSaMnuCbuh2fjNXgXPmasbxxirDTeZdxrPGFiaTLbpMSkxeS+Kc2Ua5pmutG003TMzMgs3KzYrMnsjjnVnGueYb7ZvNv8jYWlRZzFSos2i8eW2pZ8ywWWTZb3rJhWPlZ5VvVW16xJ1lzrLOtt1ldsUBtXmwybOpvLtqitm63Edptt3xTiFI8p0in1U27aMez87ArsmuwG7Tn2YfYl9m32zx3MHBId1jt0O3xydHXMdmxwvOuk4TTDqcSpw+lXZxtnoXOd8zUXpkuQyxKXdpcXU22niqdun3rLleUa7rrStdP1o5u7m9yt2W3U3cw9xX2r+00umxvJXcM970H08PdY4nHM452nm6fC85DnL152Xlle+70eT7OcJp7WMG3I28Rb4L3Le2A6Pj1l+s7pAz7GPgKfep+Hvqa+It89viN+1n6Zfgf8nvs7+sv9j/i/4XnyFvFOBWABwQHlAb2BGoGzA2sDHwSZBKUHNQWNBbsGLww+FUIMCQ1ZH3KTb8AX8hv5YzPcZyya0RXKCJ0VWhv6MMwmTB7WEY6GzwjfEH5vpvlM6cy2CIjgR2yIuB9pGZkX+X0UKSoyqi7qUbRTdHF09yzWrORZ+2e9jvGPqYy5O9tqtnJ2Z6xqbFJsY+ybuIC4qriBeIf4RfGXEnQTJAntieTE2MQ9ieNzAudsmjOc5JpUlnRjruXcorkX5unOy553PFk1WZB8OIWYEpeyP+WDIEJQLxhP5aduTR0T8oSbhU9FvqKNolGxt7hKPJLmnVaV9jjdO31D+miGT0Z1xjMJT1IreZEZkrkj801WRNberM/ZcdktOZSclJyjUg1plrQr1zC3KLdPZisrkw3keeZtyhuTh8r35CP5c/PbFWyFTNGjtFKuUA4WTC+oK3hbGFt4uEi9SFrUM99m/ur5IwuCFny9kLBQuLCz2Lh4WfHgIr9FuxYji1MXdy4xXVK6ZHhp8NJ9y2jLspb9UOJYUlXyannc8o5Sg9KlpUMrglc0lamUycturvRauWMVYZVkVe9ql9VbVn8qF5VfrHCsqK74sEa45uJXTl/VfPV5bdra3kq3yu3rSOuk626s91m/r0q9akHV0IbwDa0b8Y3lG19tSt50oXpq9Y7NtM3KzQM1YTXtW8y2rNvyoTaj9nqdf13LVv2tq7e+2Sba1r/dd3vzDoMdFTve75TsvLUreFdrvUV99W7S7oLdjxpiG7q/5n7duEd3T8Wej3ulewf2Re/ranRvbNyvv7+yCW1SNo0eSDpw5ZuAb9qb7Zp3tXBaKg7CQeXBJ9+mfHvjUOihzsPcw83fmX+39QjrSHkr0jq/dawto22gPaG97+iMo50dXh1Hvrf/fu8x42N1xzWPV56gnSg98fnkgpPjp2Snnp1OPz3Umdx590z8mWtdUV29Z0PPnj8XdO5Mt1/3yfPe549d8Lxw9CL3Ytslt0utPa49R35w/eFIr1tv62X3y+1XPK509E3rO9Hv03/6asDVc9f41y5dn3m978bsG7duJt0cuCW69fh29u0XdwruTNxdeo94r/y+2v3qB/oP6n+0/rFlwG3g+GDAYM/DWQ/vDgmHnv6U/9OH4dJHzEfVI0YjjY+dHx8bDRq98mTOk+GnsqcTz8p+Vv9563Or59/94vtLz1j82PAL+YvPv655qfNy76uprzrHI8cfvM55PfGm/K3O233vuO+638e9H5ko/ED+UPPR+mPHp9BP9z7nfP78L/eE8/sl0p8zAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAK7SURBVHja7Jk/TxphHMe/5wGDJuCtoiQsMsuABN9AibHGMndoYxpiTRsYHHShaZvGGqVN/9KBN3CLKyODASOksWlDQUn6Bkxkk7T67cKZErgT7o9Aer/kOxDI83w+xz0Pz/0QSGKUawwjXraALWAL2AK2wP8tAJKqMVCrAH4C+APgB4D7VvCRtERgGwC75NkoCOyowCt5PswCN8EreTGMArs9wit5OTCBLp/Z6xNeyauBCgAQAKTVAN1uN1OpFMfHxw1JWCLQgn+rBubxeHhwcECSzOfznJiY0JLYvu010DO8UrIs33Q7vb4tAQHAOy34QqHQBt9sNhmLxXpZEztWCwgA3mvBF4vFDviVlZV+FvauVQICgA9a8IeHh0bhleyZLSAA+KQ24eTkJI+Ojjrgl5eXqXN7ZWt3E8wQEAB87hd+aWnJCLySN2YIJNQmkCSJpVJJFT4UCvH4+Jhzc3NGJOJGBX6pwZfL5Q74xcVFAuD8/DzPz89JkmdnZwwGg3oFakYFug68tbXVAR+NRgmA4XD4Gl6pXC6nV6BpVOB7t4FdLhf39/dJkhcXF9fwkUikA/709JQzMzN6Bb4ZFYgBuOo2uNPpZDAYpM/nu4ZvNBpt8CcnJ5yentYLfwXgnhnb6FM1CSULCwsd8LVazSj8upk/ZE+0JNLpdBt8tVql1+s1Ar9mxVFiXU3C5XJRlmWSZKVS4dTUFAHQ7/frgY9beZhTlRAEgZIk0eFwEAA3NzdJkslkUje8VcfptZvWxMbGRtstlUgkeoF/pOc0OqajS/ARwOPWxF1rdna27XUgENAcsgX/5VYaW/+8F1f7JkRRZDabZb1eZyaToSiKWld+dWAP9a0rd6Vzt7kE8HAY2ip6JC4BPBimvtBdAF9bvVAt8N8ASgDumNUXEuy/WW0BW8AWsAVsgVGuvwMA8vh2EBI89HgAAAAASUVORK5CYII=" style="position: fixed; bottom: 20px; right: 20px; z-index: 999999998; cursor: pointer; border: 0px; -webkit-transition: opacity 0.5s ease; transition: opacity 0.5s ease; visibility: visible; width: 36px; height: 36px; max-height: 36px; max-width: 36px; overflow: hidden; display: block; padding: 0px; opacity: 0.15;"></body></html>
