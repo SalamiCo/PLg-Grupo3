@@ -1919,7 +1919,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = const_R2($1);}
 
     Const ::= CONST TPrim IDENT ASIG ConstLit
-        {$$ = const_R1($2, $3.lex, $5);}
+        {$$ = const_R1($2, $3, $5);}
     Const ::= 
         {$$ = const_R2();}
 
@@ -1939,7 +1939,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = types_R2($1);}
 
     Type ::= TIPO TypeDesc IDENT
-        {$$ = type_R1($2, $3.lex);}
+        {$$ = type_R1($2, $3);}
     Type ::=
         {$$ = type_R2();}
 
@@ -1954,7 +1954,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = vars_R2($1);}
 
     Var ::= VAR TypeDesc IDENT
-        {$$ = var_R1($2, $3.lex);}
+        {$$ = var_R1($2, $3);}
     Var ::=
         {$$ = var_R2();}
 
@@ -1965,7 +1965,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
     TypeDesc ::= TTupla
         {$$ = typeDesc_R3($1);}
     TypeDesc ::= IDENT
-        {$$ = typeDesc_R4($1.lex);}
+        {$$ = typeDesc_R4($1);}
 
     TPrim ::= NATURAL
         {$$ = tPrim_R1();}
@@ -1988,9 +1988,9 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = cast_R4();}
 
     TArray ::= TypeDesc ICORCHETE IDENT FCORCHETE
-        {$$ = tArray_R1($1, $3.lex);}
+        {$$ = tArray_R1($1, $3);}
     TArray ::= TypeDesc ICORCHETE LITNAT FCORCHETE
-        {$$ = tArray_R2($1, $3.lex);}
+        {$$ = tArray_R2($1, $3);}
 
     TTupla ::= IPAR Tupla FPAR
         {$$ = tTupla_R1($2);}
@@ -2011,7 +2011,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = insts_R2($1);}
 
     Inst ::= Desig ASIG Expr
-        {$$ = inst_R1($1, $3, $2.lex);}
+        {$$ = inst_R1($1, $3, $2);}
     Inst ::= IN PAR Desig FPAR
         {$$ = inst_R2($3);}
     Inst ::= OUT IPAR Expr FPAR
@@ -2035,7 +2035,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = elseIf_R2();}
 
     InstCall ::= CALL IDENT IPAR SRParams FPAR
-        {$$ = instCall_R1($2.lex, $4);}
+        {$$ = instCall_R1($2, $4);}
 
     SRParams ::= RParams
         {$$ = srParams_R1($1);}
@@ -2048,7 +2048,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = rParams_R2($1);}
 
     RParam ::= IDENT ASIG Expr
-        {$$ = rParam_R1($1.lex, $3);}
+        {$$ = rParam_R1($1, $3);}
 
     SSubprogs ::= SUBPROGRAMS ILLAVE Subprogs FLLAVE
         {$$ = sSubprogs_R1($3);}
@@ -2063,7 +2063,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = subprogs_R2($1);}
 
     Subprog ::= SUBPROGRAM IDENT IPAR SFParams FPAR ILLAVE SVars SInsts FLLAVE
-        {$$ = subprog_R1($2.lex, $4, $7, $8);}
+        {$$ = subprog_R1($2, $4, $7, $8);}
 
     SFParams ::= FParams 
         {$$ = sfParams_R1($1);}
@@ -2076,16 +2076,16 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = fParams_R2($1);}
 
     FParam ::= TypeDesc IDENT 
-        {$$ = fParam_R1($1, $2.lex);}
+        {$$ = fParam_R1($1, $2);}
     FParam ::= TypeDesc MUL IDENT 
-        {$$ = fParam_R2($1, $3.lex);}
+        {$$ = fParam_R2($1, $3);}
 
     Desig ::= IDENT 
-        {$$ = desig_R1($1.lex)));}
+        {$$ = desig_R1($1)));}
     Desig ::= Desig ICORCHETE Expr FCORCHETE 
         {$$ = desig_R2($1, $3);}
     Desig ::= Desig BARRABAJA LITNAT 
-        {$$ = desig_R3($1, $3.lex);}
+        {$$ = desig_R3($1, $3);}
 
     Expr ::= Term Op0 Term 
         {$$ = expr_R1($1, $2, $3);}
@@ -2165,7 +2165,7 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
     Lit ::= LitNum 
         {$$ = lit_R2($1);}
     Lit ::= LITCHAR 
-        {$$ = lit_R3($1.lex));}
+        {$$ = lit_R3($1));}
 
     LitBool ::= TRUE 
         {$$ = litBool_R1();}
@@ -2173,1153 +2173,1128 @@ numCeldas(CTipo): Dado un tipo te devuelve el numero de celdas de memoria.
         {$$ = litBool_R2();}
 
     LitNum ::= LITNAT 
-        {$$ = litNum_R1($1.lex);}
+        {$$ = litNum_R1($1);}
     LitNum ::= LITFLOAT 
-        {$$ = litNum_R2($1.lex);}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        {$$ = litNum_R2($1);}
 
 
 # 11 Descripción de las funciones de atribución
 
-    Funcion program_R1{
+    funcion program_R1 (SConsts, STypes, SVars, SSubprogs, SInsts) {
+        Program.tsh = creaTS()
+        Program.dirh = 2
+        SConsts.tsh = Program.tsh
+        STypes.tsh = SConsts.ts
+        SVars.tsh = STypes.ts
+        SVars.dirh = SProgram.dirh
+        SSubprogs.tsh = SVars.ts     
+        Program.err = SConsts.err ∨ STypes.err ∨ SVars.err ∨ SSubprogs.err ∨ SInsts.err
+        SInsts.tsh = SSubprogs.ts
+        Program.cod =  ir_a(SSubprogs.etq) || SSubprogs || SInsts.cod || stop 
+        SSubprogs.etqh = 5 
+        SInsts.etqh = SSubprogs.etq 
+        SVars.nivelh = global
 
-        Program → program ident illave SConsts STypes SVars SSubprogs SInsts fllave fin
-            Program.tsh = creaTS()
-            Program.dirh = 2
-            SConsts.tsh = Program.tsh
-            STypes.tsh = SConsts.ts
-            SVars.tsh = STypes.ts
-            SVars.dirh = SProgram.dirh
-            SSubprogs.tsh = SVars.ts     
-            Program.err = SConsts.err ∨ STypes.err ∨ SVars.err ∨ SSubprogs.err ∨ SInsts.err
-            SInsts.tsh = SSubprogs.ts
-            Program.cod =  ir_a(SSubprogs.etq) || SSubprogs || SInsts.cod || stop 
-            SSubprogs.etqh = 5 
-            SInsts.etqh = SSubprogs.etq 
-            SVars.nivelh = global  
+        return Program
     }
 
-    Funcion sConsts_R1{
+    funcion sConsts_R1 (Consts) {
+        Consts.tsh = SConsts.tsh
+        SConsts.ts = Consts.ts
+        SConsts.err = Consts.err
 
-        SConsts → const illave Consts fllave 
-            Consts.tsh = SConsts.tsh
-            SConsts.ts = Consts.ts
-            SConsts.err = Consts.err
+        return SConsts
     }
 
-    Funcion sConsts_R2{
+    funcion sConsts_R2 () {
+        SConsts.ts = SConsts.tsh
+        SConsts.err = false
 
-        SConsts → ɛ
-            SConsts.ts = SConsts.tsh
-            SConsts.err = false
+        return SConsts
     }
 
-    Funcion consts_R1{
+    funcion consts_R1 (Consts1, Const) {
+        Consts1.tsh = Consts0.tsh
+        Const.tsh = Consts1.ts
+        Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
+        Consts.err = existe(Const.ts, Const.id)
 
-        Consts → Consts pyc Const
-            Consts1.tsh = Consts0.tsh
-            Const.tsh = Consts1.ts
-            Consts0.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
-            Consts.err = existe(Const.ts, Const.id)
+        return Consts0
     }
 
-    Funcion consts_R2{
+    funcion consts_R2 (Const) {
+        Const.tsh = Consts.tsh
+        Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
+        Consts.err = existe(Const.ts, Const.id)
 
-        Consts → Const
-            Const.tsh = Consts.tsh
-            Consts.ts = añade(Const.ts, Const.id, Const.clase, Const.nivel, ?, Const.tipo, Const.valor)
-            Consts.err = existe(Const.ts, Const.id)
+        return Const
     }
 
-    Funcion const_R1{
+    funcion const_R1 (TPrim, ident, ConstLit) {
+        Const.ts = Const.tsh
+        Const.id = ident.lex
+        Const.clase = const
+        Const.nivel = global
+        Const.tipo = <t:TPrim.tipo, tam:1>
+        Const.valor = ConstLit.valor
+        Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
 
-        Const → const TPrim ident asig ConstLit 
-            Const.ts = Const.tsh
-            Const.id = ident.lex
-            Const.clase = const
-            Const.nivel = global
-            Const.tipo = <t:TPrim.tipo, tam:1>
-            Const.valor = ConstLit.valor
-            Const.err = ¬(compatibles(TPrim.tipo, ConstLit.tipo))
+        return Const
     }
 
-    Funcion const_R2{
+    funcion const_R2 () {
+        Const.ts = Const.tsh
+        Const.err = false
 
-        Const → ɛ
-            Const.ts = Const.tsh
-            Const.err = false
+        return Const
     }
 
-    Funcion constLit_R1{
+    funcion constLit_R1 (Lit) {
+        ConstLit.valor = Lit.valor
+        ConstLit.tipo = Lit.tipo
 
-        ConstLit → Lit
-            ConstLit.valor = Lit.valor
-            ConstLit.tipo = Lit.tipo
+        return ConstLit
     }
 
-    Funcion constLit_R2{
+    funcion constLit_R2 (Lit) {
+        ConstLit.valor = -(Lit.valor)
+        ConstLit.tipo = opUnario(menos, Lit.tipo)
 
-        ConstLit → menos Lit
-            ConstLit.valor = -(Lit.valor)
-            ConstLit.tipo = -(Lit.tipo)
+        return ConstLit
     }
 
-    Funcion sTypes_R1{
+    funcion sTypes_R1 (Types) {
+        Types.tsh = STypes.tsh
+        STypes.ts = Types.ts 
+        STypes.err = Types.err
 
-        STypes → tipos illave Types fllave 
-            Types.tsh = STypes.tsh
-            STypes.ts = Types.ts 
-            STypes.err = Types.err
+        return STypes
     }
 
-    Funcion sTypes_R2{
+    funcion sTypes_R2 () {
+        STypes.ts = STypes.tsh
+        STypes.err = false
 
-        STypes → ɛ
-            STypes.ts = STypes.tsh
-            STypes.err = false
+        return STypes
     }
 
-    Funcion types_R1{
+    funcion types_R1 (Types1, Type) {
+        Types1.tsh = Types0.tsh
+        Type.tsh = Types1.ts
+        Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
+        Types0.err = existe(Types1.ts, Type.id)
 
-        Types → Types pyc Type 
-            Types1.tsh = Types0.tsh
-            Type.tsh = Types1.ts
-            Types0.ts = añade(Types1.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
-            Types0.err = existe(Types1.ts, Type.id)
+        return Types0
     }
 
-    Funcion types_R2{
+    funcion types_R2 (Type) {
+        Type.tsh = Types.tsh
+        Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
+        Types.err = existe(Type.ts, Type.id)
 
-        Types → Type
-            Type.tsh = Types.tsh
-            Types.ts = añade(Type.ts, Type.id, Type.clase, Type.nivel, ?, Type.tipo)
-            Types.err = existe(Type.ts, Type.id)
+        return Types
     }
 
-    Funcion type_R1{
+    funcion type_R1 (TypeDesc, ident) {
+        Type.ts = Type.tsh
+        TypeDesc.tsh = Type.tsh
+        Type.id = ident.lex
+        Type.clase = Tipo
+        Type.nivel = global
+        Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(TypeDesc.tipo, Var.tsh ), Type.id)>
 
-        Type → tipo TypeDesc ident 
-            Type.ts = Type.tsh
-            TypeDesc.tsh = Type.tsh
-            Type.id = ident.lex
-            Type.clase = Tipo
-            Type.nivel = global
-            Type.tipo = <t:TypeDesc.tipo, tipo:obtieneCTipo(TypeDesc), tam:desplazamiento(TypeDesc.tipo, Var.tsh ), Type.id)>
+        return Type
     }
 
-    Funcion type_R2{
+    funcion type_R2 () {
+        Type.ts = Type.tsh
+        Type.err = false
 
-        Type → ɛ
-            Type.ts = Type.tsh
-            Type.err = false
+        return Type
     }
 
-    Funcion sVars_R1{
+    funcion sVars_R1 (Vars) {
+        Vars.tsh = SVars.tsh
+        Vars.dirh = SVars.dirh
+        SVars.ts = Vars.ts
+        SVars.dir = Vars.dir
+        SVars.err = Vars.err
+        Vars.nivelh = SVars.nivelh
 
-        SVars → vars illave Vars fllave 
-            Vars.tsh = SVars.tsh
-            Vars.dirh = SVars.dirh
-            SVars.ts = Vars.ts
-            SVars.dir = Vars.dir
-            SVars.err = Vars.err
-            Vars.nivelh = SVars.nivelh
+        return SVars
     }
 
-    Funcion sVars_R2{
+    funcion sVars_R2 () {
+        SVars.ts = SVars.tsh
+        SVars.dir = SVars.dirh
+        SVars.err = false
 
-        SVars → ɛ
-            SVars.ts = SVars.tsh
-            SVars.dir = SVars.dirh
-            SVars.err = false
+        return SVars
     }
 
-    Funcion vars_R1{
+    funcion vars_R1 (Vars1, Var) {
+        Vars1.tsh = Vars0.tsh
+        Vars1.dirh = Vars0.dirh
+        Var.tsh = Vars1.ts
+        Var.dirh = Vars1.dir
+        Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
+        Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
+        Vars0.err = existe(Var.ts, Var.id, Var.nivel)
+        Vars1.nivelh = Vars0.nivelh
+        Var.nivelh = Vars0.nivelh
 
-        Vars → Vars pyc Var 
-            Vars1.tsh = Vars0.tsh
-            Vars1.dirh = Vars0.dirh
-            Var.tsh = Vars1.ts
-            Var.dirh = Vars1.dir
-            Vars0.dir = Var.dir + desplazamiento(Var.tipo, Vars1.id)
-            Vars0.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Vars0.dir, Var.tipo)
-            Vars0.err = existe(Var.ts, Var.id, Var.nivel)
-            Vars1.nivelh = Vars0.nivelh
-            Var.nivelh = Vars0.nivelh
+        return Vars0
     }
 
-    Funcion vars_R2{
+    funcion vars_R2 (Var) {
+        Var.tsh = Vars.tsh
+        Var.dirh = Vars.dirh
+        Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
+        Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
+        Vars.err = existe(Var.ts, Var.id, Var.nivel)
+        Var.nivelh = Vars.nivelh
 
-        Vars → Var
-            Var.tsh = Vars.tsh
-            Var.dirh = Vars.dirh
-            Vars.dir = Var.dir + desplazamiento(Var.tipo, Var.id)
-            Vars.ts = añade(Var.ts, Var.id, Var.clase, Var.nivel, Var.dir, Var.tipo)
-            Vars.err = existe(Var.ts, Var.id, Var.nivel)
-            Var.nivelh = Vars.nivelh
+        return Vars
     }
 
-    Funcion var_R1{
+    funcion var_R1 (TypeDesc, ident) {
+        Var.ts = Var.tsh
+        Var.dir = Var.dirh
+        Var.id = ident.lex
+        Var.clase = Var
+        Var.nivel = nivelh
+        Var.tipo = si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
+               si no {<id:Var.id, t:ref, TypeDesc.tipo tam: desplazamiento(TypeDesc.tipo, Var.tsh )>} 
+        TypeDesc.tsh = Var.tsh
 
-        Var → var TypeDesc ident 
-            Var.ts = Var.tsh
-            Var.dir = Var.dirh
-            Var.id = ident.lex
-            Var.clase = Var
-            Var.nivel = nivelh
-            Var.tipo = si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
-                   si no {<id:Var.id, t:ref, TypeDesc.tipo tam: desplazamiento(TypeDesc.tipo, Var.tsh )>} 
-            TypeDesc.tsh = Var.tsh
+        return Var
     }
 
-    Funcion var_R2{
+    funcion var_R2 () {
+        Var.ts = Var.tsh
+        Var.dir = Var.dirh
+        Var.err = false
 
-        Var → ɛ
-            Var.ts = Var.tsh
-            Var.dir = Var.dirh
-            Var.err = false
+        return Var
     }
 
-    Funcion typeDesc_R1{
+    funcion typeDesc_R1 (TPrim) {
+        TypeDesc.tipo = TPrim.tipo
 
-        TypeDesc → TPrim
-            TypeDesc.tipo = TPrim.tipo
+        return TypeDesc
     }
 
-    Funcion typeDesc_R2 {
+    funcion typeDesc_R2 (TArray) {
+        TypeDesc.tipo = TArray.tipo
+        TArray.tsh = TypeDesc.tsh
+        TypeDesc.err = TArray.err
 
-        TypeDesc → TArray
-            TypeDesc.tipo = TArray.tipo
-            TArray.tsh = TypeDesc.tsh
-            TypeDesc.err = TArray.err
+        return TypeDesc
     }
 
-    Funcion typeDesc_R3{
-        TypeDesc → TTupla
-            TypeDesc.tipo = TTupla.tipo
-            TTupla.tsh = TypeDesc.tsh
-            TypeDesc.err = TTupla.err
+    funcion typeDesc_R3 (TTupla) {
+        TypeDesc.tipo = TTupla.tipo
+        TTupla.tsh = TypeDesc.tsh
+        TypeDesc.err = TTupla.err
+
+        TypeDesc
     }
 
-    Funcion typeDesc_R4{
+    funcion typeDesc_R4 (ident) {
+        TypeDesc.tipo = ident.lex
+        TypeDesc.err = ¬existe(TypeDesc.tsh, ident.lex) ∨ TypeDesc.tsh[ident].clase != tipo
 
-        TypeDesc → ident
-            TypeDesc.tipo = ident.lex
-            TypeDesc.err = ¬existe(TypeDesc.tsh, ident.lex) ∨ TypeDesc.tsh[ident].clase != tipo
+        return TypeDesc
     }
 
-    Funcion tPrim_R1{
+    funcion tPrim_R1 () {
+        TPrim.tipo = natural
 
-        TPrim → natural
-            TPrim.tipo = natural
+        return TPrim
     }
 
-    Funcion  tPrim_R2{  
-        TPrim → integer
-            TPrim.tipo = integer
+    funcion tPrim_R2 () {
+        TPrim.tipo = integer
+
+        return TPrim
     }
 
-    Funcion tPrim_R3{
-        TPrim → float
-            TPrim.tipo = float
+    funcion tPrim_R3 () {
+        TPrim.tipo = float
+
+        return TPrim
     }
 
-    Funcion tPrim_R4{
+    funcion tPrim_R4 () {
+        TPrim.tipo = boolean
 
-        TPrim → boolean
-            TPrim.tipo = boolean
+        return TPrim
     }
 
-    Funcion tPrim_R5{        
-        TPrim → character
-            TPrim.tipo = character
+    funcion tPrim_R5 () {
+        TPrim.tipo = character
+
+        return TPrim
     }
 
-    Funcion cast_R1{
+    funcion cast_R1 () {
+        Cast.type = char
 
-        Cast → char
-            Cast.type = char
+        return Cast
     }
 
-    Funcion  cast_R2{    
+    funcion cast_R2 () {
+        Cast.type = int
 
-        Cast → int
-            Cast.type = int
+        return Cast
     }
 
-    Funcion cast_R3{
+    funcion cast_R3 () {
+        Cast.type = nat
 
-        Cast → nat
-            Cast.type = nat
+        return Cast
     }
 
-    Funcion cast_R4{
+    funcion cast_R4 () {
+        Cast.type = float
 
-        Cast → float
-            Cast.type = float
+        return Cast
     }
 
-    Funcion tArray_R1{
+    funcion tArray_R1 (TypeDesc, ident) {
+        TypeDesc.tsh = TArray.tsh
+        TArray.tsh = TypeDesc.tsh
+        TArray.err = ¬existe(TArray.tsh, ident.lex) ∨ obtieneTipoString(ident) != nat ∨ TArray.tsh[ident].clase != constante
 
-        TArray → TypeDesc icorchete ident fcorchete
-            TypeDesc.tsh = TArray.tsh
-            TArray.tsh = TypeDesc.tsh
-            TArray.err = ¬existe(TArray.tsh, ident.lex) ∨ obtieneTipoString(ident) != nat ∨ TArray.tsh[ident].clase != constante
+        return TArray
     }
 
-    Funcion tArray_R2{
+    funcion tArray_R2 (TypeDesc, litnat) {
+        TypeDesc.tsh = TArray.tsh
+        TArray.tsh = TypeDesc.tsh
 
-        TArray → TypeDesc icorchete litnat fcorchete
-            TypeDesc.tsh = TArray.tsh
-            TArray.tsh = TypeDesc.tsh
+        return TArray
     }
 
-    Funcion tTupla_R1{
+    funcion tTupla_R1 (Tupla) {
+        Tupla.tsh = TTupla.tsh
+        TTupla.tipo = Tupla.tipo
+        TTupla.err = Tupla.err
 
-        TTupla → ipar Tupla fpar
-            Tupla.tsh = TTupla.tsh
-            TTupla.tipo = Tupla.tipo
-            TTupla.err = Tupla.err
+        return TTupla
     }
 
-    Funcion tTupla_R2{
+    funcion tTupla_R2 () {
+        TTupla.err = false
 
-        TTupla → ipar fpar
-            TTupla.err = false
+        return TTupla
     }
 
-    Funcion tupla_R1{
+    funcion tupla_R1 (TypeDesc, Tupla1) {
+        TypeDesc.tsh = Tupla0.tsh
+        Tupla1.tsh = Tupla0.tsh
+        Tupla0.tipo = TypeDesc.tipo ++ Tupla1.tipo
+        Tupla0.err = TypeDesc.err ∨ Tupla1.err
 
-        Tupla → TypeDesc coma Tupla
-            TypeDesc.tsh = Tupla0.tsh
-            Tupla1.tsh = Tupla0.tsh
-            Tupla0.tipo = TypeDesc.tipo ++ Tupla1.tipo
-            Tupla0.err = TypeDesc.err ∨ Tupla1.err
+        return Tupla0
     }
 
-    Funcion tupla_R2{
+    funcion tupla_R2 (TypeDesc) {
+        TypeDesc.tsh = Tupla.tsh
+        Tupla.tipo = TypeDesc.tipo
+        Tupla.err = TypeDesc.err
 
-        Tupla → TypeDesc
-            TypeDesc.tsh = Tupla.tsh
-            Tupla.tipo = TypeDesc.tipo
-            Tupla.err = TypeDesc.err
+        return Tupla
     }
 
-    Funcion sInsts_R1{
+    funcion sInsts_R1 (Insts) {
+        Insts.tsh = SInsts.tsh
+        SInsts.err = Insts.err
+        SInsts.cod = Insts.cod
+        Insts.etqh = SInsts.etqh
+        SInsts.etq = Insts.etq
 
-        SInsts → instructions illave Insts fllave
-            Insts.tsh = SInsts.tsh
-            SInsts.err = Insts.err
-            SInsts.cod = Insts.cod
-            Insts.etqh = SInsts.etqh
-            SInsts.etq = Insts.etq
+        return SInsts
     }
 
-    Funcion insts_R1{
+    funcion insts_R1 (Insts1, Inst) {
+        Insts1.tsh = Insts0.tsh
+        Inst.tsh = Insts0.tsh
+        Insts0.err = Insts1.err ∨ Inst.err
+        Insts0.cod = Insts1.cod || Inst.cod
+        Insts1.etqh = Insts0.etqh
+        Inst.etqh = Insts1.etq
+        Insts0.etq = Inst.etq
 
-        Insts → Insts pyc Inst
-            Insts1.tsh = Insts0.tsh
-            Inst.tsh = Insts0.tsh
-            Insts0.err = Insts1.err ∨ Inst.err
-            Insts0.cod = Insts1.cod || Inst.cod
-            Insts1.etqh = Insts0.etqh
-            Inst.etqh = Insts1.etq
-            Insts0.etq = Inst.etq
+        return Insts0
     }
 
-    Funcion insts_R2{
+    funcion insts_R2 (Inst) {
+        Inst.tsh = Insts.tsh
+        Insts.err = Inst.err
+        Insts.cod = Inst.cod
+        Inst.etqh = Insts.etqh
+        Insts.etq = Inst.etq
 
-        Insts → Inst
-            Inst.tsh = Insts.tsh
-            Insts.err = Inst.err
-            Insts.cod = Inst.cod
-            Inst.etqh = Insts.etqh
-            Insts.etq = Inst.etq
+        return Insts
     }
 
-    Funcion inst_R1{
+    funcion inst_R1 (Desig, Expr) {
+        Desig.tsh = Inst.tsh
+        Expr.tsh = Inst.tsh
+        Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
+        Inst.cod = Expr.cod || Desig.cod || si esPrimitivo(Desig.tipo) entonces desapila-ind 
+                    sino mueve(tamTipo(Desig.tipo,Desig.tsh)) 
+        Expr.etqh = Inst.etqh
+        Desig.etqh = Expr.etq
+        Inst.etq = Desig.etq + 1 
+        Expr.refh = false
 
-        Inst → Desig asig Expr
-            Desig.tsh = Inst.tsh
-            Expr.tsh = Inst.tsh
-            Inst.err = (¬asignacionValida(Desig.tipo, Expr.tipo)) ∨ Expr.err ∨ Desig.err
-            Inst.cod = Expr.cod || Desig.cod || si esPrimitivo(Desig.tipo) entonces desapila-ind 
-                        sino mueve(tamTipo(Desig.tipo,Desig.tsh)) 
-            Expr.etqh = Inst.etqh
-            Desig.etqh = Expr.etq
-            Inst.etq = Desig.etq + 1 
-            Expr.refh = false
+        return Inst
     }
 
-    Funcion inst_R2{
+    funcion inst_R2 (Desig) {
+        Desig.tsh = Inst.tsh
+        Inst.err = Desig.err
+        Inst.cod = in(Desig.type) ||Desig.cod|| desapila-ind 
+        Desig.etqh = Inst.etq + 1 
+        Inst.etq = Desig.etq + 1
 
-        Inst → in ipar Desig fpar
-            Desig.tsh = Inst.tsh
-            Inst.err = Desig.err
-            Inst.cod = in(Desig.type) ||Desig.cod|| desapila-ind 
-            Desig.etqh = Inst.etq + 1 
-            Inst.etq = Desig.etq + 1
+        return Inst
     }
 
-    Funcion inst_R3{
+    funcion inst_R3 (Expr) {
+        Expr.tsh = Inst.tsh
+        Inst.err = Expr.err
+        Inst.cod = Expr.cod || out
+        Expr.etqh = Inst.etqh
+        Inst.etq = Expr.etqh + 1 
+        Expr.refh = false
 
-        Inst → out ipar Expr fpar
-            Expr.tsh = Inst.tsh
-            Inst.err = Expr.err
-            Inst.cod = Expr.cod || out
-            Expr.etqh = Inst.etqh
-            Inst.etq = Expr.etqh + 1 
-            Expr.refh = false
+        return Inst
     }
 
-    Funcion inst_R4{
+    funcion inst_R4 () {
+        Inst.err = false
+        Inst.cod = swap1
+        Inst.etq = Inst.etqh + 1
 
-        Inst → swap1 ipar fpar
-            Inst.err = false
-            Inst.cod = swap1
-            Inst.etq = Inst.etqh + 1
+        return Inst
     }
 
-    Funcion inst_R5{
-        Inst → swap2 ipar fpar
-            Inst.err = false
-            Inst.cod = swap2
-            Inst.etq = Inst.etqh +1
+    funcion inst_R5 () {
+        Inst.err = false
+        Inst.cod = swap2
+        Inst.etq = Inst.etqh + 1
+
+        return Inst
     }
 
-    Funcion inst_R6{
+    funcion inst_R6 (Expr, Insts, ElseIf) {
+        Expr.tsh = Inst.tsh
+        Insts1.tsh = Inst0.tsh
+        ElseIf.tsh = Inst.tsh
+        Inst.err = Expr.err ∨ Insts.err ∨ ElseIf.err
+        Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
+        Expr.etqh = Inst.etqh
+        Insts.etqh = Expr.etq + 1
+        ElseIf.etqh = Insts.etq + 1
+        Inst.etq = ElseIf.etq
+        Expr.refh = false
 
-        Inst → if Expr then Insts ElseIf
-            Expr.tsh = Inst.tsh
-            Insts1.tsh = Inst0.tsh
-            ElseIf.tsh = Inst.tsh
-            Inst.err = Expr.err ∨ Insts.err ∨ ElseIf.err
-            Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Elseif.etq) || ElseIf.cod
-            Expr.etqh = Inst.etqh
-            Insts.etqh = Expr.etq + 1
-            ElseIf.etqh = Insts.etq + 1
-            Inst.etq = ElseIf.etq
-            Expr.refh = false
+        return Inst
     }
 
-    Funcion inst_R7{
+    funcion inst_R7 (Expr, Insts) {
+        Expr.tsh = Inst.tsh
+        Insts.tsh = Inst.tsh
+        Inst.err = Expr.err ∨ Insts.err
+        Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Inst.etqh)
+        Expr.etqh = Inst.etqh 
+        Insts.etqh = Expr.etq + 1
+        Inst.etq = Insts + 1 
+        Expr.refh = false
 
-        Inst → while Expr do Insts endwhile
-            Expr.tsh = Inst.tsh
-            Insts.tsh = Inst.tsh
-            Inst.err = Expr.err ∨ Insts.err
-            Inst.cod = Expr.cod || ir_f(Insts.etq + 1) || Insts.cod || ir_a(Inst.etqh)
-            Expr.etqh = Inst.etqh 
-            Insts.etqh = Expr.etq + 1
-            Inst.etq = Insts + 1 
-            Expr.refh = false
+        return Inst
     }
 
-    Funcion inst_R8{
+    funcion inst_R8 (InstCall) {
+        InstCall.tsh = Inst.tsh
+        Inst.err = InstCall.err
+        Inst.cod = IsntCall.cod
+        InstCall.etqh = Inst.etqh
+        Inst.etq = InstCall.etq
 
-        Inst → InstCall
-            InstCall.tsh = Inst.tsh
-            Inst.err = InstCall.err
-            Inst.cod = IsntCall.cod
-            InstCall.etqh = Inst.etqh
-            Inst.etq = InstCall.etq
+        return Inst
     }
 
-    Funcion inst_R9{
+    funcion inst_R9 () {
+        Inst.err = false
+        Inst.cod = []
+        Inst.etq = Inst.etqh
 
-        Inst → ɛ
-            Inst.err = false
-            Inst.cod = []
-            Inst.etq = Inst.etqh
+        return Inst
     }
 
-    Funcion elseIf_R1{
+    funcion elseIf_R1 (Insts) {
+        Insts.tsh = ElseIf.tsh
+        ElseIf.err = Insts.err
+        ElseIf.cod = Inst.cod
+        Insts.etqh = ElseIf.etqh
+        ElseIf.etq = Insts.etq
 
-        ElseIf → else Insts endif
-            Insts.tsh = ElseIf.tsh
-            ElseIf.err = Insts.err
-            ElseIf.cod = Inst.cod
-            Insts.etqh = ElseIf.etqh
-            ElseIf.etq = Insts.etq
+        return ElseIf
     }
 
-    Funcion elseIf_R2{
+    funcion elseIf_R2 () {
+        ElseIf.err = false
+        ElseIf.cod = []
+        ElseIf.etq = ElseIf.etqh
 
-        ElseIf → endif
-            ElseIf.err = false
-            ElseIf.cod = []
-            ElseIf.etq = ElseIf.etqh
+        return ElseIf
     }
 
-    Funcion instCall_R1{
+    funcion instCall_R1 (ident, SRParams) {
+        SRParams.tsh = InstCall.tsh
+        SRParams.nparams = 0
+        SRParams.nombresubprogh = ident.lex
+        SRParmas.listaparamnombresh = []
+        InstCall.err = SRParams.err ∨ ¬existe(SRParams.tsh, ident.lex) ∨ SRParams.nparams != numParametros(SRParams.tsh, ident.lex) 
+        InstCall.cod = 
+                    //Reestructuramos los punteros CP y BASE
+                    apila-ret || apila-dir(0) || apila(1) || mas || desapila-ind || apiladir(1) || apila-dir(0) || apila(2) || mas || desapila-ind || apila-dir(0) || apila(3) || suma || desapila-dir(0)||
+                    //Paso de parámetros
+                    SRParams.cod||
+                    // Saltar al subprograma
+                    apila-dir(0) || desapila-dir(1) || apila-dir(0) || apila(tamParametros(InstCall.tsh, ident)) || mas || desapila-dir(0) || ir-ind ||
+                    //Al volver del subprograma devolver los punteros CP y BASE a su sitio
+                    apila-dir(1) || apila(3) || menos || desapila-dir(0) || apila-dir(1) || apila(1) || menos || apila-ind || desapila-dir(1)
 
-        InstCall → call ident lpar SRParams rpar
-            SRParams.tsh = InstCall.tsh
-            SRParams.nparams = 0
-            SRParams.nombresubprogh = ident.lex
-            SRParmas.listaparamnombresh = []
-            InstCall.err = SRParams.err ∨ ¬existe(SRParams.tsh, ident.lex) ∨ SRParams.nparams != numParametros(SRParams.tsh, ident.lex) 
-            InstCall.cod = 
-                        //Reestructuramos los punteros CP y BASE
-                        apila-ret || apila-dir(0) || apila(1) || mas || desapila-ind || apiladir(1) || apila-dir(0) || apila(2) || mas || desapila-ind || apila-dir(0) || apila(3) || suma || desapila-dir(0)||
-                        //Paso de parámetros
-                        SRParams.cod||
-                        // Saltar al subprograma
-                        apila-dir(0) || desapila-dir(1) || apila-dir(0) || apila(tamParametros(InstCall.tsh, ident)) || mas || desapila-dir(0) || ir-ind ||
-                        //Al volver del subprograma devolver los punteros CP y BASE a su sitio
-                        apila-dir(1) || apila(3) || menos || desapila-dir(0) || apila-dir(1) || apila(1) || menos || apila-ind || desapila-dir(1)
+        SRParams.nparams = 0
+        SRParams.etqh = InstCall.etqh + 14 
+        InstCall.etq = SRParams.etq + 16
 
-            SRParams.nparams = 0
-            SRParams.etqh = InstCall.etqh + 14 
-            InstCall.etq = SRParams.etq + 16
+        return InstCall
     }
 
-    Funcion srParams_R1{
+    funcion srParams_R1 (RParams) {
+        RParams.tsh = SRParams.tsh
+        RParams.nombresubprogh = SRParams.nombresubprogh
+        RParams.listaparamnombresh = SRParams.listaparamnombresh
+        SRParams.err = RParams.err
+        SRParams.cod = RParams.cod
+        RParams.etqh = SRParams.etqh
+        SRParams.etq = RParams.etq 
+        RParams.nparamsh = SRParams.nparamsh
+        SRParams.nparams = RParams.nparams
 
-        SRParams → RParams
-            RParams.tsh = SRParams.tsh
-            RParams.nombresubprogh = SRParams.nombresubprogh
-            RParams.listaparamnombresh = SRParams.listaparamnombresh
-            SRParams.err = RParams.err
-            SRParams.cod = RParams.cod
-            RParams.etqh = SRParams.etqh
-            SRParams.etq = RParams.etq 
-            RParams.nparamsh = SRParams.nparamsh
-            SRParams.nparams = RParams.nparams
+        return SRParams
     }
 
-    Funcion srParams_R2{
+    funcion srParams_R2 () {
+        SRParams.err = false
+        SRParams.nparams = SRParams.nparamsh
+        SRParams.listaparamnombres = SRParams.listaparamnombresh
+        SRParams.cod = []
+        SRParms.etq = SRParams.etqh
+        SRParams.nparams = SRParams.nparamsh
 
-        SRParams → ɛ
-            SRParams.err = false
-            SRParams.nparams = SRParams.nparamsh
-            SRParams.listaparamnombres = SRParams.listaparamnombresh
-            SRParams.cod = []
-            SRParms.etq = SRParams.etqh
-            SRParams.nparams = SRParams.nparamsh
+        return SRParams
     }
 
-    Funcion rParams_R1{
+    funcion rParams_R1 (RParams1, RParam) {
+        RParams1.tsh = RParams0.tsh
+        RParam.tsh = RParams0.tsh
+        RParams0.err = RParams1.err ∨ Rparam.err  
+        RParams1.nombresubprogh = RParams0.nombresubprogh
+        RParam.nombresubprogh = RParams0.nombresubprogh 
+        RParams1.listaparamnombresh = RParams0.listaparamnombresh
+        RParam.listaparamnombresh = RParams1.listaparamnombres  
+        RParams0.cod = RParams1.cod || RParam.cod
+        RParams1.etqh = RParams0.etqh
+        RParam.etqh = RParams1.etq
+        RParams.etq = RParam.etq  
+        RParams1.nparamsh = RParams0.nparamsh
+        RParam.nparamsh = RParams1.nparams
+        RParams.nparams = RParam.nparams
 
-        RParams → RParams coma RParam
-            RParams1.tsh = RParams0.tsh
-            RParam.tsh = RParams0.tsh
-            RParams0.err = RParams1.err ∨ Rparam.err  
-            RParams1.nombresubprogh = RParams0.nombresubprogh
-            RParam.nombresubprogh = RParams0.nombresubprogh 
-            RParams1.listaparamnombresh = RParams0.listaparamnombresh
-            RParam.listaparamnombresh = RParams1.listaparamnombres  
-            RParams0.cod = RParams1.cod || RParam.cod
-            RParams1.etqh = RParams0.etqh
-            RParam.etqh = RParams1.etq
-            RParams.etq = RParam.etq  
-            RParams1.nparamsh = RParams0.nparamsh
-            RParam.nparamsh = RParams1.nparams
-            RParams.nparams = RParam.nparams
+        return RParams0
     }
 
-    Funcion rParams_R2{
+    funcion rParams_R2 (RParam) {
+        RParam.tsh = RParams.tsh
+        RParam.nombresubprogh = RParams.nombresubprogh
+        RParam.listaparamnombresh = RParams.listaparamnombresh
+        RParams.listaparamnombres = RParam.listaparamnombres
+        RParams.err = RParam.err
+        RParams.cod = RParam.cod
+        RParam.etqh = RParams.etqh
+        RParams.etq = RParam.etq
+        RParam.nparamsh = RParams.nparamsh
+        RParams.nparams = RParam.nparams
 
-        RParams → RParam
-            RParam.tsh = RParams.tsh
-            RParam.nombresubprogh = RParams.nombresubprogh
-            RParam.listaparamnombresh = RParams.listaparamnombresh
-            RParams.listaparamnombres = RParam.listaparamnombres
-            RParams.err = RParam.err
-            RParams.cod = RParam.cod
-            RParam.etqh = RParams.etqh
-            RParams.etq = RParam.etq
-            RParam.nparamsh = RParams.nparamsh
-            RParams.nparams = RParam.nparams
+        return RParams
     }
 
-    Funcion rParam_R1{
-
-        RParam → ident asig Expr
-            Expr.tsh = RParam.tsh
-            RParam.listaparamnombres = RParam.listaparamnombresh ++ ident 
-            RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
-            ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig ∨ (ident ∈ listaparamnombresh)
-            RParam.cod = Expr.cod || apila_dir(0) || apila(RParams. nparams) || mas   
-                        si (RParam.tsh[ident.lex].clase == pvariable)
+    funcion rParam_R1 (ident, Expr) {
+        Expr.tsh = RParam.tsh
+        RParam.listaparamnombres = RParam.listaparamnombresh ++ ident 
+        RParam.err = Expr.err ∨ ¬existe(Exp.tsh, ident.lex) ∨ ¬esVariable(Expr.tsh, ident.lex)
+        ∨ ¬estaDeclarado(RParam.tsh, ident.lex, RParam.nombresubprogh) ∨ ¬compatible(ident.tipo,Expr.tipo) ∨ ¬Expr.desig ∨ (ident ∈ listaparamnombresh)
+        RParam.cod = Expr.cod || apila_dir(0) || apila(RParams. nparams) || mas   
+                    si (RParam.tsh[ident.lex].clase == pvariable)
+                        || desapila-ind
+                    sino si (esPrimitivo(RParam.tsh[ident.lex].tipo)
                             || desapila-ind
-                        sino si (esPrimitivo(RParam.tsh[ident.lex].tipo)
-                                || desapila-ind
-                            sino // es un tipo compuesto
-                                || mueve(tamTipo(RParam.tsh[ident.lex].tipo, Rparam.tsh))
-            RParam.nparams = RParams.nparamsh + 1 
-            Expr.etqh = RParam.etqh 
-            RParam.etq = Expr.etq + 4 
-            Expr.refh = RParam.tsh[ident.lex] == pvariable 
+                        sino // es un tipo compuesto
+                            || mueve(tamTipo(RParam.tsh[ident.lex].tipo, Rparam.tsh))
+        RParam.nparams = RParams.nparamsh + 1 
+        Expr.etqh = RParam.etqh 
+        RParam.etq = Expr.etq + 4 
+        Expr.refh = RParam.tsh[ident.lex] == pvariable 
+
+        return RParam
     }
 
-    Funcion sSubprogs_R1{
+    funcion sSubprogs_R1 (Subprogs) {
+        Subprogs.tsh = SSubprogs.tsh
+        SSbprogs.ts = Subprog.ts
+        SSubprogs.err = Subprogrs.err
+        SSubprogs.cod = Subprogs.cod
+        Subprogs.etqh = SSubprogs.etqh
+        SSubprogs.etq = Subprogs.etq
 
-        SSubprogs → subprograms illave Subprogs fllave 
-            Subprogs.tsh = SSubprogs.tsh
-            SSbprogs.ts = Subprog.ts
-            SSubprogs.err = Subprogrs.err
-            SSubprogs.cod = Subprogs.cod
-            Subprogs.etqh = SSubprogs.etqh
-            SSubprogs.etq = Subprogs.etq
+        return SSubprogs
     }
 
-    Funcion sSubprogs_R2{
+    funcion sSubprogs_R2 () {
+        SSubprogs.tsh = Subprog.tsh
+        SSubprogs.cod = [] 
+        SSubprogs.etq = SSubprogs.etqh
 
-        SSubprogs → subprograms illave fllave 
-            SSubprogs.tsh = Subprog.tsh
-            SSubprogs.cod = [] 
-            SSubprogs.etq = SSubprogs.etqh
+        return SSubprogs
     }
 
-    Funcion sSubprogs_R3{
+    funcion sSubprogs_R3 () {
+        SSubprogs.tsh = Subprog.tsh
+        SSubprogs.err = false
+        SSubprogs.cod = []
+        SSubprogs.etq = SSubprogs.etqh
 
-        SSubprogs → ɛ
-            SSubprogs.tsh = Subprog.tsh
-            SSubprogs.err = false
-            SSubprogs.cod = []
-            SSubprogs.etq = SSubprogs.etqh
+        return SSubprogs
     }
 
-    Funcion subprogs_R1{
+    funcion subprogs_R1 (Subprogs1, Subprog) {
+        Subprogs1.tsh =  Subprogs0.tsh
+        Subprog.tsh = Subprogs0.tsh 
+        Subprogs0.ts = Subprog.ts  
+        Subprogs0.err = Subprogs1.err ∨ Subprog.err
+        Subprogs0.cod  = Subprogs1.cod || Subprog.cod
+        Subprogs1.etqh = Subprogs0.etqh
+        Subprog.etqh   = Subprogs1.etq 
+        Subprogs0.etq  = Subprog.etq
 
-        Subprogs → Subprogs Subprog
-            Subprogs1.tsh =  Subprogs0.tsh
-            Subprog.tsh = Subprogs0.tsh 
-            Subprogs0.ts = Subprog.ts  
-            Subprogs0.err = Subprogs1.err ∨ Subprog.err
-            Subprogs0.cod  = Subprogs1.cod || Subprog.cod
-            Subprogs1.etqh = Subprogs0.etqh
-            Subprog.etqh   = Subprogs1.etq 
-            Subprogs0.etq  = Subprog.etq
+        return Subprogs0
     }
 
-    Funcion subprogs_R2{
+    funcion subprogs_R2 (Subprog) {
+        Subprog.tsh = Subprogs.tsh
+        Subprogs.ts = Subprog.ts
+        Subprogs.err = Subprog.err
+        Subprogs.cod = Subprog.cod
+        Subprog.etqh = Subprogs.etqh
+        Subprogs.etq = Subprog.etq
 
-        Subprogs → Subprog
-            Subprog.tsh = Subprogs.tsh
-            Subprogs.ts = Subprog.ts
-            Subprogs.err = Subprog.err
-            Subprogs.cod = Subprog.cod
-            Subprog.etqh = Subprogs.etqh
-            Subprogs.etq = Subprog.etq
+        return Subprogs
     }
 
-    Funcion subprog_R1{
+    funcion subprog_R1 (ident, SFParams, SVars, SInsts) {
+        SFParams.dirh = 0
+        SFParams.tsh = CreaTS(Subprog.tsh)
+        SVars.tsh = SFParams.ts
+        SVars.dirh = SFParams.dir
+        SInsts.tsh = SVars.ts
+        Subprog.ts = añade(Subprog.tsh, ident, subprog, global, ? , <dir:Subprog.etqh, params:SFParams.params>)
+        Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨ parametrosNoRepetidos(SParams.ts, ident)
+        Subprog.cod = apila-dir(0) || apila(SVars.dir) || mas || desapila-dir(0) ||
+                    SInsts.cod || 
+                    apila_dir(1) || apila(2) || menos || apila_ind || ir_ind
+        SInsts.etqh = Subprog.etqh 
+        Subprog.etq = SInsts.etq + 5
+        SVars.nivelh = local
 
-        Subprog → subprogram ident ipar SFParams fpar illave SVars SInsts fllave
-            SFParams.dirh = 0
-            SFParams.tsh = CreaTS(Subprog.tsh)
-            SVars.tsh = SFParams.ts
-            SVars.dirh = SFParams.dir
-            SInsts.tsh = SVars.ts
-            Subprog.ts = añade(Subprog.tsh, ident, subprog, global, ? , <dir:Subprog.etqh, params:SFParams.params>)
-            Subprog.err = existe(Subprog.tsh, ident) ∨ SParams.err ∨ SVars.err ∨ SInsts.err ∨ parametrosNoRepetidos(SParams.ts, ident)
-            Subprog.cod = apila-dir(0) || apila(SVars.dir) || mas || desapila-dir(0) ||
-                        SInsts.cod || 
-                        apila_dir(1) || apila(2) || menos || apila_ind || ir_ind
-            SInsts.etqh = Subprog.etqh 
-            Subprog.etq = SInsts.etq + 5
-            SVars.nivelh = local
+        return Subprog
     }
 
-    Funcion sfParams_R1{
+    funcion sfParams_R1 (FParams) {
+        FParams.tsh = SFParams.tsh
+        SFParams.ts = FParams.ts
+        FParams.dirh = SFParams.dirh
+        SFParams.dir = FParams.dir
+        SFParams.params = FParams.params
+        SFParams.err = FParams.err
 
-        SFParams → FParams 
-            FParams.tsh = SFParams.tsh
-            SFParams.ts = FParams.ts
-            FParams.dirh = SFParams.dirh
-            SFParams.dir = FParams.dir
-            SFParams.params = FParams.params
-            SFParams.err = FParams.err
+        return SFParams
     }
 
-    Funcion sfParams_R2{
+    funcion sfParams_R2 () {
+        SFParams.ts = SFParams.tsh
+        SFParams.dir = SFParams.dirh
+        SFParams.params = []
+        SFParams.err = false
 
-        SFParams → ɛ
-            SFParams.ts = SFParams.tsh
-            SFParams.dir = SFParams.dirh
-            SFParams.params = []
-            SFParams.err = false
+        return SFParams
     }
 
-    Funcion fParams_R1{
+    funcion fParams_R1 (FParams, FParam) {
+        FParams1.tsh = FParams0.tsh
+        FParams1.dirh = FParams0.dirh
+        FParam.tsh = FParams1.tsh
+        FParam.dirh = FParams1.dirh
+        FParams0.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id) 
+        FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+        FParams0.params = FParams1.params ++ FParam.params
+        FParams0.err = existe(FParam.ts, FParam.id, FParam.nivel)
 
-        FParams → FParams coma FParam 
-            FParams1.tsh = FParams0.tsh
-            FParams1.dirh = FParams0.dirh
-            FParam.tsh = FParams1.tsh
-            FParam.dirh = FParams1.dirh
-            FParams0.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id) 
-            FParams0.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
-            FParams0.params = FParams1.params ++ FParam.params
-            FParams0.err = existe(FParam.ts, FParam.id, FParam.nivel)
+        return FParams
     }
 
-    Funcion fParams_R2{
+    funcion fParams_R2 (FParam) {
+        FParam.dirh = FParams.dirh
+        FParam.tsh = FParams.tsh
+        FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
+        FParams.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id)
+        FParams.params = FParap.params
+        FParams.err = existe(FParam.ts, FParam.id, FParam.nivel)
 
-        FParams → FParam
-            FParam.dirh = FParams.dirh
-            FParam.tsh = FParams.tsh
-            FParams.ts = añade(FParam.ts, FParam.id, FParam.clase, FParam.nivel, FParam.dir, FParam.tipo)
-            FParams.dir = FParam.dir + desplazamiento(FParam.tipo, FParam.id)
-            FParams.params = FParap.params
-            FParams.err = existe(FParam.ts, FParam.id, FParam.nivel)
+        return FParams
     }
 
-    Funcion fParam_R1{
+    funcion fParam_R1 (TypeDesc) {
+        FParam.ts = FParam.tsh
+        FParam.dir = FParam.dirh 
+        Fparam.id = ident.lex
+        FParam.clase = pvalor
+        FParam.nivel = local
+        FParam.tipo = (si (TypeDesc.tipo== TPrim) {<t:TypeDesc.tipo, tam:1>}
+                   si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
+        FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:falso, despl:DParam.dirh>]
+        TypeDesc.tsh = FParam.tsh
 
-        FParam → TypeDesc ident 
-            FParam.ts = FParam.tsh
-            FParam.dir = FParam.dirh 
-            Fparam.id = ident.lex
-            FParam.clase = pvalor
-            FParam.nivel = local
-            FParam.tipo = (si (TypeDesc.tipo== TPrim) {<t:TypeDesc.tipo, tam:1>}
-                       si no {<t:ref, id:FParam.id, tam: desplazamiento(TypeDesc.tipo, Param.id)>} )
-            FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:falso, despl:DParam.dirh>]
-            TypeDesc.tsh = FParam.tsh
+        return FParam
     }
 
-    Funcion fParam_R2{
+    funcion fParam_R2 (TypeDesc, ident) {
+        FParam.ts = FParam.tsh
+        FParam.dir =  FParam.dirh 
+        Fparam.id = ident.lex
+        FParam.clase = pvariable
+        FParam.nivel = local
+        FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
+                   si no {<t:ref, id:FParam.id, tam: 1>} )
+        FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh>]
+        TypeDesc.tsh = FParam.tsh
 
-        FParam → TypeDesc mul ident
-            FParam.ts = FParam.tsh
-            FParam.dir =  FParam.dirh 
-            Fparam.id = ident.lex
-            FParam.clase = pvariable
-            FParam.nivel = local
-            FParam.tipo = (si (TypeDesc.tipo == TPrim) {<t:TypeDesc.tipo, tam:1>}
-                       si no {<t:ref, id:FParam.id, tam: 1>} )
-            FParam.params = [<id:FParam.id, tam:desplazamiento(TypeDesc.tipo, Param.id), ref:cierto, despl:DParam.dirh>]
-            TypeDesc.tsh = FParam.tsh
+        return FParam
     }
 
-    Funcion desig_R1{
+    funcion desig_R1 (ident) {
+        Desig.tipo = Desig.tsh[ident.lex].tipo
+        Desig.err = ¬existe(Desig.tsh, ident.lex) ∨ ¬esVariable(Desig.tsh, ident.lex)
+        Desig.cod = si (Desig.tsh[ident.lex].nivel == global) entonces 
+                        apila(Desig.tsh[ident.lex].dir)
+                        Desig.etq = Desig.etq + 1 
 
-        Desig → ident
-            Desig.tipo = Desig.tsh[ident.lex].tipo
-            Desig.err = ¬existe(Desig.tsh, ident.lex) ∨ ¬esVariable(Desig.tsh, ident.lex)
-             Desig.cod = si (Desig.tsh[ident.lex].nivel == global) entonces 
-                            apila(Desig.tsh[ident.lex].dir)
-                            Desig.etq = Desig.etq + 1 
+                    si no // el nivel el local
+                        si (Desig.tsh[ident.lex].clase == var || Desig.tsh[ident.lex].clase == pvalor) entonces 
+                            apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas
+                            Desig.etq = Desig.etq + 3 
 
-                        si no // el nivel el local
-                            si (Desig.tsh[ident.lex].clase == var || Desig.tsh[ident.lex].clase == pvalor) entonces 
-                                apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas
-                                Desig.etq = Desig.etq + 3 
+                        si no si (Desig.tsh[ident.lex].clase == pvariable ) 
+                            apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas || apila_ind 
+                            Desig.etq = Desig.etq + 4 
 
-                            si no si (Desig.tsh[ident.lex].clase == pvariable ) 
-                                apila_dir(1) || apila(Desig.tsh[ident.lex].dir) || mas || apila_ind 
-                                Desig.etq = Desig.etq + 4 
+        return Desig
     }
 
-    Funcion desig_R2{
+    funcion desig_R2 (Desig1, Expr) {
+        Desig0.tipo = Desig1.tipo
+        Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
+        Desig0.cod = Desig1.cod || Expr.cod || range(tamTipo(Desig1.type)) || apila(tamTipo(Desig1.type)) || mul || mas
+        Desig1.etqh = Desig0.etqh 
+        Expr.etqh = Desig1.etq
+        Desig0.etq = Expr.etq + 3  
+        Expr.refh = false
 
-        Desig → Desig icorchete Expr fcorchete
-            Desig0.tipo = Desig1.tipo
-            Desig0.err = Desig1.err ∨ Expr.err ∨ ¬tamañoCorrecto()
-            Desig0.cod = Desig1.cod || Expr.cod || range(tamTipo(Desig1.type)) || apila(tamTipo(Desig1.type)) || mul || mas
-            Desig1.etqh = Desig0.etqh 
-            Expr.etqh = Desig1.etq
-            Desig0.etq = Expr.etq + 3  
-            Expr.refh = false
+        return Desig0
     }
 
-    Funcion desig_R3{
+    funcion desig_R3 (Desig, litnat) {
+        Desig0.tipo = Desig1.tipo
+        Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
+        Desig0.cod = Desig1.cod || apila(desplTupla(litnat.lex, Desig1.type)) || mas
+        Desig1.etqh = Desig0.etqh
+        Desig0.etq = Desgi1.etq + 2
 
-        Desig → Desig barrabaja litnat
-            Desig0.tipo = Desig1.tipo
-            Desig0.err = Desig1.err ∨ ¬tamañoCorrecto()
-            Desig0.cod = Desig1.cod || apila(desplTupla(litnat.lex, Desig1.type)) || mas
-            Desig1.etqh = Desig0.etqh
-            Desig0.etq = Desgi1.etq + 2
+        return Desig0
     }
 
-    Funcion expr_R1{
+    funcion expr_R1 (Term0, Op0, Term1) {
+        Expr.desig = false
+        Expr.tipo = tipoFunc(Term0.tipo, Op0.op, Term1.tipo)
+        Term0.tsh = Expr.tsh
+        Term1.tsh = Expr.tsh
+        Expr.desig = false
+        Expr0.cod = Term1.cod || Term2.cod || Op0.op
+        Term1.etqh = Expr.etqh 
+        Term2.etqh = Term1.etq
+        Expr.etq = Term2.etq + 1  
+        Term0.refh = Expr.refh
+        Term1.refh = Expr.refh
 
-        Expr → Term Op0 Term
-            Expr.desig = false
-            Expr.tipo = tipoFunc(Term0.tipo, Op0.op, Term1.tipo)
-            Term0.tsh = Expr.tsh
-            Term1.tsh = Expr.tsh
-            Expr.desig = false
-            Expr0.cod = Term1.cod || Term2.cod || Op0.op
-            Term1.etqh = Expr.etqh 
-            Term2.etqh = Term1.etq
-            Expr.etq = Term2.etq + 1  
-            Term0.refh = Expr.refh
-            Term1.refh = Expr.refh
+        return Expr
     }
 
-    Funcion expr_R2{
+    funcion expr_R2 (Term) {
+        Expr.tipo = Term.tipo
+        Term.tsh = Expr.tsh
+        Expr.desig = false
+        Expr.desig = Term.desig
+        Expr.cod = Term.cod
+        Term.etqh = Expr.etqh
+        Expr.etq = Term.etq
+        Term.refh = Expr.refh
 
-        Expr → Term
-            Expr.tipo = Term.tipo
-            Term.tsh = Expr.tsh
-            Expr.desig = false
-            Expr.desig = Term.desig
-            Expr.cod = Term.cod
-            Term.etqh = Expr.etqh
-            Expr.etq = Term.etq
-            Term.refh = Expr.refh
+        return Expr
     }
 
-    Funcion term_R1{
+    funcion term_R1 (Term1, Op1, Fact) {
+        Term0.tipo = tipoFunc(Term1.tipo, Op1.op, Fact.tipo)
+        Term1.tsh = Term0.tsh
+        Fact.tsh = Term0.tsh
+        Term0.desig = false
+        Term0.cod = Term1.cod || Fact.cod || Op1.op
+        Term1.etqh = Term0.etqh 
+        Fact.etqh = Term1.etq
+        Term0.etq = Fact.etq + 1 
+        Term1.refh = Term0.refh 
+        Fact.refh = Term0.refh
 
-        Term → Term Op1 Fact 
-            Term0.tipo = tipoFunc(Term1.tipo, Op1.op, Fact.tipo)
-            Term1.tsh = Term0.tsh
-            Fact.tsh = Term0.tsh
-            Term0.desig = false
-            Term0.cod = Term1.cod || Fact.cod || Op1.op
-            Term1.etqh = Term0.etqh 
-            Fact.etqh = Term1.etq
-            Term0.etq = Fact.etq + 1 
-            Term1.refh = Term0.refh 
-            Fact.refh = Term0.refh
+        return Term0
     }
 
-    Funcion term_R2{
-        Term → Term or Fact
-            Term0.tipo = tipoFunc(Term1.tipo, or, Fact.tipo)
-            Term1.tsh = Term0.tsh
-            Fact.tsh = Term0.tsh
-            Term0.desig = false
-            Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
-            Term1.etqh = Term0.etqh 
-            Fact.etqh = Term1.etq + 3 
-            Term0.etq = Fact.etq  
-            Expr.refh = false
-            Term1.refh = Term0.refh
-            Fact.refh = Term0.refh
+    funcion term_R2 (Term1, Fact) {
+        Term0.tipo = tipoFunc(Term1.tipo, or, Fact.tipo)
+        Term1.tsh = Term0.tsh
+        Fact.tsh = Term0.tsh
+        Term0.desig = false
+        Term0.cod → Term1.cod || copia || ir-v(Fact.etq ) || desapila || Fact.cod 
+        Term1.etqh = Term0.etqh 
+        Fact.etqh = Term1.etq + 3 
+        Term0.etq = Fact.etq  
+        Expr.refh = false
+        Term1.refh = Term0.refh
+        Fact.refh = Term0.refh
+
+        return Term0
     }
      
-    Funcion term_R3{
+    funcion term_R3 (Fact) {
+        Term.tipo = Fact.tipo
+        Fact.tsh = Term.tsh
+        Term.desig = Fact.desig
+        Term.cod = Fact.cod
+        Fact.etqh = Term.etqh
+        Term.etq = Fact.etq
+        Fact.refh = Term.refh
 
-        Term → Fact
-            Term.tipo = Fact.tipo
-            Fact.tsh = Term.tsh
-            Term.desig = Fact.desig
-            Term.cod = Fact.cod
-            Fact.etqh = Term.etqh
-            Term.etq = Fact.etq
-            Fact.refh = Term.refh
+        return Term
     }
 
-    Funcion fact_R1{
+    funcion fact_R1 (Fact1, Op2, Shft) {
+        Fact0.tipo = tipoFunc(Fact1.tipo, Op2.op, Shft.tipo) 
+        Fact1.tsh = Fact0.tsh
+        Shft.tsh = Fact0.tsh
+        Fact0.desig = false
+        Fact0.cod = Fact1.cod || Shft.cod || Op2.op
+        Fact1.etqh = Fact0.etqh 
+        Shft.etqh = Fact1.etq 
+        Term0.etq = Shft.etq + 1 
+        Fact1.refh = Fact0.refh
+        Shft.refh = Fact0.refh
 
-        Fact → Fact Op2 Shft
-            Fact0.tipo = tipoFunc(Fact1.tipo, Op2.op, Shft.tipo) 
-            Fact1.tsh = Fact0.tsh
-            Shft.tsh = Fact0.tsh
-            Fact0.desig = false
-            Fact0.cod = Fact1.cod || Shft.cod || Op2.op
-            Fact1.etqh = Fact0.etqh 
-            Shft.etqh = Fact1.etq 
-            Term0.etq = Shft.etq + 1 
-            Fact1.refh = Fact0.refh
-            Shft.refh = Fact0.refh
+        return Fact0
     }
 
-    Funcion fact_R2{
+    funcion fact_R2 (Fact1, Shft) {
+        Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
+        Fact1.tsh = Fact0.tsh
+        Shft.tsh = Fact0.tsh
+        Fact0.desig = false
+        Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
+        Fact1.etqh = = Fact0.etqh
+        Shft.etqh = Fact1.etq + 3
+        Fact0.etq = Shft.etq 
+        Fact1.refh = Fact0.refh
+        Shft.refh = Fact0.refh
 
-        Fact → Fact and Shft
-            Fact0.tipo = tipoFunc(Fact1.tipo, and, Shft.tipo)
-            Fact1.tsh = Fact0.tsh
-            Shft.tsh = Fact0.tsh
-            Fact0.desig = false
-            Fact0.cod = Fact1.cod || copia || ir-f(Shft.etq ) || desapila || Shft.cod 
-            Fact1.etqh = = Fact0.etqh
-            Shft.etqh = Fact1.etq + 3
-            Fact0.etq = Shft.etq 
-            Fact1.refh = Fact0.refh
-            Shft.refh = Fact0.refh
+        return Fact0
     }
 
-    Funcion fact_R3{
+    funcion fact_R3 (Shft) {
+        Fact.tipo = Shft.tipo
+        Shft.tsh = Fact.tsh
+        Fact.desig = Shft.desig 
+        Fact.cod = Shft.cod
+        Shft.etqh = Fact.etqh
+        Fact.etq = Shft.etq
+        Shft.refh = Fact.refh
 
-        Fact → Shft
-            Fact.tipo = Shft.tipo
-            Shft.tsh = Fact.tsh
-            Fact.desig = Shft.desig 
-            Fact.cod = Shft.cod
-            Shft.etqh = Fact.etqh
-            Fact.etq = Shft.etq
-            Shft.refh = Fact.refh
+        return Fact
     }
 
-    Funcion shft_R1{
+    funcion shft_R1 (Unary, Op3, Shft1) {
+        Shft0.tipo = tipoFunc(Unary.tipo, Op3.op, Shft.tipo) 
+        Unary.tsh = Shft0.tsh
+        Shft1.tsh = Shft0.tsh
+        Shft0.desig = false
+        Shft0.cod = Unary.cod || Shft1.cod || Op3.op
+        Unary.etqh = Shft0.etqh 
+        Shft1.etqh = Unary.etq 
+        Shft0.etq = Shft1.etq + 1 
+        Unary.refh = Shft0.refh
+        Shft1.refh = Shft0.refh
 
-        Shft → Unary Op3 Shft
-            Shft0.tipo = tipoFunc(Unary.tipo, Op3.op, Shft.tipo) 
-            Unary.tsh = Shft0.tsh
-            Shft1.tsh = Shft0.tsh
-            Shft0.desig = false
-            Shft0.cod = Unary.cod || Shft1.cod || Op3.op
-            Unary.etqh = Shft0.etqh 
-            Shft1.etqh = Unary.etq 
-            Shft0.etq = Shft1.etq + 1 
-            Unary.refh = Shft0.refh
-            Shft1.refh = Shft0.refh
+        return Shft0
     }
 
-    Funcion shft_R2{
+    funcion shft_R2 (Unary) {
+        Shft.tipo = Unary.tipo
+        Unary.tsh = Shft.tsh
+        Shft.desig = Unary.desig
+        Shft.cod = Unary.cod
+        Unary.etqh = Shft.eqth
+        Shft.etq = Unary.etq
+        Unary.refh = Shft.refh
 
-        Shft → Unary
-            Shft.tipo = Unary.tipo
-            Unary.tsh = Shft.tsh
-            Shft.desig = Unary.desig
-            Shft.cod = Unary.cod
-            Unary.etqh = Shft.eqth
-            Shft.etq = Unary.etq
-            Unary.refh = Shft.refh
+        return Shft
     }
 
-    Funcion unary_R1{    
-        Unary → Op4 Unary
-            Unary0.tipo = opUnario(Op4.op, Unary1.tipo)
-            Unary1.tsh = Unary0.tsh
-            Unary0.desig = false
-            Unary0.cod = Unary1.cod || Op4.op
-            Unary1.etqh = Unary0.eqth
-            Unary0.eqt = Unary1.etq + 1 
-            Unary1.refh = Unary0.refh
+    funcion unary_R1 (Op4, Unary1) {
+        Unary0.tipo = opUnario(Op4.op, Unary1.tipo)
+        Unary1.tsh = Unary0.tsh
+        Unary0.desig = false
+        Unary0.cod = Unary1.cod || Op4.op
+        Unary1.etqh = Unary0.eqth
+        Unary0.eqt = Unary1.etq + 1 
+        Unary1.refh = Unary0.refh
+
+        return Unary0
     }
 
-    Funcion unary_R2{
+    funcion unary_R2 (Cast, Paren) {
+        Unary.tipo = casting(Cast.tipo, Paren.tipo)
+        Paren.tsh = Unary.tsh
+        Unary.desig = false
+        Unary.cod = Paren.cod || Cast.type
+        Paren.etqh = Unary.eqth 
+        Unary.etq = Paren.eqt + 1 
+        Paren.refh = Unary.refh
 
-        Unary → lpar Cast rpar Paren 
-            Unary.tipo = casting(Cast.tipo, Paren.tipo)
-            Paren.tsh = Unary.tsh
-            Unary.desig = false
-            Unary.cod = Paren.cod || Cast.type
-            Paren.etqh = Unary.eqth 
-            Unary.etq = Paren.eqt + 1 
-            Paren.refh = Unary.refh
+        return Unary
     }
 
-    Funcion unary_R3{
+    funcion unary_R3 (Paren) {
+        Unary.tipo = Paren.tipo
+        Paren.tsh = Unary.tsh
+        Unary.desig = Paren.desig
+        Unary.cod = Paren.cod
+        Paren.eqth = Unary.etqh
+        Unary.etq = Paren.etq
+        Paren.refh = Unary.refh
 
-        Unary → Paren
-            Unary.tipo = Paren.tipo
-            Paren.tsh = Unary.tsh
-            Unary.desig = Paren.desig
-            Unary.cod = Paren.cod
-            Paren.eqth = Unary.etqh
-            Unary.etq = Paren.etq
-            Paren.refh = Unary.refh
+        return Unary
     }
 
-    Funcion paren_R1{
-        Paren → lpar Expr rpar 
-            Paren.tipo = Expr.tipo
-            Expr.tsh = Paren.tsh
-            Paren.desig = false
-            Paren.cod = Expr.cod
-            Expr.etqh = Paren.eqth
-            Paren.etq = Expr.etq
-            Expr.tsh = Paren.tsh
+    funcion paren_R1 (Expr) {
+        Paren.tipo = Expr.tipo
+        Expr.tsh = Paren.tsh
+        Paren.desig = false
+        Paren.cod = Expr.cod
+        Expr.etqh = Paren.eqth
+        Paren.etq = Expr.etq
+        Expr.tsh = Paren.tsh
+
+        return Expr
     }
 
-    Funcion paren_R2{
+    funcion paren_R2 (Lit) {
+        Parent.tipo = Lit.tipo
+        Lit.tsh = Paren.tsh
+        Paren.desig = false
+        Paren.err = false
+        Paren.cod = apila(Lit.valor)
+        Paren.etq = Paren.etqh + 1
 
-        Paren → Lit 
-            Parent.tipo = Lit.tipo
-            Lit.tsh = Paren.tsh
-            Paren.desig = false
-            Paren.err = false
-            Paren.cod = apila(Lit.valor)
-            Paren.etq = Paren.etqh + 1
+        return Paren
     }
 
-    Funcion paren_R3{
+    funcion paren_R3 (Desig) {
+        Paren.desig = true
+        Paren.err = Desig.err
+        Paren.cod = Desig.cod || 
+                    si (esPrimitivo(Desig.tipo) && Desig.tsh[Desig.lex].clase == constante)
+                        apila(Desig.tsh[Desig.lex].valor)
+                        Desig.etq = Desig.etq + 1
+                    fsi
+                    si (esPrimitivo(Desig.tipo) && !Paren.refh)
+                        apila-ind
+                        Desig.etq = Desig.etq + 1
+                    fsi
+        Desig.etqh = Paren.etqh 
+        Paren.etq = Desig.etq + 1 
 
-        Paren → Desig
-            Paren.desig = true
-            Paren.err = Desig.err
-            Paren.cod = Desig.cod || 
-                        si (esPrimitivo(Desig.tipo) && Desig.tsh[Desig.lex].clase == constante)
-                            apila(Desig.tsh[Desig.lex].valor)
-                            Desig.etq = Desig.etq + 1
-                        fsi
-                        si (esPrimitivo(Desig.tipo) && !Paren.refh)
-                            apila-ind
-                            Desig.etq = Desig.etq + 1
-                        fsi
-            Desig.etqh = Paren.etqh 
-            Paren.etq = Desig.etq + 1 
+        return Paren
     }
 
-    Funcion op0_R1{
+    funcion op0_R1 () {
+        Op0.op = igual
 
-        Op0 → igual
-            Op0.op = igual
+        return Op0
     }
 
-    Funcion op0_R2{
+    funcion op0_R2 () {
+        Op0.op = noigual 
 
-        Op0 → noigual 
-            Op0.op = noigual 
+        return Op0
     }
 
-    Funcion op0_R3{
+    funcion op0_R3 () {
+        Op0.op = men 
 
-        Op0 → men 
-            Op0.op = men 
+        return Op0
     }
 
-    Funcion op0_R4{
+    funcion op0_R4 () {
+        Op0.op = may 
 
-        Op0 → may 
-            Op0.op = may 
+        return Op0
     }
 
-    Funcion op0_R5{
+    funcion op0_R5 () {
+        Op0.op = menoig 
 
-        Op0 → menoig 
-            Op0.op = menoig 
+        return Op0
     }
 
-    Funcion op0_R6{
+    funcion op0_R6 () {
+        Op0.op = mayoig
 
-        Op0 → mayoig 
-            Op0.op = mayoig
+        return Op0
     }
 
-    Funcion op1_R1{
+    funcion op1_R1 () {
+        Op1.op = menos
 
-        Op1 → menos
-            Op1.op = menos
+        return Op1
     }
 
-    Funcion op1_R2{
+    funcion op1_R2 () {
+        Op1.op = mas
 
-        Op1 → mas
-            Op1.op = mas
+        return Op1
     }
 
-    Funcion op2_R1{
+    funcion op2_R1 () {
+        Op2.op = mod
 
-        Op2 → mod
-            Op2.op = mod
+        return Op2
     }
 
-    Funcion op2_R2{
+    funcion op2_R2 () {
+        Op2.op = div
 
-        Op2 → div
-            Op2.op = div
+        return Op2
     }
 
-    Funcion op2_R3{
+    funcion op2_R3 () {
+        Op2.op = mul
 
-        Op2 → mul
-            Op2.op = mul
+        return Op2
     }
 
-    Funcion op3_R1{
+    funcion op3_R1 () {
+        Op3.op = lsh
 
-        Op3 → lsh
-            Op3.op = lsh
+        return Op3
     }
 
-    Funcion op3_R2{
+    funcion op3_R2 () {
+        Op3.op = rsh
 
-        Op3 → rsh
-            Op3.op = rsh
+        return Op3
     }
 
-    Funcion op4_R1{
+    funcion op4_R1 () {
+        Op4.op = not
 
-        Op4 → not
-            Op4.op = not
+        return Op4
     }
 
-    Funcion op4_R2{
+    funcion op4_R2 () {
+        Op4.op = menos
 
-        Op4 → menos
-            Op4.op = menos
+        return Op4
     }  
 
 
-    Funcion lit_R1{
+    funcion lit_R1 (LitBool) {
+        Lit.valor = LitBool.valor
+        Lit.tipo = LitBool.tipo
 
-        Lit → LitBool {
-
-            Lit.valor = LitBool.valor
-            Lit.tipo = LitBool.tipo
+        return Lit
     }
 
-    Funcion lit_R2{
+    funcion lit_R2 (LitNum) {
+        Lit.valor = LitNum.valor
+        Lit.tipo = LitNum.tipo
 
-        Lit → LitNum
-            Lit.valor = LitNum.valor
-            Lit.tipo = LitNum.tipo
+        return Lit
     }
 
-    Funcion lit_R3{
+    funcion lit_R3 (litchar) {
+        Lit.valor = stringToChar(litchar)
+        Lit.tipo = character
 
-        Lit → litChar
-            Lit.valor = stringToChar(litchar)
-            Lit.tipo = character
+        return Lit
     }
 
-    Funcion litBool_R1{
+    funcion litBool_R1 () {
+        LitBool.valor = true
+        LitBool.tipo = boolean
 
-        LitBool → true 
-            LitBool.valor = true
-            Litbool.tipo = boolean
+        return LitBool
     }
 
-    Funcion litBool_R2{
+    funcion litBool_R2 () {
+        LitBool.valor = false
+        Lit.tipo = boolean
 
-        LitBool → false
-            LitBool.valor = false
-            Lit.tipo = boolean
+        return LitBool
     }
 
-    Funcion litNum_R1{
+    funcion litNum_R1 (litnat) {
+        LitNum.valor = stringToNat(litnat)
+        LitNum.tipo = natural
 
-        LitNum → litNat
-            LitNum.valor = stringToNat(litnat)
-            LitNum.tipo = natural
+        return LitNum
     }
 
-    Funcion litNum_R2{
+    funcion litNum_R2 (litfloat) {
+        LitNum.valor = stringToFloat(litfloat)
+        LitNum.tipo = float
 
-        LitNum → litFloat
-            LitNum.valor = stringToFloat(litfloat)
-            LitNum.tipo = float
+        return LitNum
     }
 
 
